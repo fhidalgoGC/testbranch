@@ -87,7 +87,9 @@ shared/
 6. User profile data stored in localStorage (user_name, user_lastname, user_id, user_email)
 7. Frontend calls partition keys API to fetch user partition information
 8. Partition key stored in localStorage (partition_key from first array element)
-9. User redirected to dashboard on successful authentication
+9. Frontend calls organization API to fetch organization information
+10. Representative people ID stored in localStorage (representative_people_id from extras array)
+11. User redirected to dashboard on successful authentication
 
 ### API Request Flow
 1. Frontend components use RTK Query hooks

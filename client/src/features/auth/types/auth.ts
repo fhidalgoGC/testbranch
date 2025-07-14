@@ -68,3 +68,79 @@ export interface PartitionKeyResponse {
     idCustomer: string;
   }>;
 }
+
+export interface OrganizationResponse {
+  data: Array<{
+    _id: string;
+    _partitionKey: string;
+    active: boolean;
+    addresses: Array<{
+      _id: string;
+      line: string;
+      type: string;
+    }>;
+    applications: Array<{
+      _id: string;
+      slug: string;
+    }>;
+    business_name: string;
+    business_type: string;
+    configuration_set: {
+      _id: string;
+      name: string;
+    };
+    created_at: string;
+    created_by: string;
+    emails: Array<{
+      _id: string;
+      type: string;
+      value: string;
+      verified: boolean;
+    }>;
+    extras: Array<{
+      key: string;
+      values: Array<{
+        value: string;
+        value_id: string;
+        value_type: string;
+      }>;
+    }>;
+    name: string;
+    phones: Array<{
+      _id: string;
+      calling_code: string;
+      phone_number: string;
+      type: string;
+      verified: boolean;
+    }>;
+    status: string;
+    type: string;
+    updated_at: string;
+    logs: Array<{
+      executed_at: string;
+      executed_by?: string;
+      executed_name: string;
+      action: string;
+      _id: string;
+    }>;
+    images: any[];
+    ids: any[];
+    relationships: any[];
+    reports: any[];
+    externals: any[];
+    id: string;
+  }>;
+  _meta: {
+    page_size: number;
+    page_number: number;
+    total_elements: number;
+    total_pages: number;
+  };
+  _links: {
+    self: string;
+    first: string;
+    prev: string;
+    next: string;
+    last: string;
+  };
+}

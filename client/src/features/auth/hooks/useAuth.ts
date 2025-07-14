@@ -62,33 +62,64 @@ export const useAuth = () => {
           const partitionKeysData = await partitionKeysResponse.json();
           
           // Store partition key from the first object in the array
+          let partitionKey = '';
           if (partitionKeysData.data && partitionKeysData.data.length > 0) {
-            localStorage.setItem('partition_key', partitionKeysData.data[0].partitionKey);
+            partitionKey = partitionKeysData.data[0].partitionKey;
+            localStorage.setItem('partition_key', partitionKey);
           }
           
-          // Update Redux state
-          dispatch(loginAction({
-            user: { 
-              email: identityData.data.email,
-              name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+          // Fourth endpoint: Get organization information
+          const crmBaseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
+          const organizationUrl = `${crmBaseUrl}/mngm-organizations/organizations?filter={"_partitionKey":{"$in":["${partitionKey}"]}}`;
+          console.log('Organization URL:', organizationUrl);
+          
+          const organizationResponse = await fetch(organizationUrl, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${result.id_token}`,
             },
-            tokens: {
-              accessToken: result.access_token,
-              refreshToken: result.refresh_token,
-              idToken: result.id_token,
-            },
-          }));
-
-          toast({
-            title: t('loginSuccess'),
-            description: t('loginSuccessMessage'),
           });
 
-          setTimeout(() => {
-            setLocation('/home');
-          }, 1000);
+          if (organizationResponse.ok) {
+            const organizationData = await organizationResponse.json();
+            
+            // Extract representative_people_id from the first organization's extras
+            if (organizationData.data && organizationData.data.length > 0) {
+              const firstOrg = organizationData.data[0];
+              if (firstOrg.extras && Array.isArray(firstOrg.extras)) {
+                const representativeExtra = firstOrg.extras.find(extra => extra.key === 'representativePeople_id');
+                if (representativeExtra && representativeExtra.values && representativeExtra.values.length > 0) {
+                  localStorage.setItem('representative_people_id', representativeExtra.values[0].value);
+                }
+              }
+            }
+            
+            // Update Redux state
+            dispatch(loginAction({
+              user: { 
+                email: identityData.data.email,
+                name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+              },
+              tokens: {
+                accessToken: result.access_token,
+                refreshToken: result.refresh_token,
+                idToken: result.id_token,
+              },
+            }));
 
-          return true;
+            toast({
+              title: t('loginSuccess'),
+              description: t('loginSuccessMessage'),
+            });
+
+            setTimeout(() => {
+              setLocation('/home');
+            }, 1000);
+
+            return true;
+          } else {
+            throw new Error('Failed to fetch organization information');
+          }
         } else {
           throw new Error('Failed to fetch partition keys');
         }
@@ -118,6 +149,8 @@ export const useAuth = () => {
     localStorage.removeItem('user_lastname');
     localStorage.removeItem('user_id');
     localStorage.removeItem('user_email');
+    localStorage.removeItem('partition_key');
+    localStorage.removeItem('representative_people_id');
     
     // Update Redux state
     dispatch(logoutAction());
