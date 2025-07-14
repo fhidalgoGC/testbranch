@@ -55,3 +55,16 @@ export interface IdentityResponse {
     id: string;
   };
 }
+
+export interface PartitionKeyResponse {
+  data: Array<{
+    role: string;
+    partitionKey: string;
+    organization: string;
+    registered: string;
+    id: string;
+    externals: any[];
+    type: string;
+    idCustomer: string;
+  }>;
+}

@@ -47,29 +47,51 @@ export const useAuth = () => {
         localStorage.setItem('user_id', identityData.data.id);
         localStorage.setItem('user_email', identityData.data.email);
         
-        // Update Redux state
-        dispatch(loginAction({
-          user: { 
-            email: identityData.data.email,
-            name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+        // Third endpoint: Get partition keys
+        const partitionKeysUrl = `${baseUrl}/identity/v2/customers/${identityData.data.id}/partition_keys`;
+        console.log('Partition Keys URL:', partitionKeysUrl);
+        
+        const partitionKeysResponse = await fetch(partitionKeysUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${result.id_token}`,
           },
-          tokens: {
-            accessToken: result.access_token,
-            refreshToken: result.refresh_token,
-            idToken: result.id_token,
-          },
-        }));
-
-        toast({
-          title: t('loginSuccess'),
-          description: t('loginSuccessMessage'),
         });
 
-        setTimeout(() => {
-          setLocation('/home');
-        }, 1000);
+        if (partitionKeysResponse.ok) {
+          const partitionKeysData = await partitionKeysResponse.json();
+          
+          // Store partition key from the first object in the array
+          if (partitionKeysData.data && partitionKeysData.data.length > 0) {
+            localStorage.setItem('partition_key', partitionKeysData.data[0].partitionKey);
+          }
+          
+          // Update Redux state
+          dispatch(loginAction({
+            user: { 
+              email: identityData.data.email,
+              name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+            },
+            tokens: {
+              accessToken: result.access_token,
+              refreshToken: result.refresh_token,
+              idToken: result.id_token,
+            },
+          }));
 
-        return true;
+          toast({
+            title: t('loginSuccess'),
+            description: t('loginSuccessMessage'),
+          });
+
+          setTimeout(() => {
+            setLocation('/home');
+          }, 1000);
+
+          return true;
+        } else {
+          throw new Error('Failed to fetch partition keys');
+        }
       } else {
         throw new Error('Failed to fetch user identity');
       }
