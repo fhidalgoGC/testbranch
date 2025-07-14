@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { LoginRequest, LoginResponse } from '../types/auth';
+import { LoginRequest, LoginResponse, IdentityResponse } from '../types/auth';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
@@ -28,4 +28,24 @@ export const authApi = createApi({
   }),
 });
 
+export const identityApi = createApi({
+  reducerPath: 'identityApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_URL_IDENTITY || 'https://un4grlwfx2.execute-api.us-west-2.amazonaws.com/dev',
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem('jwt');
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  endpoints: (builder) => ({
+    getIdentity: builder.query<IdentityResponse, void>({
+      query: () => '/identity/customers',
+    }),
+  }),
+});
+
 export const { useLoginMutation } = authApi;
+export const { useGetIdentityQuery } = identityApi;

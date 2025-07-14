@@ -29,3 +29,29 @@ export interface LoginResponse {
   expires_in: number;
   token_type: string;
 }
+
+export interface IdentityResponse {
+  data: {
+    firstName: string;
+    lastName: string;
+    address: Record<string, any>;
+    auth0: string;
+    phone: Array<{
+      callingCode: string;
+      role: string;
+      phoneNumber: string;
+    }>;
+    companyName: string;
+    roles: string[];
+    dateOfBirth: string;
+    id: string;
+    email: string;
+    group: any;
+  };
+  meta: {
+    links: {
+      address: string;
+    };
+    id: string;
+  };
+}

@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { login as loginAction, logout as logoutAction } from '../slices/authSlice';
-import { useLoginMutation } from '../services/authApi';
+import { useLoginMutation, useGetIdentityQuery } from '../services/authApi';
 import { useToast } from '@/hooks/use-toast';
 
 export const useAuth = () => {
@@ -25,26 +25,49 @@ export const useAuth = () => {
       localStorage.setItem('refresh_token', result.refresh_token);
       localStorage.setItem('access_token', result.access_token);
       
-      // Update Redux state
-      dispatch(loginAction({
-        user: { email },
-        tokens: {
-          accessToken: result.access_token,
-          refreshToken: result.refresh_token,
-          idToken: result.id_token,
+      // After successful login, fetch user identity
+      const identityResponse = await fetch(`${import.meta.env.VITE_URL_IDENTITY}/identity/customers`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${result.id_token}`,
         },
-      }));
-
-      toast({
-        title: t('loginSuccess'),
-        description: t('loginSuccessMessage'),
       });
 
-      setTimeout(() => {
-        setLocation('/home');
-      }, 1000);
+      if (identityResponse.ok) {
+        const identityData = await identityResponse.json();
+        
+        // Store user data in localStorage
+        localStorage.setItem('user_name', identityData.data.firstName);
+        localStorage.setItem('user_lastname', identityData.data.lastName);
+        localStorage.setItem('user_id', identityData.data.id);
+        localStorage.setItem('user_email', identityData.data.email);
+        
+        // Update Redux state
+        dispatch(loginAction({
+          user: { 
+            email: identityData.data.email,
+            name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+          },
+          tokens: {
+            accessToken: result.access_token,
+            refreshToken: result.refresh_token,
+            idToken: result.id_token,
+          },
+        }));
 
-      return true;
+        toast({
+          title: t('loginSuccess'),
+          description: t('loginSuccessMessage'),
+        });
+
+        setTimeout(() => {
+          setLocation('/home');
+        }, 1000);
+
+        return true;
+      } else {
+        throw new Error('Failed to fetch user identity');
+      }
     } catch (err: any) {
       const errorMessage = err?.data?.error_description || err?.message || t('loginError');
       setError(errorMessage);
@@ -62,6 +85,12 @@ export const useAuth = () => {
     localStorage.removeItem('jwt');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('access_token');
+    
+    // Clear user data from localStorage
+    localStorage.removeItem('user_name');
+    localStorage.removeItem('user_lastname');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_email');
     
     // Update Redux state
     dispatch(logoutAction());

@@ -83,7 +83,9 @@ shared/
 2. Frontend calls Auth0 API through RTK Query
 3. Auth0 returns tokens (access, refresh, ID)
 4. Tokens stored in localStorage and Redux state
-5. User redirected to dashboard on successful authentication
+5. Frontend calls identity API to fetch user profile data
+6. User profile data stored in localStorage (user_name, user_lastname, user_id, user_email)
+7. User redirected to dashboard on successful authentication
 
 ### API Request Flow
 1. Frontend components use RTK Query hooks
