@@ -26,7 +26,11 @@ export const useAuth = () => {
       localStorage.setItem('access_token', result.access_token);
       
       // After successful login, fetch user identity
-      const identityResponse = await fetch(`${import.meta.env.VITE_URL_IDENTITY}/identity/customers`, {
+      const identityUrl = `${import.meta.env.VITE_URL_IDENTITY}/identity/customers`;
+      console.log('Identity URL:', identityUrl);
+      console.log('Environment variable VITE_URL_IDENTITY:', import.meta.env.VITE_URL_IDENTITY);
+      
+      const identityResponse = await fetch(identityUrl, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${result.id_token}`,
