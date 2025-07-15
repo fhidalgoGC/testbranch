@@ -26,21 +26,46 @@ export default function NavBar({ title }: NavBarProps) {
   // Get user name from localStorage
   const getUserName = () => {
     const fullName = localStorage.getItem('representative_people_full_name');
-    if (fullName) return fullName;
+    if (fullName && fullName.trim().length > 0) {
+      return fullName.trim();
+    }
     
-    const firstName = localStorage.getItem('representative_people_first_name') || '';
-    const lastName = localStorage.getItem('representative_people_last_name') || '';
-    return `${firstName} ${lastName}`.trim() || 'Usuario';
+    const firstName = localStorage.getItem('representative_people_first_name');
+    const lastName = localStorage.getItem('representative_people_last_name');
+    
+    if (firstName && firstName.trim().length > 0 && lastName && lastName.trim().length > 0) {
+      return `${firstName.trim()} ${lastName.trim()}`;
+    } else if (firstName && firstName.trim().length > 0) {
+      return firstName.trim();
+    } else if (lastName && lastName.trim().length > 0) {
+      return lastName.trim();
+    }
+    
+    return 'Usuario';
   };
 
   // Get user initials
   const getUserInitials = () => {
     const name = getUserName();
-    const names = name.split(' ');
-    if (names.length >= 2) {
-      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    
+    if (name === 'Usuario') {
+      return 'US';
     }
-    return name.substring(0, 2).toUpperCase();
+    
+    const names = name.split(' ').filter(n => n.length > 0);
+    
+    if (names.length >= 2) {
+      // Take first letter of first name and first letter of last name
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    } else if (names.length === 1 && names[0].length >= 2) {
+      // If only one name, take first two letters
+      return names[0].substring(0, 2).toUpperCase();
+    } else if (names.length === 1 && names[0].length === 1) {
+      // If only one letter, duplicate it
+      return `${names[0][0]}${names[0][0]}`.toUpperCase();
+    }
+    
+    return 'US';
   };
 
   const changeLanguage = (lang: string) => {
