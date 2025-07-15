@@ -27,5 +27,20 @@
   "analytics": "Analíticas",
   "analyticsDesc": "Ve el rendimiento comercial y perspectivas",
   "partners": "Socios",
-  "partnersDesc": "Conecta con socios comerciales"
+  "partnersDesc": "Conecta con socios comerciales",
+  "dashboard": "Panel de Control",
+  "welcome": "¡Bienvenido!",
+  "welcomeMessage": "Tu plataforma de comercio de granos está lista para usar. Comienza a gestionar tus contratos y transacciones.",
+  "buyers": "Compradores",
+  "sellers": "Vendedores",
+  "purchaseContracts": "Contratos de Compra",
+  "saleContracts": "Contratos de Venta",
+  "manageBuyers": "Gestiona información de compradores",
+  "manageSellers": "Gestiona información de vendedores",
+  "managePurchaseContracts": "Gestiona contratos de compra",
+  "manageSaleContracts": "Gestiona contratos de venta",
+  "buyersDescription": "Administra y gestiona información de compradores",
+  "sellersDescription": "Administra y gestiona información de vendedores",
+  "purchaseContractsDescription": "Crea y gestiona contratos de compra",
+  "saleContractsDescription": "Crea y gestiona contratos de venta"
 }

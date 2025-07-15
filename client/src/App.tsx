@@ -9,6 +9,10 @@ import { useEffect } from "react";
 import "./common/utils/i18n";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
+import Buyers from "@/pages/Buyers";
+import Sellers from "@/pages/Sellers";
+import PurchaseContracts from "@/pages/PurchaseContracts";
+import SaleContracts from "@/pages/SaleContracts";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +20,10 @@ function Router() {
     <Switch>
       <Route path="/" component={Login} />
       <Route path="/home" component={Home} />
+      <Route path="/buyers" component={Buyers} />
+      <Route path="/sellers" component={Sellers} />
+      <Route path="/purchase-contracts" component={PurchaseContracts} />
+      <Route path="/sale-contracts" component={SaleContracts} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -24,7 +32,7 @@ function Router() {
 function App() {
   useEffect(() => {
     // Set document language based on detected language
-    const savedLanguage = localStorage.getItem('currentLanguage') || 'en';
+    const savedLanguage = localStorage.getItem('language') || 'es';
     document.documentElement.lang = savedLanguage;
   }, []);
 

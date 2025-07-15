@@ -12,24 +12,30 @@ const resources = {
   },
 };
 
-// Detect browser language
-const detectLanguage = () => {
+// Get saved language or detect browser language
+const getSavedLanguage = () => {
+  const savedLang = localStorage.getItem('language');
+  if (savedLang && ['en', 'es'].includes(savedLang)) {
+    return savedLang;
+  }
   const browserLang = navigator.language.split('-')[0];
-  return ['en', 'es'].includes(browserLang) ? browserLang : 'en';
+  return ['en', 'es'].includes(browserLang) ? browserLang : 'es';
 };
+
+const initialLanguage = getSavedLanguage();
 
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: detectLanguage(),
-    fallbackLng: 'en',
+    lng: initialLanguage,
+    fallbackLng: 'es',
     interpolation: {
       escapeValue: false,
     },
   });
 
-// Save detected language to localStorage
-localStorage.setItem('currentLanguage', i18n.language);
+// Save initial language to localStorage
+localStorage.setItem('language', initialLanguage);
 
 export default i18n;

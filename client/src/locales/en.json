@@ -27,5 +27,20 @@
   "analytics": "Analytics",
   "analyticsDesc": "View trading performance and insights",
   "partners": "Partners",
-  "partnersDesc": "Connect with trading partners"
+  "partnersDesc": "Connect with trading partners",
+  "dashboard": "Dashboard",
+  "welcome": "Welcome!",
+  "welcomeMessage": "Your grain trading platform is ready to use. Start managing your contracts and transactions.",
+  "buyers": "Buyers",
+  "sellers": "Sellers",
+  "purchaseContracts": "Purchase Contracts",
+  "saleContracts": "Sale Contracts",
+  "manageBuyers": "Manage buyer information",
+  "manageSellers": "Manage seller information",
+  "managePurchaseContracts": "Manage purchase contracts",
+  "manageSaleContracts": "Manage sale contracts",
+  "buyersDescription": "Manage and administer buyer information",
+  "sellersDescription": "Manage and administer seller information",
+  "purchaseContractsDescription": "Create and manage purchase contracts",
+  "saleContractsDescription": "Create and manage sale contracts"
 }

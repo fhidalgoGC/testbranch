@@ -151,3 +151,17 @@ shared/
 - `npm run build`: Build for production
 - `npm run start`: Start production server
 - `npm run db:push`: Apply database migrations
+
+## Recent Changes
+
+### Dashboard Layout Implementation (July 15, 2025)
+- **Complete UI overhaul**: Replaced simple welcome screen with comprehensive dashboard layout
+- **Sidebar navigation**: Left-side menu with icons for Buyers, Sellers, Purchase Contracts, Sale Contracts
+- **Top navigation bar**: Page title on left, language selector and user menu on right
+- **Language switching**: Circular flag icons with dropdown menu, persists selection in localStorage
+- **User profile system**: Avatar with user initials, name display, logout functionality moved to dropdown
+- **Full-screen layout**: Optimized space utilization with sidebar + main content area
+- **Responsive design**: Mobile-first approach with proper breakpoints
+- **New pages created**: Individual pages for each menu section with consistent layout
+- **Internationalization**: Added Spanish/English translations for all new UI elements
+- **Modern styling**: Clean, minimalist design with proper dark mode support
