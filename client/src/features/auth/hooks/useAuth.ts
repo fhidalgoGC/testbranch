@@ -104,6 +104,7 @@ export const useAuth = () => {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+                '_partitionkey': partitionKey,
               },
             });
 
