@@ -84,39 +84,76 @@ export const useAuth = () => {
             const organizationData = await organizationResponse.json();
             
             // Extract representative_people_id from the first organization's extras
+            let representativePeopleId = '';
             if (organizationData.data && organizationData.data.length > 0) {
               const firstOrg = organizationData.data[0];
               if (firstOrg.extras && Array.isArray(firstOrg.extras)) {
                 const representativeExtra = firstOrg.extras.find(extra => extra.key === 'representativePeople_id');
                 if (representativeExtra && representativeExtra.values && representativeExtra.values.length > 0) {
-                  localStorage.setItem('representative_people_id', representativeExtra.values[0].value);
+                  representativePeopleId = representativeExtra.values[0].value;
+                  localStorage.setItem('representative_people_id', representativePeopleId);
                 }
               }
             }
             
-            // Update Redux state
-            dispatch(loginAction({
-              user: { 
-                email: identityData.data.email,
-                name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+            // Fifth endpoint: Get representative people information
+            const peopleUrl = `${crmBaseUrl}/crm-people/people/${representativePeopleId}`;
+            console.log('People URL:', peopleUrl);
+            
+            const peopleResponse = await fetch(peopleUrl, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
               },
-              tokens: {
-                accessToken: result.access_token,
-                refreshToken: result.refresh_token,
-                idToken: result.id_token,
-              },
-            }));
-
-            toast({
-              title: t('loginSuccess'),
-              description: t('loginSuccessMessage'),
             });
 
-            setTimeout(() => {
-              setLocation('/home');
-            }, 1000);
+            if (peopleResponse.ok) {
+              const peopleData = await peopleResponse.json();
+              
+              // Store representative people information in localStorage
+              if (peopleData.data) {
+                localStorage.setItem('representative_people_full_name', peopleData.data.full_name);
+                localStorage.setItem('representative_people_first_name', peopleData.data.first_name);
+                localStorage.setItem('representative_people_last_name', peopleData.data.last_name);
+                
+                // Store email from first email object
+                if (peopleData.data.emails && peopleData.data.emails.length > 0) {
+                  localStorage.setItem('representative_people_email', peopleData.data.emails[0].value);
+                }
+                
+                // Store phone information from first phone object
+                if (peopleData.data.phones && peopleData.data.phones.length > 0) {
+                  localStorage.setItem('representative_people_calling_code', peopleData.data.phones[0].calling_code);
+                  localStorage.setItem('representative_people_phone_number', peopleData.data.phones[0].phone_number);
+                }
+              }
+              
+              // Update Redux state
+              dispatch(loginAction({
+                user: { 
+                  email: identityData.data.email,
+                  name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+                },
+                tokens: {
+                  accessToken: result.access_token,
+                  refreshToken: result.refresh_token,
+                  idToken: result.id_token,
+                },
+              }));
 
-            return true;
+              toast({
+                title: t('loginSuccess'),
+                description: t('loginSuccessMessage'),
+              });
+
+              setTimeout(() => {
+                setLocation('/home');
+              }, 1000);
+
+              return true;
+            } else {
+              throw new Error('Failed to fetch representative people information');
+            }
           } else {
             throw new Error('Failed to fetch organization information');
           }
@@ -151,6 +188,12 @@ export const useAuth = () => {
     localStorage.removeItem('user_email');
     localStorage.removeItem('partition_key');
     localStorage.removeItem('representative_people_id');
+    localStorage.removeItem('representative_people_full_name');
+    localStorage.removeItem('representative_people_first_name');
+    localStorage.removeItem('representative_people_last_name');
+    localStorage.removeItem('representative_people_email');
+    localStorage.removeItem('representative_people_calling_code');
+    localStorage.removeItem('representative_people_phone_number');
     
     // Update Redux state
     dispatch(logoutAction());

@@ -144,3 +144,53 @@ export interface OrganizationResponse {
     last: string;
   };
 }
+
+export interface PeopleResponse {
+  data: {
+    _id: string;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    birthdate: string;
+    person_type: string;
+    roles: Array<{
+      slug: string;
+      platforms: any[];
+      created_at: string;
+      updated_at: string;
+    }>;
+    emails: Array<{
+      _id: string;
+      type: string;
+      value: string;
+      verified: boolean;
+      created_at: string;
+      updated_at: string;
+    }>;
+    phones: Array<{
+      _id: string;
+      calling_code: string;
+      phone_number: string;
+      type: string;
+      verified: boolean;
+      created_at: string;
+      updated_at: string;
+    }>;
+    externals: Array<{
+      _id: string;
+      platform: string;
+      platform_id: string;
+      registered_at: string;
+    }>;
+    created_by: string;
+    active: boolean;
+    status: string;
+    _partitionKey: string;
+    created_at: string;
+    updated_at: string;
+    related_people: any[];
+    ids: any[];
+    relationships: any[];
+    extras: any[];
+  };
+}
