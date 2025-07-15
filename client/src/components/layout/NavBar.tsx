@@ -129,7 +129,7 @@ export default function NavBar({ title }: NavBarProps) {
                   {getUserInitials()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-normal text-gray-700 dark:text-gray-300 max-w-24 truncate">
+              <span className="text-sm font-normal text-gray-700 dark:text-gray-300 max-w-36 truncate">
                 {getUserName()}
               </span>
               <ChevronDown className="w-3 h-3 text-gray-500 transition-transform duration-100 group-data-[state=open]:rotate-180" strokeWidth={1.5} />
