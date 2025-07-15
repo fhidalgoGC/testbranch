@@ -82,32 +82,36 @@ export default function NavBar({ title }: NavBarProps) {
   const currentLang = languages.find(lang => lang.code === currentLanguage);
 
   return (
-    <nav className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 flex items-center justify-between">
+    <nav className="h-16 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50 px-6 flex items-center justify-between shadow-sm">
       {/* Left side - Page title */}
       <div>
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
+        <h1 className="text-xl font-semibold text-gray-800 dark:text-white tracking-tight">
           {title}
         </h1>
       </div>
 
       {/* Right side - Language selector and User menu */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-3">
         {/* Language Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-10 h-10 rounded-full p-0">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-10 h-10 rounded-full p-0 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 hover:shadow-sm ring-1 ring-transparent hover:ring-gray-200/50 dark:hover:ring-gray-700/50"
+            >
               <span className="text-lg">{currentLang?.flag}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-44 border-gray-200/50 dark:border-gray-700/50 shadow-lg backdrop-blur-sm">
             {languages.map((lang) => (
               <DropdownMenuItem
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
-                className="flex items-center space-x-2 cursor-pointer"
+                className="flex items-center space-x-3 cursor-pointer px-3 py-2 hover:bg-gray-50/80 dark:hover:bg-gray-800/80 transition-all duration-200"
               >
                 <span className="text-lg">{lang.flag}</span>
-                <span>{lang.name}</span>
+                <span className="font-medium">{lang.name}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -116,21 +120,27 @@ export default function NavBar({ title }: NavBarProps) {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center space-x-2 h-10 px-2">
-              <Avatar className="w-8 h-8">
-                <AvatarFallback className="bg-green-600 text-white text-sm">
+            <Button 
+              variant="ghost" 
+              className="flex items-center space-x-3 h-10 px-3 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 transition-all duration-200 hover:shadow-sm ring-1 ring-transparent hover:ring-gray-200/50 dark:hover:ring-gray-700/50 rounded-lg"
+            >
+              <Avatar className="w-8 h-8 ring-2 ring-gray-200/50 dark:ring-gray-700/50">
+                <AvatarFallback className="bg-gradient-to-br from-green-600 to-green-700 text-white text-sm font-semibold">
                   {getUserInitials()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-32 truncate">
                 {getUserName()}
               </span>
-              <ChevronDown className="w-4 h-4 text-gray-500" />
+              <ChevronDown className="w-4 h-4 text-gray-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={logout} className="cursor-pointer">
-              <LogOut className="w-4 h-4 mr-2" />
+          <DropdownMenuContent align="end" className="w-48 border-gray-200/50 dark:border-gray-700/50 shadow-lg backdrop-blur-sm">
+            <DropdownMenuItem 
+              onClick={logout} 
+              className="cursor-pointer px-3 py-2 hover:bg-red-50/80 dark:hover:bg-red-900/20 transition-all duration-200 text-red-600 dark:text-red-400"
+            >
+              <LogOut className="w-4 h-4 mr-3" />
               {t('logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
