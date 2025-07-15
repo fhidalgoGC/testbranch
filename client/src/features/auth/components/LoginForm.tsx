@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,75 +8,40 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '../hooks/useAuth';
-import { useLocalStorage } from '../../../common/hooks/useLocalStorage';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address').min(1, 'Email is required'),
   password: z.string().min(1, 'Password is required'),
-  rememberMe: z.boolean().default(false),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-interface SavedCredential {
-  email: string;
-  password: string;
-}
-
 export default function LoginForm() {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedCredential, setSelectedCredential] = useState<string>('');
-  const [savedCredentials, setSavedCredentials] = useLocalStorage<SavedCredential[]>('savedCredentials', []);
   const { login, isLoading, error } = useAuth();
+
+  // Clear saved credentials from localStorage for security
+  useEffect(() => {
+    localStorage.removeItem('savedCredentials');
+  }, []);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
     },
   });
 
-  const watchedRememberMe = watch('rememberMe');
-
   const onSubmit = async (data: LoginFormData) => {
-    const success = await login(data.email, data.password);
-    
-    if (success && data.rememberMe) {
-      // Save credentials if login was successful and remember me is checked
-      const existingCredIndex = savedCredentials.findIndex(cred => cred.email === data.email);
-      
-      if (existingCredIndex !== -1) {
-        // Update existing credential
-        const updatedCredentials = [...savedCredentials];
-        updatedCredentials[existingCredIndex].password = data.password;
-        setSavedCredentials(updatedCredentials);
-      } else {
-        // Add new credential
-        setSavedCredentials([...savedCredentials, { email: data.email, password: data.password }]);
-      }
-    }
-  };
-
-  const handleCredentialSelect = (email: string) => {
-    const credential = savedCredentials.find(cred => cred.email === email);
-    if (credential) {
-      setValue('email', credential.email);
-      setValue('password', credential.password);
-      setValue('rememberMe', true);
-    }
+    await login(data.email, data.password);
   };
 
   return (
@@ -154,38 +119,7 @@ export default function LoginForm() {
               )}
             </div>
 
-            {/* Remember Me Checkbox */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="rememberMe"
-                checked={watchedRememberMe}
-                onCheckedChange={(checked) => setValue('rememberMe', checked as boolean)}
-              />
-              <Label htmlFor="rememberMe" className="text-sm text-gray-700">
-                {t('rememberMe')}
-              </Label>
-            </div>
 
-            {/* Saved Credentials Dropdown */}
-            {savedCredentials.length > 0 && (
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">
-                  {t('savedCredentials')}
-                </Label>
-                <Select value={selectedCredential} onValueChange={handleCredentialSelect}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('selectCredential')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {savedCredentials.map((credential, index) => (
-                      <SelectItem key={index} value={credential.email}>
-                        {credential.email}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
 
             {/* Error Message */}
             {error && (
