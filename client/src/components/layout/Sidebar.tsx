@@ -7,6 +7,7 @@ import {
   ScrollText 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import logoPath from '@assets/LogoGrainchain_1752610987841.png';
 
 const menuItems = [
   {
@@ -38,11 +39,12 @@ export default function Sidebar() {
   return (
     <div className="w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-r border-gray-200/60 dark:border-gray-700/60 h-screen">
       <div className="px-4 py-6">
-        <div className="mb-8 px-2">
-          <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-            GrainChain
-          </h1>
-          <div className="w-8 h-0.5 bg-blue-600 dark:bg-blue-500 rounded-full"></div>
+        <div className="mb-8 flex justify-center">
+          <img 
+            src={logoPath} 
+            alt="GrainChain Logo" 
+            className="h-12 w-auto object-contain"
+          />
         </div>
         
         {/* Navigation section header */}
