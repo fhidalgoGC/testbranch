@@ -42,5 +42,6 @@
   "buyersDescription": "Administra y gestiona información de compradores",
   "sellersDescription": "Administra y gestiona información de vendedores",
   "purchaseContractsDescription": "Crea y gestiona contratos de compra",
-  "saleContractsDescription": "Crea y gestiona contratos de venta"
+  "saleContractsDescription": "Crea y gestiona contratos de venta",
+  "navigation": "Navegación"
 }

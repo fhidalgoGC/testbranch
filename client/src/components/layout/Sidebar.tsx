@@ -36,16 +36,23 @@ export default function Sidebar() {
   const [location] = useLocation();
 
   return (
-    <div className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-screen shadow-sm">
-      <div className="p-6">
-        <div className="mb-8">
-          <h1 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight">
+    <div className="w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-r border-gray-200/60 dark:border-gray-700/60 h-screen">
+      <div className="px-4 py-6">
+        <div className="mb-8 px-2">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
             GrainChain
           </h1>
-          <div className="w-12 h-0.5 bg-gradient-to-r from-green-600 to-green-400 mt-2 rounded-full"></div>
+          <div className="w-8 h-0.5 bg-blue-600 dark:bg-blue-500 rounded-full"></div>
         </div>
         
-        <nav className="space-y-1">
+        {/* Navigation section header */}
+        <div className="px-3 mb-3">
+          <h2 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            {t('navigation')}
+          </h2>
+        </div>
+        
+        <nav className="space-y-0.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location === item.path;
@@ -53,31 +60,50 @@ export default function Sidebar() {
             return (
               <Link key={item.key} href={item.path}>
                 <div className={cn(
-                  "group flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer relative overflow-hidden",
+                  "group relative flex items-center min-h-[36px] px-3 py-1.5 text-sm font-normal rounded-sm transition-all duration-100 ease-out cursor-pointer",
                   isActive 
-                    ? "bg-gradient-to-r from-green-50 to-green-50/80 dark:from-green-900/30 dark:to-green-900/20 text-green-700 dark:text-green-400 shadow-sm ring-1 ring-green-200/50 dark:ring-green-700/50" 
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/80 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200 hover:shadow-sm"
+                    ? "bg-blue-50/80 dark:bg-blue-950/50 text-blue-700 dark:text-blue-200 shadow-sm" 
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 hover:text-gray-900 dark:hover:text-gray-100"
                 )}>
+                  
+                  {/* Microsoft-style active indicator */}
                   {isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-green-600 to-green-500 rounded-r-full"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-blue-600 dark:bg-blue-400 rounded-r-sm"></div>
                   )}
-                  <Icon className={cn(
-                    "w-5 h-5 transition-all duration-200",
+                  
+                  {/* Icon container with proper sizing */}
+                  <div className={cn(
+                    "flex items-center justify-center w-4 h-4 mr-4 transition-colors duration-100",
                     isActive 
-                      ? "text-green-600 dark:text-green-400" 
+                      ? "text-blue-600 dark:text-blue-400" 
                       : "text-gray-500 dark:text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-                  )} />
+                  )}>
+                    <Icon className="w-4 h-4" strokeWidth={1.5} />
+                  </div>
+                  
+                  {/* Label with Microsoft typography */}
                   <span className={cn(
-                    "font-medium transition-all duration-200",
+                    "flex-1 text-sm font-normal leading-tight transition-colors duration-100",
                     isActive 
-                      ? "text-green-800 dark:text-green-300" 
-                      : "group-hover:text-gray-900 dark:group-hover:text-gray-200"
+                      ? "text-blue-700 dark:text-blue-200 font-medium" 
+                      : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100"
                   )}>
                     {t(item.key)}
                   </span>
+                  
+                  {/* Fluent UI selection indicator */}
                   {isActive && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent pointer-events-none"></div>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full opacity-60"></div>
                   )}
+                  
+                  {/* Subtle interaction feedback */}
+                  <div className={cn(
+                    "absolute inset-0 rounded-sm transition-all duration-100",
+                    "opacity-0 group-hover:opacity-100",
+                    isActive 
+                      ? "bg-blue-600/5 dark:bg-blue-400/10" 
+                      : "bg-gray-900/5 dark:bg-gray-100/5"
+                  )}></div>
                 </div>
               </Link>
             );
