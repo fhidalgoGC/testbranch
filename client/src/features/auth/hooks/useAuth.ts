@@ -12,12 +12,14 @@ export const useAuth = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
-  const [loginMutation, { isLoading }] = useLoginMutation();
+  const [loginMutation] = useLoginMutation();
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setError(null);
+      setIsLoading(true);
       const result = await loginMutation({ email, password }).unwrap();
       
       // Store tokens in localStorage
@@ -173,6 +175,8 @@ export const useAuth = () => {
         variant: 'destructive',
       });
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
