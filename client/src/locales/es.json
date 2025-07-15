@@ -8,6 +8,8 @@
   "rememberMe": "Recordarme",
   "signIn": "Iniciar sesión",
   "signingIn": "Iniciando sesión...",
+  "authenticating": "Autenticando...",
+  "pleaseWait": "Por favor espera",
   "savedCredentials": "Credenciales guardadas",
   "selectCredential": "Selecciona una credencial guardada",
   "loginSuccess": "¡Inicio de sesión exitoso!",

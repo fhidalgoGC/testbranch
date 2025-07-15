@@ -8,6 +8,8 @@
   "rememberMe": "Remember me",
   "signIn": "Sign In",
   "signingIn": "Signing in...",
+  "authenticating": "Authenticating...",
+  "pleaseWait": "Please wait",
   "savedCredentials": "Saved Credentials",
   "selectCredential": "Select a saved credential",
   "loginSuccess": "Login successful!",

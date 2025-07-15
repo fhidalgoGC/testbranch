@@ -46,7 +46,19 @@ export default function LoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 login-container">
-      <Card className="w-full max-w-md shadow-lg">
+      <Card className="w-full max-w-md shadow-lg relative">
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <Loader2 className="h-8 w-8 text-green-600 animate-spin" />
+              </div>
+              <p className="text-gray-600 font-medium">{t('authenticating')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t('pleaseWait')}</p>
+            </div>
+          </div>
+        )}
         <CardContent className="p-8">
           {/* Logo */}
           <div className="flex justify-center mb-8">
@@ -67,6 +79,7 @@ export default function LoginForm() {
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <fieldset disabled={isLoading} className="space-y-6">
             {/* Email Field */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">
@@ -143,6 +156,7 @@ export default function LoginForm() {
                 t('signIn')
               )}
             </Button>
+            </fieldset>
           </form>
         </CardContent>
       </Card>
