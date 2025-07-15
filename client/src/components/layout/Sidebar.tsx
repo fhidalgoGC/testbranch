@@ -43,7 +43,7 @@ export default function Sidebar() {
           <img 
             src={logoPath} 
             alt="GrainChain Logo" 
-            className="h-12 w-auto object-contain"
+            className="h-24 w-auto object-contain"
           />
         </div>
         
