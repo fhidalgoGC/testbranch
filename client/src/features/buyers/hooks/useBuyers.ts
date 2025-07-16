@@ -13,7 +13,7 @@ interface UseBuyersParams {
 
 export function useBuyers(params: UseBuyersParams = {}) {
   const [currentPage, setCurrentPage] = useState(params.page || 1);
-  const [pageSize, setPageSize] = useState(params.limit || 25);
+  const [pageSize, setPageSize] = useState(params.limit || 10);
   const [sortKey, setSortKey] = useState(params.sortKey || 'full_name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(params.sortDirection || 'asc');
   const [searchValue, setSearchValue] = useState(params.search || '');
