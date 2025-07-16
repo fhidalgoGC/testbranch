@@ -58,5 +58,8 @@
   "loading": "Loading...",
   "noResults": "No results found",
   "addBuyer": "Add Buyer",
-  "toggleTheme": "Toggle theme"
+  "toggleTheme": "Toggle theme",
+  "unknownBuyer": "Unknown buyer",
+  "registrationDate": "Registration date",
+  "personType": "Person type"
 }

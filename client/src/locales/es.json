@@ -58,5 +58,8 @@
   "loading": "Cargando...",
   "noResults": "No se encontraron resultados",
   "addBuyer": "Agregar Comprador",
-  "toggleTheme": "Cambiar tema"
+  "toggleTheme": "Cambiar tema",
+  "unknownBuyer": "Comprador desconocido",
+  "registrationDate": "Fecha de registro",
+  "personType": "Tipo de persona"
 }

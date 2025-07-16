@@ -3,6 +3,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { useBuyers } from '@/features/buyers/hooks/useBuyers';
 import { Buyer } from '@/features/buyers/types';
+import BuyerDetailsCard from '@/components/buyers/BuyerDetailsCard';
+import { formatBuyerId } from '@/lib/formatters';
 
 export default function Buyers() {
   const { t } = useTranslation();
@@ -29,12 +31,15 @@ export default function Buyers() {
 
   const columns: Column<Buyer>[] = [
     {
+      key: 'details',
+      title: '',
+      render: (buyer) => <BuyerDetailsCard buyer={buyer} />,
+      sortable: false,
+    },
+    {
       key: 'id',
       title: t('buyerId'),
-      render: (buyer) => {
-        const id = buyer._id.toUpperCase();
-        return id.slice(-6);
-      },
+      render: (buyer) => formatBuyerId(buyer._id),
       sortable: false,
     },
     {
