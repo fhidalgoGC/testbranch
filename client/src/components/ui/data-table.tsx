@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, Search, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -37,6 +37,8 @@ export interface DataTableProps<T> {
   sortKey?: string;
   sortDirection?: 'asc' | 'desc';
   searchValue: string;
+  onAddNew?: () => void;
+  addButtonLabel?: string;
 }
 
 const pageSizeOptions = [10, 25, 50, 100];
@@ -54,6 +56,8 @@ export function DataTable<T>({
   sortKey,
   sortDirection,
   searchValue,
+  onAddNew,
+  addButtonLabel,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState(searchValue);
@@ -115,20 +119,32 @@ export function DataTable<T>({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400">{t('rowsPerPage')}:</span>
-          <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(parseInt(value))}>
-            <SelectTrigger className="w-20 h-9 border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {pageSizeOptions.map((size) => (
-                <SelectItem key={size} value={size.toString()}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">{t('rowsPerPage')}:</span>
+            <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(parseInt(value))}>
+              <SelectTrigger className="w-20 h-9 border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {pageSizeOptions.map((size) => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {onAddNew && (
+            <Button
+              onClick={onAddNew}
+              className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-sm hover:shadow-md transition-all duration-200 font-medium text-sm rounded-md flex items-center gap-2 dark:bg-blue-600 dark:hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              {addButtonLabel || t('addBuyer')}
+            </Button>
+          )}
         </div>
       </div>
 

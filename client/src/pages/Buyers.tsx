@@ -22,6 +22,11 @@ export default function Buyers() {
 
   console.log('Buyers component render:', { data, isLoading, currentPage });
 
+  const handleAddBuyer = () => {
+    console.log('Add buyer button clicked');
+    // TODO: Implement add buyer functionality
+  };
+
   const columns: Column<Buyer>[] = [
     {
       key: 'id',
@@ -89,6 +94,7 @@ export default function Buyers() {
           onPageSizeChange={handlePageSizeChange}
           onSortChange={handleSortChange}
           onSearchChange={handleSearchChange}
+          onAddNew={handleAddBuyer}
         />
       </div>
     </DashboardLayout>

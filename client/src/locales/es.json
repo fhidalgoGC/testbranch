@@ -56,5 +56,6 @@
   "to": "a",
   "results": "resultados",
   "loading": "Cargando...",
-  "noResults": "No se encontraron resultados"
+  "noResults": "No se encontraron resultados",
+  "addBuyer": "Agregar Comprador"
 }
