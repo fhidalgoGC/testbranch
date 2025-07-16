@@ -4,12 +4,12 @@ import { LoginRequest, LoginResponse, IdentityResponse } from '../types/auth';
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_AUTH0_URL || 'https://grainchaindev.auth0.com',
+    baseUrl: import.meta.env.VITE_AUTH0_URL || 'https://grainchaindev.auth0.com/oauth/token',
   }),
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/oauth/token',
+        url: '',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
