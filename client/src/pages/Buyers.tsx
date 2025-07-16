@@ -20,6 +20,8 @@ export default function Buyers() {
     handleSearchChange,
   } = useBuyers();
 
+  console.log('Buyers component render:', { data, isLoading, currentPage });
+
   const columns: Column<Buyer>[] = [
     {
       key: 'id',

@@ -22,7 +22,10 @@ export function useBuyers(params: UseBuyersParams = {}) {
     const partitionKey = localStorage.getItem('partition_key');
     const baseUrl = import.meta.env.VITE_URL_CRM;
     
+    console.log('Building API URL with:', { partitionKey, baseUrl });
+    
     if (!partitionKey || !baseUrl) {
+      console.error('Missing required data:', { partitionKey, baseUrl });
       throw new Error('Missing required environment variables or partition key');
     }
 
@@ -83,14 +86,19 @@ export function useBuyers(params: UseBuyersParams = {}) {
   } = useQuery<BuyersResponse>({
     queryKey: ['buyers', currentPage, pageSize, sortKey, sortDirection, searchValue],
     queryFn: async () => {
+      console.log('Executing query function...');
       const jwt = localStorage.getItem('jwt');
       const partitionKey = localStorage.getItem('partition_key');
       
+      console.log('Auth tokens:', { jwt: !!jwt, partitionKey });
+      
       if (!jwt || !partitionKey) {
+        console.error('Missing authentication tokens');
         throw new Error('Missing authentication tokens');
       }
 
       const url = buildApiUrl();
+      console.log('API URL:', url);
       
       const response = await apiRequest(url, {
         method: 'GET',
@@ -101,13 +109,18 @@ export function useBuyers(params: UseBuyersParams = {}) {
         },
       });
 
+      console.log('API Response:', response);
+
       if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status}`);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return response.json();
+      const result = await response.json();
+      console.log('API Result:', result);
+      return result;
     },
-    enabled: !!localStorage.getItem('jwt') && !!localStorage.getItem('partition_key'),
+    enabled: true, // Always enable the query to see what happens
   });
 
   const handlePageChange = useCallback((page: number) => {
