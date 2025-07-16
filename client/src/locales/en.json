@@ -43,5 +43,18 @@
   "sellersDescription": "Manage and administer seller information",
   "purchaseContractsDescription": "Create and manage purchase contracts",
   "saleContractsDescription": "Create and manage sale contracts",
-  "navigation": "MENU"
+  "navigation": "MENU",
+  "buyerId": "Buyer ID",
+  "fullName": "Full Name",
+  "email": "Email",
+  "phoneNumber": "Phone Number",
+  "search": "Search",
+  "rowsPerPage": "Rows per page",
+  "page": "Page",
+  "of": "of",
+  "showing": "Showing",
+  "to": "to",
+  "results": "results",
+  "loading": "Loading...",
+  "noResults": "No results found"
 }

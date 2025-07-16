@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Search, X, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,6 +55,7 @@ export function DataTable<T>({
   sortDirection,
   searchValue,
 }: DataTableProps<T>) {
+  const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState(searchValue);
 
   // Debounced search effect
@@ -96,7 +98,7 @@ export function DataTable<T>({
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="Buscar..."
+            placeholder={t('search') + '...'}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="pl-10 pr-10 h-9 border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
@@ -114,7 +116,7 @@ export function DataTable<T>({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Filas por página:</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{t('rowsPerPage')}:</span>
           <Select value={pageSize.toString()} onValueChange={(value) => onPageSizeChange(parseInt(value))}>
             <SelectTrigger className="w-20 h-9 border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
               <SelectValue />
@@ -172,13 +174,13 @@ export function DataTable<T>({
               {loading ? (
                 <tr>
                   <td colSpan={columns.length} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    Cargando...
+                    {t('loading')}
                   </td>
                 </tr>
               ) : data?.data.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    No se encontraron resultados
+                    {t('noResults')}
                   </td>
                 </tr>
               ) : (
@@ -201,7 +203,7 @@ export function DataTable<T>({
       {data && data.meta && data.meta.total_pages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            Mostrando {startItem} a {endItem} de {data.meta?.total_elements || 0} resultados
+            {t('showing')} {startItem} {t('to')} {endItem} {t('of')} {data.meta?.total_elements || 0} {t('results')}
           </div>
           
           <div className="flex items-center gap-2">
@@ -227,7 +229,7 @@ export function DataTable<T>({
             
             <div className="flex items-center gap-1">
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Página {currentPage} de {data.meta?.total_pages || 1}
+                {t('page')} {currentPage} {t('of')} {data.meta?.total_pages || 1}
               </span>
             </div>
             

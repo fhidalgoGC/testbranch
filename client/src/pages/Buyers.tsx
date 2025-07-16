@@ -25,7 +25,7 @@ export default function Buyers() {
   const columns: Column<Buyer>[] = [
     {
       key: 'id',
-      title: 'Id Comprador',
+      title: t('buyerId'),
       render: (buyer) => {
         const id = buyer._id.toUpperCase();
         return id.slice(-6);
@@ -34,14 +34,14 @@ export default function Buyers() {
     },
     {
       key: 'full_name',
-      title: 'Nombre Completo',
+      title: t('fullName'),
       render: (buyer) => buyer.full_name || '-',
       sortable: true,
       sortKey: 'full_name',
     },
     {
       key: 'email',
-      title: 'Correo Electrónico',
+      title: t('email'),
       render: (buyer) => {
         const email = buyer.emails && buyer.emails.length > 0 ? buyer.emails[0].value : null;
         return email || '-';
@@ -51,7 +51,7 @@ export default function Buyers() {
     },
     {
       key: 'phone',
-      title: 'Número de Teléfono',
+      title: t('phoneNumber'),
       render: (buyer) => {
         if (buyer.phones && buyer.phones.length > 0) {
           const phone = buyer.phones[0];

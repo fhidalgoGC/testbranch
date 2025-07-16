@@ -43,5 +43,18 @@
   "sellersDescription": "Administra y gestiona información de vendedores",
   "purchaseContractsDescription": "Crea y gestiona contratos de compra",
   "saleContractsDescription": "Crea y gestiona contratos de venta",
-  "navigation": "MENÚ"
+  "navigation": "MENÚ",
+  "buyerId": "Id Comprador",
+  "fullName": "Nombre Completo",
+  "email": "Correo Electrónico",
+  "phoneNumber": "Número de Teléfono",
+  "search": "Buscar",
+  "rowsPerPage": "Filas por página",
+  "page": "Página",
+  "of": "de",
+  "showing": "Mostrando",
+  "to": "a",
+  "results": "resultados",
+  "loading": "Cargando...",
+  "noResults": "No se encontraron resultados"
 }
