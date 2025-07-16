@@ -32,7 +32,7 @@ export function useBuyers(params: UseBuyersParams = {}) {
     // Build filter object
     const baseFilter = {
       "_partitionKey": partitionKey,
-      "roles.slug": "{$in:['buyer']}"
+      "roles.slug": {"$in": ["buyer"]}
     };
 
     let filter = baseFilter;
@@ -100,7 +100,7 @@ export function useBuyers(params: UseBuyersParams = {}) {
       const url = buildApiUrl();
       console.log('API URL:', url);
       
-      const response = await apiRequest(url, {
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${jwt}`,
@@ -112,15 +112,46 @@ export function useBuyers(params: UseBuyersParams = {}) {
       console.log('API Response:', response);
 
       if (!response.ok) {
-        console.error(`HTTP error! status: ${response.status}`);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
       }
 
       const result = await response.json();
       console.log('API Result:', result);
-      return result;
+      console.log('API Result Structure:', {
+        hasData: !!result.data,
+        dataLength: result.data?.length,
+        hasMeta: !!result.meta,
+        has_meta: !!result._meta,
+        hasLinks: !!result._links,
+        keys: Object.keys(result)
+      });
+      
+      // Transform the response to match expected structure
+      const transformedResult = {
+        data: result.data || [],
+        meta: result._meta ? {
+          page_size: result._meta.page_size,
+          page_number: result._meta.page_number,
+          total_elements: result._meta.total_elements,
+          total_pages: result._meta.total_pages
+        } : {
+          page_size: 25,
+          page_number: 1,
+          total_elements: result.data?.length || 0,
+          total_pages: 1
+        }
+      };
+      
+      console.log('Transformed result:', transformedResult);
+      return transformedResult;
     },
     enabled: true, // Always enable the query to see what happens
+    retry: 1,
+    onError: (error) => {
+      console.error('Query error:', error);
+    },
   });
 
   const handlePageChange = useCallback((page: number) => {

@@ -84,10 +84,10 @@ export function DataTable<T>({
   };
 
   const canGoToPreviousPage = currentPage > 1;
-  const canGoToNextPage = data ? currentPage < data.meta.total_pages : false;
+  const canGoToNextPage = data && data.meta ? currentPage < data.meta.total_pages : false;
 
-  const startItem = data ? (currentPage - 1) * pageSize + 1 : 0;
-  const endItem = data ? Math.min(currentPage * pageSize, data.meta.total_elements) : 0;
+  const startItem = data && data.meta ? (currentPage - 1) * pageSize + 1 : 0;
+  const endItem = data && data.meta ? Math.min(currentPage * pageSize, data.meta.total_elements) : 0;
 
   return (
     <div className="space-y-4">
@@ -198,10 +198,10 @@ export function DataTable<T>({
       </div>
 
       {/* Pagination */}
-      {data && data.meta.total_pages > 1 && (
+      {data && data.meta && data.meta.total_pages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600 dark:text-gray-400">
-            Mostrando {startItem} a {endItem} de {data.meta.total_elements} resultados
+            Mostrando {startItem} a {endItem} de {data.meta?.total_elements || 0} resultados
           </div>
           
           <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ export function DataTable<T>({
             
             <div className="flex items-center gap-1">
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Página {currentPage} de {data.meta.total_pages}
+                Página {currentPage} de {data.meta?.total_pages || 1}
               </span>
             </div>
             
@@ -244,7 +244,7 @@ export function DataTable<T>({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPageChange(data.meta.total_pages)}
+              onClick={() => onPageChange(data.meta?.total_pages || 1)}
               disabled={!canGoToNextPage}
               className="h-8 px-2 border-gray-200/50 dark:border-gray-700/50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm"
             >
