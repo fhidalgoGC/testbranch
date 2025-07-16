@@ -139,7 +139,7 @@ export function DataTable<T>({
           {onAddNew && (
             <Button
               onClick={onAddNew}
-              className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-sm hover:shadow-md transition-all duration-200 font-medium text-sm rounded-md flex items-center gap-2 dark:bg-blue-600 dark:hover:bg-blue-700"
+              className="h-9 px-4 bg-agricultural hover:bg-agricultural-hover text-white border-none shadow-sm hover:shadow-md transition-all duration-200 font-medium text-sm rounded-md flex items-center gap-2 dark:bg-agricultural-light dark:hover:bg-agricultural"
             >
               <Plus className="w-4 h-4" />
               {addButtonLabel || t('addBuyer')}

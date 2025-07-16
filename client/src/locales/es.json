@@ -57,5 +57,6 @@
   "results": "resultados",
   "loading": "Cargando...",
   "noResults": "No se encontraron resultados",
-  "addBuyer": "Agregar Comprador"
+  "addBuyer": "Agregar Comprador",
+  "toggleTheme": "Cambiar tema"
 }

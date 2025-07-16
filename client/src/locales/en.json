@@ -57,5 +57,6 @@
   "results": "results",
   "loading": "Loading...",
   "noResults": "No results found",
-  "addBuyer": "Add Buyer"
+  "addBuyer": "Add Buyer",
+  "toggleTheme": "Toggle theme"
 }

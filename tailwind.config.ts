@@ -61,6 +61,12 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
+        agricultural: {
+          DEFAULT: "hsl(142, 76%, 36%)",
+          hover: "hsl(142, 76%, 32%)",
+          light: "hsl(142, 76%, 40%)",
+          dark: "hsl(142, 76%, 28%)",
+        },
       },
       keyframes: {
         "accordion-down": {

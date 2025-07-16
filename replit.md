@@ -154,6 +154,25 @@ shared/
 
 ## Recent Changes
 
+### Dark Mode & Agricultural Green Theme Implementation (July 16, 2025)
+- **Dark mode toggle**: Added theme toggle button in navbar (left of language selector)
+- **Theme persistence**: Theme preference saved to localStorage and persists across navigation
+- **Agricultural green theme**: Unified button styling using green colors (hsl(142, 76%, 36%)) for agricultural context
+- **CSS variables**: Updated theme system with agricultural green color palette for light/dark modes
+- **ThemeProvider**: React context provider for theme management with light/dark mode support
+- **Button uniformity**: All buttons now use consistent agricultural green styling
+- **Dark mode compatibility**: Full dark mode support for all existing components
+- **Internationalization**: Added theme toggle translations in Spanish/English
+- **Fluent UI integration**: Theme toggle styled with Microsoft Fluent UI design language
+
+### Comprehensive Internationalization (July 16, 2025)
+- **DataTable translations**: Complete translation support for all table elements
+- **Search functionality**: Translated search placeholder and controls
+- **Pagination labels**: Translated pagination text ("Page X of Y", "Showing X to Y of Z results")
+- **Loading states**: Translated loading and empty state messages
+- **Column headers**: Dynamic translation of table column headers
+- **Add button**: Translated "Add Buyer" / "Agregar Comprador" button with agricultural green styling
+
 ### Reusable Data Table Component (July 15, 2025)
 - **Comprehensive table component**: Created reusable DataTable component with enterprise-grade features
 - **Pagination system**: Full pagination with page size options (10, 25, 50, 100) and navigation controls

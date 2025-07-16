@@ -67,6 +67,10 @@
   background: hsl(210, 20%, 98%);
 }
 
+.dark .login-container {
+  background: hsl(240, 10%, 3.9%);
+}
+
 .logo-container {
   background: hsl(142, 76%, 36%);
 }
@@ -93,4 +97,36 @@
 .btn-primary:disabled {
   background: hsl(142, 76%, 36%, 0.5);
   cursor: not-allowed;
+}
+
+/* Agricultural green button theme */
+.btn-agricultural {
+  background: hsl(142, 76%, 36%);
+  color: hsl(0, 0%, 100%);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-agricultural:hover {
+  background: hsl(142, 76%, 32%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.btn-agricultural:active {
+  transform: translateY(0);
+}
+
+.btn-agricultural:disabled {
+  background: hsl(142, 76%, 36%, 0.5);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dark .btn-agricultural {
+  background: hsl(142, 76%, 40%);
+}
+
+.dark .btn-agricultural:hover {
+  background: hsl(142, 76%, 44%);
 }

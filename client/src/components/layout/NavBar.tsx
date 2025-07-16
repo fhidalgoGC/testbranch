@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 interface NavBarProps {
   title: string;
@@ -90,8 +91,11 @@ export default function NavBar({ title }: NavBarProps) {
         </h1>
       </div>
 
-      {/* Right side - Language selector and User menu */}
+      {/* Right side - Theme toggle, Language selector and User menu */}
       <div className="flex items-center space-x-2">
+        {/* Theme Toggle */}
+        <ThemeToggle />
+        
         {/* Language Selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
