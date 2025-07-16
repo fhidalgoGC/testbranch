@@ -22,10 +22,10 @@ export function useBuyers(params: UseBuyersParams = {}) {
     const partitionKey = localStorage.getItem('partition_key');
     const baseUrl = import.meta.env.VITE_URL_CRM;
     
-    console.log('Building API URL with:', { partitionKey, baseUrl });
+    console.log('Building API URL with:', { partitionKey, baseUrl, envVars: import.meta.env });
     
     if (!partitionKey || !baseUrl) {
-      console.error('Missing required data:', { partitionKey, baseUrl });
+      console.error('Missing required data:', { partitionKey, baseUrl, envVars: import.meta.env });
       throw new Error('Missing required environment variables or partition key');
     }
 
