@@ -25,24 +25,28 @@ export function useCreateBuyer() {
           partitionKeyValue: partitionKey 
         });
         
-        // Always use demo mode for now since we don't have real auth tokens
-        console.warn('CreateBuyer: Using demo mode for testing');
-        localStorage.setItem('jwt', 'demo-jwt-token-for-testing');
-        localStorage.setItem('partition_key', 'demo-partition-key');
-        
-        // For demo purposes, simulate the API response
-        const mockBuyerId = `demo-buyer-id-${Date.now()}`;
-        
-        console.log('CreateBuyer: Using demo buyer ID:', mockBuyerId);
-        setIdempotentBuyerId(mockBuyerId);
-        setError(null);
-        setIsInitializing(false);
-        return;
+        // Check if we have real authentication tokens (not demo tokens)
+        const isRealAuth = jwt && partitionKey && 
+          jwt !== 'demo-jwt-token-for-testing' && 
+          partitionKey !== 'demo-partition-key' &&
+          localStorage.getItem('user_id'); // Check for user_id from real login
 
-        // TODO: Enable real API calls when proper authentication is implemented
-        /*
+        if (!isRealAuth) {
+          console.warn('CreateBuyer: No real authentication found, using demo mode');
+          localStorage.setItem('jwt', 'demo-jwt-token-for-testing');
+          localStorage.setItem('partition_key', 'demo-partition-key');
+          
+          // For demo purposes, simulate the API response
+          const mockBuyerId = `demo-buyer-id-${Date.now()}`;
+          
+          console.log('CreateBuyer: Using demo buyer ID:', mockBuyerId);
+          setIdempotentBuyerId(mockBuyerId);
+          setError(null);
+          setIsInitializing(false);
+          return;
+        }
 
-        // Only run real API calls if we have valid authentication
+        // Make real API call to generate idempotent ID
         const crmUrl = import.meta.env.VITE_URL_CRM;
         console.log('CreateBuyer: CRM URL:', crmUrl);
         
@@ -72,11 +76,10 @@ export function useCreateBuyer() {
         console.log('CreateBuyer: Successfully initialized buyer ID:', data.data.key);
         setIdempotentBuyerId(data.data.key);
         setError(null);
-        */
       } catch (err) {
-        // This catch block should not be reached in demo mode
-        console.error('CreateBuyer: Unexpected error in demo mode:', err);
+        console.error('CreateBuyer: Failed to initialize idempotent buyer ID:', err);
         setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      } finally {
         setIsInitializing(false);
       }
     };

@@ -154,6 +154,17 @@ shared/
 
 ## Recent Changes
 
+### Create Buyer Form with Idempotency System (July 18, 2025)
+- **Complete buyer registration form**: Modern Microsoft Fluent UI styled form with all required fields
+- **Idempotency system**: POST endpoint call on form load to generate unique buyer ID
+- **Conditional validation**: Different fields for natural vs juridical persons
+- **Country code validation**: Email and phone validation with US/Mexico country codes
+- **Demo mode support**: Automatic fallback when no real authentication tokens present
+- **Real API integration**: Direct calls to CRM API endpoints when authenticated
+- **Form state management**: Comprehensive error handling and loading states
+- **Success workflow**: Automatic redirect and cache invalidation after successful creation
+- **Authentication detection**: Smart detection between real tokens and demo mode
+
 ### Dark Mode & Agricultural Green Theme Implementation (July 16, 2025)
 - **Dark mode toggle**: Added theme toggle button in navbar (left of language selector)
 - **Theme persistence**: Theme preference saved to localStorage and persists across navigation
