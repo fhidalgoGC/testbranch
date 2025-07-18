@@ -119,12 +119,21 @@ export default function CreateBuyer() {
   if (!idempotentBuyerId) {
     return (
       <DashboardLayout>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto space-y-4">
           <Alert variant="destructive">
             <AlertDescription>
-              Error al inicializar el formulario. Por favor, intenta nuevamente.
+              Error al inicializar el formulario. 
+              {!localStorage.getItem('jwt') && ' No hay sesión activa.'}
+              {!localStorage.getItem('partition_key') && ' Faltan datos de organización.'}
+              <br />
+              Por favor, asegúrate de estar autenticado y vuelve a intentar.
             </AlertDescription>
           </Alert>
+          <div className="text-center">
+            <Button asChild variant="outline">
+              <Link href="/buyers">Volver a la lista</Link>
+            </Button>
+          </div>
         </div>
       </DashboardLayout>
     );
