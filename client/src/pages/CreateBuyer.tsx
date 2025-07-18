@@ -70,6 +70,7 @@ export default function CreateBuyer() {
   const {
     idempotentBuyerId,
     isInitializing,
+    initializationError,
     createBuyer,
     isCreating,
     error,
@@ -116,15 +117,19 @@ export default function CreateBuyer() {
     );
   }
 
-  if (!idempotentBuyerId) {
+  if (!isInitializing && (!idempotentBuyerId || initializationError)) {
     return (
       <DashboardLayout>
         <div className="max-w-2xl mx-auto space-y-4">
           <Alert variant="destructive">
             <AlertDescription>
-              Error al inicializar el formulario. 
-              {!localStorage.getItem('jwt') && ' No hay sesión activa.'}
-              {!localStorage.getItem('partition_key') && ' Faltan datos de organización.'}
+              Error al inicializar el formulario.
+              {initializationError && (
+                <>
+                  <br />
+                  <strong>Detalle:</strong> {initializationError}
+                </>
+              )}
               <br />
               Por favor, asegúrate de estar autenticado y vuelve a intentar.
             </AlertDescription>

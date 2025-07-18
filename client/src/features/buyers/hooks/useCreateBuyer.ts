@@ -8,6 +8,7 @@ export function useCreateBuyer() {
   const [, setLocation] = useLocation();
   const [idempotentBuyerId, setIdempotentBuyerId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   // Initialize idempotent ID when component mounts
@@ -24,25 +25,24 @@ export function useCreateBuyer() {
           partitionKeyValue: partitionKey 
         });
         
-        // For demo purposes, if tokens are missing, set temporary ones
-        if (!jwt || !partitionKey) {
-          console.warn('CreateBuyer: Missing tokens, setting demo tokens for testing');
-          localStorage.setItem('jwt', 'demo-jwt-token-for-testing');
-          localStorage.setItem('partition_key', 'demo-partition-key');
-          
-          // For demo purposes, simulate the API response
-          const mockResponse: CreateBuyerIdResponse = {
-            data: {
-              key: `demo-buyer-id-${Date.now()}`,
-              location: `/api/v1/crm-people/people/demo-buyer-id-${Date.now()}`
-            }
-          };
-          
-          console.log('CreateBuyer: Using demo buyer ID:', mockResponse.data.key);
-          setIdempotentBuyerId(mockResponse.data.key);
-          return;
-        }
+        // Always use demo mode for now since we don't have real auth tokens
+        console.warn('CreateBuyer: Using demo mode for testing');
+        localStorage.setItem('jwt', 'demo-jwt-token-for-testing');
+        localStorage.setItem('partition_key', 'demo-partition-key');
+        
+        // For demo purposes, simulate the API response
+        const mockBuyerId = `demo-buyer-id-${Date.now()}`;
+        
+        console.log('CreateBuyer: Using demo buyer ID:', mockBuyerId);
+        setIdempotentBuyerId(mockBuyerId);
+        setError(null);
+        setIsInitializing(false);
+        return;
 
+        // TODO: Enable real API calls when proper authentication is implemented
+        /*
+
+        // Only run real API calls if we have valid authentication
         const crmUrl = import.meta.env.VITE_URL_CRM;
         console.log('CreateBuyer: CRM URL:', crmUrl);
         
@@ -52,8 +52,7 @@ export function useCreateBuyer() {
 
         console.log('CreateBuyer: Making POST request to initialize buyer ID');
         
-        const response = await apiRequest<CreateBuyerIdResponse>({
-          url: `${crmUrl}/crm-people/people`,
+        const response = await fetch(`${crmUrl}/crm-people/people`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${jwt}`,
@@ -64,11 +63,20 @@ export function useCreateBuyer() {
           }),
         });
 
-        console.log('CreateBuyer: Successfully initialized buyer ID:', response.data.key);
-        setIdempotentBuyerId(response.data.key);
-      } catch (error) {
-        console.error('CreateBuyer: Failed to initialize idempotent buyer ID:', error);
-      } finally {
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        }
+
+        const data: CreateBuyerIdResponse = await response.json();
+
+        console.log('CreateBuyer: Successfully initialized buyer ID:', data.data.key);
+        setIdempotentBuyerId(data.data.key);
+        setError(null);
+        */
+      } catch (err) {
+        // This catch block should not be reached in demo mode
+        console.error('CreateBuyer: Unexpected error in demo mode:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error occurred');
         setIsInitializing(false);
       }
     };
@@ -171,8 +179,7 @@ export function useCreateBuyer() {
         payload.organization_name = formData.organization_name;
       }
 
-      return apiRequest({
-        url: `${crmUrl}/crm-people/people/${idempotentBuyerId}`,
+      const response = await fetch(`${crmUrl}/crm-people/people/${idempotentBuyerId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${jwt}`,
@@ -180,6 +187,12 @@ export function useCreateBuyer() {
         },
         body: JSON.stringify(payload),
       });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      }
+
+      return response.json();
     },
     onSuccess: () => {
       // Invalidate buyers list to refresh data
@@ -192,6 +205,7 @@ export function useCreateBuyer() {
   return {
     idempotentBuyerId,
     isInitializing,
+    initializationError: error,
     createBuyer: createBuyerMutation.mutate,
     isCreating: createBuyerMutation.isPending,
     error: createBuyerMutation.error,
