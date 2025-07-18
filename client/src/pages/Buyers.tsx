@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'wouter';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { useBuyers } from '@/features/buyers/hooks/useBuyers';
@@ -8,6 +9,7 @@ import { formatBuyerId } from '@/lib/formatters';
 
 export default function Buyers() {
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
   const {
     data,
     isLoading,
@@ -25,8 +27,7 @@ export default function Buyers() {
   console.log('Buyers component render:', { data, isLoading, currentPage });
 
   const handleAddBuyer = () => {
-    console.log('Add buyer button clicked');
-    // TODO: Implement add buyer functionality
+    setLocation('/buyers/create');
   };
 
   const columns: Column<Buyer>[] = [

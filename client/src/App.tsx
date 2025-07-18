@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
 import Buyers from "@/pages/Buyers";
+import CreateBuyer from "@/pages/CreateBuyer";
 import Sellers from "@/pages/Sellers";
 import PurchaseContracts from "@/pages/PurchaseContracts";
 import SaleContracts from "@/pages/SaleContracts";
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/" component={Login} />
       <Route path="/home" component={Home} />
       <Route path="/buyers" component={Buyers} />
+      <Route path="/buyers/create" component={CreateBuyer} />
       <Route path="/sellers" component={Sellers} />
       <Route path="/purchase-contracts" component={PurchaseContracts} />
       <Route path="/sale-contracts" component={SaleContracts} />
