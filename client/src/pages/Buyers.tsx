@@ -35,6 +35,7 @@ export default function Buyers() {
       title: '',
       render: (buyer) => <BuyerDetailsCard buyer={buyer} />,
       sortable: false,
+      width: '60px',
     },
     {
       key: 'id',

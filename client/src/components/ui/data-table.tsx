@@ -12,6 +12,7 @@ export interface Column<T> {
   render?: (item: T) => React.ReactNode;
   sortable?: boolean;
   sortKey?: string;
+  width?: string;
 }
 
 export interface TableData<T> {
@@ -161,6 +162,7 @@ export function DataTable<T>({
                       "px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider",
                       column.sortable && "cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-700/80 transition-colors duration-100"
                     )}
+                    style={column.width ? { width: column.width } : undefined}
                     onClick={() => handleSort(column)}
                   >
                     <div className="flex items-center gap-2">
@@ -203,7 +205,11 @@ export function DataTable<T>({
                 data?.data.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-colors duration-100">
                     {columns.map((column) => (
-                      <td key={column.key} className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                      <td 
+                        key={column.key} 
+                        className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+                        style={column.width ? { width: column.width } : undefined}
+                      >
                         {column.render ? column.render(item) : String((item as any)[column.key] || '-')}
                       </td>
                     ))}
