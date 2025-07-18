@@ -148,43 +148,19 @@ export default function CreateBuyer() {
     <DashboardLayout>
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button asChild variant="ghost" size="sm" className="p-2">
-              <Link href="/buyers">
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                {t('addBuyer')}
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Registra un nuevo comprador en el sistema
-              </p>
-            </div>
-          </div>
-          
-          {/* Demo Mode Indicator & Test Auth Button */}
-          <div className="flex items-center gap-2">
-            {localStorage.getItem('jwt') === 'demo-jwt-token-for-testing' && (
-              <div className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded">
-                Modo Demo
-              </div>
-            )}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => {
-                // Simulate real authentication for testing
-                localStorage.setItem('jwt', 'real-jwt-token-example');
-                localStorage.setItem('partition_key', 'real-partition-key');
-                localStorage.setItem('user_id', 'test-user-123');
-                window.location.reload();
-              }}
-            >
-              Simular Auth Real
-            </Button>
+        <div className="flex items-center gap-4">
+          <Button asChild variant="ghost" size="sm" className="p-2">
+            <Link href="/buyers">
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              {t('addBuyer')}
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Registra un nuevo comprador en el sistema
+            </p>
           </div>
         </div>
 
