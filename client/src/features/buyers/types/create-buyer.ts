@@ -50,6 +50,7 @@ export interface BuyerFormData {
   calling_code: string;
   phone_number: string;
   country: string;
+  state: string;
 }
 
 // Country codes for phone selector

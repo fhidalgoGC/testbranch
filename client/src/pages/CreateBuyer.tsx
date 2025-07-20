@@ -13,7 +13,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { CountrySelector } from '@/components/ui/country-selector';
+import { StateSelector } from '@/components/ui/state-selector';
 import type { Country } from '@/features/countries/types/country';
+import type { State } from '@/features/states/types/state';
 import { useCreateBuyer } from '@/features/buyers/hooks/useCreateBuyer';
 import type { BuyerFormData } from '@/features/buyers/types/create-buyer';
 
@@ -27,6 +29,7 @@ const buyerSchema = z.object({
   calling_code: z.string().optional(),
   phone_number: z.string().optional(),
   country: z.string().optional(),
+  state: z.string().optional(),
 }).refine((data) => {
   if (data.person_type === 'juridical_person') {
     return data.organization_name && data.organization_name.trim().length > 0;
@@ -58,6 +61,7 @@ export default function CreateBuyer() {
   const { t, i18n } = useTranslation();
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [selectedState, setSelectedState] = useState<State | null>(null);
   
   const {
     idempotentBuyerId,
@@ -80,13 +84,14 @@ export default function CreateBuyer() {
       calling_code: '',
       phone_number: '',
       country: '',
+      state: '',
     },
   });
 
   const personType = form.watch('person_type');
 
-  const onSubmit = (data: BuyerFormData) => {
-    createBuyer(data);
+  const onSubmit = async (data: BuyerFormData) => {
+    await createBuyer(data);
   };
 
   // Show success message when buyer is created
@@ -369,37 +374,77 @@ export default function CreateBuyer() {
                     {t('addressOptional')}
                   </h3>
 
-                  {/* Country Selector */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      {t('country')}
-                    </Label>
-                    <CountrySelector
-                      value={selectedCountry ? (i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en) : ''}
-                      onChange={(country) => {
-                        console.log('CreateBuyer: Country change triggered:', country ? {
-                          name: i18n.language === 'es' ? country.names.es : country.names.en,
-                          slug: country.slug,
-                          hasFlag: !!country.flag
-                        } : 'null');
-                        
-                        setSelectedCountry(country);
-                        form.setValue('country', country ? (i18n.language === 'es' ? country.names.es : country.names.en) : '');
-                        
-                        // Force re-render by updating the form state
-                        if (country) {
-                          console.log('CreateBuyer: Updated selectedCountry state');
-                        }
-                      }}
-                      placeholder={t('countrySelect')}
-                      error={!!form.formState.errors.country}
-                    />
-                    {form.formState.errors.country && (
-                      <p className="text-sm text-red-600 dark:text-red-400">
-                        {form.formState.errors.country.message}
-                      </p>
-                    )}
+                  {/* Country and State Selectors */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Country Selector */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {t('country')}
+                      </Label>
+                      <CountrySelector
+                        value={selectedCountry ? (i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en) : ''}
+                        onChange={(country) => {
+                          console.log('CreateBuyer: Country change triggered:', country ? {
+                            name: i18n.language === 'es' ? country.names.es : country.names.en,
+                            slug: country.slug,
+                            hasFlag: !!country.flag
+                          } : 'null');
+                          
+                          setSelectedCountry(country);
+                          form.setValue('country', country ? (i18n.language === 'es' ? country.names.es : country.names.en) : '');
+                          
+                          // Reset state when country changes
+                          setSelectedState(null);
+                          form.setValue('state', '');
+                          
+                          if (country) {
+                            console.log('CreateBuyer: Updated selectedCountry state, reset selectedState');
+                          }
+                        }}
+                        placeholder={t('countrySelect')}
+                        error={!!form.formState.errors.country}
+                      />
+                      {form.formState.errors.country && (
+                        <p className="text-sm text-red-600 dark:text-red-400">
+                          {form.formState.errors.country.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* State Selector */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {t('state')}
+                      </Label>
+                      <StateSelector
+                        value={selectedState ? selectedState.name : ''}
+                        countrySlug={selectedCountry?.slug}
+                        onChange={(state) => {
+                          console.log('CreateBuyer: State change triggered:', state ? {
+                            name: state.name,
+                            code: state.code,
+                            countrySlug: state.country_slug
+                          } : 'null');
+                          
+                          setSelectedState(state);
+                          form.setValue('state', state ? state.name : '');
+                          
+                          if (state) {
+                            console.log('CreateBuyer: Updated selectedState');
+                          }
+                        }}
+                        placeholder={t('stateSelect')}
+                        disabled={!selectedCountry}
+                        error={!!form.formState.errors.state}
+                      />
+                      {form.formState.errors.state && (
+                        <p className="text-sm text-red-600 dark:text-red-400">
+                          {form.formState.errors.state.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
 

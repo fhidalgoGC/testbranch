@@ -94,5 +94,13 @@
   "countrySelect": "Seleccionar País",
   "countryName": "Nombre del País",
   "clear": "Limpiar selección",
-  "country": "País"
+  "country": "País",
+  "state": "Estado",
+  "stateSelect": "Seleccionar estado",
+  "selectState": "Seleccionar Estado",
+  "selectCountryFirst": "Primero seleccione un país",
+  "searchStates": "Buscar estados...",
+  "stateName": "Nombre del Estado",
+  "noStatesFound": "No se encontraron estados",
+  "noStatesAvailable": "No hay estados disponibles"
 }

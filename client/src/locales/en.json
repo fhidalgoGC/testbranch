@@ -94,5 +94,13 @@
   "countrySelect": "Select Country",
   "countryName": "Country Name",
   "clear": "Clear selection",
-  "country": "Country"
+  "country": "Country",
+  "state": "State",
+  "stateSelect": "Select state",
+  "selectState": "Select State",
+  "selectCountryFirst": "Please select a country first",
+  "searchStates": "Search states...",
+  "stateName": "State Name",
+  "noStatesFound": "No states found",
+  "noStatesAvailable": "No states available"
 }
