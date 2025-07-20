@@ -141,6 +141,22 @@ export function useCreateBuyer() {
 
         console.log('CreateBuyer: Demo payload would be:', payload);
         
+        // Store the created buyer in localStorage for demo mode
+        const mockBuyer = {
+          _id: idempotentBuyerId,
+          ...payload,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        // Get existing demo buyers and add this new one
+        const existingBuyersData = localStorage.getItem('demo_created_buyers');
+        const existingBuyers = existingBuyersData ? JSON.parse(existingBuyersData) : [];
+        const updatedBuyers = [mockBuyer, ...existingBuyers]; // Add new buyer at the beginning
+        
+        localStorage.setItem('demo_created_buyers', JSON.stringify(updatedBuyers));
+        console.log('CreateBuyer: Stored demo buyer in localStorage:', mockBuyer);
+        
         return { success: true, data: payload };
       }
 
@@ -198,8 +214,10 @@ export function useCreateBuyer() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidate buyers list to refresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/buyers'] });
+      // Invalidate all buyers queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['buyers'] });
+      // Also force a refetch of all buyers data
+      queryClient.refetchQueries({ queryKey: ['buyers'] });
       // Redirect to buyers list
       setLocation('/buyers');
     },

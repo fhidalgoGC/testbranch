@@ -92,9 +92,72 @@ export function useBuyers(params: UseBuyersParams = {}) {
       
       console.log('Auth tokens:', { jwt: !!jwt, partitionKey });
       
+      // If no auth tokens, return empty data
       if (!jwt || !partitionKey) {
         console.error('Missing authentication tokens');
-        throw new Error('Missing authentication tokens');
+        return {
+          data: [],
+          meta: {
+            page_size: pageSize,
+            page_number: currentPage,
+            total_elements: 0,
+            total_pages: 0
+          }
+        };
+      }
+
+      // If in demo mode, return mock data with recently created buyers
+      if (jwt === 'demo-jwt-token-for-testing') {
+        console.log('Buyers: Demo mode - returning mock data');
+        
+        // Get any demo buyers created in this session from localStorage
+        const createdBuyersData = localStorage.getItem('demo_created_buyers');
+        const createdBuyers = createdBuyersData ? JSON.parse(createdBuyersData) : [];
+        
+        const baseMockBuyers = [
+          {
+            _id: 'demo-buyer-123',
+            full_name: 'Juan Pérez García',
+            person_type: 'natural_person',
+            first_name: 'Juan',
+            last_name: 'Pérez García',
+            emails: [{ value: 'juan.perez@example.com', type: 'principal', verified: false }],
+            phones: [{ calling_code: '+1', phone_number: '5551234567', type: 'principal', verified: false }],
+            roles: [{ slug: 'buyer' }],
+            active: true,
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+            updated_at: new Date(Date.now() - 86400000).toISOString()
+          },
+          {
+            _id: 'demo-buyer-456',
+            full_name: 'Comercializadora ABC S.A.',
+            person_type: 'juridical_person',
+            organization_name: 'Comercializadora ABC S.A.',
+            first_name: 'Comercializadora',
+            last_name: 'ABC S.A.',
+            emails: [{ value: 'contacto@abc.com', type: 'principal', verified: false }],
+            phones: [{ calling_code: '+52', phone_number: '5555678901', type: 'principal', verified: false }],
+            roles: [{ slug: 'buyer' }],
+            active: true,
+            created_at: new Date(Date.now() - 172800000).toISOString(),
+            updated_at: new Date(Date.now() - 172800000).toISOString()
+          }
+        ];
+
+        // Combine created buyers with base mock data (created buyers first)
+        const allMockBuyers = [...createdBuyers, ...baseMockBuyers];
+        
+        console.log('Demo buyers:', { createdCount: createdBuyers.length, totalCount: allMockBuyers.length });
+
+        return {
+          data: allMockBuyers,
+          meta: {
+            page_size: pageSize,
+            page_number: currentPage,
+            total_elements: allMockBuyers.length,
+            total_pages: Math.ceil(allMockBuyers.length / pageSize)
+          }
+        };
       }
 
       const url = buildApiUrl();
