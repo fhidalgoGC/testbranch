@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCountries } from '@/features/countries/hooks/useCountries';
 import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MapPin, Loader2, X, ArrowUpDown } from 'lucide-react';
 import type { Country } from '@/features/countries/types/country';
+import { FlagImage } from './flag-image';
 
 interface CountrySelectorProps {
   value?: string;
@@ -130,14 +131,11 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
             } ${error ? 'border-red-500 dark:border-red-500' : ''}`}
           />
           {selectedCountry && (
-            <img 
+            <FlagImage
               src={selectedCountry.flag}
               alt={getCountryDisplayName(selectedCountry)}
+              countrySlug={selectedCountry.slug}
               className="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-4 object-cover rounded border border-gray-200 dark:border-gray-600 pointer-events-none"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
             />
           )}
           <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -266,14 +264,11 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
                           className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-600"
                         >
                           <td className="p-3">
-                            <img 
-                              src={country.flag} 
+                            <FlagImage
+                              src={country.flag}
                               alt={getCountryDisplayName(country)}
+                              countrySlug={country.slug}
                               className="w-8 h-6 object-cover rounded border border-gray-200 dark:border-gray-600"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                              }}
                             />
                           </td>
                           <td className="p-3 text-gray-900 dark:text-white font-medium">

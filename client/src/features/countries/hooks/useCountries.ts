@@ -50,7 +50,7 @@ export function useCountries({
         // Simulate delay
         await new Promise(resolve => setTimeout(resolve, 300));
         
-        // Mock response data
+        // Mock response data - including some with invalid flags to test fallback
         const mockCountries = [
           {
             _id: "demo-country-bra",
@@ -84,9 +84,9 @@ export function useCountries({
             name: language === 'es' ? "Brasil" : "Brazil"
           },
           {
-            _id: "demo-country-col",
+            _id: "demo-country-col-no-flag",
             slug: "COL", 
-            flag: colombiaFlag,
+            flag: "", // Empty flag to test fallback
             names: {
               default: "Colombia",
               en: "Colombia", 
@@ -146,9 +146,9 @@ export function useCountries({
             name: language === 'es' ? "Estados Unidos" : "United States"
           },
           {
-            _id: "demo-country-gtm",
+            _id: "demo-country-gtm-no-flag",
             slug: "GTM",
-            flag: guatemalaFlag, 
+            flag: "invalid-flag-url",  // Invalid flag to test fallback 
             names: {
               default: "Guatemala",
               en: "Guatemala",
@@ -239,6 +239,15 @@ export function useCountries({
             name: language === 'es' ? "México" : "Mexico"
           }
         ];
+
+        console.log('Countries API: Demo mode loaded', mockCountries.length, 'countries with flags');
+        mockCountries.forEach(country => {
+          console.log(`Country ${country.names.en}: flag source type:`, {
+            slug: country.slug,
+            hasFlag: !!country.flag,
+            flagType: country.flag ? (country.flag.startsWith('data:') ? 'base64' : country.flag.startsWith('http') ? 'url' : 'asset') : 'none'
+          });
+        });
 
         // Filter by search if provided
         const filteredCountries = search 
