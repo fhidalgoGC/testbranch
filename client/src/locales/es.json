@@ -88,5 +88,11 @@
   "initializationError": "Error al inicializar el formulario.",
   "detail": "Detalle:",
   "ensureAuthenticated": "Por favor, asegúrate de estar autenticado y vuelve a intentar.",
-  "backToList": "Volver a la lista"
+  "backToList": "Volver a la lista",
+  "address": "Dirección",
+  "addressOptional": "Dirección (Opcional)",
+  "countrySelect": "Seleccionar País",
+  "countryName": "Nombre del País",
+  "clear": "Limpiar selección",
+  "country": "País"
 }

@@ -49,6 +49,7 @@ export interface BuyerFormData {
   email: string;
   calling_code: string;
   phone_number: string;
+  country: string;
 }
 
 // Country codes for phone selector

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Link } from 'wouter';
-import { ArrowLeft, User, Building2, Mail, Phone, Loader2 } from 'lucide-react';
+import { ArrowLeft, User, Building2, Mail, Phone, Loader2, MapPin } from 'lucide-react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PhoneInput } from '@/components/ui/phone-input';
+import { CountrySelector } from '@/components/ui/country-selector';
+import type { Country } from '@/features/countries/types/country';
 import { useCreateBuyer } from '@/features/buyers/hooks/useCreateBuyer';
 import type { BuyerFormData } from '@/features/buyers/types/create-buyer';
 
@@ -24,6 +26,7 @@ const buyerSchema = z.object({
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   calling_code: z.string().optional(),
   phone_number: z.string().optional(),
+  country: z.string().optional(),
 }).refine((data) => {
   if (data.person_type === 'juridical_person') {
     return data.organization_name && data.organization_name.trim().length > 0;
@@ -52,8 +55,9 @@ const buyerSchema = z.object({
 });
 
 export default function CreateBuyer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   
   const {
     idempotentBuyerId,
@@ -75,6 +79,7 @@ export default function CreateBuyer() {
       email: '',
       calling_code: '',
       phone_number: '',
+      country: '',
     },
   });
 
@@ -355,6 +360,35 @@ export default function CreateBuyer() {
                         </div>
                       )}
                     </div>
+                  </div>
+                </div>
+
+                {/* Address Section */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                    {t('addressOptional')}
+                  </h3>
+
+                  {/* Country Selector */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {t('country')}
+                    </Label>
+                    <CountrySelector
+                      value={selectedCountry ? (i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en) : ''}
+                      onChange={(country) => {
+                        setSelectedCountry(country);
+                        form.setValue('country', country ? (i18n.language === 'es' ? country.names.es : country.names.en) : '');
+                      }}
+                      placeholder={t('countrySelect')}
+                      error={!!form.formState.errors.country}
+                    />
+                    {form.formState.errors.country && (
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {form.formState.errors.country.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 

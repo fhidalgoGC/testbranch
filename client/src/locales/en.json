@@ -88,5 +88,11 @@
   "initializationError": "Error initializing form.",
   "detail": "Detail:",
   "ensureAuthenticated": "Please ensure you are authenticated and try again.",
-  "backToList": "Back to list"
+  "backToList": "Back to list",
+  "address": "Address",
+  "addressOptional": "Address (Optional)",
+  "countrySelect": "Select Country",
+  "countryName": "Country Name",
+  "clear": "Clear selection",
+  "country": "Country"
 }
