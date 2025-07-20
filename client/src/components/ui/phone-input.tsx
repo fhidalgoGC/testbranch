@@ -85,13 +85,6 @@ const PhoneInput = forwardRef<HTMLDivElement, PhoneInputProps>(
             <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           )}
         </div>
-
-        {/* Selected Country Display */}
-        {selectedCountry && !phoneNumber && (
-          <div className="absolute left-20 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 pointer-events-none">
-            {selectedCountry.name}
-          </div>
-        )}
       </div>
     );
   }
