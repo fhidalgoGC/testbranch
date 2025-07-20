@@ -154,6 +154,15 @@ shared/
 
 ## Recent Changes
 
+### Flag Validation System with Fallback Assets (July 20, 2025)
+- **Robust flag validation**: Intelligent detection of invalid, empty, or broken flag URLs
+- **Automatic fallback system**: Uses user-provided flag assets for Colombia and Guatemala
+- **Real-time synchronization**: Country selector input perfectly syncs with selected country flag
+- **Comprehensive logging**: Detailed console logs for flag validation debugging
+- **Multiple validation methods**: Base64, URL, and imported asset detection
+- **Immediate fallback**: Detects invalid flags instantly without loading errors
+- **Enhanced UX**: No more broken flag icons, seamless flag display
+
 ### Create Buyer Form with Idempotency System (July 18, 2025)
 - **Complete buyer registration form**: Modern Microsoft Fluent UI styled form with all required fields
 - **Idempotency system**: POST endpoint call on form load to generate unique buyer ID
