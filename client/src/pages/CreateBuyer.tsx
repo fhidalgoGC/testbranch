@@ -378,8 +378,19 @@ export default function CreateBuyer() {
                     <CountrySelector
                       value={selectedCountry ? (i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en) : ''}
                       onChange={(country) => {
+                        console.log('CreateBuyer: Country change triggered:', country ? {
+                          name: i18n.language === 'es' ? country.names.es : country.names.en,
+                          slug: country.slug,
+                          hasFlag: !!country.flag
+                        } : 'null');
+                        
                         setSelectedCountry(country);
                         form.setValue('country', country ? (i18n.language === 'es' ? country.names.es : country.names.en) : '');
+                        
+                        // Force re-render by updating the form state
+                        if (country) {
+                          console.log('CreateBuyer: Updated selectedCountry state');
+                        }
                       }}
                       placeholder={t('countrySelect')}
                       error={!!form.formState.errors.country}

@@ -69,6 +69,13 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
 
   // Handle country selection
   const handleCountrySelect = (country: Country) => {
+    console.log('CountrySelector: Country selected:', {
+      name: getCountryDisplayName(country),
+      slug: country.slug,
+      hasFlag: !!country.flag,
+      flagSrc: country.flag
+    });
+    
     setSelectedCountry(country);
     onChange(country);
     setIsOpen(false);
@@ -132,6 +139,7 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
           />
           {selectedCountry && (
             <FlagImage
+              key={`flag-input-${selectedCountry._id}`}
               src={selectedCountry.flag}
               alt={getCountryDisplayName(selectedCountry)}
               countrySlug={selectedCountry.slug}
@@ -265,6 +273,7 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
                         >
                           <td className="p-3">
                             <FlagImage
+                              key={`flag-table-${country._id}`}
                               src={country.flag}
                               alt={getCountryDisplayName(country)}
                               countrySlug={country.slug}
