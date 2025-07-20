@@ -302,66 +302,71 @@ export default function CreateBuyer() {
                     Información de Contacto (Opcional)
                   </h3>
 
-                  {/* Email */}
-                  <div className="space-y-3">
-                    <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...form.register('email')}
-                      className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                      placeholder="ejemplo@dominio.com"
-                      maxLength={90}
-                    />
-                    {form.formState.errors.email && (
-                      <p className="text-sm text-red-600 dark:text-red-400">
-                        {form.formState.errors.email.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Phone */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* Email and Phone in same row */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Email */}
                     <div className="space-y-3">
-                      <Label htmlFor="calling_code" className="text-sm font-medium text-gray-900 dark:text-white">
-                        País
+                      <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <Mail className="w-4 h-4" />
+                        Email
                       </Label>
-                      <select
-                        id="calling_code"
-                        {...form.register('calling_code')}
-                        className="h-12 w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="">Seleccionar</option>
-                        <option value="+1">🇺🇸 +1</option>
-                        <option value="+52">🇲🇽 +52</option>
-                      </select>
-                      {form.formState.errors.calling_code && (
+                      <Input
+                        id="email"
+                        type="email"
+                        {...form.register('email')}
+                        className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                        placeholder="ejemplo@dominio.com"
+                        maxLength={90}
+                      />
+                      {form.formState.errors.email && (
                         <p className="text-sm text-red-600 dark:text-red-400">
-                          {form.formState.errors.calling_code.message}
+                          {form.formState.errors.email.message}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-3 sm:col-span-2">
-                      <Label htmlFor="phone_number" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                    {/* Phone - Country Code and Number */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
                         <Phone className="w-4 h-4" />
                         Teléfono
                       </Label>
-                      <Input
-                        id="phone_number"
-                        type="tel"
-                        {...form.register('phone_number')}
-                        className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                        placeholder="1234567890"
-                        maxLength={15}
-                      />
-                      {form.formState.errors.phone_number && (
-                        <p className="text-sm text-red-600 dark:text-red-400">
-                          {form.formState.errors.phone_number.message}
-                        </p>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="col-span-1">
+                          <select
+                            id="calling_code"
+                            {...form.register('calling_code')}
+                            className="h-12 w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-sm"
+                          >
+                            <option value="">País</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+52">🇲🇽 +52</option>
+                          </select>
+                        </div>
+                        <div className="col-span-2">
+                          <Input
+                            id="phone_number"
+                            type="tel"
+                            {...form.register('phone_number')}
+                            className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                            placeholder="1234567890"
+                            maxLength={15}
+                          />
+                        </div>
+                      </div>
+                      {(form.formState.errors.calling_code || form.formState.errors.phone_number) && (
+                        <div className="space-y-1">
+                          {form.formState.errors.calling_code && (
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                              {form.formState.errors.calling_code.message}
+                            </p>
+                          )}
+                          {form.formState.errors.phone_number && (
+                            <p className="text-sm text-red-600 dark:text-red-400">
+                              {form.formState.errors.phone_number.message}
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
