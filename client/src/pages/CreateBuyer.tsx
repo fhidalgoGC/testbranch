@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { useCreateBuyer } from '@/features/buyers/hooks/useCreateBuyer';
 import type { BuyerFormData } from '@/features/buyers/types/create-buyer';
 
@@ -325,35 +326,20 @@ export default function CreateBuyer() {
                       )}
                     </div>
 
-                    {/* Phone - Country Code and Number */}
+                    {/* Phone - Integrated Component */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
                         <Phone className="w-4 h-4" />
                         Teléfono
                       </Label>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="col-span-1">
-                          <select
-                            id="calling_code"
-                            {...form.register('calling_code')}
-                            className="h-12 w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 text-sm"
-                          >
-                            <option value="">País</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+52">🇲🇽 +52</option>
-                          </select>
-                        </div>
-                        <div className="col-span-2">
-                          <Input
-                            id="phone_number"
-                            type="tel"
-                            {...form.register('phone_number')}
-                            className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                            placeholder="1234567890"
-                            maxLength={15}
-                          />
-                        </div>
-                      </div>
+                      <PhoneInput
+                        callingCode={form.watch('calling_code') || ''}
+                        phoneNumber={form.watch('phone_number') || ''}
+                        onCallingCodeChange={(code) => form.setValue('calling_code', code)}
+                        onPhoneNumberChange={(number) => form.setValue('phone_number', number)}
+                        placeholder="Ingresa tu número de teléfono"
+                        error={!!(form.formState.errors.calling_code || form.formState.errors.phone_number)}
+                      />
                       {(form.formState.errors.calling_code || form.formState.errors.phone_number) && (
                         <div className="space-y-1">
                           {form.formState.errors.calling_code && (
