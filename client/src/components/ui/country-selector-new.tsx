@@ -32,12 +32,15 @@ export function CountrySelector({
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const pageSize = 10;
 
   const { fetchCountries, isLoading, error: fetchError } = useCountries({
     search: debouncedSearch,
     page: currentPage,
-    pageSize
+    pageSize,
+    sortOrder,
+    language: i18n.language === 'es' ? 'es' : 'en'
   });
 
   // Debounce search input to avoid excessive API calls
@@ -50,12 +53,12 @@ export function CountrySelector({
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Load countries when modal opens or debounced search/page changes
+  // Load countries when modal opens or debounced search/page/sort changes
   useEffect(() => {
     if (isOpen) {
       loadCountries();
     }
-  }, [isOpen, debouncedSearch, currentPage]);
+  }, [isOpen, debouncedSearch, currentPage, sortOrder]);
 
   const loadCountries = async () => {
     const result = await fetchCountries();
@@ -74,15 +77,10 @@ export function CountrySelector({
     return country.name || '';
   };
 
-  // Sorting functions
+  // Sorting functions - now triggers API call with sort parameter
   const sortCountriesByName = (ascending: boolean) => {
-    const sorted = [...countries].sort((a, b) => {
-      const nameA = getCountryDisplayName(a);
-      const nameB = getCountryDisplayName(b);
-      const comparison = nameA.localeCompare(nameB);
-      return ascending ? comparison : -comparison;
-    });
-    setCountries(sorted);
+    setSortOrder(ascending ? 'asc' : 'desc');
+    setCurrentPage(1); // Reset to first page when sorting
   };
 
   // Pagination functions

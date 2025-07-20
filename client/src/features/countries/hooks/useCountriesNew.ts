@@ -5,6 +5,8 @@ interface UseCountriesParams {
   search?: string;
   page?: number;
   pageSize?: number;
+  sortOrder?: 'asc' | 'desc';
+  language?: 'en' | 'es';
 }
 
 export function useCountries(params: UseCountriesParams) {
@@ -19,8 +21,20 @@ export function useCountries(params: UseCountriesParams) {
       // Use the CRM base URL - it should already include /api/v1
       const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
       
-      // Build sort object - always sort by English name
-      const sort = { "names.en": 1 };
+      // Build sort object based on language and sort order
+      const language = params.language || 'en';
+      const sortOrder = params.sortOrder || 'asc';
+      const sortKey = `names.${language}`;
+      const sortValue = sortOrder === 'asc' ? 1 : -1;
+      const sort = { [sortKey]: sortValue };
+      
+      console.log('Countries API: Sort configuration:', {
+        language,
+        sortOrder,
+        sortKey,
+        sortValue,
+        sortObject: sort
+      });
 
       // Build filter object for search
       let filter: any = {};
