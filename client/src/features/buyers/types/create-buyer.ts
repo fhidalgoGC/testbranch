@@ -26,12 +26,6 @@ export interface BuyerRole {
   slug: 'buyer';
 }
 
-// External platform object structure
-export interface BuyerExternal {
-  platform_id: 'null';
-  platform: 'ss-desktop';
-}
-
 // Complete buyer creation payload
 export interface CreateBuyerPayload {
   first_name: string;
@@ -41,7 +35,6 @@ export interface CreateBuyerPayload {
   roles: BuyerRole[];
   emails: BuyerEmail[];
   phones: BuyerPhone[];
-  externals: BuyerExternal[];
   _partitionKey: string;
   active: true;
   person_type: 'natural_person' | 'juridical_person';

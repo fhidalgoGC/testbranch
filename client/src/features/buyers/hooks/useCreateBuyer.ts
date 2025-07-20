@@ -125,10 +125,6 @@ export function useCreateBuyer() {
             type: 'principal',
             verified: false
           }] : [],
-          externals: [{
-            platform_id: 'null',
-            platform: 'ss-desktop'
-          }],
           _partitionKey: partitionKey,
           active: true,
           person_type: formData.person_type
@@ -184,10 +180,6 @@ export function useCreateBuyer() {
           type: 'principal',
           verified: false
         }] : [],
-        externals: [{
-          platform_id: 'null',
-          platform: 'ss-desktop'
-        }],
         _partitionKey: partitionKey,
         active: true,
         person_type: formData.person_type
