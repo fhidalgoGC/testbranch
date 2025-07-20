@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCountries } from '@/features/countries/hooks/useCountries';
-import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MapPin, Loader2 } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MapPin, Loader2, X, ArrowUpDown } from 'lucide-react';
 import type { Country } from '@/features/countries/types/country';
 
 interface CountrySelectorProps {
@@ -25,6 +25,7 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const language = i18n.language === 'es' ? 'es' : 'en';
 
@@ -86,6 +87,33 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
     onChange(null);
   };
 
+  // Clear search
+  const handleClearSearch = () => {
+    setSearch('');
+  };
+
+  // Toggle sort order
+  const handleSort = () => {
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setCurrentPage(1);
+  };
+
+  // Sort countries locally for demo mode or when API doesn't handle sorting
+  const sortedCountries = useMemo(() => {
+    if (!countries) return [];
+    
+    return [...countries].sort((a, b) => {
+      const aName = getCountryDisplayName(a);
+      const bName = getCountryDisplayName(b);
+      
+      if (sortOrder === 'asc') {
+        return aName.localeCompare(bName);
+      } else {
+        return bName.localeCompare(aName);
+      }
+    });
+  }, [countries, sortOrder, language]);
+
   return (
     <>
       {/* Country Input Field */}
@@ -98,9 +126,20 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
             disabled={disabled}
             onClick={() => !disabled && setIsOpen(true)}
             className={`h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer pr-10 ${
-              error ? 'border-red-500 dark:border-red-500' : ''
-            }`}
+              selectedCountry ? 'pl-12' : 'pl-4'
+            } ${error ? 'border-red-500 dark:border-red-500' : ''}`}
           />
+          {selectedCountry && (
+            <img 
+              src={selectedCountry.flag}
+              alt={getCountryDisplayName(selectedCountry)}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-4 object-cover rounded border border-gray-200 dark:border-gray-600 pointer-events-none"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+            />
+          )}
           <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         </div>
         
@@ -137,8 +176,21 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
                   placeholder={t('search', 'Search')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 h-10 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                  className={`pl-10 h-10 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 ${
+                    search ? 'pr-10' : 'pr-4'
+                  }`}
                 />
+                {search && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearSearch}
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 w-8 h-8 p-0 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full"
+                  >
+                    <X className="w-4 h-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+                  </Button>
+                )}
               </div>
 
               {/* Page Size Selector */}
@@ -195,12 +247,19 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
                           Flag
                         </th>
                         <th className="text-left p-3 font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-600">
-                          {t('countryName', 'Country Name')}
+                          <Button
+                            variant="ghost"
+                            onClick={handleSort}
+                            className="flex items-center gap-2 p-0 h-auto font-medium hover:bg-transparent"
+                          >
+                            {t('countryName', 'Country Name')}
+                            <ArrowUpDown className="w-4 h-4" />
+                          </Button>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {countries.map((country) => (
+                      {sortedCountries.map((country) => (
                         <tr 
                           key={country._id}
                           onClick={() => handleCountrySelect(country)}
