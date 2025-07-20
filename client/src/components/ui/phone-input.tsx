@@ -59,7 +59,7 @@ const PhoneInput = forwardRef<HTMLDivElement, PhoneInputProps>(
             style={{ minWidth: '80px' }}
           >
             <option value="" disabled className="text-gray-500">
-              País
+              Country
             </option>
             {countries.map((country) => (
               <option key={country.code} value={country.code} className="bg-white dark:bg-gray-700">

@@ -109,20 +109,20 @@ export default function CreateBuyer() {
         <div className="max-w-2xl mx-auto space-y-4">
           <Alert variant="destructive">
             <AlertDescription>
-              Error al inicializar el formulario.
+              {t('initializationError')}
               {initializationError && (
                 <>
                   <br />
-                  <strong>Detalle:</strong> {initializationError}
+                  <strong>{t('detail')}</strong> {initializationError}
                 </>
               )}
               <br />
-              Por favor, asegúrate de estar autenticado y vuelve a intentar.
+              {t('ensureAuthenticated')}
             </AlertDescription>
           </Alert>
           <div className="text-center">
             <Button asChild variant="outline">
-              <Link href="/buyers">Volver a la lista</Link>
+              <Link href="/buyers">{t('backToList')}</Link>
             </Button>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function CreateBuyer() {
                 {t('addBuyer')}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Complete la información para registrar un nuevo comprador
+                {t('createBuyerDescription')}
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function CreateBuyer() {
           {showSuccess && (
             <Alert className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 rounded-xl shadow-sm">
               <AlertDescription className="text-emerald-800 dark:text-emerald-200 font-medium">
-                ¡Comprador registrado exitosamente!
+                {t('buyerRegisteredSuccess')}
               </AlertDescription>
             </Alert>
           )}
@@ -169,7 +169,7 @@ export default function CreateBuyer() {
           {error && (
             <Alert variant="destructive" className="rounded-xl shadow-sm">
               <AlertDescription>
-                Error al registrar el comprador. Por favor, intenta nuevamente.
+                {t('buyerRegistrationError')}
               </AlertDescription>
             </Alert>
           )}
@@ -182,7 +182,7 @@ export default function CreateBuyer() {
                 {/* Person Type Selection */}
                 <div className="space-y-4">
                   <Label className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Tipo de Persona
+                    {t('personTypeLabel')}
                   </Label>
                   <RadioGroup
                     value={personType}
@@ -201,10 +201,10 @@ export default function CreateBuyer() {
                       >
                         <User className="w-6 h-6 text-gray-600 dark:text-gray-400 mb-2" />
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          Persona Natural
+                          {t('naturalPerson')}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
-                          Individuo como persona física
+                          {t('naturalPersonDesc')}
                         </span>
                       </Label>
                     </div>
@@ -220,10 +220,10 @@ export default function CreateBuyer() {
                       >
                         <Building2 className="w-6 h-6 text-gray-600 dark:text-gray-400 mb-2" />
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          Persona Jurídica
+                          {t('juridicalPerson')}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
-                          Empresa u organización
+                          {t('juridicalPersonDesc')}
                         </span>
                       </Label>
                     </div>
@@ -240,13 +240,13 @@ export default function CreateBuyer() {
                   <div className="space-y-3">
                     <Label htmlFor="organization_name" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
                       <Building2 className="w-4 h-4" />
-                      Nombre de la Organización *
+                      {t('organizationName')} {t('required')}
                     </Label>
                     <Input
                       id="organization_name"
                       {...form.register('organization_name')}
                       className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Ingresa el nombre de la organización"
+                      placeholder={t('organizationNamePlaceholder')}
                       maxLength={90}
                     />
                     {form.formState.errors.organization_name && (
@@ -262,13 +262,13 @@ export default function CreateBuyer() {
                   <div className="space-y-3">
                     <Label htmlFor="first_name" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
                       <User className="w-4 h-4" />
-                      Nombre *
+                      {t('firstName')} {t('required')}
                     </Label>
                     <Input
                       id="first_name"
                       {...form.register('first_name')}
                       className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Ingresa el nombre"
+                      placeholder={t('firstNamePlaceholder')}
                       maxLength={90}
                     />
                     {form.formState.errors.first_name && (
@@ -280,13 +280,13 @@ export default function CreateBuyer() {
 
                   <div className="space-y-3">
                     <Label htmlFor="last_name" className="text-sm font-medium text-gray-900 dark:text-white">
-                      Apellido *
+                      {t('lastName')} {t('required')}
                     </Label>
                     <Input
                       id="last_name"
                       {...form.register('last_name')}
                       className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Ingresa el apellido"
+                      placeholder={t('lastNamePlaceholder')}
                       maxLength={90}
                     />
                     {form.formState.errors.last_name && (
@@ -300,7 +300,7 @@ export default function CreateBuyer() {
                 {/* Contact Information */}
                 <div className="space-y-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
-                    Información de Contacto (Opcional)
+                    {t('contactInformation')}
                   </h3>
 
                   {/* Email and Phone in same row */}
@@ -309,14 +309,14 @@ export default function CreateBuyer() {
                     <div className="space-y-3">
                       <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
                         <Mail className="w-4 h-4" />
-                        Email
+                        {t('email')}
                       </Label>
                       <Input
                         id="email"
                         type="email"
                         {...form.register('email')}
                         className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
-                        placeholder="ejemplo@dominio.com"
+                        placeholder={t('emailPlaceholderForm')}
                         maxLength={90}
                       />
                       {form.formState.errors.email && (
@@ -330,14 +330,14 @@ export default function CreateBuyer() {
                     <div className="space-y-3">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
                         <Phone className="w-4 h-4" />
-                        Teléfono
+                        {t('phoneLabel')}
                       </Label>
                       <PhoneInput
                         callingCode={form.watch('calling_code') || ''}
                         phoneNumber={form.watch('phone_number') || ''}
                         onCallingCodeChange={(code) => form.setValue('calling_code', code)}
                         onPhoneNumberChange={(number) => form.setValue('phone_number', number)}
-                        placeholder="Ingresa tu número de teléfono"
+                        placeholder={t('phonePlaceholder')}
                         error={!!(form.formState.errors.calling_code || form.formState.errors.phone_number)}
                       />
                       {(form.formState.errors.calling_code || form.formState.errors.phone_number) && (
@@ -366,7 +366,7 @@ export default function CreateBuyer() {
                     asChild
                     className="flex-1 h-12 rounded-lg border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
-                    <Link href="/buyers">Cancelar</Link>
+                    <Link href="/buyers">{t('cancel')}</Link>
                   </Button>
                   <Button
                     type="submit"
@@ -376,10 +376,10 @@ export default function CreateBuyer() {
                     {isCreating ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Registrando...
+                        {t('registering')}
                       </>
                     ) : (
-                      'Registrar Comprador'
+                      t('registerBuyer')
                     )}
                   </Button>
                 </div>
