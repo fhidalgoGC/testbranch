@@ -16,7 +16,8 @@ export function useCountries(params: UseCountriesParams) {
     setError(null);
 
     try {
-      const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io';
+      // Use the CRM base URL - it should already include /api/v1
+      const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
       
       // Build sort object - always sort by English name
       const sort = { "names.en": 1 };
@@ -44,7 +45,7 @@ export function useCountries(params: UseCountriesParams) {
         queryParams.append('filter', JSON.stringify(filter));
       }
 
-      const url = `${baseUrl}/api/v1/crm-locations/countries/find-countries?${queryParams.toString()}`;
+      const url = `${baseUrl}/crm-locations/countries/find-countries?${queryParams.toString()}`;
       console.log('Countries API: Making request to:', url);
 
       // Check for authentication tokens

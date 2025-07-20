@@ -229,7 +229,7 @@ export function useStates(params: UseStatesParams) {
     setError(null);
 
     try {
-      const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io';
+      const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
       
       // Build filter object
       const filter: any = {
@@ -251,7 +251,7 @@ export function useStates(params: UseStatesParams) {
         sort: JSON.stringify({ name: 1 })
       });
 
-      const url = `${baseUrl}/api/v1/crm-locations/states/find-states?${queryParams.toString()}`;
+      const url = `${baseUrl}/crm-locations/states/find-states?${queryParams.toString()}`;
       console.log('States API: Making request to:', url);
 
       // Check for authentication tokens
