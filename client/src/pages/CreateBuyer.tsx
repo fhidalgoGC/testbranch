@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PhoneInput } from '@/components/ui/phone-input';
-import { CountrySelector } from '@/components/ui/country-selector';
+import { CountrySelector } from '@/components/ui/country-selector-new';
 import { StateSelector } from '@/components/ui/state-selector';
 import type { Country } from '@/features/countries/types/country';
 import type { State } from '@/features/states/types/state';

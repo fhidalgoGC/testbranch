@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useCountries } from '@/features/countries/hooks/useCountries';
+import { useCountries } from '@/features/countries/hooks/useCountriesNew';
 import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MapPin, Loader2, X, ArrowUpDown } from 'lucide-react';
 import type { Country } from '@/features/countries/types/country';
 import { FlagImage } from './flag-image';
@@ -40,24 +40,31 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Fetch countries with current parameters
-  const { 
-    data: countriesData, 
-    isLoading, 
-    error: apiError 
-  } = useCountries({
-    page: currentPage,
-    limit: pageSize,
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const { fetchCountries, isLoading, error: fetchError } = useCountries({
     search: debouncedSearch,
-    language
+    page: currentPage,
+    pageSize
   });
 
-  const countries = countriesData?.data || [];
-  const meta = countriesData?._meta;
+  // Load countries when modal opens or search/page changes
+  useEffect(() => {
+    if (isOpen) {
+      loadCountries();
+    }
+  }, [isOpen, debouncedSearch, currentPage]);
 
-  // Calculate pagination info
-  const totalPages = meta?.total_pages || 1;
-  const totalElements = meta?.total_elements || 0;
+  const loadCountries = async () => {
+    const result = await fetchCountries();
+    if (result) {
+      setCountries(result.data);
+      setTotalPages(result._meta.total_pages);
+      setTotalElements(result._meta.total_elements);
+    }
+  };
   const startElement = totalElements > 0 ? ((currentPage - 1) * pageSize) + 1 : 0;
   const endElement = Math.min(currentPage * pageSize, totalElements);
 

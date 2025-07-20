@@ -102,5 +102,8 @@
   "searchStates": "Buscar estados...",
   "stateName": "Nombre del Estado",
   "noStatesFound": "No se encontraron estados",
-  "noStatesAvailable": "No hay estados disponibles"
+  "noStatesAvailable": "No hay estados disponibles",
+  "flag": "Bandera",
+  "noCountriesFound": "No se encontraron países",
+  "noCountriesAvailable": "No hay países disponibles"
 }
