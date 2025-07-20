@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { CountrySelector } from '@/components/ui/country-selector-new';
-import { StateSelector } from '@/components/ui/state-selector';
+import { StateSelector } from '@/components/ui/state-selector-new';
 import type { Country } from '@/features/countries/types/country';
 import type { State } from '@/features/states/types/state';
 import { useCreateBuyer } from '@/features/buyers/hooks/useCreateBuyer';
@@ -420,7 +420,7 @@ export default function CreateBuyer() {
                       </Label>
                       <StateSelector
                         value={selectedState ? selectedState.name : ''}
-                        countrySlug={selectedCountry?.slug}
+                        selectedCountry={selectedCountry}
                         onChange={(state) => {
                           console.log('CreateBuyer: State change triggered:', state ? {
                             name: state.name,

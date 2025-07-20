@@ -105,5 +105,8 @@
   "noStatesAvailable": "No hay estados disponibles",
   "flag": "Bandera",
   "noCountriesFound": "No se encontraron países",
-  "noCountriesAvailable": "No hay países disponibles"
+  "noCountriesAvailable": "No hay países disponibles",
+  "code": "Código",
+  "sortAscending": "Ordenar Ascendente",
+  "sortDescending": "Ordenar Descendente"
 }

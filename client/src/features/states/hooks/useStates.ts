@@ -214,6 +214,8 @@ interface UseStatesParams {
   search?: string;
   page?: number;
   pageSize?: number;
+  sortOrder?: 'asc' | 'desc';
+  language?: 'en' | 'es';
 }
 
 export function useStates(params: UseStatesParams) {
@@ -248,7 +250,7 @@ export function useStates(params: UseStatesParams) {
         page: (params.page || 1).toString(),
         limit: (params.pageSize || 10).toString(),
         filter: JSON.stringify(filter),
-        sort: JSON.stringify({ name: 1 })
+        sort: JSON.stringify({ name: params.sortOrder === 'desc' ? -1 : 1 })
       });
 
       const url = `${baseUrl}/crm-locations/states/find-states?${queryParams.toString()}`;

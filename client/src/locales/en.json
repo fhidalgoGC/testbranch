@@ -105,5 +105,8 @@
   "noStatesAvailable": "No states available",
   "flag": "Flag",
   "noCountriesFound": "No countries found",
-  "noCountriesAvailable": "No countries available"
+  "noCountriesAvailable": "No countries available",
+  "code": "Code",
+  "sortAscending": "Sort Ascending",
+  "sortDescending": "Sort Descending"
 }
