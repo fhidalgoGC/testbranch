@@ -1,66 +1,53 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, User, Building2, Mail, Phone, Save, Loader2 } from 'lucide-react';
+import { z } from 'zod';
 import { Link } from 'wouter';
+import { ArrowLeft, User, Building2, Mail, Phone, Loader2 } from 'lucide-react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCreateBuyer } from '@/features/buyers/hooks/useCreateBuyer';
-import type { BuyerFormData, CountryCode } from '@/features/buyers/types/create-buyer';
-
-// Country codes data
-const countryCodes: CountryCode[] = [
-  { code: '+1', country: 'Estados Unidos', flag: '🇺🇸' },
-  { code: '+52', country: 'México', flag: '🇲🇽' },
-];
+import type { BuyerFormData } from '@/features/buyers/types/create-buyer';
 
 // Form validation schema
-const createBuyerSchema = z.object({
+const buyerSchema = z.object({
   person_type: z.enum(['natural_person', 'juridical_person']),
-  organization_name: z.string().max(90, 'Máximo 90 caracteres').optional(),
-  first_name: z.string().min(1, 'Campo requerido').max(60, 'Máximo 60 caracteres'),
-  last_name: z.string().min(1, 'Campo requerido').max(60, 'Máximo 60 caracteres'),
-  email: z.string().email('Formato de email inválido').optional().or(z.literal('')),
+  first_name: z.string().min(1, 'El nombre es requerido'),
+  last_name: z.string().min(1, 'El apellido es requerido'),
+  organization_name: z.string().optional(),
+  email: z.string().email('Email inválido').optional().or(z.literal('')),
   calling_code: z.string().optional(),
   phone_number: z.string().optional(),
 }).refine((data) => {
-  // Organization name is required for juridical persons
-  if (data.person_type === 'juridical_person' && !data.organization_name?.trim()) {
-    return false;
+  if (data.person_type === 'juridical_person') {
+    return data.organization_name && data.organization_name.trim().length > 0;
   }
-  
-  // If phone number is provided, calling code is required
-  if (data.phone_number && !data.calling_code) {
-    return false;
-  }
-  
-  // If calling code is provided, phone number is required
-  if (data.calling_code && !data.phone_number) {
-    return false;
-  }
-  
-  // Validate phone format based on country
-  if (data.phone_number && data.calling_code) {
-    if (data.calling_code === '+1') {
-      // US format: 10 digits
-      return /^\d{10}$/.test(data.phone_number);
-    } else if (data.calling_code === '+52') {
-      // Mexico format: 10 digits
-      return /^\d{10}$/.test(data.phone_number);
-    }
-  }
-  
   return true;
 }, {
-  message: 'Datos del formulario inválidos',
+  message: 'El nombre de la organización es requerido para personas jurídicas',
+  path: ['organization_name'],
+}).refine((data) => {
+  if (data.email && data.email.trim()) {
+    const validDomains = ['.com', '.mx'];
+    return validDomains.some(domain => data.email!.endsWith(domain));
+  }
+  return true;
+}, {
+  message: 'El email debe terminar en .com o .mx',
+  path: ['email'],
+}).refine((data) => {
+  if (data.phone_number && data.phone_number.trim()) {
+    return data.calling_code && data.calling_code.trim().length > 0;
+  }
+  return true;
+}, {
+  message: 'Código de país requerido cuando se proporciona teléfono',
+  path: ['calling_code'],
 });
 
 export default function CreateBuyer() {
@@ -78,12 +65,12 @@ export default function CreateBuyer() {
   } = useCreateBuyer();
 
   const form = useForm<BuyerFormData>({
-    resolver: zodResolver(createBuyerSchema),
+    resolver: zodResolver(buyerSchema),
     defaultValues: {
       person_type: 'natural_person',
-      organization_name: '',
       first_name: '',
       last_name: '',
+      organization_name: '',
       email: '',
       calling_code: '',
       phone_number: '',
@@ -91,8 +78,6 @@ export default function CreateBuyer() {
   });
 
   const personType = form.watch('person_type');
-  const callingCode = form.watch('calling_code');
-  const phoneNumber = form.watch('phone_number');
 
   const onSubmit = (data: BuyerFormData) => {
     createBuyer(data);
@@ -106,7 +91,7 @@ export default function CreateBuyer() {
 
   if (isInitializing) {
     return (
-      <DashboardLayout>
+      <DashboardLayout title="Agregar Comprador">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -119,7 +104,7 @@ export default function CreateBuyer() {
 
   if (!isInitializing && (!idempotentBuyerId || initializationError)) {
     return (
-      <DashboardLayout>
+      <DashboardLayout title="Error">
         <div className="max-w-2xl mx-auto space-y-4">
           <Alert variant="destructive">
             <AlertDescription>
@@ -145,220 +130,272 @@ export default function CreateBuyer() {
   }
 
   return (
-    <DashboardLayout>
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button asChild variant="ghost" size="sm" className="p-2">
-            <Link href="/buyers">
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              {t('addBuyer')}
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Registra un nuevo comprador en el sistema
-            </p>
+    <DashboardLayout title="Agregar Comprador">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 -mx-6 -my-6 px-6 py-6">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="flex items-center gap-6">
+            <Button 
+              asChild 
+              variant="ghost" 
+              size="sm" 
+              className="p-3 hover:bg-white/60 dark:hover:bg-gray-800/60 rounded-xl transition-all duration-200"
+            >
+              <Link href="/buyers">
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                {t('addBuyer')}
+              </h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Complete la información para registrar un nuevo comprador
+              </p>
+            </div>
+          </div>
+
+          {/* Success Message */}
+          {showSuccess && (
+            <Alert className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 rounded-xl shadow-sm">
+              <AlertDescription className="text-emerald-800 dark:text-emerald-200 font-medium">
+                ¡Comprador registrado exitosamente!
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <Alert variant="destructive" className="rounded-xl shadow-sm">
+              <AlertDescription>
+                Error al registrar el comprador. Por favor, intenta nuevamente.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Form Container */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+            <div className="p-8 sm:p-12">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                
+                {/* Person Type Selection */}
+                <div className="space-y-4">
+                  <Label className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Tipo de Persona
+                  </Label>
+                  <RadioGroup
+                    value={personType}
+                    onValueChange={(value) => form.setValue('person_type', value as 'natural_person' | 'juridical_person')}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                  >
+                    <div className="relative">
+                      <RadioGroupItem 
+                        value="natural_person" 
+                        id="natural_person" 
+                        className="peer sr-only" 
+                      />
+                      <Label 
+                        htmlFor="natural_person" 
+                        className="flex flex-col items-center justify-center p-6 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20 transition-all duration-200"
+                      >
+                        <User className="w-6 h-6 text-gray-600 dark:text-gray-400 mb-2" />
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          Persona Natural
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+                          Individuo como persona física
+                        </span>
+                      </Label>
+                    </div>
+                    <div className="relative">
+                      <RadioGroupItem 
+                        value="juridical_person" 
+                        id="juridical_person" 
+                        className="peer sr-only" 
+                      />
+                      <Label 
+                        htmlFor="juridical_person" 
+                        className="flex flex-col items-center justify-center p-6 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20 transition-all duration-200"
+                      >
+                        <Building2 className="w-6 h-6 text-gray-600 dark:text-gray-400 mb-2" />
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          Persona Jurídica
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+                          Empresa u organización
+                        </span>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                  {form.formState.errors.person_type && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {form.formState.errors.person_type.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Organization Name (only for juridical persons) */}
+                {personType === 'juridical_person' && (
+                  <div className="space-y-3">
+                    <Label htmlFor="organization_name" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                      <Building2 className="w-4 h-4" />
+                      Nombre de la Organización *
+                    </Label>
+                    <Input
+                      id="organization_name"
+                      {...form.register('organization_name')}
+                      className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Ingresa el nombre de la organización"
+                      maxLength={90}
+                    />
+                    {form.formState.errors.organization_name && (
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {form.formState.errors.organization_name.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Name Fields Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <Label htmlFor="first_name" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      Nombre *
+                    </Label>
+                    <Input
+                      id="first_name"
+                      {...form.register('first_name')}
+                      className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Ingresa el nombre"
+                      maxLength={90}
+                    />
+                    {form.formState.errors.first_name && (
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {form.formState.errors.first_name.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="last_name" className="text-sm font-medium text-gray-900 dark:text-white">
+                      Apellido *
+                    </Label>
+                    <Input
+                      id="last_name"
+                      {...form.register('last_name')}
+                      className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Ingresa el apellido"
+                      maxLength={90}
+                    />
+                    {form.formState.errors.last_name && (
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {form.formState.errors.last_name.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+                    Información de Contacto (Opcional)
+                  </h3>
+
+                  {/* Email */}
+                  <div className="space-y-3">
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...form.register('email')}
+                      className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      placeholder="ejemplo@dominio.com"
+                      maxLength={90}
+                    />
+                    {form.formState.errors.email && (
+                      <p className="text-sm text-red-600 dark:text-red-400">
+                        {form.formState.errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Phone */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-3">
+                      <Label htmlFor="calling_code" className="text-sm font-medium text-gray-900 dark:text-white">
+                        País
+                      </Label>
+                      <select
+                        id="calling_code"
+                        {...form.register('calling_code')}
+                        className="h-12 w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      >
+                        <option value="">Seleccionar</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+52">🇲🇽 +52</option>
+                      </select>
+                      {form.formState.errors.calling_code && (
+                        <p className="text-sm text-red-600 dark:text-red-400">
+                          {form.formState.errors.calling_code.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-3 sm:col-span-2">
+                      <Label htmlFor="phone_number" className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <Phone className="w-4 h-4" />
+                        Teléfono
+                      </Label>
+                      <Input
+                        id="phone_number"
+                        type="tel"
+                        {...form.register('phone_number')}
+                        className="h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                        placeholder="1234567890"
+                        maxLength={15}
+                      />
+                      {form.formState.errors.phone_number && (
+                        <p className="text-sm text-red-600 dark:text-red-400">
+                          {form.formState.errors.phone_number.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    asChild
+                    className="flex-1 h-12 rounded-lg border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <Link href="/buyers">Cancelar</Link>
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isCreating}
+                    className="flex-1 h-12 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+                  >
+                    {isCreating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Registrando...
+                      </>
+                    ) : (
+                      'Registrar Comprador'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-
-        {/* Success Message */}
-        {showSuccess && (
-          <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20">
-            <AlertDescription className="text-green-800 dark:text-green-200">
-              ¡Comprador registrado exitosamente!
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>
-              Error al registrar el comprador. Por favor, intenta nuevamente.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Main Form */}
-        <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-gray-200/50 dark:border-gray-700/50">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <User className="w-5 h-5" />
-              Información del Comprador
-            </CardTitle>
-            <CardDescription>
-              Completa los datos del comprador que deseas registrar
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Person Type Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Tipo de Persona *
-                </Label>
-                <RadioGroup
-                  value={form.watch('person_type')}
-                  onValueChange={(value) => form.setValue('person_type', value as 'natural_person' | 'juridical_person')}
-                  className="flex gap-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="natural_person" id="natural" />
-                    <Label htmlFor="natural" className="flex items-center gap-2 cursor-pointer">
-                      <User className="w-4 h-4" />
-                      Persona Natural
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="juridical_person" id="juridical" />
-                    <Label htmlFor="juridical" className="flex items-center gap-2 cursor-pointer">
-                      <Building2 className="w-4 h-4" />
-                      Persona Jurídica
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Organization Name (only for juridical persons) */}
-              {personType === 'juridical_person' && (
-                <div className="space-y-2">
-                  <Label htmlFor="organization_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Nombre de la Organización *
-                  </Label>
-                  <Input
-                    id="organization_name"
-                    {...form.register('organization_name')}
-                    className="bg-white/80 dark:bg-gray-800/80"
-                    placeholder="Ingresa el nombre de la organización"
-                    maxLength={90}
-                  />
-                  {form.formState.errors.organization_name && (
-                    <p className="text-xs text-red-600">{form.formState.errors.organization_name.message}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Name and Last Name Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="first_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Nombre *
-                  </Label>
-                  <Input
-                    id="first_name"
-                    {...form.register('first_name')}
-                    className="bg-white/80 dark:bg-gray-800/80"
-                    placeholder="Ingresa el nombre"
-                    maxLength={60}
-                  />
-                  {form.formState.errors.first_name && (
-                    <p className="text-xs text-red-600">{form.formState.errors.first_name.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="last_name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Apellido *
-                  </Label>
-                  <Input
-                    id="last_name"
-                    {...form.register('last_name')}
-                    className="bg-white/80 dark:bg-gray-800/80"
-                    placeholder="Ingresa el apellido"
-                    maxLength={60}
-                  />
-                  {form.formState.errors.last_name && (
-                    <p className="text-xs text-red-600">{form.formState.errors.last_name.message}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  Correo Electrónico
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...form.register('email')}
-                  className="bg-white/80 dark:bg-gray-800/80"
-                  placeholder="ejemplo@correo.com"
-                />
-                {form.formState.errors.email && (
-                  <p className="text-xs text-red-600">{form.formState.errors.email.message}</p>
-                )}
-              </div>
-
-              {/* Phone */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  Teléfono
-                </Label>
-                <div className="grid grid-cols-5 gap-3">
-                  <div className="col-span-2">
-                    <Select
-                      value={form.watch('calling_code')}
-                      onValueChange={(value) => form.setValue('calling_code', value)}
-                    >
-                      <SelectTrigger className="bg-white/80 dark:bg-gray-800/80">
-                        <SelectValue placeholder="Código" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {countryCodes.map((country) => (
-                          <SelectItem key={country.code} value={country.code}>
-                            <span className="flex items-center gap-2">
-                              <span>{country.flag}</span>
-                              <span>{country.code}</span>
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-3">
-                    <Input
-                      {...form.register('phone_number')}
-                      className="bg-white/80 dark:bg-gray-800/80"
-                      placeholder={callingCode === '+1' ? '1234567890' : '1234567890'}
-                      type="tel"
-                    />
-                  </div>
-                </div>
-                {(callingCode && phoneNumber && form.formState.errors.root) && (
-                  <p className="text-xs text-red-600">Formato de teléfono inválido</p>
-                )}
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex justify-end pt-4">
-                <Button
-                  type="submit"
-                  disabled={isCreating}
-                  className="bg-agricultural hover:bg-agricultural-hover text-white px-6 py-2 flex items-center gap-2"
-                >
-                  {isCreating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Registrando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      Registrar Comprador
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
       </div>
     </DashboardLayout>
   );
