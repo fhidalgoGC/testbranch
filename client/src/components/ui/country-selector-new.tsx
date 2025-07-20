@@ -26,6 +26,7 @@ export function CountrySelector({
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [countries, setCountries] = useState<Country[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,17 +35,27 @@ export function CountrySelector({
   const pageSize = 10;
 
   const { fetchCountries, isLoading, error: fetchError } = useCountries({
-    search,
+    search: debouncedSearch,
     page: currentPage,
     pageSize
   });
 
-  // Load countries when modal opens or search/page changes
+  // Debounce search input to avoid excessive API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setCurrentPage(1); // Reset to first page when searching
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Load countries when modal opens or debounced search/page changes
   useEffect(() => {
     if (isOpen) {
       loadCountries();
     }
-  }, [isOpen, search, currentPage]);
+  }, [isOpen, debouncedSearch, currentPage]);
 
   const loadCountries = async () => {
     const result = await fetchCountries();
@@ -54,17 +65,6 @@ export function CountrySelector({
       setTotalElements(result._meta.total_elements);
     }
   };
-
-  // Debounced search
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (isOpen) {
-        setCurrentPage(1);
-      }
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [search]);
 
   // Get display name for country based on current language
   const getCountryDisplayName = (country: Country): string => {
@@ -105,11 +105,13 @@ export function CountrySelector({
     setIsOpen(false);
     // Reset search and pagination
     setSearch('');
+    setDebouncedSearch('');
     setCurrentPage(1);
   };
 
   const clearSearch = () => {
     setSearch('');
+    setDebouncedSearch('');
     setCurrentPage(1);
   };
 
