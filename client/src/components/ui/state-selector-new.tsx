@@ -84,7 +84,7 @@ export function StateSelector({
 
   // Helper function to normalize text (title case)
   const normalizeText = (text: string): string => {
-    return text.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    return text.toLowerCase().replace(/\b\p{L}/gu, l => l.toUpperCase());
   };
 
   // Get display name for state - State type only has 'name' property

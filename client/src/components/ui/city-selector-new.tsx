@@ -134,7 +134,7 @@ export function CitySelector({
 
   // Helper function to normalize text (title case)
   const normalizeText = (text: string): string => {
-    return text.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+    return text.toLowerCase().replace(/\b\p{L}/gu, l => l.toUpperCase());
   };
 
   // Helper function to get city display name
