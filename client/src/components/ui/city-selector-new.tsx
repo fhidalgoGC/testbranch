@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, Search, MapPin, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, MapPin, Loader2, ArrowLeft, ArrowRight, SkipBack, SkipForward } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './dialog';
 import { Button } from './button';
 import { Input } from './input';
@@ -135,6 +135,12 @@ export function CitySelector({
 
   const canGoPrevious = currentPage > 1;
   const canGoNext = currentPage < totalPages;
+
+  // Navigation functions
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToPrevPage = () => setCurrentPage(prev => Math.max(1, prev - 1));
+  const goToNextPage = () => setCurrentPage(prev => Math.min(totalPages, prev + 1));
+  const goToLastPage = () => setCurrentPage(totalPages);
 
   return (
     <div className="space-y-2">
@@ -276,8 +282,8 @@ export function CitySelector({
             )}
 
             {/* Pagination */}
-            {!isLoading && !fetchError && totalElements > 0 && (
-              <div className="flex items-center justify-between py-4">
+            {!isLoading && !fetchError && cities.length > 0 && totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-600">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   {t('showingResults', { start: startIndex, end: endIndex, total: totalElements })}
                 </div>
@@ -286,11 +292,21 @@ export function CitySelector({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={!canGoPrevious}
-                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
+                    onClick={goToFirstPage}
+                    disabled={currentPage === 1}
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
-                    {t('previous')}
+                    <SkipBack className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={goToPrevPage}
+                    disabled={currentPage === 1}
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
                   </Button>
                   
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-3">
@@ -300,11 +316,21 @@ export function CitySelector({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={!canGoNext}
-                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
-                    {t('next')}
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={goToLastPage}
+                    disabled={currentPage === totalPages}
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
+                  >
+                    <SkipForward className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
