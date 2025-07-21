@@ -65,6 +65,7 @@ export default function CreateBuyer() {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedState, setSelectedState] = useState<State | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [address, setAddress] = useState<string>('');
   
   const {
     idempotentBuyerId,
@@ -455,32 +456,64 @@ export default function CreateBuyer() {
 
                   </div>
 
-                  {/* City Selector - Single row */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      {t('city')}
-                    </Label>
-                    <CitySelector
-                      selectedCountry={selectedCountry}
-                      selectedState={selectedState}
-                      selectedCity={selectedCity}
-                      onCityChange={(city) => {
-                        console.log('CreateBuyer: City change triggered:', city ? {
-                          name: city.name,
-                          id: city._id,
-                          countrySlug: city.country_slug,
-                          stateId: city.state
-                        } : 'null');
-                        
-                        setSelectedCity(city);
-                        
-                        if (city) {
-                          console.log('CreateBuyer: Updated selectedCity');
-                        }
-                      }}
-                      disabled={!selectedCountry || !selectedState}
-                    />
+                  {/* City Selector and Address Input */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* City Selector */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {t('city')}
+                      </Label>
+                      <CitySelector
+                        selectedCountry={selectedCountry}
+                        selectedState={selectedState}
+                        selectedCity={selectedCity}
+                        onCityChange={(city) => {
+                          console.log('CreateBuyer: City change triggered:', city ? {
+                            name: city.name,
+                            id: city._id,
+                            countrySlug: city.country_slug,
+                            stateId: city.state
+                          } : 'null');
+                          
+                          setSelectedCity(city);
+                          
+                          if (city) {
+                            console.log('CreateBuyer: Updated selectedCity');
+                          }
+                        }}
+                        disabled={!selectedCountry || !selectedState}
+                      />
+                    </div>
+
+                    {/* Address Input */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {t('address')}
+                      </Label>
+                      <Input
+                        type="text"
+                        placeholder={t('enterAddress')}
+                        value={address}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length <= 200) {
+                            setAddress(value);
+                          }
+                        }}
+                        maxLength={200}
+                        className="h-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:border-[#16a34a] focus:ring-1 focus:ring-[#16a34a]"
+                      />
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {t('addressOptional')}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {address.length}/200
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
