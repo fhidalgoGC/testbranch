@@ -225,52 +225,52 @@ export function StateSelector({
             {/* States Table */}
             {!isLoading && !fetchError && states.length > 0 && (
               <div className="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                    <tr>
-                      <th className="p-3 text-left">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900 dark:text-white">
-                            {t('stateName')}
-                          </span>
-                          <div className="flex flex-col">
-                            <button
-                              onClick={() => sortStatesByName(true)}
-                              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                              title={t('sortAscending')}
-                            >
-                              <ChevronUp className="w-3 h-3" />
-                            </button>
-                            <button
-                              onClick={() => sortStatesByName(false)}
-                              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                              title={t('sortDescending')}
-                            >
-                              <ChevronDown className="w-3 h-3" />
-                            </button>
+                <div className="max-h-96 overflow-y-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 sticky top-0">
+                      <tr>
+                        <th className="p-3 text-left">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900 dark:text-white">
+                              {t('stateName')}
+                            </span>
+                            <div className="flex flex-col">
+                              <button
+                                onClick={() => sortStatesByName(true)}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                title={t('sortAscending')}
+                              >
+                                <ChevronUp className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => sortStatesByName(false)}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                title={t('sortDescending')}
+                              >
+                                <ChevronDown className="w-3 h-3" />
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      </th>
-
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {states.map((state) => (
-                      <tr
-                        key={state._id}
-                        onClick={() => handleStateSelect(state)}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-600"
-                      >
-                        <td className="p-3">
-                          <span className="text-gray-900 dark:text-white font-medium">
-                            {getStateDisplayName(state)}
-                          </span>
-                        </td>
-
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {states.map((state) => (
+                        <tr
+                          key={state._id}
+                          onClick={() => handleStateSelect(state)}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-600"
+                        >
+                          <td className="p-3">
+                            <span className="text-gray-900 dark:text-white font-medium">
+                              {getStateDisplayName(state)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
 
