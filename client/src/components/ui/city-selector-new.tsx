@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Search, MapPin, Loader2, ArrowLeft, ArrowRight, SkipBack, SkipForward, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './dialog';
@@ -89,13 +89,26 @@ export function CitySelector({
     });
   }, [selectedCountry?.slug, selectedState?._id, searchTerm, currentPage, pageSize, sortOrder, fetchCities, clearCities, onCityChange]);
 
-  // Clear city selection when country or state changes
+  // Clear city selection when country or state changes (but not on initial mount)
+  const prevCountryRef = useRef(selectedCountry?.slug);
+  const prevStateRef = useRef(selectedState?._id);
+  
   useEffect(() => {
-    console.log('CitySelector: Country or state change detected:', {
-      country: selectedCountry?.slug,
-      state: selectedState?._id
-    });
-    onCityChange(null);
+    const countryChanged = prevCountryRef.current !== selectedCountry?.slug;
+    const stateChanged = prevStateRef.current !== selectedState?._id;
+    
+    if ((countryChanged || stateChanged) && (prevCountryRef.current !== undefined || prevStateRef.current !== undefined)) {
+      console.log('CitySelector: Country or state actually changed, clearing city:', {
+        country: selectedCountry?.slug,
+        state: selectedState?._id,
+        countryChanged,
+        stateChanged
+      });
+      onCityChange(null);
+    }
+    
+    prevCountryRef.current = selectedCountry?.slug;
+    prevStateRef.current = selectedState?._id;
   }, [selectedCountry?.slug, selectedState?._id, onCityChange]);
 
   const handleCitySelect = (city: City) => {
