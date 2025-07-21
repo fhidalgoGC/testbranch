@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,7 +38,7 @@ export function StateSelector({
   const [pageSize, setPageSize] = useState(10);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  const { fetchStates, isLoading, error: fetchError } = useStates({
+  const { states: hookStates, meta, isLoading, error: fetchError } = useStates({
     search: debouncedSearch,
     page: currentPage,
     pageSize,
@@ -57,12 +57,16 @@ export function StateSelector({
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Load states when modal opens or parameters change
+  // Update local state when hook data changes
   useEffect(() => {
-    if (isOpen && selectedCountry) {
-      loadStates();
+    if (hookStates) {
+      setStates(hookStates);
     }
-  }, [isOpen, debouncedSearch, currentPage, pageSize, sortOrder, selectedCountry]);
+    if (meta) {
+      setTotalPages(meta.total_pages);
+      setTotalElements(meta.total_elements);
+    }
+  }, [hookStates, meta]);
 
   // Reset states when country changes
   useEffect(() => {
@@ -75,17 +79,6 @@ export function StateSelector({
       onChange(null); // Clear selected state when country changes
     }
   }, [selectedCountry?.slug]);
-
-  const loadStates = async () => {
-    if (!selectedCountry) return;
-    
-    const result = await fetchStates();
-    if (result) {
-      setStates(result.data);
-      setTotalPages(result._meta.total_pages);
-      setTotalElements(result._meta.total_elements);
-    }
-  };
 
   // Get display name for state - State type only has 'name' property
   const getStateDisplayName = (state: State): string => {

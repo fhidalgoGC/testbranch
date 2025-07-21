@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StatesResponse, State } from '../types/state';
 
 // Demo states data for testing
@@ -219,13 +219,24 @@ interface UseStatesParams {
 }
 
 export function useStates(params: UseStatesParams) {
+  const [states, setStates] = useState<State[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [meta, setMeta] = useState<any>(null);
 
   const fetchStates = async (): Promise<StatesResponse | null> => {
     if (!params.countrySlug) {
+      console.log('States API: No country slug provided, skipping request');
       return null;
     }
+
+    console.log('States API: Starting fetch with params:', {
+      countrySlug: params.countrySlug,
+      search: params.search,
+      page: params.page,
+      pageSize: params.pageSize,
+      sortOrder: params.sortOrder
+    });
 
     setIsLoading(true);
     setError(null);
@@ -255,6 +266,7 @@ export function useStates(params: UseStatesParams) {
 
       const url = `${baseUrl}/crm-locations/states/find-states?${queryParams.toString()}`;
       console.log('States API: Making request to:', url);
+      console.log('States API: Sort configuration:', JSON.stringify({ name: params.sortOrder === 'desc' ? -1 : 1 }));
 
       // Check for authentication tokens
       const jwt = localStorage.getItem('jwt_token');
@@ -276,7 +288,7 @@ export function useStates(params: UseStatesParams) {
 
         console.log('States API: Demo mode loaded', states.length, 'states for country', params.countrySlug);
 
-        return {
+        const demoResponse = {
           data: states,
           _meta: {
             page_size: params.pageSize || 10,
@@ -292,6 +304,10 @@ export function useStates(params: UseStatesParams) {
             last: `/api/v1/crm-locations/states/find-states?page=${Math.ceil(states.length / (params.pageSize || 10))}`
           }
         };
+
+        setStates(demoResponse.data);
+        setMeta(demoResponse._meta);
+        return demoResponse;
       }
 
       // Make real API request
@@ -311,6 +327,8 @@ export function useStates(params: UseStatesParams) {
       const data: StatesResponse = await response.json();
       console.log('States API: Success response:', data);
       
+      setStates(data.data);
+      setMeta(data._meta);
       return data;
 
     } catch (error) {
@@ -322,7 +340,19 @@ export function useStates(params: UseStatesParams) {
     }
   };
 
+  // Auto-fetch when parameters change
+  useEffect(() => {
+    if (params.countrySlug) {
+      fetchStates();
+    } else {
+      setStates([]);
+      setMeta(null);
+    }
+  }, [params.countrySlug, params.search, params.page, params.pageSize, params.sortOrder]);
+
   return {
+    states,
+    meta,
     fetchStates,
     isLoading,
     error
