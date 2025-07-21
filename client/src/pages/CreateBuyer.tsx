@@ -439,8 +439,7 @@ export default function CreateBuyer() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Country Selector */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">
                         {t('country')}
                       </Label>
                       <CountrySelector
@@ -476,8 +475,7 @@ export default function CreateBuyer() {
 
                     {/* State Selector */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">
                         {t('state')}
                       </Label>
                       <StateSelector
@@ -517,8 +515,7 @@ export default function CreateBuyer() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* City Selector */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">
                         {t('city')}
                       </Label>
                       <CitySelector
@@ -545,8 +542,7 @@ export default function CreateBuyer() {
 
                     {/* Address Input */}
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">
                         {t('address')}
                       </Label>
                       <Input
@@ -575,11 +571,10 @@ export default function CreateBuyer() {
 
                   {/* Postal Code Input */}
                   <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
+                    <Label className="text-sm font-medium text-gray-900 dark:text-white">
                       {t('postalCode')}
                     </Label>
-                    <div className="max-w-md">
+                    <div>
                       <Input
                         type="text"
                         placeholder={t('enterPostalCode')}
