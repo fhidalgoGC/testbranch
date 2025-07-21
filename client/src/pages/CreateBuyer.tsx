@@ -558,14 +558,7 @@ export default function CreateBuyer() {
                         maxLength={200}
                         className="h-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:border-[#16a34a] focus:ring-1 focus:ring-[#16a34a]"
                       />
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {t('addressOptional')}
-                        </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {address.length}/200
-                        </span>
-                      </div>
+
                     </div>
                   </div>
 
@@ -584,16 +577,13 @@ export default function CreateBuyer() {
                           postalCodeError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                         }`}
                       />
-                      <div className="flex justify-between items-center mt-1">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {t('postalCodeOptional')}
-                        </span>
-                        {selectedCountry && (
+                      {selectedCountry && (
+                        <div className="mt-1">
                           <span className="text-xs text-gray-500 dark:text-gray-400">
                             {t('formatFor')} {i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                       {postalCodeError && (
                         <p className="text-xs text-red-600 dark:text-red-400 mt-1">
                           {postalCodeError}
