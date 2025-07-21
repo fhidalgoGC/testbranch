@@ -377,8 +377,8 @@ export default function CreateBuyer() {
                     {t('addressOptional')}
                   </h3>
 
-                  {/* Country, State and City Selectors */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Country and State Selectors */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Country Selector */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
@@ -453,33 +453,34 @@ export default function CreateBuyer() {
                       )}
                     </div>
 
-                    {/* City Selector */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        {t('city')}
-                      </Label>
-                      <CitySelector
-                        selectedCountry={selectedCountry}
-                        selectedState={selectedState}
-                        selectedCity={selectedCity}
-                        onCityChange={(city) => {
-                          console.log('CreateBuyer: City change triggered:', city ? {
-                            name: city.name,
-                            id: city._id,
-                            countrySlug: city.country_slug,
-                            stateId: city.state
-                          } : 'null');
-                          
-                          setSelectedCity(city);
-                          
-                          if (city) {
-                            console.log('CreateBuyer: Updated selectedCity');
-                          }
-                        }}
-                        disabled={!selectedCountry || !selectedState}
-                      />
-                    </div>
+                  </div>
+
+                  {/* City Selector - Single row */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {t('city')}
+                    </Label>
+                    <CitySelector
+                      selectedCountry={selectedCountry}
+                      selectedState={selectedState}
+                      selectedCity={selectedCity}
+                      onCityChange={(city) => {
+                        console.log('CreateBuyer: City change triggered:', city ? {
+                          name: city.name,
+                          id: city._id,
+                          countrySlug: city.country_slug,
+                          stateId: city.state
+                        } : 'null');
+                        
+                        setSelectedCity(city);
+                        
+                        if (city) {
+                          console.log('CreateBuyer: Updated selectedCity');
+                        }
+                      }}
+                      disabled={!selectedCountry || !selectedState}
+                    />
                   </div>
                 </div>
 

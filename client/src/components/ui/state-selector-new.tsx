@@ -194,14 +194,14 @@ export function StateSelector({
                   setPageSize(parseInt(value));
                   setCurrentPage(1);
                 }}>
-                  <SelectTrigger className="w-20">
+                  <SelectTrigger className="w-20 h-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                    <SelectItem value="10" className="hover:bg-gray-50 dark:hover:bg-gray-700">10</SelectItem>
+                    <SelectItem value="25" className="hover:bg-gray-50 dark:hover:bg-gray-700">25</SelectItem>
+                    <SelectItem value="50" className="hover:bg-gray-50 dark:hover:bg-gray-700">50</SelectItem>
+                    <SelectItem value="100" className="hover:bg-gray-50 dark:hover:bg-gray-700">100</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -297,7 +297,7 @@ export function StateSelector({
                     size="sm"
                     onClick={goToFirstPage}
                     disabled={currentPage === 1}
-                    className="p-2"
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
                     <SkipBack className="w-4 h-4" />
                   </Button>
@@ -307,7 +307,7 @@ export function StateSelector({
                     size="sm"
                     onClick={goToPrevPage}
                     disabled={currentPage === 1}
-                    className="p-2"
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </Button>
@@ -321,7 +321,7 @@ export function StateSelector({
                     size="sm"
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className="p-2"
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -331,7 +331,7 @@ export function StateSelector({
                     size="sm"
                     onClick={goToLastPage}
                     disabled={currentPage === totalPages}
-                    className="p-2"
+                    className="p-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
                     <SkipForward className="w-4 h-4" />
                   </Button>

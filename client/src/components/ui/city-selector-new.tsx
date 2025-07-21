@@ -15,7 +15,6 @@ interface Country {
     en: string;
   };
   flag: string;
-  calling_codes: string[];
   status: string;
 }
 
@@ -187,14 +186,14 @@ export function CitySelector({
               </div>
               <div className="w-32">
                 <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                  <SelectTrigger className="h-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
+                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                    <SelectItem value="10" className="hover:bg-gray-50 dark:hover:bg-gray-700">10</SelectItem>
+                    <SelectItem value="25" className="hover:bg-gray-50 dark:hover:bg-gray-700">25</SelectItem>
+                    <SelectItem value="50" className="hover:bg-gray-50 dark:hover:bg-gray-700">50</SelectItem>
+                    <SelectItem value="100" className="hover:bg-gray-50 dark:hover:bg-gray-700">100</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -289,7 +288,7 @@ export function CitySelector({
                     size="sm"
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={!canGoPrevious}
-                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
                     {t('previous')}
                   </Button>
@@ -303,7 +302,7 @@ export function CitySelector({
                     size="sm"
                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={!canGoNext}
-                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                    className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-900 dark:text-white"
                   >
                     {t('next')}
                   </Button>
