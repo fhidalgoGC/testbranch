@@ -156,12 +156,7 @@ export function CitySelector({
   const goToLastPage = () => setCurrentPage(totalPages);
 
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        {t('city')}
-      </label>
-      
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button
             variant="outline"
@@ -367,6 +362,5 @@ export function CitySelector({
           </div>
         </DialogContent>
       </Dialog>
-    </div>
   );
 }
