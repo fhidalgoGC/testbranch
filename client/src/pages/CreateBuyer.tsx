@@ -151,6 +151,15 @@ export default function CreateBuyer() {
     setPostalCodeError(error);
   };
 
+  // Helper function to normalize text (title case) - same as in selectors
+  const normalizeText = (text: string): string => {
+    return text
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const onSubmit = async (data: BuyerFormData) => {
     await createBuyer(data);
   };
@@ -479,7 +488,7 @@ export default function CreateBuyer() {
                         {t('state')}
                       </Label>
                       <StateSelector
-                        value={selectedState ? selectedState.name : ''}
+                        value={selectedState ? normalizeText(selectedState.name) : ''}
                         selectedCountry={selectedCountry}
                         onChange={(state) => {
                           console.log('CreateBuyer: State change triggered:', state ? {
