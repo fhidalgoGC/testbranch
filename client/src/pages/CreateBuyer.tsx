@@ -570,11 +570,11 @@ export default function CreateBuyer() {
                   </div>
 
                   {/* Postal Code Input */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                      {t('postalCode')}
-                    </Label>
-                    <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                        {t('postalCode')}
+                      </Label>
                       <Input
                         type="text"
                         placeholder={t('enterPostalCode')}
@@ -600,6 +600,8 @@ export default function CreateBuyer() {
                         </p>
                       )}
                     </div>
+                    {/* Empty column to maintain grid layout */}
+                    <div></div>
                   </div>
                 </div>
 
