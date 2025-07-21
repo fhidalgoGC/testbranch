@@ -163,15 +163,12 @@ export function CitySelector({
             className="w-full justify-between h-10 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={disabled || !selectedCountry || !selectedState}
           >
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <span className="text-gray-900 dark:text-white">
+            <span className="text-gray-900 dark:text-white">
                 {selectedCity ? getCityDisplayName(selectedCity) : 
                  !selectedCountry ? t('selectCountryFirst') :
                  !selectedState ? t('selectStateFirst') :
                  t('selectCity')}
-              </span>
-            </div>
+            </span>
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </Button>
         </DialogTrigger>

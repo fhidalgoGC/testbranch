@@ -136,11 +136,10 @@ export function StateSelector({
             placeholder={selectedCountry ? placeholder : t('selectCountryFirst')}
             readOnly
             disabled={isDisabled}
-            className={`h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer pl-10 pr-10 ${
+            className={`h-12 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 cursor-pointer pl-3 pr-10 ${
               error ? 'border-red-500 dark:border-red-500' : ''
             } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
           />
-          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
           <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
         </div>
       </DialogTrigger>
