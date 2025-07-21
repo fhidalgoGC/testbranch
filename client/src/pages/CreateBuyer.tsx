@@ -14,8 +14,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { CountrySelector } from '@/components/ui/country-selector-new';
 import { StateSelector } from '@/components/ui/state-selector-new';
+import { CitySelector } from '@/components/ui/city-selector-new';
 import type { Country } from '@/features/countries/types/country';
 import type { State } from '@/features/states/types/state';
+import type { City } from '@/features/cities/hooks/useCities';
 import { useCreateBuyer } from '@/features/buyers/hooks/useCreateBuyer';
 import type { BuyerFormData } from '@/features/buyers/types/create-buyer';
 
@@ -62,6 +64,7 @@ export default function CreateBuyer() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedState, setSelectedState] = useState<State | null>(null);
+  const [selectedCity, setSelectedCity] = useState<City | null>(null);
   
   const {
     idempotentBuyerId,
@@ -374,8 +377,8 @@ export default function CreateBuyer() {
                     {t('addressOptional')}
                   </h3>
 
-                  {/* Country and State Selectors */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Country, State and City Selectors */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Country Selector */}
                     <div className="space-y-3">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
@@ -394,9 +397,10 @@ export default function CreateBuyer() {
                           setSelectedCountry(country);
                           form.setValue('country', country ? (i18n.language === 'es' ? country.names.es : country.names.en) : '');
                           
-                          // Reset state when country changes
+                          // Reset state and city when country changes
                           setSelectedState(null);
                           form.setValue('state', '');
+                          setSelectedCity(null);
                           
                           if (country) {
                             console.log('CreateBuyer: Updated selectedCountry state, reset selectedState');
@@ -431,8 +435,11 @@ export default function CreateBuyer() {
                           setSelectedState(state);
                           form.setValue('state', state ? state.name : '');
                           
+                          // Reset city when state changes
+                          setSelectedCity(null);
+                          
                           if (state) {
-                            console.log('CreateBuyer: Updated selectedState');
+                            console.log('CreateBuyer: Updated selectedState, reset selectedCity');
                           }
                         }}
                         placeholder={t('stateSelect')}
@@ -444,6 +451,34 @@ export default function CreateBuyer() {
                           {form.formState.errors.state.message}
                         </p>
                       )}
+                    </div>
+
+                    {/* City Selector */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {t('city')}
+                      </Label>
+                      <CitySelector
+                        selectedCountry={selectedCountry}
+                        selectedState={selectedState}
+                        selectedCity={selectedCity}
+                        onCityChange={(city) => {
+                          console.log('CreateBuyer: City change triggered:', city ? {
+                            name: city.name,
+                            id: city._id,
+                            countrySlug: city.country_slug,
+                            stateId: city.state
+                          } : 'null');
+                          
+                          setSelectedCity(city);
+                          
+                          if (city) {
+                            console.log('CreateBuyer: Updated selectedCity');
+                          }
+                        }}
+                        disabled={!selectedCountry || !selectedState}
+                      />
                     </div>
                   </div>
                 </div>

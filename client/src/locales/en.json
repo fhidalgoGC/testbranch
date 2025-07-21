@@ -111,5 +111,14 @@
   "sortDescending": "Sort Descending",
   "selectStateOf": "Select a state of",
   "showingResults": "Showing {{start}} to {{end}} of {{total}} results",
-  "pageOfPages": "Page {{current}} of {{total}}"
+  "pageOfPages": "Page {{current}} of {{total}}",
+  "city": "City",
+  "citySelect": "Select city",
+  "selectCity": "Select City",
+  "selectStateFirst": "Please select a state first",
+  "searchCities": "Search cities...",
+  "cityName": "City Name",
+  "noCitiesFound": "No cities found",
+  "noCitiesAvailable": "No cities available",
+  "selectCityOf": "Select a city of"
 }

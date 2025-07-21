@@ -111,5 +111,14 @@
   "sortDescending": "Ordenar Descendente",
   "selectStateOf": "Seleccionar un estado de",
   "showingResults": "Mostrando {{start}} a {{end}} de {{total}} resultados",
-  "pageOfPages": "Página {{current}} de {{total}}"
+  "pageOfPages": "Página {{current}} de {{total}}",
+  "city": "Ciudad",
+  "citySelect": "Seleccionar ciudad",
+  "selectCity": "Seleccionar Ciudad",
+  "selectStateFirst": "Primero seleccione un estado",
+  "searchCities": "Buscar ciudades...",
+  "cityName": "Nombre de la Ciudad",
+  "noCitiesFound": "No se encontraron ciudades",
+  "noCitiesAvailable": "No hay ciudades disponibles",
+  "selectCityOf": "Seleccionar una ciudad de"
 }
