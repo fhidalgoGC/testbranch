@@ -38,12 +38,12 @@ export function StateSelector({
   const [pageSize, setPageSize] = useState(10);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  // Only pass countrySlug when modal is open and country is selected
+  // Always pass countrySlug when country is selected, regardless of modal state
   const { states: hookStates, meta, isLoading, error: fetchError } = useStates({
     search: debouncedSearch,
     page: currentPage,
     pageSize,
-    countrySlug: isOpen && selectedCountry ? selectedCountry.slug : '',
+    countrySlug: selectedCountry?.slug || '',
     sortOrder,
     language: i18n.language === 'es' ? 'es' : 'en'
   });

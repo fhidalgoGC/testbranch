@@ -275,60 +275,79 @@ export function useStates(params: UseStatesParams) {
       const jwt = localStorage.getItem('jwt_token');
       const partitionKey = localStorage.getItem('partition_key');
 
-      if (!jwt || jwt === 'demo-jwt-token' || !partitionKey || partitionKey === 'demo-partition-key') {
-        console.warn('States API: No real authentication found, using demo mode');
-        
-        // Filter demo states by country slug
-        let states = DEMO_STATES[params.countrySlug] || [];
-        
-        // Apply search filter to demo data
-        if (params.search && params.search.trim() !== '') {
-          const searchTerm = params.search.trim().toLowerCase();
-          states = states.filter(state => 
-            state.name.toLowerCase().includes(searchTerm)
-          );
-        }
+      console.log('States API: Authentication check:', {
+        jwt: jwt ? 'present' : 'missing',
+        jwtLength: jwt?.length || 0,
+        partitionKey: partitionKey ? 'present' : 'missing',
+        partitionKeyValue: partitionKey
+      });
 
-        console.log('States API: Demo mode loaded', states.length, 'states for country', params.countrySlug);
+      // Always try real API call first
+      console.log('States API: Making real API call with headers:', Object.keys({
+        'Content-Type': 'application/json',
+        'Authorization': jwt ? `Bearer ${jwt}` : 'Bearer demo-token',
+        'X-Partition-Key': partitionKey || 'demo-partition'
+      }));
 
-        const demoResponse = {
-          data: states,
-          _meta: {
-            page_size: params.pageSize || 10,
-            page_number: params.page || 1,
-            total_elements: states.length,
-            total_pages: Math.ceil(states.length / (params.pageSize || 10))
-          },
-          _links: {
-            self: `/api/v1/crm-locations/states/find-states?page=${params.page || 1}`,
-            first: '/api/v1/crm-locations/states/find-states?page=1',
-            prev: `/api/v1/crm-locations/states/find-states?page=${Math.max(1, (params.page || 1) - 1)}`,
-            next: `/api/v1/crm-locations/states/find-states?page=${(params.page || 1) + 1}`,
-            last: `/api/v1/crm-locations/states/find-states?page=${Math.ceil(states.length / (params.pageSize || 10))}`
-          }
-        };
-
-        setStates(demoResponse.data);
-        setMeta(demoResponse._meta);
-        return demoResponse;
-      }
-
-      // Make real API request
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${jwt}`,
-          'X-Partition-Key': partitionKey
+          'Authorization': jwt ? `Bearer ${jwt}` : 'Bearer demo-token',
+          'X-Partition-Key': partitionKey || 'demo-partition'
         }
       });
 
+      console.log('States API: Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error('States API: HTTP error! status:', response.status);
+        const errorText = await response.text();
+        console.error('States API: Error response:', errorText);
+        
+        // Fallback to demo data if API fails
+        if (!jwt || jwt === 'demo-jwt-token' || !partitionKey || partitionKey === 'demo-partition-key') {
+          console.warn('States API: Using demo fallback due to API error');
+          
+          let states = DEMO_STATES[params.countrySlug] || [];
+          
+          if (params.search && params.search.trim() !== '') {
+            const searchTerm = params.search.trim().toLowerCase();
+            states = states.filter(state => 
+              state.name.toLowerCase().includes(searchTerm)
+            );
+          }
+
+          const demoResponse = {
+            data: states,
+            _meta: {
+              page_size: params.pageSize || 10,
+              page_number: params.page || 1,
+              total_elements: states.length,
+              total_pages: Math.ceil(states.length / (params.pageSize || 10))
+            },
+            _links: {
+              self: `/api/v1/crm-locations/states/find-states?page=${params.page || 1}`,
+              first: '/api/v1/crm-locations/states/find-states?page=1',
+              prev: `/api/v1/crm-locations/states/find-states?page=${Math.max(1, (params.page || 1) - 1)}`,
+              next: `/api/v1/crm-locations/states/find-states?page=${(params.page || 1) + 1}`,
+              last: `/api/v1/crm-locations/states/find-states?page=${Math.ceil(states.length / (params.pageSize || 10))}`
+            }
+          };
+
+          setStates(demoResponse.data);
+          setMeta(demoResponse._meta);
+          return demoResponse;
+        }
+        
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const data: StatesResponse = await response.json();
-      console.log('States API: Success response:', data);
+      console.log('States API: Success response with', data.data.length, 'states');
+      if (data.data.length > 0) {
+        console.log('States API: Sample state:', data.data[0]);
+      }
       
       setStates(data.data);
       setMeta(data._meta);
