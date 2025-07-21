@@ -242,14 +242,15 @@ export function useStates(params: UseStatesParams) {
     setError(null);
 
     try {
+      // Use environment variable or default to the exact base URL from your example
       const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
       
-      // Build filter object
+      // Build filter object exactly as shown in your example
       const filter: any = {
         country_slug: params.countrySlug
       };
 
-      // Add search filter if provided
+      // Add search filter if provided - exactly as shown in your example
       if (params.search && params.search.trim() !== '') {
         filter.name = {
           $regex: `.*${params.search.trim()}.*`,
@@ -257,6 +258,7 @@ export function useStates(params: UseStatesParams) {
         };
       }
 
+      // Build query parameters exactly as shown in your example
       const queryParams = new URLSearchParams({
         page: (params.page || 1).toString(),
         limit: (params.pageSize || 10).toString(),
@@ -264,6 +266,7 @@ export function useStates(params: UseStatesParams) {
         sort: JSON.stringify({ name: params.sortOrder === 'desc' ? -1 : 1 })
       });
 
+      // Construct the exact URL structure from your example
       const url = `${baseUrl}/crm-locations/states/find-states?${queryParams.toString()}`;
       console.log('States API: Making request to:', url);
       console.log('States API: Sort configuration:', JSON.stringify({ name: params.sortOrder === 'desc' ? -1 : 1 }));
@@ -340,11 +343,13 @@ export function useStates(params: UseStatesParams) {
     }
   };
 
-  // Auto-fetch when parameters change
+  // Auto-fetch when parameters change - only when countrySlug is present
   useEffect(() => {
-    if (params.countrySlug) {
+    if (params.countrySlug && params.countrySlug.trim() !== '') {
+      console.log('States API: Triggering fetch due to parameter change');
       fetchStates();
     } else {
+      console.log('States API: No country slug, clearing states');
       setStates([]);
       setMeta(null);
     }

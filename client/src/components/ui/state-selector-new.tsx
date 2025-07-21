@@ -38,11 +38,12 @@ export function StateSelector({
   const [pageSize, setPageSize] = useState(10);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
+  // Only pass countrySlug when modal is open and country is selected
   const { states: hookStates, meta, isLoading, error: fetchError } = useStates({
     search: debouncedSearch,
     page: currentPage,
     pageSize,
-    countrySlug: selectedCountry?.slug || '',
+    countrySlug: isOpen && selectedCountry ? selectedCountry.slug : '',
     sortOrder,
     language: i18n.language === 'es' ? 'es' : 'en'
   });
@@ -70,6 +71,7 @@ export function StateSelector({
 
   // Reset states when country changes
   useEffect(() => {
+    console.log('StateSelector: Country change detected:', selectedCountry?.slug);
     if (selectedCountry) {
       setStates([]);
       setSelectedState(null);
