@@ -66,6 +66,8 @@ export default function CreateBuyer() {
   const [selectedState, setSelectedState] = useState<State | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
   const [address, setAddress] = useState<string>('');
+  const [postalCode, setPostalCode] = useState<string>('');
+  const [postalCodeError, setPostalCodeError] = useState<string>('');
   
   const {
     idempotentBuyerId,
@@ -93,6 +95,61 @@ export default function CreateBuyer() {
   });
 
   const personType = form.watch('person_type');
+
+  // Postal code validation function
+  const validatePostalCode = (code: string, country: Country | null): string => {
+    if (!code.trim()) return ''; // Empty is valid (optional field)
+    
+    if (!country) return '';
+    
+    const countrySlug = country.slug.toUpperCase();
+    
+    switch (countrySlug) {
+      case 'MEX': // México
+        // Mexican postal codes: 5 digits
+        if (!/^\d{5}$/.test(code)) {
+          return t('invalidPostalCodeMexico');
+        }
+        break;
+      case 'USA': // Estados Unidos
+        // US ZIP codes: 5 digits or 5+4 format
+        if (!/^\d{5}(-\d{4})?$/.test(code)) {
+          return t('invalidPostalCodeUSA');
+        }
+        break;
+      case 'COL': // Colombia
+        // Colombian postal codes: 6 digits
+        if (!/^\d{6}$/.test(code)) {
+          return t('invalidPostalCodeColombia');
+        }
+        break;
+      case 'GTM': // Guatemala
+        // Guatemalan postal codes: 5 digits
+        if (!/^\d{5}$/.test(code)) {
+          return t('invalidPostalCodeGuatemala');
+        }
+        break;
+      case 'HND': // Honduras
+        // Honduran postal codes: 5 digits
+        if (!/^\d{5}$/.test(code)) {
+          return t('invalidPostalCodeHonduras');
+        }
+        break;
+      default:
+        // Generic validation for other countries: 3-10 alphanumeric characters
+        if (!/^[A-Za-z0-9\s-]{3,10}$/.test(code)) {
+          return t('invalidPostalCodeGeneric');
+        }
+    }
+    
+    return ''; // Valid
+  };
+
+  const handlePostalCodeChange = (value: string) => {
+    setPostalCode(value);
+    const error = validatePostalCode(value, selectedCountry);
+    setPostalCodeError(error);
+  };
 
   const onSubmit = async (data: BuyerFormData) => {
     await createBuyer(data);
@@ -513,6 +570,40 @@ export default function CreateBuyer() {
                           {address.length}/200
                         </span>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Postal Code Input */}
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {t('postalCode')}
+                    </Label>
+                    <div className="max-w-md">
+                      <Input
+                        type="text"
+                        placeholder={t('enterPostalCode')}
+                        value={postalCode}
+                        onChange={(e) => handlePostalCodeChange(e.target.value)}
+                        className={`h-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:border-[#16a34a] focus:ring-1 focus:ring-[#16a34a] ${
+                          postalCodeError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                        }`}
+                      />
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {t('postalCodeOptional')}
+                        </span>
+                        {selectedCountry && (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {t('formatFor')} {i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en}
+                          </span>
+                        )}
+                      </div>
+                      {postalCodeError && (
+                        <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                          {postalCodeError}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>

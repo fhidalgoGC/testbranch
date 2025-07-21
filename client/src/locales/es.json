@@ -123,5 +123,15 @@
   "selectCityOf": "Seleccionar una ciudad de",
   "show": "Mostrar",
   "address": "Dirección",
-  "enterAddress": "Ingrese la dirección..."
+  "enterAddress": "Ingrese la dirección...",
+  "postalCode": "Código Postal",
+  "enterPostalCode": "Ingrese el código postal...",
+  "postalCodeOptional": "Opcional",
+  "formatFor": "Formato para",
+  "invalidPostalCodeMexico": "Código postal mexicano debe tener 5 dígitos",
+  "invalidPostalCodeUSA": "Código postal de EE.UU. debe tener formato 12345 o 12345-6789",
+  "invalidPostalCodeColombia": "Código postal colombiano debe tener 6 dígitos",
+  "invalidPostalCodeGuatemala": "Código postal guatemalteco debe tener 5 dígitos",
+  "invalidPostalCodeHonduras": "Código postal hondureño debe tener 5 dígitos",
+  "invalidPostalCodeGeneric": "Código postal debe tener entre 3-10 caracteres alfanuméricos"
 }

@@ -123,5 +123,15 @@
   "selectCityOf": "Select a city of",
   "show": "Show",
   "address": "Address",
-  "enterAddress": "Enter address..."
+  "enterAddress": "Enter address...",
+  "postalCode": "Postal Code",
+  "enterPostalCode": "Enter postal code...",
+  "postalCodeOptional": "Optional",
+  "formatFor": "Format for",
+  "invalidPostalCodeMexico": "Mexican postal code must have 5 digits",
+  "invalidPostalCodeUSA": "US postal code must have format 12345 or 12345-6789",
+  "invalidPostalCodeColombia": "Colombian postal code must have 6 digits",
+  "invalidPostalCodeGuatemala": "Guatemalan postal code must have 5 digits",
+  "invalidPostalCodeHonduras": "Honduran postal code must have 5 digits",
+  "invalidPostalCodeGeneric": "Postal code must have 3-10 alphanumeric characters"
 }
