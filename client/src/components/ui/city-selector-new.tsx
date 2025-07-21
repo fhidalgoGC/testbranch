@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, Search, MapPin, Loader2, ArrowLeft, ArrowRight, SkipBack, SkipForward } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, MapPin, Loader2, ArrowLeft, ArrowRight, SkipBack, SkipForward, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './dialog';
 import { Button } from './button';
 import { Input } from './input';
@@ -180,19 +180,35 @@ export function CitySelector({
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Search Input */}
-            <div className="flex gap-4">
-              <div className="flex-1">
+            {/* Search and Page Size Controls */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
+                  type="text"
                   placeholder={t('searchCities')}
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
-                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                  className="pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
+                {searchTerm && (
+                  <button
+                    onClick={() => handleSearchChange('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
-              <div className="w-32">
+
+              {/* Page Size Selector */}
+              <div className="flex items-center gap-2 min-w-fit">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('show')}:
+                </span>
                 <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-                  <SelectTrigger className="h-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <SelectTrigger className="w-20 h-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">

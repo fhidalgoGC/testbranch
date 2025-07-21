@@ -120,5 +120,6 @@
   "cityName": "City Name",
   "noCitiesFound": "No cities found",
   "noCitiesAvailable": "No cities available",
-  "selectCityOf": "Select a city of"
+  "selectCityOf": "Select a city of",
+  "show": "Show"
 }
