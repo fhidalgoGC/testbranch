@@ -108,5 +108,8 @@
   "noCountriesAvailable": "No countries available",
   "code": "Code",
   "sortAscending": "Sort Ascending",
-  "sortDescending": "Sort Descending"
+  "sortDescending": "Sort Descending",
+  "selectStateOf": "Select a state of",
+  "showingResults": "Showing {{start}} to {{end}} of {{total}} results",
+  "pageOfPages": "Page {{current}} of {{total}}"
 }

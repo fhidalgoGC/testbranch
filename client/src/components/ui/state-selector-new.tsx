@@ -149,7 +149,10 @@ export function StateSelector({
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <Search className="w-5 h-5" />
-            {t('stateSelect')}
+            {selectedCountry ? 
+              `${t('selectStateOf')} ${i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en}` :
+              t('stateSelect')
+            }
           </DialogTitle>
         </DialogHeader>
 
@@ -248,11 +251,7 @@ export function StateSelector({
                           </div>
                         </div>
                       </th>
-                      <th className="p-3 text-left w-24">
-                        <span className="font-medium text-gray-900 dark:text-white">
-                          {t('code')}
-                        </span>
-                      </th>
+
                     </tr>
                   </thead>
                   <tbody>
@@ -267,11 +266,7 @@ export function StateSelector({
                             {getStateDisplayName(state)}
                           </span>
                         </td>
-                        <td className="p-3">
-                          <span className="text-gray-600 dark:text-gray-300 text-sm font-mono">
-                            {state.code}
-                          </span>
-                        </td>
+
                       </tr>
                     ))}
                   </tbody>
