@@ -82,9 +82,15 @@ export function StateSelector({
     }
   }, [selectedCountry?.slug]);
 
+  // Helper function to normalize text (title case)
+  const normalizeText = (text: string): string => {
+    return text.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  };
+
   // Get display name for state - State type only has 'name' property
   const getStateDisplayName = (state: State): string => {
-    return state.name || '';
+    const displayName = state.name || '';
+    return normalizeText(displayName);
   };
 
   // Sorting functions - triggers API call with sort parameter

@@ -132,12 +132,20 @@ export function CitySelector({
     setCurrentPage(1); // Reset to first page when sorting
   };
 
+  // Helper function to normalize text (title case)
+  const normalizeText = (text: string): string => {
+    return text.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+  };
+
   // Helper function to get city display name
   const getCityDisplayName = (city: City): string => {
+    let displayName = '';
     if (city.names) {
-      return i18n.language === 'es' ? city.names.es : city.names.en;
+      displayName = i18n.language === 'es' ? city.names.es : city.names.en;
+    } else {
+      displayName = city.name;
     }
-    return city.name;
+    return normalizeText(displayName);
   };
 
   // Pagination calculations
