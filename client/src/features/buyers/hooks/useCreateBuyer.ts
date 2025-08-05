@@ -4,6 +4,26 @@ import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
 import type { CreateBuyerIdResponse, CreateBuyerPayload, BuyerFormData } from '../types/create-buyer';
 
+// Interface for the location payload
+interface CreateLocationPayload {
+  owner_id: string;
+  type: string[];
+  address_line_1: string;
+  address_line_2: string;
+  country_id: string;
+  country: string;
+  state_id: string;
+  state: string;
+  city_id: string;
+  city: string;
+  neighborhood: string;
+  zip_code: string;
+  latitude: string;
+  longitude: string;
+  elevation: string;
+  _partitionKey: string;
+}
+
 export function useCreateBuyer() {
   const [, setLocation] = useLocation();
   const [idempotentBuyerId, setIdempotentBuyerId] = useState<string | null>(null);
@@ -87,6 +107,79 @@ export function useCreateBuyer() {
     initializeIdempotentId();
   }, []);
 
+  // Helper function to create location after buyer creation
+  const createBuyerLocation = async (peopleId: string, formData: BuyerFormData) => {
+    const jwt = localStorage.getItem('jwt');
+    const partitionKey = localStorage.getItem('partition_key');
+    const crmUrl = import.meta.env.VITE_URL_CRM;
+    
+    if (!jwt || !partitionKey || !crmUrl) {
+      console.log('CreateBuyer: Missing data for location creation, skipping location step');
+      return;
+    }
+    
+    // Only create location if we have address information
+    if (!formData.address || !formData.selectedCountry || !formData.selectedState || !formData.selectedCity) {
+      console.log('CreateBuyer: No address information provided, skipping location creation');
+      return;
+    }
+    
+    console.log('CreateBuyer: Creating location for people_id:', peopleId);
+    
+    // Build the location payload
+    const locationPayload: CreateLocationPayload = {
+      owner_id: peopleId,
+      type: ["personal"],
+      address_line_1: formData.address,
+      address_line_2: "",
+      country_id: formData.selectedCountry._id || "",
+      country: formData.selectedCountry.names.en,
+      state_id: formData.selectedState._id || "",
+      state: formData.selectedState.name,
+      city_id: formData.selectedCity._id || "",
+      city: formData.selectedCity.name,
+      neighborhood: "",
+      zip_code: formData.postalCode || "",
+      latitude: "",
+      longitude: "",
+      elevation: "",
+      _partitionKey: partitionKey
+    };
+    
+    console.log('CreateBuyer: Location payload:', locationPayload);
+    
+    // Check if we're in demo mode
+    if (jwt === 'demo-jwt-token-for-testing') {
+      console.log('CreateBuyer: Demo mode - simulating location creation');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { success: true, data: locationPayload };
+    }
+    
+    const locationResponse = await fetch(`${crmUrl}/crm-locations/address`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwt}`,
+        'Content-Type': 'application/json',
+        '_partitionkey': partitionKey,
+        'bt-organization': partitionKey,
+        'bt-uid': partitionKey,
+        'organization_id': partitionKey,
+        'pk-organization': partitionKey,
+      },
+      body: JSON.stringify(locationPayload),
+    });
+    
+    if (!locationResponse.ok) {
+      console.warn('CreateBuyer: Location creation failed:', locationResponse.status, locationResponse.statusText);
+      // Don't throw error - location creation is optional
+      return null;
+    }
+    
+    const locationResult = await locationResponse.json();
+    console.log('CreateBuyer: Location created successfully:', locationResult);
+    return locationResult;
+  };
+
   // Mutation for creating the buyer
   const createBuyerMutation = useMutation({
     mutationFn: async (formData: BuyerFormData) => {
@@ -153,7 +246,10 @@ export function useCreateBuyer() {
         localStorage.setItem('demo_created_buyers', JSON.stringify(updatedBuyers));
         console.log('CreateBuyer: Stored demo buyer in localStorage:', mockBuyer);
         
-        return { success: true, data: payload };
+        // Try to create location in demo mode
+        await createBuyerLocation(idempotentBuyerId, formData);
+        
+        return { success: true, data: payload, people_id: idempotentBuyerId };
       }
 
       const crmUrl = import.meta.env.VITE_URL_CRM;
@@ -203,7 +299,16 @@ export function useCreateBuyer() {
         throw new Error(`API request failed: ${response.status} ${response.statusText}`);
       }
 
-      return response.json();
+      const buyerResult = await response.json();
+      console.log('CreateBuyer: Buyer created successfully:', buyerResult);
+      
+      // Extract people_id from the response
+      const peopleId = buyerResult.people_id || idempotentBuyerId;
+      
+      // Create location if we have address information
+      await createBuyerLocation(peopleId, formData);
+      
+      return { ...buyerResult, people_id: peopleId };
     },
     onSuccess: () => {
       // Invalidate all buyers queries to refresh data

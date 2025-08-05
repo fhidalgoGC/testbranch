@@ -51,6 +51,22 @@ export interface BuyerFormData {
   phone_number: string;
   country: string;
   state: string;
+  // Location fields for address creation
+  address?: string;
+  postalCode?: string;
+  selectedCountry?: {
+    _id: string;
+    names: { en: string; es: string };
+    slug: string;
+  };
+  selectedState?: {
+    _id: string;
+    name: string;
+  };
+  selectedCity?: {
+    _id: string;
+    name: string;
+  };
 }
 
 // Country codes for phone selector

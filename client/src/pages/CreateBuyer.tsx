@@ -161,7 +161,18 @@ export default function CreateBuyer() {
   };
 
   const onSubmit = async (data: BuyerFormData) => {
-    await createBuyer(data);
+    // Add location fields to the form data
+    const formDataWithLocation: BuyerFormData = {
+      ...data,
+      address,
+      postalCode,
+      selectedCountry,
+      selectedState,
+      selectedCity,
+    };
+    
+    console.log('CreateBuyer: Submitting form with location data:', formDataWithLocation);
+    await createBuyer(formDataWithLocation);
   };
 
   // Show success message when buyer is created

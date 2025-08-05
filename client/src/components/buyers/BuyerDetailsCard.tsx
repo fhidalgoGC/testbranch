@@ -7,7 +7,7 @@ import { Buyer } from '@/features/buyers/types';
 import { 
   formatBuyerId, 
   formatDate, 
-  formatPersonType, 
+  formatPersonType,
   getBuyerEmails, 
   getBuyerPhones 
 } from '@/lib/formatters';
