@@ -89,7 +89,7 @@ export function ContractInfoSection() {
   };
 
   // Helper function to handle number input change with strict validation
-  const handleNumberChange = (field: 'quantity', inputValue: string) => {
+  const handleNumberChange = (field: 'quantity' | 'min_thresholds_percentage' | 'max_thresholds_percentage', inputValue: string) => {
     // Only allow numbers and one decimal point
     const validChars = /^[0-9.]*$/;
     
@@ -118,6 +118,54 @@ export function ContractInfoSection() {
       const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
       setValue(field, numericValue);
     }
+  };
+
+  // Helper function to handle threshold validation (0-100)
+  const handleThresholdChange = (field: 'min_thresholds_percentage' | 'max_thresholds_percentage', inputValue: string) => {
+    // Only allow numbers and one decimal point
+    const validChars = /^[0-9.]*$/;
+    
+    if (!validChars.test(inputValue)) {
+      return; // Reject invalid characters
+    }
+    
+    // Prevent multiple decimal points
+    const decimalCount = (inputValue.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return;
+    }
+    
+    // Allow empty string or valid number format
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      let numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
+      
+      // Limit to 0-100 range
+      if (numericValue > 100) {
+        numericValue = 100;
+      } else if (numericValue < 0) {
+        numericValue = 0;
+      }
+      
+      setValue(field, numericValue);
+    }
+  };
+
+  // Helper function to format threshold on blur (0-100 with 2 decimals)
+  const handleThresholdBlur = (field: 'min_thresholds_percentage' | 'max_thresholds_percentage', e: React.FocusEvent<HTMLInputElement>) => {
+    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    
+    // Ensure value is within 0-100 range
+    if (value > 100) value = 100;
+    if (value < 0) value = 0;
+    
+    // Format with 2 decimal places
+    const formatted = value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    
+    e.target.value = formatted;
+    setValue(field, value);
   };
 
   // Helper function to format number on blur
@@ -378,13 +426,22 @@ export function ContractInfoSection() {
                 </Label>
                 <Input
                   id="min_thresholds_percentage"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  {...register('min_thresholds_percentage', { valueAsNumber: true })}
+                  type="text"
+                  inputMode="decimal"
+                  defaultValue={watch('min_thresholds_percentage') ? watch('min_thresholds_percentage').toFixed(2) : ''}
+                  onChange={(e) => handleThresholdChange('min_thresholds_percentage', e.target.value)}
+                  onBlur={(e) => handleThresholdBlur('min_thresholds_percentage', e)}
+                  onKeyDown={(e) => {
+                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                    if (!allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="0"
+                  placeholder="0.00"
+                  style={{
+                    MozAppearance: 'textfield'
+                  }}
                 />
                 {errors.min_thresholds_percentage && (
                   <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
@@ -397,13 +454,22 @@ export function ContractInfoSection() {
                 </Label>
                 <Input
                   id="max_thresholds_percentage"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  {...register('max_thresholds_percentage', { valueAsNumber: true })}
+                  type="text"
+                  inputMode="decimal"
+                  defaultValue={watch('max_thresholds_percentage') ? watch('max_thresholds_percentage').toFixed(2) : ''}
+                  onChange={(e) => handleThresholdChange('max_thresholds_percentage', e.target.value)}
+                  onBlur={(e) => handleThresholdBlur('max_thresholds_percentage', e)}
+                  onKeyDown={(e) => {
+                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                    if (!allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="100"
+                  placeholder="100.00"
+                  style={{
+                    MozAppearance: 'textfield'
+                  }}
                 />
                 {errors.max_thresholds_percentage && (
                   <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
