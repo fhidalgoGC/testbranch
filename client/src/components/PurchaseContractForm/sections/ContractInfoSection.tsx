@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from 'lucide-react';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 
@@ -165,6 +166,9 @@ export function ContractInfoSection() {
                     MozAppearance: 'textfield'
                   }}
                 />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <Calendar className="h-4 w-4 text-gray-500" />
+                </div>
               </div>
               {errors.contract_date && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
