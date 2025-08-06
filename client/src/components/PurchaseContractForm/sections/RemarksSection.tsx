@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, MessageSquare } from 'lucide-react';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
+import { AddRemarkModal } from '../modals/AddRemarkModal';
 
 interface RemarksSectionProps {
   addRemark: () => void;
@@ -21,8 +22,16 @@ export function RemarksSection({
 }: RemarksSectionProps) {
   const { t } = useTranslation();
   const { watch } = useFormContext<PurchaseContractFormData>();
+  const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
   
   const remarks = watch('remarks') || [];
+
+  const handleAddRemark = (remarkType: string, content: string) => {
+    addRemark();
+    const currentRemarks = watch('remarks') || [];
+    const newIndex = currentRemarks.length - 1;
+    updateRemark(newIndex, content);
+  };
 
   return (
     <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
@@ -40,7 +49,7 @@ export function RemarksSection({
           <div className="flex gap-2">
             <Button
               type="button"
-              onClick={addRemark}
+              onClick={() => setIsRemarkModalOpen(true)}
               variant="outline"
               size="sm"
               className="flex items-center gap-2"
@@ -88,6 +97,12 @@ export function RemarksSection({
             <p>{t('noRemarksYet')}. {t('clickAddRemark')}.</p>
           </div>
         )}
+
+        <AddRemarkModal
+          isOpen={isRemarkModalOpen}
+          onClose={() => setIsRemarkModalOpen(false)}
+          onAddRemark={handleAddRemark}
+        />
       </CardContent>
     </Card>
   );
