@@ -224,6 +224,7 @@
   "searchSellers": "Buscar vendedores...",
   "noSellersFound": "No se encontraron vendedores",
   "sellersAvailable": "vendedores disponibles",
+  "quantityAndThresholds": "Cantidad y Umbrales",
   "firstNamePlaceholder": "Ingresa el nombre",
   "lastName": "Apellido",
   "lastNamePlaceholder": "Ingresa el apellido",

@@ -67,23 +67,7 @@ export function ContractInfoSection() {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="quantity" className="text-sm font-medium text-gray-900 dark:text-white">
-              {t('quantity')} <span className="text-red-500">{t('requiredField')}</span>
-            </Label>
-            <Input
-              id="quantity"
-              type="number"
-              min="1"
-              step="0.01"
-              {...register('quantity', { valueAsNumber: true })}
-              className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder={t('quantityPlaceholder')}
-            />
-            {errors.quantity && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.quantity.message}</p>
-            )}
-          </div>
+
         </div>
 
         {/* Commodity and Configuration Selects */}
@@ -137,32 +121,8 @@ export function ContractInfoSection() {
           </div>
         </div>
 
-        {/* Measurement Unit and Reference */}
+        {/* Reference Number */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="measurement_unit" className="text-sm font-medium text-gray-900 dark:text-white">
-              {t('measurementUnit')} <span className="text-red-500">{t('requiredField')}</span>
-            </Label>
-            <Select
-              value={watch('measurement_unit')}
-              onValueChange={(value) => setValue('measurement_unit', value)}
-            >
-              <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                <SelectValue placeholder={t('selectMeasurementUnit')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="unit_tons">Toneladas / Tons</SelectItem>
-                <SelectItem value="unit_kg">Kilogramos / Kilograms</SelectItem>
-                <SelectItem value="unit_bushels">Bushels</SelectItem>
-                <SelectItem value="unit_cwt">Quintales / Hundredweight</SelectItem>
-                <SelectItem value="unit_mt">Toneladas Métricas / Metric Tons</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.measurement_unit && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.measurement_unit.message}</p>
-            )}
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('referenceNumber')} <span className="text-red-500">{t('requiredField')}</span>
@@ -179,8 +139,8 @@ export function ContractInfoSection() {
           </div>
         </div>
 
-        {/* Contract Date, Seller and Thresholds */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Contract Date and Seller */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
@@ -208,43 +168,95 @@ export function ContractInfoSection() {
               <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
             )}
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
-              {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
-            </Label>
-            <Input
-              id="min_thresholds_percentage"
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
-              {...register('min_thresholds_percentage', { valueAsNumber: true })}
-              className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="0"
-            />
-            {errors.min_thresholds_percentage && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
-            )}
-          </div>
+        {/* Quantity & Thresholds Subsection */}
+        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50">
+          <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+            {t('quantityAndThresholds')}
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="quantity_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('quantity')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Input
+                id="quantity_subsection"
+                type="number"
+                min="1"
+                step="0.01"
+                {...register('quantity', { valueAsNumber: true })}
+                className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder={t('quantityPlaceholder')}
+              />
+              {errors.quantity && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.quantity.message}</p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
-              {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
-            </Label>
-            <Input
-              id="max_thresholds_percentage"
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
-              {...register('max_thresholds_percentage', { valueAsNumber: true })}
-              className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="100"
-            />
-            {errors.max_thresholds_percentage && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="measurement_unit_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('measurementUnit')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('measurement_unit')}
+                onValueChange={(value) => setValue('measurement_unit', value)}
+              >
+                <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder={t('selectMeasurementUnit')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unit_tons">Toneladas / Tons</SelectItem>
+                  <SelectItem value="unit_kg">Kilogramos / Kilograms</SelectItem>
+                  <SelectItem value="unit_bushels">Bushels</SelectItem>
+                  <SelectItem value="unit_cwt">Quintales / Hundredweight</SelectItem>
+                  <SelectItem value="unit_mt">Toneladas Métricas / Metric Tons</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.measurement_unit && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.measurement_unit.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Input
+                id="min_thresholds_percentage"
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                {...register('min_thresholds_percentage', { valueAsNumber: true })}
+                className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder="0"
+              />
+              {errors.min_thresholds_percentage && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Input
+                id="max_thresholds_percentage"
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                {...register('max_thresholds_percentage', { valueAsNumber: true })}
+                className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder="100"
+              />
+              {errors.max_thresholds_percentage && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
