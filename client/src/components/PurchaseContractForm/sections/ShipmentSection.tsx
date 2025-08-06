@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Package } from 'lucide-react';
+import { Package, Calendar } from 'lucide-react';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 
 export function ShipmentSection() {
@@ -27,12 +27,30 @@ export function ShipmentSection() {
             <Label htmlFor="shipping_start_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('shippingStartDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
-            <Input
-              id="shipping_start_date"
-              type="date"
-              {...register('shipping_start_date')}
-              className={`h-10 ${errors.shipping_start_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-            />
+            <div className="relative">
+              <Input
+                id="shipping_start_date"
+                type="date"
+                {...register('shipping_start_date')}
+                className={`h-10 pr-10 ${errors.shipping_start_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                style={{
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'textfield',
+                  position: 'relative'
+                }}
+              />
+              <div 
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                onClick={() => {
+                  const input = document.getElementById('shipping_start_date') as HTMLInputElement;
+                  if (input) {
+                    input.showPicker?.();
+                  }
+                }}
+              >
+                <Calendar className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+              </div>
+            </div>
             {errors.shipping_start_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_start_date.message}</p>
             )}
@@ -42,12 +60,30 @@ export function ShipmentSection() {
             <Label htmlFor="shipping_end_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('shippingEndDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
-            <Input
-              id="shipping_end_date"
-              type="date"
-              {...register('shipping_end_date')}
-              className={`h-10 ${errors.shipping_end_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-            />
+            <div className="relative">
+              <Input
+                id="shipping_end_date"
+                type="date"
+                {...register('shipping_end_date')}
+                className={`h-10 pr-10 ${errors.shipping_end_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                style={{
+                  WebkitAppearance: 'none',
+                  MozAppearance: 'textfield',
+                  position: 'relative'
+                }}
+              />
+              <div 
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                onClick={() => {
+                  const input = document.getElementById('shipping_end_date') as HTMLInputElement;
+                  if (input) {
+                    input.showPicker?.();
+                  }
+                }}
+              >
+                <Calendar className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+              </div>
+            </div>
             {errors.shipping_end_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_end_date.message}</p>
             )}
