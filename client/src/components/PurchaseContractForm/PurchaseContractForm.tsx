@@ -69,6 +69,7 @@ export function PurchaseContractForm() {
               addRemark={addRemark}
               removeRemark={removeRemark}
               updateRemark={updateRemark}
+              addComment={addRemark}
             />
 
             {/* Form Actions */}

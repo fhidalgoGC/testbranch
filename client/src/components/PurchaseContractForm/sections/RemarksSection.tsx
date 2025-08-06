@@ -14,12 +14,14 @@ interface RemarksSectionProps {
   addRemark: () => void;
   removeRemark: (index: number) => void;
   updateRemark: (index: number, value: string) => void;
+  addComment: () => void;
 }
 
 export function RemarksSection({ 
   addRemark, 
   removeRemark, 
-  updateRemark 
+  updateRemark,
+  addComment 
 }: RemarksSectionProps) {
   const { t } = useTranslation();
   const { watch } = useFormContext<PurchaseContractFormData>();
@@ -29,12 +31,23 @@ export function RemarksSection({
   const [currentRemarkIndex, setCurrentRemarkIndex] = useState<number>(-1);
   
   const remarks = watch('remarks') || [];
+  
+  // Separate remarks (structured) from comments (free text)
+  const structuredRemarks = remarks.filter((_, index) => index % 2 === 0); // Even indices for remarks
+  const freeComments = remarks.filter((_, index) => index % 2 === 1); // Odd indices for comments
 
   const handleAddRemark = (remarkType: string, content: string) => {
     addRemark();
     const currentRemarks = watch('remarks') || [];
     const newIndex = currentRemarks.length - 1;
     updateRemark(newIndex, content);
+  };
+
+  const handleAddComment = () => {
+    addComment();
+    const currentRemarks = watch('remarks') || [];
+    const newIndex = currentRemarks.length - 1;
+    updateRemark(newIndex, 'COMMENT:');
   };
 
   const handleOpenRemarkList = (index: number) => {
@@ -78,7 +91,7 @@ export function RemarksSection({
             </Button>
             <Button
               type="button"
-              onClick={addRemark}
+              onClick={addComment}
               variant="outline"
               size="sm"
               className="flex items-center gap-2"
@@ -89,36 +102,52 @@ export function RemarksSection({
           </div>
         </div>
 
-        {remarks.map((remark, index) => (
-          <div key={index} className="flex items-center gap-4">
-            <div className="flex-1">
-              <Input
-                value={remark}
-                onChange={(e) => updateRemark(index, e.target.value)}
-                className="h-10"
-                placeholder={`${t('comment')} ${index + 1}`}
-              />
+        {remarks.map((remark, index) => {
+          const isComment = remark.startsWith('COMMENT:'); // Free text comments
+          const displayValue = isComment ? remark.replace('COMMENT:', '') : remark;
+          
+          return (
+            <div key={index} className="flex items-start gap-4">
+              <div className="flex-1">
+                {isComment ? (
+                  <textarea
+                    value={displayValue}
+                    onChange={(e) => updateRemark(index, `COMMENT:${e.target.value}`)}
+                    className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none"
+                    placeholder={`Comentario ${Math.floor(index / 2) + 1}`}
+                  />
+                ) : (
+                  <Input
+                    value={displayValue}
+                    onChange={(e) => updateRemark(index, e.target.value)}
+                    className="h-10"
+                    placeholder={`Remark ${Math.floor(index / 2) + 1}`}
+                  />
+                )}
+              </div>
+              {!isComment && (
+                <Button
+                  type="button"
+                  onClick={() => handleOpenRemarkList(index)}
+                  variant="outline"
+                  size="sm"
+                  className="text-gray-600 hover:text-gray-700 border-gray-300 mt-0"
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
+              )}
+              <Button
+                type="button"
+                onClick={() => removeRemark(index)}
+                variant="outline"
+                size="sm"
+                className="text-red-600 hover:text-red-700 mt-0"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </div>
-            <Button
-              type="button"
-              onClick={() => handleOpenRemarkList(index)}
-              variant="outline"
-              size="sm"
-              className="text-gray-600 hover:text-gray-700 border-gray-300"
-            >
-              <Search className="w-4 h-4" />
-            </Button>
-            <Button
-              type="button"
-              onClick={() => removeRemark(index)}
-              variant="outline"
-              size="sm"
-              className="text-red-600 hover:text-red-700"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
-        ))}
+          );
+        })}
 
         {remarks.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
