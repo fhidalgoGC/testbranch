@@ -70,17 +70,32 @@ export function PriceSection({
               <Input
                 type="text"
                 inputMode="decimal"
-                pattern="[0-9]*\.?[0-9]*"
-                value={currentSchedule.price || ''}
+                value={
+                  currentSchedule.price 
+                    ? currentSchedule.price.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })
+                    : ''
+                }
                 onChange={(e) => {
-                  const value = e.target.value;
-                  // Only allow numbers and one decimal point
-                  if (/^\d*\.?\d*$/.test(value)) {
-                    updatePriceSchedule(0, 'price', parseFloat(value) || 0);
+                  const value = e.target.value.replace(/,/g, '');
+                  if (/^\d*\.?\d*$/.test(value) || value === '') {
+                    updatePriceSchedule(0, 'price', value === '' ? 0 : parseFloat(value));
                   }
                 }}
+                onFocus={(e) => {
+                  // Remove formatting when focusing for easier editing
+                  const numValue = currentSchedule.price || 0;
+                  e.target.value = String(numValue);
+                }}
+                onBlur={(e) => {
+                  // Reformat when losing focus
+                  const value = parseFloat(e.target.value) || 0;
+                  updatePriceSchedule(0, 'price', value);
+                }}
                 className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="370"
+                placeholder="370.00"
                 style={{
                   MozAppearance: 'textfield'
                 }}
@@ -95,16 +110,30 @@ export function PriceSection({
               <Input
                 type="text"
                 inputMode="decimal"
-                pattern="[0-9]*\.?[0-9]*"
-                value={currentSchedule.future_price || ''}
+                value={
+                  currentSchedule.future_price 
+                    ? currentSchedule.future_price.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })
+                    : ''
+                }
                 onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d*\.?\d*$/.test(value)) {
-                    updatePriceSchedule(0, 'future_price', parseFloat(value) || 0);
+                  const value = e.target.value.replace(/,/g, '');
+                  if (/^\d*\.?\d*$/.test(value) || value === '') {
+                    updatePriceSchedule(0, 'future_price', value === '' ? 0 : parseFloat(value));
                   }
                 }}
+                onFocus={(e) => {
+                  const numValue = currentSchedule.future_price || 0;
+                  e.target.value = String(numValue);
+                }}
+                onBlur={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  updatePriceSchedule(0, 'future_price', value);
+                }}
                 className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="370"
+                placeholder="370.00"
                 style={{
                   MozAppearance: 'textfield'
                 }}
@@ -119,16 +148,30 @@ export function PriceSection({
               <Input
                 type="text"
                 inputMode="decimal"
-                pattern="[0-9]*\.?[0-9]*"
-                value={currentSchedule.basis || ''}
+                value={
+                  currentSchedule.basis 
+                    ? currentSchedule.basis.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })
+                    : ''
+                }
                 onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d*\.?\d*$/.test(value)) {
-                    updatePriceSchedule(0, 'basis', parseFloat(value) || 0);
+                  const value = e.target.value.replace(/,/g, '');
+                  if (/^\d*\.?\d*$/.test(value) || value === '') {
+                    updatePriceSchedule(0, 'basis', value === '' ? 0 : parseFloat(value));
                   }
                 }}
+                onFocus={(e) => {
+                  const numValue = currentSchedule.basis || 0;
+                  e.target.value = String(numValue);
+                }}
+                onBlur={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  updatePriceSchedule(0, 'basis', value);
+                }}
                 className="h-10 border-gray-300 focus:border-green-500"
-                placeholder="0"
+                placeholder="0.00"
                 style={{
                   MozAppearance: 'textfield'
                 }}
@@ -184,12 +227,11 @@ export function PriceSection({
               <Input
                 type="text"
                 inputMode="numeric"
-                pattern="[0-9]*"
                 value={currentSchedule.option_year || ''}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (/^\d*$/.test(value)) {
-                    updatePriceSchedule(0, 'option_year', parseInt(value) || new Date().getFullYear());
+                  if (/^\d*$/.test(value) || value === '') {
+                    updatePriceSchedule(0, 'option_year', value === '' ? new Date().getFullYear() : parseInt(value));
                   }
                 }}
                 className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
