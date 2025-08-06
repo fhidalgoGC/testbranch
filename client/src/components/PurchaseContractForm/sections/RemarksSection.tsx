@@ -104,46 +104,52 @@ export function RemarksSection({
         {remarks.map((remark, index) => {
           const isComment = remark.startsWith('COMMENT:'); // Free text comments
           const displayValue = isComment ? remark.replace('COMMENT:', '') : remark;
+          const itemNumber = Math.floor(index / 2) + 1;
           
           return (
-            <div key={index} className="flex items-start gap-4">
-              <div className="flex-1">
-                {isComment ? (
-                  <textarea
-                    value={displayValue}
-                    onChange={(e) => updateRemark(index, `COMMENT:${e.target.value}`)}
-                    className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none"
-                    placeholder={`Comentario ${Math.floor(index / 2) + 1}`}
-                  />
-                ) : (
-                  <Input
-                    value={displayValue}
-                    onChange={(e) => updateRemark(index, e.target.value)}
-                    className="h-10"
-                    placeholder={`Remark ${Math.floor(index / 2) + 1}`}
-                  />
+            <div key={index} className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                {isComment ? `Comentario ${itemNumber}` : `Remark ${itemNumber}`}
+              </Label>
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  {isComment ? (
+                    <textarea
+                      value={displayValue}
+                      onChange={(e) => updateRemark(index, `COMMENT:${e.target.value}`)}
+                      className="w-full h-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+                      placeholder={`Enter your comment here...`}
+                    />
+                  ) : (
+                    <Input
+                      value={displayValue}
+                      onChange={(e) => updateRemark(index, e.target.value)}
+                      className="h-10 border-gray-300 focus:border-green-500"
+                      placeholder={`Enter remark content...`}
+                    />
+                  )}
+                </div>
+                {!isComment && (
+                  <Button
+                    type="button"
+                    onClick={() => handleOpenRemarkList(index)}
+                    variant="outline"
+                    size="sm"
+                    className="text-gray-600 hover:text-gray-700 border-gray-300 mt-0"
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
                 )}
-              </div>
-              {!isComment && (
                 <Button
                   type="button"
-                  onClick={() => handleOpenRemarkList(index)}
+                  onClick={() => removeRemark(index)}
                   variant="outline"
                   size="sm"
-                  className="text-gray-600 hover:text-gray-700 border-gray-300 mt-0"
+                  className="text-red-600 hover:text-red-700 mt-0"
                 >
-                  <Search className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </Button>
-              )}
-              <Button
-                type="button"
-                onClick={() => removeRemark(index)}
-                variant="outline"
-                size="sm"
-                className="text-red-600 hover:text-red-700 mt-0"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              </div>
             </div>
           );
         })}
