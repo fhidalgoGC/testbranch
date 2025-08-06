@@ -110,12 +110,15 @@ export function RemarksSection({
           let remarkLabel = 'Remark';
           if (!isComment && remark.includes(':')) {
             remarkLabel = remark.split(':')[0];
+          } else if (!isComment) {
+            // If no colon found, it might be just the remark type name
+            remarkLabel = remark || 'Remark';
           }
           
           return (
             <div key={index} className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                {isComment ? 'Comentario' : remarkLabel}
+                {isComment ? 'Comentario' : `(${remarkLabel})`}
               </Label>
               <div className="flex items-start gap-4">
                 <div className="flex-1">
