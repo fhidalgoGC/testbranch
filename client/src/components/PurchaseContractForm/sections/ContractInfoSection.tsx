@@ -169,11 +169,35 @@ export function ContractInfoSection() {
                 />
                 <div 
                   className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const input = document.getElementById('contract_date') as HTMLInputElement;
                     if (input) {
-                      input.focus();
-                      input.click();
+                      try {
+                        // Try modern showPicker first
+                        if (input.showPicker) {
+                          input.showPicker();
+                        } else {
+                          // Fallback for browsers without showPicker
+                          input.focus();
+                          const clickEvent = new MouseEvent('click', {
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                          });
+                          input.dispatchEvent(clickEvent);
+                        }
+                      } catch (error) {
+                        // If showPicker fails (like in iframe), use fallback
+                        input.focus();
+                        const clickEvent = new MouseEvent('click', {
+                          bubbles: true,
+                          cancelable: true,
+                          view: window
+                        });
+                        input.dispatchEvent(clickEvent);
+                      }
                     }
                   }}
                 >

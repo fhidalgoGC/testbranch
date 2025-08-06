@@ -41,11 +41,32 @@ export function ShipmentSection() {
               />
               <div 
                 className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   const input = document.getElementById('shipping_start_date') as HTMLInputElement;
                   if (input) {
-                    input.focus();
-                    input.click();
+                    try {
+                      if (input.showPicker) {
+                        input.showPicker();
+                      } else {
+                        input.focus();
+                        const clickEvent = new MouseEvent('click', {
+                          bubbles: true,
+                          cancelable: true,
+                          view: window
+                        });
+                        input.dispatchEvent(clickEvent);
+                      }
+                    } catch (error) {
+                      input.focus();
+                      const clickEvent = new MouseEvent('click', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                      });
+                      input.dispatchEvent(clickEvent);
+                    }
                   }
                 }}
               >
@@ -75,11 +96,32 @@ export function ShipmentSection() {
               />
               <div 
                 className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   const input = document.getElementById('shipping_end_date') as HTMLInputElement;
                   if (input) {
-                    input.focus();
-                    input.click();
+                    try {
+                      if (input.showPicker) {
+                        input.showPicker();
+                      } else {
+                        input.focus();
+                        const clickEvent = new MouseEvent('click', {
+                          bubbles: true,
+                          cancelable: true,
+                          view: window
+                        });
+                        input.dispatchEvent(clickEvent);
+                      }
+                    } catch (error) {
+                      input.focus();
+                      const clickEvent = new MouseEvent('click', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                      });
+                      input.dispatchEvent(clickEvent);
+                    }
                   }
                 }}
               >
