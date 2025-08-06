@@ -67,6 +67,26 @@
   background: hsl(210, 20%, 98%);
 }
 
+/* Hide native date input icons */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  width: 0;
+  height: 0;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="date"] {
+  -moz-appearance: textfield;
+}
+
 .dark .login-container {
   background: hsl(240, 10%, 3.9%);
 }

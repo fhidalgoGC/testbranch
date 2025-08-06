@@ -163,7 +163,8 @@ export function ContractInfoSection() {
                   className={`h-10 pr-10 ${errors.contract_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                   style={{
                     WebkitAppearance: 'none',
-                    MozAppearance: 'textfield'
+                    MozAppearance: 'textfield',
+                    position: 'relative'
                   }}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
