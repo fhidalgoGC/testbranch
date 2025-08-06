@@ -109,10 +109,9 @@ export function SellerSelectionModal({ onSelect, selectedSeller }: SellerSelecti
         <Button 
           type="button"
           variant="outline" 
-          className="h-10 px-4 border-gray-300 hover:border-green-500 focus:border-green-500 justify-between"
+          className="h-10 px-3 border-gray-300 hover:border-green-500 focus:border-green-500"
         >
-          <span>{selectedSellerData ? selectedSellerData.name : t('selectSeller')}</span>
-          <Search className="h-4 w-4 ml-2" />
+          <Search className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">

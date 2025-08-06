@@ -8,6 +8,62 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 
+// Fake sellers data for display
+const FAKE_SELLERS = [
+  {
+    id: '1',
+    name: 'Juan Carlos Rodríguez',
+    company: 'Agricola San Miguel',
+    email: 'juan.rodriguez@sanmiguel.com',
+    phone: '+52 55 1234 5678',
+    location: 'Guadalajara, México',
+    type: 'company' as const
+  },
+  {
+    id: '2',
+    name: 'María Elena Vásquez',
+    email: 'maria.vasquez@email.com',
+    phone: '+52 33 9876 5432',
+    location: 'Zapopan, México',
+    type: 'individual' as const
+  },
+  {
+    id: '3',
+    name: 'Roberto Fernández',
+    company: 'Granos del Norte SA',
+    email: 'r.fernandez@granoselnorte.com',
+    phone: '+52 81 5555 0123',
+    location: 'Monterrey, México',
+    type: 'company' as const
+  },
+  {
+    id: '4',
+    name: 'Ana Patricia Morales',
+    company: 'Cooperativa El Campo',
+    email: 'ana.morales@elcampo.mx',
+    phone: '+52 444 777 8899',
+    location: 'San Luis Potosí, México',
+    type: 'company' as const
+  },
+  {
+    id: '5',
+    name: 'Carlos David Herrera',
+    email: 'carlos.herrera@outlook.com',
+    phone: '+52 477 123 4567',
+    location: 'León, México',
+    type: 'individual' as const
+  },
+  {
+    id: '6',
+    name: 'Luisa Fernanda García',
+    company: 'Agroexportadora del Bajío',
+    email: 'luisa.garcia@agrobajio.com',
+    phone: '+52 462 888 9999',
+    location: 'Celaya, México',
+    type: 'company' as const
+  }
+];
+
 export function ContractInfoSection() {
   const { t } = useTranslation();
   const {
@@ -161,10 +217,18 @@ export function ContractInfoSection() {
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
-              <SellerSelectionModal
-                selectedSeller={watch('seller')}
-                onSelect={(seller) => setValue('seller', seller.id)}
-              />
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={watch('seller') ? FAKE_SELLERS.find(s => s.id === watch('seller'))?.name || '' : ''}
+                  placeholder={t('selectSeller')}
+                  className={`h-10 flex-1 ${errors.seller ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                />
+                <SellerSelectionModal
+                  selectedSeller={watch('seller')}
+                  onSelect={(seller) => setValue('seller', seller.id)}
+                />
+              </div>
               {errors.seller && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
               )}
