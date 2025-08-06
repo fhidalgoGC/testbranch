@@ -345,12 +345,6 @@ export function PriceSection({
         {errors.price_schedule && (
           <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule.message}</p>
         )}
-
-        {priceSchedule.length === 0 && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <p>No price schedules added yet. Click "Add Price Schedule" to get started.</p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
