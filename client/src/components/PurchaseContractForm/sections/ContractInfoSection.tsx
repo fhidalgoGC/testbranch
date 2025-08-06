@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from 'lucide-react';
+import { DatePicker } from '@/components/ui/datepicker';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 
@@ -155,55 +155,13 @@ export function ContractInfoSection() {
               <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
-              <div className="relative">
-                <Input
-                  id="contract_date"
-                  type="date"
-                  {...register('contract_date')}
-                  className={`h-10 pr-10 ${errors.contract_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  style={{
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'textfield',
-                    position: 'relative'
-                  }}
-                />
-                <div 
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const input = document.getElementById('contract_date') as HTMLInputElement;
-                    if (input) {
-                      try {
-                        // Try modern showPicker first
-                        if (input.showPicker) {
-                          input.showPicker();
-                        } else {
-                          // Fallback for browsers without showPicker
-                          input.focus();
-                          const clickEvent = new MouseEvent('click', {
-                            bubbles: true,
-                            cancelable: true,
-                            view: window
-                          });
-                          input.dispatchEvent(clickEvent);
-                        }
-                      } catch (error) {
-                        // If showPicker fails (like in iframe), use fallback
-                        input.focus();
-                        const clickEvent = new MouseEvent('click', {
-                          bubbles: true,
-                          cancelable: true,
-                          view: window
-                        });
-                        input.dispatchEvent(clickEvent);
-                      }
-                    }
-                  }}
-                >
-                  <Calendar className="h-4 w-4 text-gray-500 hover:text-gray-700" />
-                </div>
-              </div>
+              <DatePicker
+                id="contract_date"
+                value={watch('contract_date')}
+                onChange={(date) => setValue('contract_date', date)}
+                placeholder={t('contractDate')}
+                error={!!errors.contract_date}
+              />
               {errors.contract_date && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
               )}

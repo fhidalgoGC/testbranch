@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Package, Calendar } from 'lucide-react';
+import { Package } from 'lucide-react';
+import { DatePicker } from '@/components/ui/datepicker';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 
 export function ShipmentSection() {
@@ -27,52 +28,13 @@ export function ShipmentSection() {
             <Label htmlFor="shipping_start_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('shippingStartDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
-            <div className="relative">
-              <Input
-                id="shipping_start_date"
-                type="date"
-                {...register('shipping_start_date')}
-                className={`h-10 pr-10 ${errors.shipping_start_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                style={{
-                  WebkitAppearance: 'none',
-                  MozAppearance: 'textfield',
-                  position: 'relative'
-                }}
-              />
-              <div 
-                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const input = document.getElementById('shipping_start_date') as HTMLInputElement;
-                  if (input) {
-                    try {
-                      if (input.showPicker) {
-                        input.showPicker();
-                      } else {
-                        input.focus();
-                        const clickEvent = new MouseEvent('click', {
-                          bubbles: true,
-                          cancelable: true,
-                          view: window
-                        });
-                        input.dispatchEvent(clickEvent);
-                      }
-                    } catch (error) {
-                      input.focus();
-                      const clickEvent = new MouseEvent('click', {
-                        bubbles: true,
-                        cancelable: true,
-                        view: window
-                      });
-                      input.dispatchEvent(clickEvent);
-                    }
-                  }
-                }}
-              >
-                <Calendar className="h-4 w-4 text-gray-500 hover:text-gray-700" />
-              </div>
-            </div>
+            <DatePicker
+              id="shipping_start_date"
+              value={watch('shipping_start_date')}
+              onChange={(date) => setValue('shipping_start_date', date)}
+              placeholder={t('shippingStartDate')}
+              error={!!errors.shipping_start_date}
+            />
             {errors.shipping_start_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_start_date.message}</p>
             )}
@@ -82,52 +44,13 @@ export function ShipmentSection() {
             <Label htmlFor="shipping_end_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('shippingEndDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
-            <div className="relative">
-              <Input
-                id="shipping_end_date"
-                type="date"
-                {...register('shipping_end_date')}
-                className={`h-10 pr-10 ${errors.shipping_end_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                style={{
-                  WebkitAppearance: 'none',
-                  MozAppearance: 'textfield',
-                  position: 'relative'
-                }}
-              />
-              <div 
-                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const input = document.getElementById('shipping_end_date') as HTMLInputElement;
-                  if (input) {
-                    try {
-                      if (input.showPicker) {
-                        input.showPicker();
-                      } else {
-                        input.focus();
-                        const clickEvent = new MouseEvent('click', {
-                          bubbles: true,
-                          cancelable: true,
-                          view: window
-                        });
-                        input.dispatchEvent(clickEvent);
-                      }
-                    } catch (error) {
-                      input.focus();
-                      const clickEvent = new MouseEvent('click', {
-                        bubbles: true,
-                        cancelable: true,
-                        view: window
-                      });
-                      input.dispatchEvent(clickEvent);
-                    }
-                  }
-                }}
-              >
-                <Calendar className="h-4 w-4 text-gray-500 hover:text-gray-700" />
-              </div>
-            </div>
+            <DatePicker
+              id="shipping_end_date"
+              value={watch('shipping_end_date')}
+              onChange={(date) => setValue('shipping_end_date', date)}
+              placeholder={t('shippingEndDate')}
+              error={!!errors.shipping_end_date}
+            />
             {errors.shipping_end_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_end_date.message}</p>
             )}
