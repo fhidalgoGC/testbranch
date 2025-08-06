@@ -26,6 +26,24 @@ export function PriceSection({
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};
 
+  // Helper function to format number for display
+  const formatNumber = (value: number | undefined): string => {
+    if (!value || value === 0) return '';
+    return value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  // Helper function to handle number input change
+  const handleNumberChange = (field: keyof PriceSchedule, inputValue: string) => {
+    const cleanValue = inputValue.replace(/,/g, '');
+    if (/^\d*\.?\d*$/.test(cleanValue) || cleanValue === '') {
+      const numericValue = cleanValue === '' ? 0 : parseFloat(cleanValue);
+      updatePriceSchedule(0, field, numericValue);
+    }
+  };
+
   const months = [
     'january', 'february', 'march', 'april', 'may', 'june',
     'july', 'august', 'september', 'october', 'november', 'december'
@@ -70,30 +88,8 @@ export function PriceSection({
               <Input
                 type="text"
                 inputMode="decimal"
-                value={
-                  currentSchedule.price 
-                    ? currentSchedule.price.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      })
-                    : ''
-                }
-                onChange={(e) => {
-                  const value = e.target.value.replace(/,/g, '');
-                  if (/^\d*\.?\d*$/.test(value) || value === '') {
-                    updatePriceSchedule(0, 'price', value === '' ? 0 : parseFloat(value));
-                  }
-                }}
-                onFocus={(e) => {
-                  // Remove formatting when focusing for easier editing
-                  const numValue = currentSchedule.price || 0;
-                  e.target.value = String(numValue);
-                }}
-                onBlur={(e) => {
-                  // Reformat when losing focus
-                  const value = parseFloat(e.target.value) || 0;
-                  updatePriceSchedule(0, 'price', value);
-                }}
+                defaultValue={formatNumber(currentSchedule.price)}
+                onChange={(e) => handleNumberChange('price', e.target.value)}
                 className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="370.00"
                 style={{
@@ -110,28 +106,8 @@ export function PriceSection({
               <Input
                 type="text"
                 inputMode="decimal"
-                value={
-                  currentSchedule.future_price 
-                    ? currentSchedule.future_price.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      })
-                    : ''
-                }
-                onChange={(e) => {
-                  const value = e.target.value.replace(/,/g, '');
-                  if (/^\d*\.?\d*$/.test(value) || value === '') {
-                    updatePriceSchedule(0, 'future_price', value === '' ? 0 : parseFloat(value));
-                  }
-                }}
-                onFocus={(e) => {
-                  const numValue = currentSchedule.future_price || 0;
-                  e.target.value = String(numValue);
-                }}
-                onBlur={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  updatePriceSchedule(0, 'future_price', value);
-                }}
+                defaultValue={formatNumber(currentSchedule.future_price)}
+                onChange={(e) => handleNumberChange('future_price', e.target.value)}
                 className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="370.00"
                 style={{
@@ -148,28 +124,8 @@ export function PriceSection({
               <Input
                 type="text"
                 inputMode="decimal"
-                value={
-                  currentSchedule.basis 
-                    ? currentSchedule.basis.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      })
-                    : ''
-                }
-                onChange={(e) => {
-                  const value = e.target.value.replace(/,/g, '');
-                  if (/^\d*\.?\d*$/.test(value) || value === '') {
-                    updatePriceSchedule(0, 'basis', value === '' ? 0 : parseFloat(value));
-                  }
-                }}
-                onFocus={(e) => {
-                  const numValue = currentSchedule.basis || 0;
-                  e.target.value = String(numValue);
-                }}
-                onBlur={(e) => {
-                  const value = parseFloat(e.target.value) || 0;
-                  updatePriceSchedule(0, 'basis', value);
-                }}
+                defaultValue={formatNumber(currentSchedule.basis)}
+                onChange={(e) => handleNumberChange('basis', e.target.value)}
                 className="h-10 border-gray-300 focus:border-green-500"
                 placeholder="0.00"
                 style={{
