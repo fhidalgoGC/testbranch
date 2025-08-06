@@ -31,7 +31,7 @@ export function ShipmentSection() {
               id="shipping_start_date"
               type="date"
               {...register('shipping_start_date')}
-              className={`h-10 ${errors.shipping_start_date ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.shipping_start_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
             />
             {errors.shipping_start_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_start_date.message}</p>
@@ -46,7 +46,7 @@ export function ShipmentSection() {
               id="shipping_end_date"
               type="date"
               {...register('shipping_end_date')}
-              className={`h-10 ${errors.shipping_end_date ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.shipping_end_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
             />
             {errors.shipping_end_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_end_date.message}</p>
@@ -66,7 +66,7 @@ export function ShipmentSection() {
               min="1"
               max="10"
               {...register('application_priority', { valueAsNumber: true })}
-              className={`h-10 ${errors.application_priority ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.application_priority ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="1"
             />
             {errors.application_priority && (
@@ -81,7 +81,7 @@ export function ShipmentSection() {
             <Input
               id="delivered"
               {...register('delivered')}
-              className={`h-10 ${errors.delivered ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.delivered ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="IMPORTER Progreso"
             />
             {errors.delivered && (
@@ -100,7 +100,7 @@ export function ShipmentSection() {
               value={watch('transport')}
               onValueChange={(value) => setValue('transport', value)}
             >
-              <SelectTrigger className={`h-10 ${errors.transport ? 'border-red-500' : ''}`}>
+              <SelectTrigger className={`h-10 ${errors.transport ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select transport" />
               </SelectTrigger>
               <SelectContent>
@@ -124,7 +124,7 @@ export function ShipmentSection() {
               value={watch('weights')}
               onValueChange={(value) => setValue('weights', value)}
             >
-              <SelectTrigger className={`h-10 ${errors.weights ? 'border-red-500' : ''}`}>
+              <SelectTrigger className={`h-10 ${errors.weights ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select weights" />
               </SelectTrigger>
               <SelectContent>
@@ -149,7 +149,7 @@ export function ShipmentSection() {
               value={watch('inspections')}
               onValueChange={(value) => setValue('inspections', value)}
             >
-              <SelectTrigger className={`h-10 ${errors.inspections ? 'border-red-500' : ''}`}>
+              <SelectTrigger className={`h-10 ${errors.inspections ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select inspections" />
               </SelectTrigger>
               <SelectContent>
@@ -172,7 +172,7 @@ export function ShipmentSection() {
               value={watch('proteins')}
               onValueChange={(value) => setValue('proteins', value)}
             >
-              <SelectTrigger className={`h-10 ${errors.proteins ? 'border-red-500' : ''}`}>
+              <SelectTrigger className={`h-10 ${errors.proteins ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select proteins" />
               </SelectTrigger>
               <SelectContent>
@@ -205,7 +205,7 @@ export function ShipmentSection() {
                 min="0"
                 max="100"
                 {...register('min_thresholds_percentage', { valueAsNumber: true })}
-                className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500' : ''}`}
+                className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="10"
               />
               {errors.min_thresholds_percentage && (
@@ -224,7 +224,7 @@ export function ShipmentSection() {
                 min="0"
                 max="100"
                 {...register('max_thresholds_percentage', { valueAsNumber: true })}
-                className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500' : ''}`}
+                className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="10"
               />
               {errors.max_thresholds_percentage && (

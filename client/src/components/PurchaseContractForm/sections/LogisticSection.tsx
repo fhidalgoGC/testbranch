@@ -75,7 +75,7 @@ export function LogisticSection({
                   value={schedule.logistic_payment_responsability}
                   onValueChange={(value) => updateLogisticSchedule(index, 'logistic_payment_responsability', value)}
                 >
-                  <SelectTrigger className="h-10">
+                  <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.logistic_payment_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                     <SelectValue placeholder="Select responsibility" />
                   </SelectTrigger>
                   <SelectContent>
@@ -95,7 +95,7 @@ export function LogisticSection({
                   value={schedule.logistic_coordination_responsability}
                   onValueChange={(value) => updateLogisticSchedule(index, 'logistic_coordination_responsability', value)}
                 >
-                  <SelectTrigger className="h-10">
+                  <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.logistic_coordination_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                     <SelectValue placeholder="Select responsibility" />
                   </SelectTrigger>
                   <SelectContent>
@@ -115,7 +115,7 @@ export function LogisticSection({
                   value={schedule.payment_currency}
                   onValueChange={(value) => updateLogisticSchedule(index, 'payment_currency', value)}
                 >
-                  <SelectTrigger className="h-10">
+                  <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                     <SelectValue placeholder="Select currency" />
                   </SelectTrigger>
                   <SelectContent>
@@ -142,7 +142,7 @@ export function LogisticSection({
                     value={schedule.freight_cost.type}
                     onValueChange={(value) => updateLogisticSchedule(index, 'freight_cost.type', value)}
                   >
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -164,7 +164,7 @@ export function LogisticSection({
                     min="0"
                     value={schedule.freight_cost.cost}
                     onChange={(e) => updateLogisticSchedule(index, 'freight_cost.cost', parseFloat(e.target.value) || 0)}
-                    className="h-10"
+                    className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="0"
                   />
                 </div>
@@ -180,7 +180,7 @@ export function LogisticSection({
                     min="0"
                     value={schedule.freight_cost.min}
                     onChange={(e) => updateLogisticSchedule(index, 'freight_cost.min', parseFloat(e.target.value) || 0)}
-                    className="h-10"
+                    className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="0"
                   />
                 </div>
@@ -196,7 +196,7 @@ export function LogisticSection({
                     min="0"
                     value={schedule.freight_cost.max}
                     onChange={(e) => updateLogisticSchedule(index, 'freight_cost.max', parseFloat(e.target.value) || 0)}
-                    className="h-10"
+                    className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="0"
                   />
                 </div>

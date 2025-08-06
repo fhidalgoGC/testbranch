@@ -80,7 +80,7 @@ export function PriceSection({
                   value={schedule.pricing_type}
                   onValueChange={(value) => updatePriceSchedule(index, 'pricing_type', value)}
                 >
-                  <SelectTrigger className="h-10">
+                  <SelectTrigger className={`h-10 ${errors.price_schedule?.[index]?.pricing_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                     <SelectValue placeholder="Select pricing type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -101,7 +101,7 @@ export function PriceSection({
                   min="0"
                   value={schedule.price}
                   onChange={(e) => updatePriceSchedule(index, 'price', parseFloat(e.target.value) || 0)}
-                  className="h-10"
+                  className={`h-10 ${errors.price_schedule?.[index]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                   placeholder="370"
                 />
               </div>
@@ -117,7 +117,7 @@ export function PriceSection({
                   min="0"
                   value={schedule.future_price}
                   onChange={(e) => updatePriceSchedule(index, 'future_price', parseFloat(e.target.value) || 0)}
-                  className="h-10"
+                  className={`h-10 ${errors.price_schedule?.[index]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                   placeholder="370"
                 />
               </div>
@@ -220,7 +220,7 @@ export function PriceSection({
                 <Input
                   value={schedule.exchange}
                   onChange={(e) => updatePriceSchedule(index, 'exchange', e.target.value)}
-                  className="h-10"
+                  className={`h-10 ${errors.price_schedule?.[index]?.exchange ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                   placeholder="Kansas City Board of Trade"
                 />
               </div>

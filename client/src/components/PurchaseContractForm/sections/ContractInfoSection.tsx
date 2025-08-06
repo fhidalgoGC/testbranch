@@ -43,7 +43,7 @@ export function ContractInfoSection({
             <Input
               id="folio"
               {...register('folio')}
-              className={`h-10 ${errors.folio ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.folio ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="SPC-48"
             />
             {errors.folio && (
@@ -59,7 +59,7 @@ export function ContractInfoSection({
               value={watch('sub_type')}
               onValueChange={(value) => setValue('sub_type', value as 'imported' | 'domestic')}
             >
-              <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500' : ''}`}>
+              <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select sub type" />
               </SelectTrigger>
               <SelectContent>
@@ -82,7 +82,7 @@ export function ContractInfoSection({
               min="1"
               max="10"
               {...register('grade', { valueAsNumber: true })}
-              className={`h-10 ${errors.grade ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="3"
             />
             {errors.grade && (
@@ -100,7 +100,7 @@ export function ContractInfoSection({
             <Input
               id="commodity_id"
               {...register('commodity_id')}
-              className={`h-10 ${errors.commodity_id ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="6839ef25edc3c27f091bdfc0"
             />
             {errors.commodity_id && (
@@ -115,7 +115,7 @@ export function ContractInfoSection({
             <Input
               id="commodity_name"
               {...register('commodity_name')}
-              className={`h-10 ${errors.commodity_name ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.commodity_name ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="SRW - Wheat Soft Red Winter"
             />
             {errors.commodity_name && (
@@ -133,7 +133,7 @@ export function ContractInfoSection({
             <Input
               id="characteristics_configuration_id"
               {...register('characteristics_configuration_id')}
-              className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="683bbb8317f5aafb7814eb22"
             />
             {errors.characteristics_configuration_id && (
@@ -148,7 +148,7 @@ export function ContractInfoSection({
             <Input
               id="characteristics_configuration_name"
               {...register('characteristics_configuration_name')}
-              className={`h-10 ${errors.characteristics_configuration_name ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.characteristics_configuration_name ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="Configuration Name"
             />
             {errors.characteristics_configuration_name && (
@@ -168,7 +168,7 @@ export function ContractInfoSection({
               type="number"
               min="1"
               {...register('quantity', { valueAsNumber: true })}
-              className={`h-10 ${errors.quantity ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="1700"
             />
             {errors.quantity && (
@@ -183,7 +183,7 @@ export function ContractInfoSection({
             <Input
               id="measurement_unit"
               {...register('measurement_unit')}
-              className={`h-10 ${errors.measurement_unit ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="bu56"
             />
             {errors.measurement_unit && (
@@ -198,7 +198,7 @@ export function ContractInfoSection({
             <Input
               id="measurement_unit_id"
               {...register('measurement_unit_id')}
-              className={`h-10 ${errors.measurement_unit_id ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.measurement_unit_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="6840d42d60fd7f152734525e"
             />
             {errors.measurement_unit_id && (
@@ -216,7 +216,7 @@ export function ContractInfoSection({
             <Input
               id="reference_number"
               {...register('reference_number')}
-              className={`h-10 ${errors.reference_number ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
               placeholder="NA"
             />
             {errors.reference_number && (
@@ -232,7 +232,7 @@ export function ContractInfoSection({
               id="contract_date"
               type="date"
               {...register('contract_date')}
-              className={`h-10 ${errors.contract_date ? 'border-red-500' : ''}`}
+              className={`h-10 ${errors.contract_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
             />
             {errors.contract_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
@@ -281,7 +281,7 @@ export function ContractInfoSection({
                   <Input
                     value={participant.people_id}
                     onChange={(e) => updateParticipant(index, 'people_id', e.target.value)}
-                    className="h-10"
+                    className={`h-10 ${errors.participants?.[index]?.people_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="685b2f67ca51c8f284775f83"
                   />
                 </div>
@@ -293,7 +293,7 @@ export function ContractInfoSection({
                   <Input
                     value={participant.name}
                     onChange={(e) => updateParticipant(index, 'name', e.target.value)}
-                    className="h-10"
+                    className={`h-10 ${errors.participants?.[index]?.name ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="Andrés bandera"
                   />
                 </div>
@@ -306,7 +306,7 @@ export function ContractInfoSection({
                     value={participant.role}
                     onValueChange={(value) => updateParticipant(index, 'role', value)}
                   >
-                    <SelectTrigger className="h-10">
+                    <SelectTrigger className={`h-10 ${errors.participants?.[index]?.role ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
