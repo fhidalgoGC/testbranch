@@ -278,22 +278,24 @@ export function PriceSection({
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 Option Year <span className="text-red-500">*</span>
               </Label>
-              <Input
-                type="text"
-                inputMode="numeric"
-                value={currentSchedule.option_year || ''}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d*$/.test(value) || value === '') {
-                    updatePriceSchedule(0, 'option_year', value === '' ? new Date().getFullYear() : parseInt(value));
-                  }
+              <Select
+                value={currentSchedule.option_year?.toString() || ''}
+                onValueChange={(value) => {
+                  const currentPriceSchedule = watch('price_schedule') || [{}];
+                  const updatedSchedule = [...currentPriceSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], option_year: parseInt(value) };
+                  setValue('price_schedule', updatedSchedule);
                 }}
-                className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="2026"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
+              >
+                <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2025">2025</SelectItem>
+                  <SelectItem value="2026">2026</SelectItem>
+                  <SelectItem value="2027">2027</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Payment Currency */}
