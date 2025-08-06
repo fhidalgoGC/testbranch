@@ -290,15 +290,21 @@ export function ContractInfoSection() {
               <Label htmlFor="grade" className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('grade')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
-              <Input
-                id="grade"
-                type="number"
-                min="1"
-                max="10"
-                {...register('grade', { valueAsNumber: true })}
-                className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder={t('gradePlaceholder')}
-              />
+              <Select
+                value={watch('grade')?.toString() || ''}
+                onValueChange={(value) => setValue('grade', parseInt(value))}
+              >
+                <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select grade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
+                </SelectContent>
+              </Select>
               {errors.grade && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
               )}
