@@ -172,7 +172,8 @@ export function ContractInfoSection() {
                   onClick={() => {
                     const input = document.getElementById('contract_date') as HTMLInputElement;
                     if (input) {
-                      input.showPicker?.();
+                      input.focus();
+                      input.click();
                     }
                   }}
                 >

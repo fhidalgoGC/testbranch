@@ -44,7 +44,8 @@ export function ShipmentSection() {
                 onClick={() => {
                   const input = document.getElementById('shipping_start_date') as HTMLInputElement;
                   if (input) {
-                    input.showPicker?.();
+                    input.focus();
+                    input.click();
                   }
                 }}
               >
@@ -77,7 +78,8 @@ export function ShipmentSection() {
                 onClick={() => {
                   const input = document.getElementById('shipping_end_date') as HTMLInputElement;
                   if (input) {
-                    input.showPicker?.();
+                    input.focus();
+                    input.click();
                   }
                 }}
               >
