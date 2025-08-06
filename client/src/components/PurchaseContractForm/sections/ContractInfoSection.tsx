@@ -74,6 +74,73 @@ export function ContractInfoSection() {
     setValue,
   } = useFormContext<PurchaseContractFormData>();
 
+  // Helper function to format number for display (2-4 decimals)
+  const formatNumber = (value: number | undefined): string => {
+    if (!value || value === 0) return '';
+    
+    // Determine how many decimal places to show
+    const decimalString = value.toString().split('.')[1] || '';
+    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
+    
+    return value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: decimalPlaces
+    });
+  };
+
+  // Helper function to handle number input change with strict validation
+  const handleNumberChange = (field: 'quantity', inputValue: string) => {
+    // Only allow numbers and one decimal point
+    const validChars = /^[0-9.]*$/;
+    
+    if (!validChars.test(inputValue)) {
+      return; // Reject invalid characters
+    }
+    
+    // Prevent multiple decimal points
+    const decimalCount = (inputValue.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return;
+    }
+    
+    // Check decimal places limit (max 4)
+    const parts = inputValue.split('.');
+    if (parts[1] && parts[1].length > 4) {
+      // Truncate to 4 decimals (round down)
+      const truncated = parts[0] + '.' + parts[1].substring(0, 4);
+      const numericValue = parseFloat(truncated);
+      setValue(field, numericValue);
+      return;
+    }
+    
+    // Allow empty string or valid number format
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
+      setValue(field, numericValue);
+    }
+  };
+
+  // Helper function to format number on blur
+  const handleNumberBlur = (field: 'quantity', e: React.FocusEvent<HTMLInputElement>) => {
+    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    
+    // Truncate to 4 decimals (round down)
+    const factor = Math.pow(10, 4);
+    value = Math.floor(value * factor) / factor;
+    
+    // Determine how many decimal places to show (2-4)
+    const decimalString = value.toString().split('.')[1] || '';
+    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
+    
+    const formatted = value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: decimalPlaces
+    });
+    
+    e.target.value = formatted;
+    setValue(field, value);
+  };
+
   return (
     <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
       <CardHeader className="pb-4">
@@ -256,12 +323,22 @@ export function ContractInfoSection() {
                 </Label>
                 <Input
                   id="quantity_subsection"
-                  type="number"
-                  min="1"
-                  step="0.01"
-                  {...register('quantity', { valueAsNumber: true })}
+                  type="text"
+                  inputMode="decimal"
+                  defaultValue={formatNumber(watch('quantity'))}
+                  onChange={(e) => handleNumberChange('quantity', e.target.value)}
+                  onBlur={(e) => handleNumberBlur('quantity', e)}
+                  onKeyDown={(e) => {
+                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                    if (!allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder={t('quantityPlaceholder')}
+                  placeholder="1,000.00"
+                  style={{
+                    MozAppearance: 'textfield'
+                  }}
                 />
                 {errors.quantity && (
                   <p className="text-sm text-red-600 dark:text-red-400">{errors.quantity.message}</p>
