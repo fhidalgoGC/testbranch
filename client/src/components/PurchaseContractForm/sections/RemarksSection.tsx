@@ -24,7 +24,7 @@ export function RemarksSection({
   addComment 
 }: RemarksSectionProps) {
   const { t } = useTranslation();
-  const { watch } = useFormContext<PurchaseContractFormData>();
+  const { watch, setValue } = useFormContext<PurchaseContractFormData>();
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
   const [isRemarkListModalOpen, setIsRemarkListModalOpen] = useState(false);
   const [selectedRemarkType, setSelectedRemarkType] = useState<string>('');
@@ -44,10 +44,9 @@ export function RemarksSection({
   };
 
   const handleAddComment = () => {
-    addComment();
     const currentRemarks = watch('remarks') || [];
-    const newIndex = currentRemarks.length - 1;
-    updateRemark(newIndex, 'COMMENT:');
+    const newComment = 'COMMENT:';
+    setValue('remarks', [...currentRemarks, newComment]);
   };
 
   const handleOpenRemarkList = (index: number) => {
@@ -91,7 +90,7 @@ export function RemarksSection({
             </Button>
             <Button
               type="button"
-              onClick={addComment}
+              onClick={handleAddComment}
               variant="outline"
               size="sm"
               className="flex items-center gap-2"
