@@ -36,20 +36,9 @@ export function PurchaseContractForm() {
   } = usePurchaseContractForm();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            {t('createPurchaseContract')}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            {t('createPurchaseContractDescription')}
-          </p>
-        </div>
-
-        <FormProvider {...form}>
-          <form onSubmit={onSubmit} className="space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 p-6">
+      <FormProvider {...form}>
+        <form onSubmit={onSubmit} className="space-y-8">
             
             {/* Section 1: Contract Info */}
             <ContractInfoSection
@@ -109,9 +98,8 @@ export function PurchaseContractForm() {
                 )}
               </Button>
             </div>
-          </form>
-        </FormProvider>
-      </div>
+        </form>
+      </FormProvider>
     </div>
   );
 }
