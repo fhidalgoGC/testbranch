@@ -35,13 +35,37 @@ export function PriceSection({
     });
   };
 
-  // Helper function to handle number input change
+  // Helper function to handle number input change with strict validation
   const handleNumberChange = (field: keyof PriceSchedule, inputValue: string) => {
-    const cleanValue = inputValue.replace(/,/g, '');
-    if (/^\d*\.?\d*$/.test(cleanValue) || cleanValue === '') {
-      const numericValue = cleanValue === '' ? 0 : parseFloat(cleanValue);
+    // Only allow numbers and one decimal point
+    const validChars = /^[0-9.]*$/;
+    
+    if (!validChars.test(inputValue)) {
+      return; // Reject invalid characters
+    }
+    
+    // Prevent multiple decimal points
+    const decimalCount = (inputValue.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return;
+    }
+    
+    // Allow empty string or valid number format
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
       updatePriceSchedule(0, field, numericValue);
     }
+  };
+
+  // Helper function to format number on blur
+  const handleNumberBlur = (field: keyof PriceSchedule, e: React.FocusEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value) || 0;
+    const formatted = value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    e.target.value = formatted;
+    updatePriceSchedule(0, field, value);
   };
 
   const months = [
@@ -90,6 +114,14 @@ export function PriceSection({
                 inputMode="decimal"
                 defaultValue={formatNumber(currentSchedule.price)}
                 onChange={(e) => handleNumberChange('price', e.target.value)}
+                onBlur={(e) => handleNumberBlur('price', e)}
+                onKeyDown={(e) => {
+                  // Allow only numbers, decimal point, backspace, delete, tab, enter, arrow keys
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                  if (!allowedKeys.includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="370.00"
                 style={{
@@ -108,6 +140,13 @@ export function PriceSection({
                 inputMode="decimal"
                 defaultValue={formatNumber(currentSchedule.future_price)}
                 onChange={(e) => handleNumberChange('future_price', e.target.value)}
+                onBlur={(e) => handleNumberBlur('future_price', e)}
+                onKeyDown={(e) => {
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                  if (!allowedKeys.includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="370.00"
                 style={{
@@ -126,6 +165,13 @@ export function PriceSection({
                 inputMode="decimal"
                 defaultValue={formatNumber(currentSchedule.basis)}
                 onChange={(e) => handleNumberChange('basis', e.target.value)}
+                onBlur={(e) => handleNumberBlur('basis', e)}
+                onKeyDown={(e) => {
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                  if (!allowedKeys.includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 className="h-10 border-gray-300 focus:border-green-500"
                 placeholder="0.00"
                 style={{
