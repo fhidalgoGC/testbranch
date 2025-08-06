@@ -74,7 +74,7 @@ export function ContractInfoSection({
 
           <div className="space-y-2">
             <Label htmlFor="grade" className="text-sm font-medium text-gray-900 dark:text-white">
-              Grade <span className="text-red-500">*</span>
+              {t('grade')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
             <Input
               id="grade"
@@ -83,7 +83,7 @@ export function ContractInfoSection({
               max="10"
               {...register('grade', { valueAsNumber: true })}
               className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="3"
+              placeholder={t('gradePlaceholder')}
             />
             {errors.grade && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
@@ -95,13 +95,13 @@ export function ContractInfoSection({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="commodity_id" className="text-sm font-medium text-gray-900 dark:text-white">
-              Commodity ID <span className="text-red-500">*</span>
+              {t('commodityId')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
             <Input
               id="commodity_id"
               {...register('commodity_id')}
               className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="6839ef25edc3c27f091bdfc0"
+              placeholder={t('commodityIdPlaceholder')}
             />
             {errors.commodity_id && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>

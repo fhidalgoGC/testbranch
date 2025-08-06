@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { purchaseContractSchema } from '@/validation/purchaseContract.schema';
+import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
 import type { PurchaseContractFormData, PurchaseContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseContract.types';
 
 export function usePurchaseContractForm() {
@@ -10,7 +10,7 @@ export function usePurchaseContractForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<PurchaseContractFormData>({
-    resolver: zodResolver(purchaseContractSchema),
+    resolver: zodResolver(createPurchaseContractSchema()),
     defaultValues: {
       folio: '',
       type: 'purchase',
