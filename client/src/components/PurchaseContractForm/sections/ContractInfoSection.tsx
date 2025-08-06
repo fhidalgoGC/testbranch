@@ -154,12 +154,18 @@ export function ContractInfoSection() {
               <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
-              <Input
-                id="contract_date"
-                type="date"
-                {...register('contract_date')}
-                className={`h-10 ${errors.contract_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              />
+              <div className="relative">
+                <Input
+                  id="contract_date"
+                  type="date"
+                  {...register('contract_date')}
+                  className={`h-10 pr-10 ${errors.contract_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  style={{
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'textfield'
+                  }}
+                />
+              </div>
               {errors.contract_date && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
               )}
