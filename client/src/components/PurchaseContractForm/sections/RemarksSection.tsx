@@ -37,16 +37,28 @@ export function RemarksSection({
           <Label className="text-lg font-semibold text-gray-900 dark:text-white">
             {t('remarks')}
           </Label>
-          <Button
-            type="button"
-            onClick={addRemark}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            {t('addComment')}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              onClick={addRemark}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Remarks
+            </Button>
+            <Button
+              type="button"
+              onClick={addRemark}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Comentario
+            </Button>
+          </div>
         </div>
 
         {remarks.map((remark, index) => (
