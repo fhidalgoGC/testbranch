@@ -217,17 +217,19 @@ export function ContractInfoSection() {
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
-              <div className="flex gap-2">
+              <div className="relative">
                 <Input
                   readOnly
                   value={watch('seller') ? FAKE_SELLERS.find(s => s.id === watch('seller'))?.name || '' : ''}
                   placeholder={t('selectSeller')}
-                  className={`h-10 flex-1 ${errors.seller ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  className={`h-10 pr-10 ${errors.seller ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 />
-                <SellerSelectionModal
-                  selectedSeller={watch('seller')}
-                  onSelect={(seller) => setValue('seller', seller.id)}
-                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <SellerSelectionModal
+                    selectedSeller={watch('seller')}
+                    onSelect={(seller) => setValue('seller', seller.id)}
+                  />
+                </div>
               </div>
               {errors.seller && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>

@@ -108,10 +108,11 @@ export function SellerSelectionModal({ onSelect, selectedSeller }: SellerSelecti
       <DialogTrigger asChild>
         <Button 
           type="button"
-          variant="outline" 
-          className="h-10 px-3 border-gray-300 hover:border-green-500 focus:border-green-500"
+          variant="ghost" 
+          size="sm"
+          className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
         >
-          <Search className="h-4 w-4" />
+          <Search className="h-4 w-4 text-gray-500" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
