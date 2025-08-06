@@ -104,15 +104,16 @@ export function RemarksSection({
 
         {remarks.map((remark, index) => {
           const isComment = remark.startsWith('COMMENT:'); // Free text comments
-          const displayValue = isComment ? remark.replace('COMMENT:', '') : remark;
           
-          // For remarks, extract the remark type from the content (before the colon)
+          let displayValue = '';
           let remarkLabel = 'Remark';
-          if (!isComment && remark.includes(':')) {
-            remarkLabel = remark.split(':')[0];
-          } else if (!isComment) {
-            // If no colon found, it might be just the remark type name
-            remarkLabel = remark || 'Remark';
+          
+          if (isComment) {
+            displayValue = remark.replace('COMMENT:', '');
+          } else {
+            // For remarks, the remark value is the label itself (empty input for user to fill)
+            remarkLabel = remark;
+            displayValue = ''; // Always empty for user to fill
           }
           
           return (
@@ -132,9 +133,9 @@ export function RemarksSection({
                   ) : (
                     <Input
                       value={displayValue}
-                      onChange={(e) => updateRemark(index, e.target.value)}
+                      onChange={(e) => updateRemark(index, `${remarkLabel}:${e.target.value}`)}
                       className="h-10 border-gray-300 focus:border-green-500"
-                      placeholder={`Enter remark content...`}
+                      placeholder={`Enter ${remarkLabel.toLowerCase()} details...`}
                     />
                   )}
                 </div>
