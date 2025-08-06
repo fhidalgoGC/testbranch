@@ -32,9 +32,8 @@ export function RemarksSection({
   
   const remarks = watch('remarks') || [];
   
-  // Separate remarks (structured) from comments (free text)
-  const structuredRemarks = remarks.filter((_, index) => index % 2 === 0); // Even indices for remarks
-  const freeComments = remarks.filter((_, index) => index % 2 === 1); // Odd indices for comments
+  // Check if there's already a comment
+  const hasComment = remarks.some(remark => remark.startsWith('COMMENT:'));
 
   const handleAddRemark = (remarkType: string, content: string) => {
     addRemark();
@@ -88,28 +87,35 @@ export function RemarksSection({
               <Plus className="w-4 h-4" />
               Add Remarks
             </Button>
-            <Button
-              type="button"
-              onClick={handleAddComment}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add Comentario
-            </Button>
+            {!hasComment && (
+              <Button
+                type="button"
+                onClick={handleAddComment}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Comentario
+              </Button>
+            )}
           </div>
         </div>
 
         {remarks.map((remark, index) => {
           const isComment = remark.startsWith('COMMENT:'); // Free text comments
           const displayValue = isComment ? remark.replace('COMMENT:', '') : remark;
-          const itemNumber = Math.floor(index / 2) + 1;
+          
+          // For remarks, extract the remark type from the content (before the colon)
+          let remarkLabel = 'Remark';
+          if (!isComment && remark.includes(':')) {
+            remarkLabel = remark.split(':')[0];
+          }
           
           return (
             <div key={index} className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                {isComment ? `Comentario ${itemNumber}` : `Remark ${itemNumber}`}
+                {isComment ? 'Comentario' : remarkLabel}
               </Label>
               <div className="flex items-start gap-4">
                 <div className="flex-1">
