@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 
 export function ContractInfoSection() {
@@ -178,8 +179,8 @@ export function ContractInfoSection() {
           </div>
         </div>
 
-        {/* Contract Date */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Contract Date, Seller and Thresholds */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-2">
             <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
@@ -192,6 +193,57 @@ export function ContractInfoSection() {
             />
             {errors.contract_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-900 dark:text-white">
+              {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
+            </Label>
+            <SellerSelectionModal
+              selectedSeller={watch('seller')}
+              onSelect={(seller) => setValue('seller', seller.id)}
+            />
+            {errors.seller && (
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+              {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+            </Label>
+            <Input
+              id="min_thresholds_percentage"
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              {...register('min_thresholds_percentage', { valueAsNumber: true })}
+              className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+              placeholder="0"
+            />
+            {errors.min_thresholds_percentage && (
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+              {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+            </Label>
+            <Input
+              id="max_thresholds_percentage"
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              {...register('max_thresholds_percentage', { valueAsNumber: true })}
+              className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+              placeholder="100"
+            />
+            {errors.max_thresholds_percentage && (
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
             )}
           </div>
         </div>

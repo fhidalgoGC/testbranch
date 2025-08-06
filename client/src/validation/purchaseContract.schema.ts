@@ -16,6 +16,9 @@ export const createPurchaseContractSchema = () => {
     reference_number: z.string().min(1, t('fieldRequired')),
     measurement_unit: z.string().min(1, t('selectOption')),
     contract_date: z.string().min(1, t('fieldRequired')),
+    min_thresholds_percentage: z.number().min(0, t('positiveNumber')).max(100, t('invalidFormat')),
+    max_thresholds_percentage: z.number().min(0, t('positiveNumber')).max(100, t('invalidFormat')),
+    seller: z.string().min(1, t('selectOption')),
 
     // Participants validation - minimum 2, must include 1 buyer and 1 seller
     participants: z
@@ -79,8 +82,6 @@ export const createPurchaseContractSchema = () => {
     weights: z.string().optional(),
     inspections: z.string().optional(),
     proteins: z.string().optional(),
-    min_thresholds_percentage: z.number().min(0, t('positiveNumber')).max(100, t('invalidFormat')),
-    max_thresholds_percentage: z.number().min(0, t('positiveNumber')).max(100, t('invalidFormat')),
 
     // Remarks Section
     remarks: z.array(z.string()).default([]),
