@@ -167,8 +167,16 @@ export function ContractInfoSection() {
                     position: 'relative'
                   }}
                 />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <Calendar className="h-4 w-4 text-gray-500" />
+                <div 
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                  onClick={() => {
+                    const input = document.getElementById('contract_date') as HTMLInputElement;
+                    if (input) {
+                      input.showPicker?.();
+                    }
+                  }}
+                >
+                  <Calendar className="h-4 w-4 text-gray-500 hover:text-gray-700" />
                 </div>
               </div>
               {errors.contract_date && (
