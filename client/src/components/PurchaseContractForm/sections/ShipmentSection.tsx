@@ -17,7 +17,7 @@ export function ShipmentSection() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <Package className="w-5 h-5" />
-          Shipment & Delivery
+          {t('shipment')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -25,7 +25,7 @@ export function ShipmentSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="shipping_start_date" className="text-sm font-medium text-gray-900 dark:text-white">
-              Shipping Start Date <span className="text-red-500">*</span>
+              {t('shippingStartDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
             <Input
               id="shipping_start_date"
@@ -40,7 +40,7 @@ export function ShipmentSection() {
 
           <div className="space-y-2">
             <Label htmlFor="shipping_end_date" className="text-sm font-medium text-gray-900 dark:text-white">
-              Shipping End Date <span className="text-red-500">*</span>
+              {t('shippingEndDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
             <Input
               id="shipping_end_date"

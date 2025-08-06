@@ -30,13 +30,13 @@ export function LogisticSection({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <Truck className="w-5 h-5" />
-          Logistic Contract
+          {t('logisticContract')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <Label className="text-lg font-semibold text-gray-900 dark:text-white">
-            Logistic Schedule <span className="text-red-500">*</span>
+            {t('logisticSchedule')} <span className="text-red-500">{t('requiredField')}</span>
           </Label>
           <Button
             type="button"
@@ -46,7 +46,7 @@ export function LogisticSection({
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Logistic Schedule
+            {t('addLogisticSchedule')}
           </Button>
         </div>
 

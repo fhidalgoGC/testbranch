@@ -30,7 +30,7 @@ export function ContractInfoSection({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <FileText className="w-5 h-5" />
-          Contract Info
+          {t('contractInfo')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -38,13 +38,13 @@ export function ContractInfoSection({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="folio" className="text-sm font-medium text-gray-900 dark:text-white">
-              Folio <span className="text-red-500">*</span>
+              {t('folio')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
             <Input
               id="folio"
               {...register('folio')}
               className={`h-10 ${errors.folio ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="SPC-48"
+              placeholder={t('folioPlaceholder')}
             />
             {errors.folio && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.folio.message}</p>
@@ -53,18 +53,18 @@ export function ContractInfoSection({
 
           <div className="space-y-2">
             <Label htmlFor="sub_type" className="text-sm font-medium text-gray-900 dark:text-white">
-              Sub Type <span className="text-red-500">*</span>
+              {t('subType')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
             <Select
               value={watch('sub_type')}
               onValueChange={(value) => setValue('sub_type', value as 'imported' | 'domestic')}
             >
               <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                <SelectValue placeholder="Select sub type" />
+                <SelectValue placeholder={t('selectSubType')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="imported">Imported</SelectItem>
-                <SelectItem value="domestic">Domestic</SelectItem>
+                <SelectItem value="imported">{t('imported')}</SelectItem>
+                <SelectItem value="domestic">{t('domestic')}</SelectItem>
               </SelectContent>
             </Select>
             {errors.sub_type && (
@@ -244,7 +244,7 @@ export function ContractInfoSection({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Label className="text-lg font-semibold text-gray-900 dark:text-white">
-              Participants <span className="text-red-500">*</span>
+              {t('participants')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
             <Button
               type="button"
@@ -254,7 +254,7 @@ export function ContractInfoSection({
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Add Participant
+              {t('addParticipant')}
             </Button>
           </div>
 

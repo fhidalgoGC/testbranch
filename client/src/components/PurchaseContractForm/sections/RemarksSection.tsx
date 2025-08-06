@@ -29,13 +29,13 @@ export function RemarksSection({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <MessageSquare className="w-5 h-5" />
-          Remarks & Observation
+          {t('remarks')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <Label className="text-lg font-semibold text-gray-900 dark:text-white">
-            Remarks
+            {t('remarks')}
           </Label>
           <Button
             type="button"
@@ -45,7 +45,7 @@ export function RemarksSection({
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Remark
+            {t('addComment')}
           </Button>
         </div>
 
@@ -56,7 +56,7 @@ export function RemarksSection({
                 value={remark}
                 onChange={(e) => updateRemark(index, e.target.value)}
                 className="h-10"
-                placeholder={`Remark ${index + 1}`}
+                placeholder={`${t('comment')} ${index + 1}`}
               />
             </div>
             <Button
@@ -73,7 +73,7 @@ export function RemarksSection({
 
         {remarks.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <p>No remarks added yet. Click "Add Remark" to add observations.</p>
+            <p>{t('noRemarksYet')}. {t('clickAddRemark')}.</p>
           </div>
         )}
       </CardContent>

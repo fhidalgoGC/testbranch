@@ -9,16 +9,16 @@ export default function PurchaseContracts() {
   const { t } = useTranslation();
 
   return (
-    <DashboardLayout title="Contratos de Compra">
+    <DashboardLayout title={t('purchaseContracts')}>
       <div className="space-y-6">
         {/* Header with Add Button */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Contratos de Compra
+              {t('purchaseContracts')}
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Gestión de contratos de compra de commodities
+              {t('purchaseContractsDescription')}
             </p>
           </div>
           
@@ -28,7 +28,7 @@ export default function PurchaseContracts() {
               size="lg"
             >
               <Plus className="w-4 h-4" />
-              Crear Contrato
+              {t('createContract')}
             </Button>
           </Link>
         </div>
@@ -39,10 +39,10 @@ export default function PurchaseContracts() {
             <div className="text-center">
               <FileText className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                No hay contratos de compra
+                {t('noContractsYet')}
               </h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6">
-                Comienza creando tu primer contrato de compra.
+                {t('createFirstContract')}
               </p>
               <Link href="/purchase-contracts/create">
                 <Button 
@@ -50,7 +50,7 @@ export default function PurchaseContracts() {
                   className="border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Crear Primer Contrato
+                  {t('createFirstContractButton')}
                 </Button>
               </Link>
             </div>

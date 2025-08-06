@@ -35,13 +35,13 @@ export function PriceSection({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <DollarSign className="w-5 h-5" />
-          Price Contract Per (Bushel 56)
+          {t('priceContract')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <Label className="text-lg font-semibold text-gray-900 dark:text-white">
-            Price Schedule <span className="text-red-500">*</span>
+            {t('priceSchedule')} <span className="text-red-500">{t('requiredField')}</span>
           </Label>
           <Button
             type="button"
@@ -51,7 +51,7 @@ export function PriceSection({
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Price Schedule
+            {t('addPriceSchedule')}
           </Button>
         </div>
 

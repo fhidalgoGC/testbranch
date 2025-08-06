@@ -41,10 +41,10 @@ export function PurchaseContractForm() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            Create Purchase Contract
+            {t('createPurchaseContract')}
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            Fill out all sections to create a new purchase contract
+            {t('createPurchaseContractDescription')}
           </p>
         </div>
 
@@ -91,7 +91,7 @@ export function PurchaseContractForm() {
                 disabled={isSubmitting}
                 className="px-8"
               >
-                Cancelar
+                {t('cancel')}
               </Button>
               
               <Button
@@ -102,10 +102,10 @@ export function PurchaseContractForm() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creando...
+                    {t('createContract')}...
                   </>
                 ) : (
-                  'Crear'
+                  t('createContract')
                 )}
               </Button>
             </div>
