@@ -150,3 +150,18 @@ input[type="date"] {
 .dark .btn-agricultural:hover {
   background: hsl(142, 76%, 44%);
 }
+
+/* Hide spin buttons for number inputs and numeric text inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[inputmode="decimal"]::-webkit-outer-spin-button,
+input[inputmode="decimal"]::-webkit-inner-spin-button,
+input[inputmode="numeric"]::-webkit-outer-spin-button,
+input[inputmode="numeric"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

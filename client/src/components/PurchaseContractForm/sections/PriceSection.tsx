@@ -42,7 +42,7 @@ export function PriceSection({
       <CardContent className="space-y-6">
         {/* Price Schedule Fields */}
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Pricing Type */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
@@ -68,13 +68,22 @@ export function PriceSection({
                 Price <span className="text-red-500">*</span>
               </Label>
               <Input
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
                 value={currentSchedule.price || ''}
-                onChange={(e) => updatePriceSchedule(0, 'price', parseFloat(e.target.value) || 0)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Only allow numbers and one decimal point
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    updatePriceSchedule(0, 'price', parseFloat(value) || 0);
+                  }
+                }}
                 className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="370"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
               />
             </div>
 
@@ -84,13 +93,21 @@ export function PriceSection({
                 Future Price <span className="text-red-500">*</span>
               </Label>
               <Input
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
                 value={currentSchedule.future_price || ''}
-                onChange={(e) => updatePriceSchedule(0, 'future_price', parseFloat(e.target.value) || 0)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    updatePriceSchedule(0, 'future_price', parseFloat(value) || 0);
+                  }
+                }}
                 className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="370"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
               />
             </div>
 
@@ -100,12 +117,21 @@ export function PriceSection({
                 Basis
               </Label>
               <Input
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
                 value={currentSchedule.basis || ''}
-                onChange={(e) => updatePriceSchedule(0, 'basis', parseFloat(e.target.value) || 0)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    updatePriceSchedule(0, 'basis', parseFloat(value) || 0);
+                  }
+                }}
                 className="h-10 border-gray-300 focus:border-green-500"
                 placeholder="0"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
               />
             </div>
 
@@ -156,12 +182,21 @@ export function PriceSection({
                 Option Year <span className="text-red-500">*</span>
               </Label>
               <Input
-                type="number"
-                min={new Date().getFullYear()}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={currentSchedule.option_year || ''}
-                onChange={(e) => updatePriceSchedule(0, 'option_year', parseInt(e.target.value) || new Date().getFullYear())}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*$/.test(value)) {
+                    updatePriceSchedule(0, 'option_year', parseInt(value) || new Date().getFullYear());
+                  }
+                }}
                 className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="2026"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
               />
             </div>
 
