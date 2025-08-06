@@ -7,18 +7,14 @@ export const createPurchaseContractSchema = () => {
 
   return z.object({
     // Contract Info Section
-    folio: z.string().min(1, t('fieldRequired')).min(3, t('minimumLength', { min: 3 })),
     type: z.enum(['purchase']).default('purchase'),
     sub_type: z.enum(['imported', 'domestic'], { required_error: t('selectOption') }),
-    commodity_id: z.string().min(1, t('fieldRequired')),
-    commodity_name: z.string().min(1, t('fieldRequired')),
-    characteristics_configuration_id: z.string().min(1, t('fieldRequired')),
-    characteristics_configuration_name: z.string().min(1, t('fieldRequired')),
+    commodity: z.string().min(1, t('selectOption')),
+    characteristics_configuration: z.string().min(1, t('selectOption')),
     grade: z.number().min(1, t('positiveNumber')).max(10, t('invalidFormat')),
     quantity: z.number().min(1, t('positiveNumber')),
     reference_number: z.string().min(1, t('fieldRequired')),
-    measurement_unit_id: z.string().min(1, t('fieldRequired')),
-    measurement_unit: z.string().min(1, t('fieldRequired')),
+    measurement_unit: z.string().min(1, t('selectOption')),
     contract_date: z.string().min(1, t('fieldRequired')),
 
     // Participants validation - minimum 2, must include 1 buyer and 1 seller
@@ -80,9 +76,9 @@ export const createPurchaseContractSchema = () => {
     application_priority: z.number().min(1, t('positiveNumber')).max(10, t('invalidFormat')),
     delivered: z.string().min(1, t('fieldRequired')),
     transport: z.string().min(1, t('fieldRequired')),
-    weights: z.string().min(1, t('fieldRequired')),
-    inspections: z.string().min(1, t('fieldRequired')),
-    proteins: z.string().min(1, t('fieldRequired')),
+    weights: z.string().optional(),
+    inspections: z.string().optional(),
+    proteins: z.string().optional(),
     min_thresholds_percentage: z.number().min(0, t('positiveNumber')).max(100, t('invalidFormat')),
     max_thresholds_percentage: z.number().min(0, t('positiveNumber')).max(100, t('invalidFormat')),
 
