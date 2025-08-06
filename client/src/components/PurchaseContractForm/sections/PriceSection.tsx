@@ -61,14 +61,22 @@ export function PriceSection({
       // Truncate to 4 decimals (round down)
       const truncated = parts[0] + '.' + parts[1].substring(0, 4);
       const numericValue = parseFloat(truncated);
-      updatePriceSchedule(0, field, numericValue);
+      
+      const currentPriceSchedule = watch('price_schedule') || [{}];
+      const updatedSchedule = [...currentPriceSchedule];
+      updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+      setValue('price_schedule', updatedSchedule);
       return;
     }
     
     // Allow empty string or valid number format
     if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
       const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
-      updatePriceSchedule(0, field, numericValue);
+      
+      const currentPriceSchedule = watch('price_schedule') || [{}];
+      const updatedSchedule = [...currentPriceSchedule];
+      updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+      setValue('price_schedule', updatedSchedule);
     }
   };
 
@@ -90,7 +98,11 @@ export function PriceSection({
     });
     
     e.target.value = formatted;
-    updatePriceSchedule(0, field, value);
+    
+    const currentPriceSchedule = watch('price_schedule') || [{}];
+    const updatedSchedule = [...currentPriceSchedule];
+    updatedSchedule[0] = { ...updatedSchedule[0], [field]: value };
+    setValue('price_schedule', updatedSchedule);
   };
 
   const months = [
@@ -117,7 +129,12 @@ export function PriceSection({
               </Label>
               <Select
                 value={currentSchedule.pricing_type || ''}
-                onValueChange={(value) => updatePriceSchedule(0, 'pricing_type', value)}
+                onValueChange={(value) => {
+                  const currentPriceSchedule = watch('price_schedule') || [{}];
+                  const updatedSchedule = [...currentPriceSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], pricing_type: value };
+                  setValue('price_schedule', updatedSchedule);
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.pricing_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder="Select pricing type" />
@@ -212,7 +229,12 @@ export function PriceSection({
               </Label>
               <Select
                 value={currentSchedule.basis_operation || ''}
-                onValueChange={(value) => updatePriceSchedule(0, 'basis_operation', value)}
+                onValueChange={(value) => {
+                  const currentPriceSchedule = watch('price_schedule') || [{}];
+                  const updatedSchedule = [...currentPriceSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: value };
+                  setValue('price_schedule', updatedSchedule);
+                }}
               >
                 <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder="Select operation" />
@@ -231,7 +253,12 @@ export function PriceSection({
               </Label>
               <Select
                 value={currentSchedule.option_month || ''}
-                onValueChange={(value) => updatePriceSchedule(0, 'option_month', value)}
+                onValueChange={(value) => {
+                  const currentPriceSchedule = watch('price_schedule') || [{}];
+                  const updatedSchedule = [...currentPriceSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], option_month: value };
+                  setValue('price_schedule', updatedSchedule);
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_month ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder="Select month" />
