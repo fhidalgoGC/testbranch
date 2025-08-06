@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, MessageSquare } from 'lucide-react';
+import { Plus, Trash2, MessageSquare, Search } from 'lucide-react';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 import { AddRemarkModal } from '../modals/AddRemarkModal';
+import { RemarkListModal } from '../modals/RemarkListModal';
 
 interface RemarksSectionProps {
   addRemark: () => void;
@@ -23,6 +24,9 @@ export function RemarksSection({
   const { t } = useTranslation();
   const { watch } = useFormContext<PurchaseContractFormData>();
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
+  const [isRemarkListModalOpen, setIsRemarkListModalOpen] = useState(false);
+  const [selectedRemarkType, setSelectedRemarkType] = useState<string>('');
+  const [currentRemarkIndex, setCurrentRemarkIndex] = useState<number>(-1);
   
   const remarks = watch('remarks') || [];
 
@@ -31,6 +35,21 @@ export function RemarksSection({
     const currentRemarks = watch('remarks') || [];
     const newIndex = currentRemarks.length - 1;
     updateRemark(newIndex, content);
+  };
+
+  const handleOpenRemarkList = (index: number) => {
+    // Extract remark type from the remark content if possible
+    const remarkContent = remarks[index] || '';
+    // For now, we'll use 'general' as default, but this could be improved
+    setSelectedRemarkType('general');
+    setCurrentRemarkIndex(index);
+    setIsRemarkListModalOpen(true);
+  };
+
+  const handleSelectFromList = (remarkContent: string) => {
+    if (currentRemarkIndex >= 0) {
+      updateRemark(currentRemarkIndex, remarkContent);
+    }
   };
 
   return (
@@ -82,6 +101,15 @@ export function RemarksSection({
             </div>
             <Button
               type="button"
+              onClick={() => handleOpenRemarkList(index)}
+              variant="outline"
+              size="sm"
+              className="text-gray-600 hover:text-gray-700 border-gray-300"
+            >
+              <Search className="w-4 h-4" />
+            </Button>
+            <Button
+              type="button"
               onClick={() => removeRemark(index)}
               variant="outline"
               size="sm"
@@ -102,6 +130,13 @@ export function RemarksSection({
           isOpen={isRemarkModalOpen}
           onClose={() => setIsRemarkModalOpen(false)}
           onAddRemark={handleAddRemark}
+        />
+
+        <RemarkListModal
+          isOpen={isRemarkListModalOpen}
+          onClose={() => setIsRemarkListModalOpen(false)}
+          onSelectRemark={handleSelectFromList}
+          remarkType={selectedRemarkType}
         />
       </CardContent>
     </Card>

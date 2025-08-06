@@ -44,10 +44,9 @@ export function AddRemarkModal({ isOpen, onClose, onAddRemark }: AddRemarkModalP
   );
 
   const handleAdd = () => {
-    if (selectedType && remarkContent.trim()) {
+    if (selectedType) {
       const selectedRemarkType = REMARK_TYPES.find(type => type.value === selectedType);
-      const formattedRemark = `${selectedRemarkType?.label}: ${remarkContent.trim()}`;
-      onAddRemark(selectedType, formattedRemark);
+      onAddRemark(selectedType, selectedRemarkType?.label || selectedType);
       
       // Reset form
       setSelectedType('');
@@ -74,23 +73,6 @@ export function AddRemarkModal({ isOpen, onClose, onAddRemark }: AddRemarkModalP
         </DialogHeader>
         
         <div className="space-y-6 py-4">
-          {/* Search Field */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Search Remark Types
-            </Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                type="text"
-                placeholder="Search remark types..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-10 border-gray-300 focus:border-green-500"
-              />
-            </div>
-          </div>
-
           {/* Remark Type Select */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-900 dark:text-white">
@@ -101,27 +83,13 @@ export function AddRemarkModal({ isOpen, onClose, onAddRemark }: AddRemarkModalP
                 <SelectValue placeholder="Select remark type" />
               </SelectTrigger>
               <SelectContent>
-                {filteredRemarkTypes.map((type) => (
+                {REMARK_TYPES.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Remark Content */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Remark Content <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="text"
-              placeholder="Enter remark content..."
-              value={remarkContent}
-              onChange={(e) => setRemarkContent(e.target.value)}
-              className="h-10 border-gray-300 focus:border-green-500"
-            />
           </div>
         </div>
 
@@ -137,7 +105,7 @@ export function AddRemarkModal({ isOpen, onClose, onAddRemark }: AddRemarkModalP
           <Button 
             type="button" 
             onClick={handleAdd}
-            disabled={!selectedType || !remarkContent.trim()}
+            disabled={!selectedType}
             className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
