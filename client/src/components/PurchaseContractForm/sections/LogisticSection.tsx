@@ -21,9 +21,113 @@ export function LogisticSection({
   updateLogisticSchedule 
 }: LogisticSectionProps) {
   const { t } = useTranslation();
-  const { formState: { errors }, watch } = useFormContext<PurchaseContractFormData>();
+  const { formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
   
   const logisticSchedule = watch('logistic_schedule') || [];
+  const currentSchedule = logisticSchedule[0] || {};
+
+  // Helper function to format number for display (2-4 decimals)
+  const formatNumber = (value: number | undefined): string => {
+    if (!value || value === 0) return '';
+    
+    // Determine how many decimal places to show
+    const decimalString = value.toString().split('.')[1] || '';
+    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
+    
+    return value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: decimalPlaces
+    });
+  };
+
+  // Helper function to handle number input change with strict validation
+  const handleNumberChange = (field: string, inputValue: string) => {
+    // Only allow numbers and one decimal point
+    const validChars = /^[0-9.]*$/;
+    
+    if (!validChars.test(inputValue)) {
+      return; // Reject invalid characters
+    }
+    
+    // Prevent multiple decimal points
+    const decimalCount = (inputValue.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return;
+    }
+    
+    // Check decimal places limit (max 4)
+    const parts = inputValue.split('.');
+    if (parts[1] && parts[1].length > 4) {
+      // Truncate to 4 decimals (round down)
+      const truncated = parts[0] + '.' + parts[1].substring(0, 4);
+      const numericValue = parseFloat(truncated);
+      
+      const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+      const updatedSchedule = [...currentLogisticSchedule];
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        updatedSchedule[0] = { 
+          ...updatedSchedule[0], 
+          [parent]: { ...updatedSchedule[0][parent], [child]: numericValue }
+        };
+      } else {
+        updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+      }
+      setValue('logistic_schedule', updatedSchedule);
+      return;
+    }
+    
+    // Allow empty string or valid number format
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
+      
+      const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+      const updatedSchedule = [...currentLogisticSchedule];
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        updatedSchedule[0] = { 
+          ...updatedSchedule[0], 
+          [parent]: { ...updatedSchedule[0][parent], [child]: numericValue }
+        };
+      } else {
+        updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+      }
+      setValue('logistic_schedule', updatedSchedule);
+    }
+  };
+
+  // Helper function to format number on blur
+  const handleNumberBlur = (field: string, e: React.FocusEvent<HTMLInputElement>) => {
+    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    
+    // Truncate to 4 decimals (round down)
+    const factor = Math.pow(10, 4);
+    value = Math.floor(value * factor) / factor;
+    
+    // Determine how many decimal places to show (2-4)
+    const decimalString = value.toString().split('.')[1] || '';
+    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
+    
+    const formatted = value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: decimalPlaces
+    });
+    
+    e.target.value = formatted;
+    
+    const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+    const updatedSchedule = [...currentLogisticSchedule];
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      updatedSchedule[0] = { 
+        ...updatedSchedule[0], 
+        [parent]: { ...updatedSchedule[0][parent], [child]: value }
+      };
+    } else {
+      updatedSchedule[0] = { ...updatedSchedule[0], [field]: value };
+    }
+    setValue('logistic_schedule', updatedSchedule);
+  };
 
   return (
     <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
@@ -34,186 +138,190 @@ export function LogisticSection({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Label className="text-lg font-semibold text-gray-900 dark:text-white">
-            {t('logisticSchedule')} <span className="text-red-500">{t('requiredField')}</span>
-          </Label>
-          <Button
-            type="button"
-            onClick={addLogisticSchedule}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            {t('addLogisticSchedule')}
-          </Button>
-        </div>
-
-        {logisticSchedule.map((schedule, index) => (
-          <div key={index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium text-gray-900 dark:text-white">Logistic Schedule {index + 1}</h4>
-              <Button
-                type="button"
-                onClick={() => removeLogisticSchedule(index)}
-                variant="outline"
-                size="sm"
-                className="text-red-600 hover:text-red-700"
+        {/* Logistic Schedule Fields */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Payment Responsibility */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Payment Responsibility <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={currentSchedule.logistic_payment_responsability || ''}
+                onValueChange={(value) => {
+                  const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                  const updatedSchedule = [...currentLogisticSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], logistic_payment_responsability: value };
+                  setValue('logistic_schedule', updatedSchedule);
+                }}
               >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+                <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.logistic_payment_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select responsibility" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="buyer">Buyer</SelectItem>
+                  <SelectItem value="seller">Seller</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Logistic Payment Responsibility */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Payment Responsibility <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={schedule.logistic_payment_responsability}
-                  onValueChange={(value) => updateLogisticSchedule(index, 'logistic_payment_responsability', value)}
-                >
-                  <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.logistic_payment_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder="Select responsibility" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="buyer">Buyer</SelectItem>
-                    <SelectItem value="seller">Seller</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Logistic Coordination Responsibility */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Coordination Responsibility <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={schedule.logistic_coordination_responsability}
-                  onValueChange={(value) => updateLogisticSchedule(index, 'logistic_coordination_responsability', value)}
-                >
-                  <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.logistic_coordination_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder="Select responsibility" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="buyer">Buyer</SelectItem>
-                    <SelectItem value="seller">Seller</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Payment Currency */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Payment Currency <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={schedule.payment_currency}
-                  onValueChange={(value) => updateLogisticSchedule(index, 'payment_currency', value)}
-                >
-                  <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder="Select currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="usd">USD</SelectItem>
-                    <SelectItem value="mxn">MXN</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Coordination Responsibility */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Coordination Responsibility <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={currentSchedule.logistic_coordination_responsability || ''}
+                onValueChange={(value) => {
+                  const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                  const updatedSchedule = [...currentLogisticSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], logistic_coordination_responsability: value };
+                  setValue('logistic_schedule', updatedSchedule);
+                }}
+              >
+                <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.logistic_coordination_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select responsibility" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="buyer">Buyer</SelectItem>
+                  <SelectItem value="seller">Seller</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Freight Cost Section */}
-            <div className="space-y-4">
-              <Label className="text-lg font-semibold text-gray-900 dark:text-white">
+            {/* Payment Currency */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Payment Currency <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={currentSchedule.payment_currency || ''}
+                onValueChange={(value) => {
+                  const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                  const updatedSchedule = [...currentLogisticSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value };
+                  setValue('logistic_schedule', updatedSchedule);
+                }}
+              >
+                <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="usd">USD</SelectItem>
+                  <SelectItem value="mxn">MXN</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Freight Cost Type */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Freight Cost Type <span className="text-red-500">*</span>
+              </Label>
+              <Select
+                value={currentSchedule.freight_cost?.type || ''}
+                onValueChange={(value) => {
+                  const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                  const updatedSchedule = [...currentLogisticSchedule];
+                  updatedSchedule[0] = { 
+                    ...updatedSchedule[0], 
+                    freight_cost: { ...updatedSchedule[0].freight_cost, type: value }
+                  };
+                  setValue('logistic_schedule', updatedSchedule);
+                }}
+              >
+                <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="fixed">Fixed</SelectItem>
+                  <SelectItem value="range">Range</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Freight Cost Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Cost */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 Freight Cost
               </Label>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Freight Cost Type */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Type <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    value={schedule.freight_cost.type}
-                    onValueChange={(value) => updateLogisticSchedule(index, 'freight_cost.type', value)}
-                  >
-                    <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="fixed">Fixed</SelectItem>
-                      <SelectItem value="range">Range</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <Input
+                type="text"
+                inputMode="decimal"
+                defaultValue={formatNumber(currentSchedule.freight_cost?.cost)}
+                onChange={(e) => handleNumberChange('freight_cost.cost', e.target.value)}
+                onBlur={(e) => handleNumberBlur('freight_cost.cost', e)}
+                onKeyDown={(e) => {
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                  if (!allowedKeys.includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder="0.00"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
+              />
+            </div>
 
-                {/* Cost */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Cost
-                  </Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={schedule.freight_cost.cost}
-                    onChange={(e) => updateLogisticSchedule(index, 'freight_cost.cost', parseFloat(e.target.value) || 0)}
-                    className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0"
-                  />
-                </div>
+            {/* Min */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Freight Min Cost
+              </Label>
+              <Input
+                type="text"
+                inputMode="decimal"
+                defaultValue={formatNumber(currentSchedule.freight_cost?.min)}
+                onChange={(e) => handleNumberChange('freight_cost.min', e.target.value)}
+                onBlur={(e) => handleNumberBlur('freight_cost.min', e)}
+                onKeyDown={(e) => {
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                  if (!allowedKeys.includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder="0.00"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
+              />
+            </div>
 
-                {/* Min */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Min
-                  </Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={schedule.freight_cost.min}
-                    onChange={(e) => updateLogisticSchedule(index, 'freight_cost.min', parseFloat(e.target.value) || 0)}
-                    className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0"
-                  />
-                </div>
-
-                {/* Max */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Max
-                  </Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={schedule.freight_cost.max}
-                    onChange={(e) => updateLogisticSchedule(index, 'freight_cost.max', parseFloat(e.target.value) || 0)}
-                    className={`h-10 ${errors.logistic_schedule?.[index]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0"
-                  />
-                </div>
-              </div>
+            {/* Max */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Freight Max Cost
+              </Label>
+              <Input
+                type="text"
+                inputMode="decimal"
+                defaultValue={formatNumber(currentSchedule.freight_cost?.max)}
+                onChange={(e) => handleNumberChange('freight_cost.max', e.target.value)}
+                onBlur={(e) => handleNumberBlur('freight_cost.max', e)}
+                onKeyDown={(e) => {
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                  if (!allowedKeys.includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder="0.00"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
+              />
             </div>
           </div>
-        ))}
-
-        {errors.logistic_schedule && (
-          <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule.message}</p>
-        )}
-
-        {logisticSchedule.length === 0 && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <p>No logistic schedules added yet. Click "Add Logistic Schedule" to get started.</p>
-          </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );
