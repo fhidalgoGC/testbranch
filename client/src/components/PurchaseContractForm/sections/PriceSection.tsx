@@ -26,12 +26,17 @@ export function PriceSection({
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};
 
-  // Helper function to format number for display
+  // Helper function to format number for display (2-4 decimals)
   const formatNumber = (value: number | undefined): string => {
     if (!value || value === 0) return '';
+    
+    // Determine how many decimal places to show
+    const decimalString = value.toString().split('.')[1] || '';
+    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
+    
     return value.toLocaleString('en-US', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: decimalPlaces
     });
   };
 
@@ -50,6 +55,16 @@ export function PriceSection({
       return;
     }
     
+    // Check decimal places limit (max 4)
+    const parts = inputValue.split('.');
+    if (parts[1] && parts[1].length > 4) {
+      // Truncate to 4 decimals (round down)
+      const truncated = parts[0] + '.' + parts[1].substring(0, 4);
+      const numericValue = parseFloat(truncated);
+      updatePriceSchedule(0, field, numericValue);
+      return;
+    }
+    
     // Allow empty string or valid number format
     if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
       const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
@@ -59,11 +74,21 @@ export function PriceSection({
 
   // Helper function to format number on blur
   const handleNumberBlur = (field: keyof PriceSchedule, e: React.FocusEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value) || 0;
+    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    
+    // Truncate to 4 decimals (round down)
+    const factor = Math.pow(10, 4);
+    value = Math.floor(value * factor) / factor;
+    
+    // Determine how many decimal places to show (2-4)
+    const decimalString = value.toString().split('.')[1] || '';
+    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
+    
     const formatted = value.toLocaleString('en-US', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: decimalPlaces
     });
+    
     e.target.value = formatted;
     updatePriceSchedule(0, field, value);
   };
