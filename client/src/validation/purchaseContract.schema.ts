@@ -51,9 +51,9 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
       .array(
         z.object({
           pricing_type: z.string().min(1, t('fieldRequired')).refine(
-            (val) => ['fixed', 'basis'].includes(val),
+            (val: string) => ['fixed', 'basis'].includes(val),
             t('selectOption')
-          ),
+          ).default('fixed'),
           price: z.union([z.number(), z.null()]).optional(),
           basis: z.union([z.number(), z.null()]).optional(),
           basis_operation: z.enum(['add', 'subtract']).default('add'),

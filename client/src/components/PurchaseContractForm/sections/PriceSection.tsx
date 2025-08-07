@@ -157,7 +157,7 @@ export function PriceSection({
                 {t('pricingType')} <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.pricing_type || ''}
+                value={currentSchedule.pricing_type || 'fixed'}
                 onValueChange={(value) => {
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
