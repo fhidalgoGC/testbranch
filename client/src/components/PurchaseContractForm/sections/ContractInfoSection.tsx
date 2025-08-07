@@ -117,14 +117,14 @@ export function ContractInfoSection() {
       // Truncate to 4 decimals (round down)
       const truncated = parts[0] + '.' + parts[1].substring(0, 4);
       const numericValue = parseFloat(truncated);
-      setValue(field, numericValue);
+      setValue(field, numericValue, { shouldValidate: true });
       return;
     }
     
     // Allow empty string or valid number format
     if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
       const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
-      setValue(field, numericValue);
+      setValue(field, numericValue, { shouldValidate: true });
     }
   };
 
@@ -154,7 +154,7 @@ export function ContractInfoSection() {
         numericValue = 0;
       }
       
-      setValue(field, numericValue);
+      setValue(field, numericValue, { shouldValidate: true });
     }
   };
 
@@ -173,7 +173,7 @@ export function ContractInfoSection() {
     });
     
     e.target.value = formatted;
-    setValue(field, value);
+    setValue(field, value, { shouldValidate: true });
   };
 
   // Helper function to format number on blur
@@ -194,7 +194,7 @@ export function ContractInfoSection() {
     });
     
     e.target.value = formatted;
-    setValue(field, value);
+    setValue(field, value, { shouldValidate: true });
   };
 
   return (

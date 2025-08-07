@@ -15,7 +15,7 @@ export const createPurchaseContractSchema = () => {
     characteristics_configuration_id: z.string().min(1, 'This field is required'),
     characteristics_configuration_name: z.string().optional(),
     grade: z.number().min(1, 'Must be a positive number').max(10, 'Invalid format'),
-    quantity: z.number().min(1, 'Must be a positive number'),
+    quantity: z.number().min(1, 'This field is required'),
     reference_number: z.string().min(1, 'This field is required'),
     measurement_unit_id: z.string().optional(),
     measurement_unit: z.string().min(1, 'This field is required'),
