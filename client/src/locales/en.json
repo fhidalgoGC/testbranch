@@ -123,7 +123,7 @@
   "futurePrice": "Future Price",
   "exchange": "Exchange",
   "exchangePlaceholder": "Kansas City Board of Trade",
-  "logisticContract": "Logistic Contract",
+  "logisticContract": "Logistic Contract (Freight)",
   "logisticSchedule": "Logistic Schedule",
   "addLogisticSchedule": "Add Logistic Schedule",
   "paymentResponsibility": "Payment Responsibility",
