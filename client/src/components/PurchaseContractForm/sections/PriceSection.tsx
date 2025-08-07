@@ -57,26 +57,16 @@ export function PriceSection({
     
     if (field === 'price') {
       currentItem.price = safeValue;
-      // For fixed pricing, recalculate future_price considering basis and operation
+      // For fixed pricing: when price changes, copy value to future
       if (currentItem.pricing_type === 'fixed') {
-        const basisValue = currentItem.basis || 0;
-        const basisOperation = currentItem.basis_operation || 'add';
-        // Apply the calculation: future = price - basis (for add) or price + basis (for subtract)
-        currentItem.future_price = basisOperation === 'add' 
-          ? safeValue - basisValue 
-          : safeValue + basisValue;
+        currentItem.future_price = safeValue;
       }
     } else if (field === 'basis') {
       currentItem.basis = safeValue;
-      // For fixed pricing, recalculate future_price considering basis_operation
+      // For fixed pricing: when basis changes, calculate future = price - basis
       if (currentItem.pricing_type === 'fixed') {
         const currentPrice = currentItem.price || 0;
-        const basisOperation = currentItem.basis_operation || 'add';
-        // If operation is 'add', we subtract basis (price - basis)
-        // If operation is 'subtract', we add basis (price + basis)
-        currentItem.future_price = basisOperation === 'add' 
-          ? currentPrice - safeValue 
-          : currentPrice + safeValue;
+        currentItem.future_price = currentPrice - safeValue;
       }
     } else if (field === 'future_price') {
       currentItem.future_price = safeValue;
@@ -100,18 +90,13 @@ export function PriceSection({
       if (field === 'price') {
         currentItem.price = 0;
         if (currentItem.pricing_type === 'fixed') {
-          const basisValue = currentItem.basis || 0;
-          const basisOperation = currentItem.basis_operation || 'add';
-          // Apply the calculation even when price is cleared: future = 0 - basis (for add) or 0 + basis (for subtract)
-          currentItem.future_price = basisOperation === 'add' 
-            ? 0 - basisValue 
-            : 0 + basisValue;
+          currentItem.future_price = 0;
         }
       } else if (field === 'basis') {
         currentItem.basis = 0;
         if (currentItem.pricing_type === 'fixed') {
           const currentPrice = currentItem.price || 0;
-          currentItem.future_price = currentPrice;
+          currentItem.future_price = currentPrice - 0;
         }
       } else if (field === 'future_price') {
         currentItem.future_price = 0;
@@ -136,22 +121,13 @@ export function PriceSection({
       if (field === 'price') {
         currentItem.price = numericValue;
         if (currentItem.pricing_type === 'fixed') {
-          const basisValue = currentItem.basis || 0;
-          const basisOperation = currentItem.basis_operation || 'add';
-          // Apply the calculation: future = price - basis (for add) or price + basis (for subtract)
-          currentItem.future_price = basisOperation === 'add' 
-            ? numericValue - basisValue 
-            : numericValue + basisValue;
+          currentItem.future_price = numericValue;
         }
       } else if (field === 'basis') {
         currentItem.basis = numericValue;
         if (currentItem.pricing_type === 'fixed') {
           const currentPrice = currentItem.price || 0;
-          const basisOperation = currentItem.basis_operation || 'add';
-          // Apply basis_operation to the calculation
-          currentItem.future_price = basisOperation === 'add' 
-            ? currentPrice - numericValue 
-            : currentPrice + numericValue;
+          currentItem.future_price = currentPrice - numericValue;
         }
       } else if (field === 'future_price') {
         currentItem.future_price = numericValue;
@@ -197,13 +173,13 @@ export function PriceSection({
                   // Initialize values based on pricing type
                   if (value === 'fixed') {
                     // For fixed: initialize all fields to 0
-                    currentItem.price = currentItem.price || 0;
-                    currentItem.basis = currentItem.basis || 0;
-                    currentItem.future_price = currentItem.future_price || 0;
+                    currentItem.price = 0;
+                    currentItem.basis = 0;
+                    currentItem.future_price = 0;
                   } else if (value === 'basis') {
-                    // For basis: initialize only basis field
-                    currentItem.basis = currentItem.basis || 0;
-                    // We keep price and future_price values but they won't be shown
+                    // For basis: initialize only basis field to 0
+                    currentItem.basis = 0;
+                    // Keep price and future_price but they won't be shown
                   }
                   
                   updatedSchedule[0] = currentItem;
@@ -230,62 +206,29 @@ export function PriceSection({
 
           {/* Price Fields - Conditional rendering based on pricing_type */}
           {currentSchedule.pricing_type === 'basis' ? (
-            /* Basis Type: Show only Basis field with +/- button */
+            /* Basis Type: Show only Basis field */
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 Basis <span className="text-red-500">*</span>
               </Label>
-              <div className="flex items-center gap-2">
-                {/* Basis Operation Button */}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex items-center justify-center"
-                  onClick={() => {
-                    const currentPriceSchedule = watch('price_schedule') || [{}];
-                    const updatedSchedule = [...currentPriceSchedule];
-                    const currentItem = { ...updatedSchedule[0] };
-                    const currentOp = currentItem.basis_operation || 'add';
-                    
-                    // Toggle operation
-                    currentItem.basis_operation = currentOp === 'add' ? 'subtract' : 'add';
-                    
-                    // Recalculate future_price if in fixed mode
-                    if (currentItem.pricing_type === 'fixed') {
-                      const currentPrice = currentItem.price || 0;
-                      const basisValue = currentItem.basis || 0;
-                      currentItem.future_price = currentItem.basis_operation === 'add' 
-                        ? currentPrice - basisValue 
-                        : currentPrice + basisValue;
-                    }
-                    
-                    updatedSchedule[0] = currentItem;
-                    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                  }}
-                >
-                  {currentSchedule.basis_operation === 'subtract' ? '-' : '+'}
-                </Button>
-                {/* Basis Input Field */}
-                <Input
-                  type="text"
-                  inputMode="decimal"
-                  defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
-                  onChange={(e) => handleNumberChange('basis', e.target.value)}
-                  onBlur={(e) => handleNumberBlur('basis', e)}
-                  onKeyDown={(e) => {
-                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                    if (!allowedKeys.includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="0.00"
-                  style={{
-                    MozAppearance: 'textfield'
-                  }}
-                />
-              </div>
+              <Input
+                type="text"
+                inputMode="decimal"
+                defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
+                onChange={(e) => handleNumberChange('basis', e.target.value)}
+                onBlur={(e) => handleNumberBlur('basis', e)}
+                onKeyDown={(e) => {
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','-'];
+                  if (!allowedKeys.includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                className={`h-10 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder="0.00"
+                style={{
+                  MozAppearance: 'textfield'
+                }}
+              />
               {/* Basis Error */}
               {errors.price_schedule?.[0]?.basis && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
@@ -325,62 +268,29 @@ export function PriceSection({
 
               {/* Basis and Futures Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Basis Field with +/- Button */}
+                {/* Basis Field */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-900 dark:text-white">
                     Basis <span className="text-red-500">*</span>
                   </Label>
-                  <div className="flex items-center gap-2">
-                    {/* Basis Operation Button */}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex items-center justify-center"
-                      onClick={() => {
-                        const currentPriceSchedule = watch('price_schedule') || [{}];
-                        const updatedSchedule = [...currentPriceSchedule];
-                        const currentItem = { ...updatedSchedule[0] };
-                        const currentOp = currentItem.basis_operation || 'add';
-                        
-                        // Toggle operation
-                        currentItem.basis_operation = currentOp === 'add' ? 'subtract' : 'add';
-                        
-                        // Recalculate future_price if in fixed mode
-                        if (currentItem.pricing_type === 'fixed') {
-                          const currentPrice = currentItem.price || 0;
-                          const basisValue = currentItem.basis || 0;
-                          currentItem.future_price = currentItem.basis_operation === 'add' 
-                            ? currentPrice - basisValue 
-                            : currentPrice + basisValue;
-                        }
-                        
-                        updatedSchedule[0] = currentItem;
-                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                      }}
-                    >
-                      {currentSchedule.basis_operation === 'subtract' ? '-' : '+'}
-                    </Button>
-                    {/* Basis Input Field */}
-                    <Input
-                      type="text"
-                      inputMode="decimal"
-                      defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
-                      onChange={(e) => handleNumberChange('basis', e.target.value)}
-                      onBlur={(e) => handleNumberBlur('basis', e)}
-                      onKeyDown={(e) => {
-                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                        if (!allowedKeys.includes(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                      placeholder="0.00"
-                      style={{
-                        MozAppearance: 'textfield'
-                      }}
-                    />
-                  </div>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
+                    onChange={(e) => handleNumberChange('basis', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('basis', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','-'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="0.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
                   {/* Basis Error */}
                   {errors.price_schedule?.[0]?.basis && (
                     <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
