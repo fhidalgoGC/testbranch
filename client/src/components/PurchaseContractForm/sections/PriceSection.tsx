@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, DollarSign } from 'lucide-react';
+import { Plus, Trash2, DollarSign, X } from 'lucide-react';
 import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
 
 interface PriceSectionProps {
@@ -122,8 +122,8 @@ export function PriceSection({
       <CardContent className="space-y-6">
         {/* Price Schedule Fields */}
         <div className="space-y-6">
+          {/* Pricing Type */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Pricing Type */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 Pricing Type <span className="text-red-500">*</span>
@@ -149,115 +149,167 @@ export function PriceSection({
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].pricing_type.message}</p>
               )}
             </div>
+          </div>
 
-            {/* Price */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Price <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                defaultValue={formatNumber(currentSchedule.price)}
-                onChange={(e) => handleNumberChange('price', e.target.value)}
-                onBlur={(e) => handleNumberBlur('price', e)}
-                onKeyDown={(e) => {
-                  // Allow only numbers, decimal point, backspace, delete, tab, enter, arrow keys
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="0.00"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
-              {errors.price_schedule?.[0]?.price && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].price.message}</p>
-              )}
-            </div>
+          {/* Horizontal Price Layout */}
+          <div className="space-y-2">
+            <div className="flex items-end gap-2">
+              {/* Price Field */}
+              <div className="flex-1 space-y-2">
+                <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                  Price <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  defaultValue={formatNumber(currentSchedule.price)}
+                  onChange={(e) => handleNumberChange('price', e.target.value)}
+                  onBlur={(e) => handleNumberBlur('price', e)}
+                  onKeyDown={(e) => {
+                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                    if (!allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  placeholder="Price"
+                  style={{
+                    MozAppearance: 'textfield'
+                  }}
+                />
+              </div>
 
-            {/* Future Price */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Future Price <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                defaultValue={formatNumber(currentSchedule.future_price)}
-                onChange={(e) => handleNumberChange('future_price', e.target.value)}
-                onBlur={(e) => handleNumberBlur('future_price', e)}
-                onKeyDown={(e) => {
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="0.00"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
-              {errors.price_schedule?.[0]?.future_price && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].future_price.message}</p>
-              )}
-            </div>
+              {/* Basis Operation Button */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-900 dark:text-white opacity-0">
+                  Op
+                </Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50"
+                  onClick={() => {
+                    const currentPriceSchedule = watch('price_schedule') || [{}];
+                    const updatedSchedule = [...currentPriceSchedule];
+                    const currentOp = updatedSchedule[0].basis_operation || 'add';
+                    updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: currentOp === 'add' ? 'subtract' : 'add' };
+                    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  }}
+                >
+                  {currentSchedule.basis_operation === 'subtract' ? '-' : '+'}
+                </Button>
+              </div>
 
-            {/* Basis */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Basis <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                defaultValue={formatNumber(currentSchedule.basis)}
-                onChange={(e) => handleNumberChange('basis', e.target.value)}
-                onBlur={(e) => handleNumberBlur('basis', e)}
-                onKeyDown={(e) => {
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`h-10 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="0.00"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
-              {errors.price_schedule?.[0]?.basis && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
-              )}
-            </div>
+              {/* Basis Field */}
+              <div className="w-32 space-y-2">
+                <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                  Basis <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={formatNumber(currentSchedule.basis)}
+                    onChange={(e) => handleNumberChange('basis', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('basis', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 pr-8 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="0.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
+                  {currentSchedule.basis && currentSchedule.basis > 0 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-6 p-0 text-gray-400 hover:text-gray-600"
+                      onClick={() => {
+                        const currentPriceSchedule = watch('price_schedule') || [{}];
+                        const updatedSchedule = [...currentPriceSchedule];
+                        updatedSchedule[0] = { ...updatedSchedule[0], basis: 0 };
+                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                      }}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
 
-            {/* Basis Operation */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Basis Operation
-              </Label>
-              <Select
-                value={currentSchedule.basis_operation || ''}
-                onValueChange={(value) => {
-                  const currentPriceSchedule = watch('price_schedule') || [{}];
-                  const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: value as 'add' | 'subtract' };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                }}
-              >
-                <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
-                  <SelectValue placeholder="Select operation" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="add">Add</SelectItem>
-                  <SelectItem value="subtract">Subtract</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Future Price Field */}
+              <div className="w-32 space-y-2">
+                <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                  Futures <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={formatNumber(currentSchedule.future_price)}
+                    onChange={(e) => handleNumberChange('future_price', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('future_price', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 pr-8 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="0.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
+                  {currentSchedule.future_price && currentSchedule.future_price > 0 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-6 p-0 text-gray-400 hover:text-gray-600"
+                      onClick={() => {
+                        const currentPriceSchedule = watch('price_schedule') || [{}];
+                        const updatedSchedule = [...currentPriceSchedule];
+                        updatedSchedule[0] = { ...updatedSchedule[0], future_price: 0 };
+                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                      }}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
+            
+            {/* Error Messages */}
+            <div className="flex gap-2">
+              <div className="flex-1">
+                {errors.price_schedule?.[0]?.price && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].price.message}</p>
+                )}
+              </div>
+              <div className="w-10"></div>
+              <div className="w-32">
+                {errors.price_schedule?.[0]?.basis && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
+                )}
+              </div>
+              <div className="w-32">
+                {errors.price_schedule?.[0]?.future_price && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].future_price.message}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* Option Month */}
             <div className="space-y-2">
