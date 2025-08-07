@@ -46,8 +46,25 @@ export function PurchaseContractForm() {
           type="button"
           onClick={() => {
             const formValues = form.getValues();
-            console.log('🔍 Form Values Debug:', JSON.stringify(formValues, null, 2));
-            console.log('📋 Form Values Object:', formValues);
+            
+            // Calculate threshold weights
+            const quantity = formValues.quantity || 0;
+            const minThresholdWeight = quantity - (quantity * formValues.min_thresholds_percentage / 100);
+            const maxThresholdWeight = quantity + (quantity * formValues.max_thresholds_percentage / 100);
+            
+            // Create enhanced debug object with calculated thresholds
+            const debugData = {
+              ...formValues,
+              thresholds: {
+                min_thresholds_percentage: formValues.min_thresholds_percentage,
+                min_thresholds_weight: minThresholdWeight,
+                max_thresholds_percentage: formValues.max_thresholds_percentage,
+                max_thresholds_weight: maxThresholdWeight
+              }
+            };
+            
+            console.log('🔍 Form Values Debug:', JSON.stringify(debugData, null, 2));
+            console.log('📋 Form Values Object:', debugData);
           }}
           className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
         >
