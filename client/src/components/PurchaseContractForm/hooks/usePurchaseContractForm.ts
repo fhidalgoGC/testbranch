@@ -17,6 +17,7 @@ export function usePurchaseContractForm() {
 
   const form = useForm<PurchaseContractFormData>({
     resolver,
+    mode: 'onSubmit', // Only validate on submit, not immediately
     defaultValues: {
       folio: '',
       type: 'purchase',
@@ -37,10 +38,10 @@ export function usePurchaseContractForm() {
       participants: [],
       price_schedule: [{
         pricing_type: 'fixed',
-        price: null as any,
-        basis: null as any,
+        price: 0,
+        basis: 0,
         basis_operation: 'add',
-        future_price: null as any,
+        future_price: 0,
         option_month: '',
         option_year: new Date().getFullYear(),
         payment_currency: APP_CONFIG.defaultCurrency as any,
@@ -71,8 +72,10 @@ export function usePurchaseContractForm() {
 
   // Update validation messages when language changes
   useEffect(() => {
-    // Force revalidation when language changes to update error messages
-    form.trigger();
+    // Only revalidate if form has been touched to avoid showing errors on initial load
+    if (form.formState.isSubmitted || Object.keys(form.formState.touchedFields).length > 0) {
+      form.trigger();
+    }
   }, [t, form]);
 
   // Participant management
