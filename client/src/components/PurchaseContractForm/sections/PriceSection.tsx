@@ -57,9 +57,14 @@ export function PriceSection({
     
     if (field === 'price') {
       currentItem.price = safeValue;
-      // For fixed pricing, copy price to future_price
+      // For fixed pricing, recalculate future_price considering basis and operation
       if (currentItem.pricing_type === 'fixed') {
-        currentItem.future_price = safeValue;
+        const basisValue = currentItem.basis || 0;
+        const basisOperation = currentItem.basis_operation || 'add';
+        // Apply the calculation: future = price - basis (for add) or price + basis (for subtract)
+        currentItem.future_price = basisOperation === 'add' 
+          ? safeValue - basisValue 
+          : safeValue + basisValue;
       }
     } else if (field === 'basis') {
       currentItem.basis = safeValue;
@@ -95,7 +100,12 @@ export function PriceSection({
       if (field === 'price') {
         currentItem.price = 0;
         if (currentItem.pricing_type === 'fixed') {
-          currentItem.future_price = 0;
+          const basisValue = currentItem.basis || 0;
+          const basisOperation = currentItem.basis_operation || 'add';
+          // Apply the calculation even when price is cleared: future = 0 - basis (for add) or 0 + basis (for subtract)
+          currentItem.future_price = basisOperation === 'add' 
+            ? 0 - basisValue 
+            : 0 + basisValue;
         }
       } else if (field === 'basis') {
         currentItem.basis = 0;
@@ -126,7 +136,12 @@ export function PriceSection({
       if (field === 'price') {
         currentItem.price = numericValue;
         if (currentItem.pricing_type === 'fixed') {
-          currentItem.future_price = numericValue;
+          const basisValue = currentItem.basis || 0;
+          const basisOperation = currentItem.basis_operation || 'add';
+          // Apply the calculation: future = price - basis (for add) or price + basis (for subtract)
+          currentItem.future_price = basisOperation === 'add' 
+            ? numericValue - basisValue 
+            : numericValue + basisValue;
         }
       } else if (field === 'basis') {
         currentItem.basis = numericValue;
