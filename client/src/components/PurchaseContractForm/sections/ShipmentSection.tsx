@@ -18,6 +18,18 @@ const INSPECTION_PROTEINS_WEIGHTS_OPTIONS = [
   { key: 'firstCertification', value: 'First Certification', label: 'First Certification' }
 ];
 
+// Standardized data structure for transport field
+const TRANSPORT_OPTIONS = [
+  { key: 'truck', value: 'Truck', label: 'Truck' },
+  { key: 'rail', value: 'Rail', label: 'Rail' },
+  { key: 'barge', value: 'Barge', label: 'Barge' },
+  { key: 'vessel', value: 'Vessel', label: 'Vessel' },
+  { key: 'truckRail', value: 'Truck/Rail', label: 'Truck/Rail' },
+  { key: 'bus', value: 'BUS', label: 'BUS' },
+  { key: 'container', value: 'Container', label: 'Container' },
+  { key: 'drum', value: 'Drum', label: 'Drum' }
+];
+
 export function ShipmentSection() {
   const { t } = useTranslation();
   const { register, formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
@@ -144,11 +156,11 @@ export function ShipmentSection() {
                 <SelectValue placeholder="Select transport" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="BUS">Bus</SelectItem>
-                <SelectItem value="TRUCK">Truck</SelectItem>
-                <SelectItem value="SHIP">Ship</SelectItem>
-                <SelectItem value="TRAIN">Train</SelectItem>
-                <SelectItem value="PLANE">Plane</SelectItem>
+                {TRANSPORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.key} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.transport && (
