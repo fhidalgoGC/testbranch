@@ -1,13 +1,12 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, DollarSign, X } from 'lucide-react';
-import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
+import { DollarSign } from 'lucide-react';
+import { usePurchaseContractNestedField, usePurchaseContract } from '@/context/PurchaseContractContext';
 import { APP_CONFIG, CURRENCY_OPTIONS, formatNumber, parseFormattedNumber } from '@/environment/environment';
 
 // Standardized exchange options
@@ -24,80 +23,69 @@ const EXCHANGE_OPTIONS = [
   }
 ];
 
-interface PriceSectionProps {
-  addPriceSchedule: () => void;
-  removePriceSchedule: (index: number) => void;
-  updatePriceSchedule: (index: number, field: keyof PriceSchedule, value: any) => void;
-}
-
-export function PriceSection({ 
-  addPriceSchedule, 
-  removePriceSchedule, 
-  updatePriceSchedule 
-}: PriceSectionProps) {
+export function PriceSection() {
   const { t } = useTranslation();
-  const { formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
+  const { formData } = usePurchaseContract();
   
-  const priceSchedule = watch('price_schedule') || [];
-  const currentSchedule = priceSchedule[0] || {};
+  // Get the current price schedule (assuming we're working with the first item)
+  const currentSchedule = formData.price_schedule[0] || {};
+  
+  // Global state hooks for nested fields
+  const [pricingType, setPricingType] = usePurchaseContractNestedField<'fixed' | 'basis'>('price_schedule.0.pricing_type');
+  const [price, setPrice] = usePurchaseContractNestedField<number>('price_schedule.0.price');
+  const [basis, setBasis] = usePurchaseContractNestedField<number>('price_schedule.0.basis');
+  const [futurePrice, setFuturePrice] = usePurchaseContractNestedField<number>('price_schedule.0.future_price');
+  const [optionMonth, setOptionMonth] = usePurchaseContractNestedField<string>('price_schedule.0.option_month');
+  const [optionYear, setOptionYear] = usePurchaseContractNestedField<number>('price_schedule.0.option_year');
+  const [paymentCurrency, setPaymentCurrency] = usePurchaseContractNestedField<'usd' | 'mxn'>('price_schedule.0.payment_currency');
+  const [exchange, setExchange] = usePurchaseContractNestedField<string>('price_schedule.0.exchange');
 
-  // Use centralized number formatting from environment configuration
-
-  // Helper function to handle number input change with format-aware validation and business logic
-  const handleNumberChange = (field: keyof PriceSchedule, inputValue: string) => {
-    const currentPriceSchedule = watch('price_schedule') || [{}];
-    const updatedSchedule = [...currentPriceSchedule];
-    const currentItem = { ...updatedSchedule[0] };
-    
+  // Helper function to handle number input change with business logic
+  const handleNumberChange = (field: 'price' | 'basis' | 'future_price', inputValue: string) => {
     if (inputValue.trim() === '') {
-      // Handle empty input - set to null for validation
-      (currentItem as any)[field] = null;
-    } else {
-      // Use parseFormattedNumber to handle the input according to configured format
-      const numericValue = parseFormattedNumber(inputValue);
-      
-      if (numericValue !== null) {
-        // Update the field that was changed
-        if (field === 'price') {
-          currentItem.price = numericValue;
-          // For fixed pricing: when price changes, copy value to future
-          if (currentItem.pricing_type === 'fixed') {
-            currentItem.future_price = numericValue;
-          }
-        } else if (field === 'basis') {
-          // For basis, respect the current sign from the toggle button
-          const isNegative = (currentItem.basis || 0) < 0;
-          currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
-          // For fixed pricing: when basis changes, calculate future = price - basis
-          if (currentItem.pricing_type === 'fixed') {
-            const currentPrice = currentItem.price || 0;
-            currentItem.future_price = currentPrice - currentItem.basis;
-          }
-        } else if (field === 'future_price') {
-          currentItem.future_price = numericValue;
-        }
-      }
+      // Handle empty input
+      if (field === 'price') setPrice(0);
+      else if (field === 'basis') setBasis(0);
+      else if (field === 'future_price') setFuturePrice(0);
+      return;
     }
     
-    updatedSchedule[0] = currentItem;
-    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+    // Use parseFormattedNumber to handle the input according to configured format
+    const numericValue = parseFormattedNumber(inputValue);
+    
+    if (numericValue !== null) {
+      if (field === 'price') {
+        setPrice(numericValue);
+        // For fixed pricing: when price changes, copy value to future
+        if (pricingType === 'fixed') {
+          setFuturePrice(numericValue);
+        }
+      } else if (field === 'basis') {
+        // For basis, respect the current sign from the toggle button
+        const isNegative = (basis || 0) < 0;
+        const newBasis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+        setBasis(newBasis);
+        
+        // For fixed pricing: when basis changes, calculate future = price - basis
+        if (pricingType === 'fixed') {
+          const currentPrice = price || 0;
+          setFuturePrice(currentPrice - newBasis);
+        }
+      } else if (field === 'future_price') {
+        setFuturePrice(numericValue);
+      }
+    }
   };
 
-  // Helper function to format number on blur using environment configuration and apply business logic
-  const handleNumberBlur = (field: keyof PriceSchedule, e: React.FocusEvent<HTMLInputElement>) => {
+  // Helper function to format number on blur
+  const handleNumberBlur = (field: 'price' | 'basis' | 'future_price', e: React.FocusEvent<HTMLInputElement>) => {
     const inputVal = e.target.value.trim();
     
     if (inputVal === '') {
       e.target.value = '';
-      const currentPriceSchedule = watch('price_schedule') || [{}];
-      const updatedSchedule = [...currentPriceSchedule];
-      const currentItem = { ...updatedSchedule[0] };
-      
-      // Handle field clearing - set to null for validation
-      (currentItem as any)[field] = null;
-      
-      updatedSchedule[0] = currentItem;
-      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+      if (field === 'price') setPrice(0);
+      else if (field === 'basis') setBasis(0);
+      else if (field === 'future_price') setFuturePrice(0);
       return;
     }
     
@@ -107,30 +95,25 @@ export function PriceSection({
       const formatted = formatNumber(Math.abs(numericValue));
       e.target.value = formatted;
       
-      const currentPriceSchedule = watch('price_schedule') || [{}];
-      const updatedSchedule = [...currentPriceSchedule];
-      const currentItem = { ...updatedSchedule[0] };
-      
-      // Handle field updates with explicit type handling
+      // Handle field updates with business logic
       if (field === 'price') {
-        currentItem.price = numericValue;
-        if (currentItem.pricing_type === 'fixed') {
-          currentItem.future_price = numericValue;
+        setPrice(numericValue);
+        if (pricingType === 'fixed') {
+          setFuturePrice(numericValue);
         }
       } else if (field === 'basis') {
         // For basis, respect the current sign from the toggle button
-        const isNegative = (currentItem.basis || 0) < 0;
-        currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
-        if (currentItem.pricing_type === 'fixed') {
-          const currentPrice = currentItem.price || 0;
-          currentItem.future_price = currentPrice - currentItem.basis;
+        const isNegative = (basis || 0) < 0;
+        const newBasis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+        setBasis(newBasis);
+        
+        if (pricingType === 'fixed') {
+          const currentPrice = price || 0;
+          setFuturePrice(currentPrice - newBasis);
         }
       } else if (field === 'future_price') {
-        currentItem.future_price = numericValue;
+        setFuturePrice(numericValue);
       }
-      
-      updatedSchedule[0] = currentItem;
-      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
     }
   };
 
@@ -157,32 +140,24 @@ export function PriceSection({
                 {t('pricingType')} <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.pricing_type || 'fixed'}
+                value={pricingType || 'fixed'}
                 onValueChange={(value) => {
-                  const currentPriceSchedule = watch('price_schedule') || [{}];
-                  const updatedSchedule = [...currentPriceSchedule];
-                  const currentItem = { ...updatedSchedule[0] };
-                  
-                  // Update pricing type
-                  currentItem.pricing_type = value as 'fixed' | 'basis';
+                  const newType = value as 'fixed' | 'basis';
+                  setPricingType(newType);
                   
                   // Initialize values based on pricing type
-                  if (value === 'fixed') {
+                  if (newType === 'fixed') {
                     // For fixed: initialize all fields to 0
-                    currentItem.price = 0;
-                    currentItem.basis = 0;
-                    currentItem.future_price = 0;
-                  } else if (value === 'basis') {
-                    // For basis: initialize basis field to null to trigger validation
-                    (currentItem as any).basis = null;
-                    // Keep price and future_price but they won't be shown
+                    setPrice(0);
+                    setBasis(0);
+                    setFuturePrice(0);
+                  } else if (newType === 'basis') {
+                    // For basis: reset basis field
+                    setBasis(0);
                   }
-                  
-                  updatedSchedule[0] = currentItem;
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
-                <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.pricing_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder="Select pricing type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -193,15 +168,8 @@ export function PriceSection({
             </div>
           </div>
 
-          {/* Pricing Type Error Row */}
-          <div className="min-h-[20px]">
-            {errors.price_schedule?.[0]?.pricing_type && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].pricing_type.message}</p>
-            )}
-          </div>
-
           {/* Price Fields - Conditional rendering based on pricing_type */}
-          {currentSchedule.pricing_type === 'basis' ? (
+          {pricingType === 'basis' ? (
             /* Basis Type: Show only Basis field with +/- button */
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
@@ -215,25 +183,17 @@ export function PriceSection({
                   size="sm"
                   className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex items-center justify-center"
                   onClick={() => {
-                    const currentPriceSchedule = watch('price_schedule') || [{}];
-                    const updatedSchedule = [...currentPriceSchedule];
-                    const currentItem = { ...updatedSchedule[0] };
-                    const currentBasis = currentItem.basis || 0;
-                    
-                    // Toggle sign
-                    currentItem.basis = -currentBasis;
-                    
-                    updatedSchedule[0] = currentItem;
-                    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                    const currentBasis = basis || 0;
+                    setBasis(-currentBasis);
                   }}
                 >
-                  {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
+                  {(basis || 0) >= 0 ? '+' : '-'}
                 </Button>
                 {/* Basis Input Field */}
                 <Input
                   type="text"
                   inputMode="decimal"
-                  defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                  defaultValue={basis !== null && basis !== undefined ? formatNumber(Math.abs(basis)) : ''}
                   onChange={(e) => handleNumberChange('basis', e.target.value)}
                   onBlur={(e) => handleNumberBlur('basis', e)}
                   onKeyDown={(e) => {
@@ -242,17 +202,13 @@ export function PriceSection({
                       e.preventDefault();
                     }
                   }}
-                  className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  className="h-10 flex-1 border-gray-300 focus:border-green-500"
                   placeholder="0.00"
                   style={{
                     MozAppearance: 'textfield'
                   }}
                 />
               </div>
-              {/* Basis Error */}
-              {errors.price_schedule?.[0]?.basis && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
-              )}
             </div>
           ) : (
             /* Fixed Type: Show all fields with calculations */
@@ -265,7 +221,7 @@ export function PriceSection({
                 <Input
                   type="text"
                   inputMode="decimal"
-                  defaultValue={currentSchedule.price ? formatNumber(currentSchedule.price) : ''}
+                  defaultValue={price ? formatNumber(price) : ''}
                   onChange={(e) => handleNumberChange('price', e.target.value)}
                   onBlur={(e) => handleNumberBlur('price', e)}
                   onKeyDown={(e) => {
@@ -274,16 +230,12 @@ export function PriceSection({
                       e.preventDefault();
                     }
                   }}
-                  className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  className="h-10 border-gray-300 focus:border-green-500"
                   placeholder="0.00"
                   style={{
                     MozAppearance: 'textfield'
                   }}
                 />
-                {/* Price Error */}
-                {errors.price_schedule?.[0]?.price && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].price.message}</p>
-                )}
               </div>
 
               {/* Basis and Futures Row */}
@@ -301,31 +253,24 @@ export function PriceSection({
                       size="sm"
                       className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex items-center justify-center"
                       onClick={() => {
-                        const currentPriceSchedule = watch('price_schedule') || [{}];
-                        const updatedSchedule = [...currentPriceSchedule];
-                        const currentItem = { ...updatedSchedule[0] };
-                        const currentBasis = currentItem.basis || 0;
-                        
-                        // Toggle sign
-                        currentItem.basis = -currentBasis;
+                        const currentBasis = basis || 0;
+                        const newBasis = -currentBasis;
+                        setBasis(newBasis);
                         
                         // Recalculate future_price for fixed type
-                        if (currentItem.pricing_type === 'fixed') {
-                          const currentPrice = currentItem.price || 0;
-                          currentItem.future_price = currentPrice - currentItem.basis;
+                        if (pricingType === 'fixed') {
+                          const currentPrice = price || 0;
+                          setFuturePrice(currentPrice - newBasis);
                         }
-                        
-                        updatedSchedule[0] = currentItem;
-                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                       }}
                     >
-                      {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
+                      {(basis || 0) >= 0 ? '+' : '-'}
                     </Button>
                     {/* Basis Input Field */}
                     <Input
                       type="text"
                       inputMode="decimal"
-                      defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                      defaultValue={basis !== null && basis !== undefined ? formatNumber(Math.abs(basis)) : ''}
                       onChange={(e) => handleNumberChange('basis', e.target.value)}
                       onBlur={(e) => handleNumberBlur('basis', e)}
                       onKeyDown={(e) => {
@@ -334,17 +279,13 @@ export function PriceSection({
                           e.preventDefault();
                         }
                       }}
-                      className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      className="h-10 flex-1 border-gray-300 focus:border-green-500"
                       placeholder="0.00"
                       style={{
-                        MozAppearance: 'textfield' as any
+                        MozAppearance: 'textfield'
                       }}
                     />
                   </div>
-                  {/* Basis Error */}
-                  {errors.price_schedule?.[0]?.basis && (
-                    <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
-                  )}
                 </div>
 
                 {/* Future Price Field (read-only for fixed type) */}
@@ -355,37 +296,27 @@ export function PriceSection({
                   <Input
                     type="text"
                     inputMode="decimal"
-                    value={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
+                    value={futurePrice ? formatNumber(futurePrice) : ''}
                     readOnly
                     className="h-10 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed"
                     placeholder="Auto calculated"
                   />
-                  {/* Future Price Error */}
-                  {errors.price_schedule?.[0]?.future_price && (
-                    <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].future_price.message}</p>
-                  )}
                 </div>
               </div>
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             {/* Option Month */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 Option Month <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.option_month || ''}
-                onValueChange={(value) => {
-                  const currentPriceSchedule = watch('price_schedule') || [{}];
-                  const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], option_month: value };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                }}
+                value={optionMonth || ''}
+                onValueChange={setOptionMonth}
               >
-                <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_month ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder="Select month" />
                 </SelectTrigger>
                 <SelectContent>
@@ -404,15 +335,10 @@ export function PriceSection({
                 Option Year <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.option_year?.toString() || ''}
-                onValueChange={(value) => {
-                  const currentPriceSchedule = watch('price_schedule') || [{}];
-                  const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], option_year: parseInt(value) };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                }}
+                value={optionYear?.toString() || ''}
+                onValueChange={(value) => setOptionYear(parseInt(value))}
               >
-                <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
@@ -424,20 +350,6 @@ export function PriceSection({
             </div>
           </div>
 
-          {/* Option Month and Year Error Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
-            <div>
-              {errors.price_schedule?.[0]?.option_month && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].option_month.message}</p>
-              )}
-            </div>
-            <div>
-              {errors.price_schedule?.[0]?.option_year && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].option_year.message}</p>
-              )}
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Payment Currency */}
             <div className="space-y-2">
@@ -445,15 +357,10 @@ export function PriceSection({
                 {t('paymentCurrency')} <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.payment_currency || APP_CONFIG.defaultCurrency}
-                onValueChange={(value) => {
-                  const currentPriceSchedule = watch('price_schedule') || [{}];
-                  const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'usd' | 'mxn' };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                }}
+                value={paymentCurrency || APP_CONFIG.defaultCurrency}
+                onValueChange={(value) => setPaymentCurrency(value as 'usd' | 'mxn')}
               >
-                <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
@@ -472,15 +379,10 @@ export function PriceSection({
                 Exchange <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.exchange || ''}
-                onValueChange={(value) => {
-                  const currentPriceSchedule = watch('price_schedule') || [{}];
-                  const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], exchange: value };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                }}
+                value={exchange || ''}
+                onValueChange={setExchange}
               >
-                <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.exchange ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder="Select exchange" />
                 </SelectTrigger>
                 <SelectContent>
@@ -493,29 +395,7 @@ export function PriceSection({
               </Select>
             </div>
           </div>
-
-          {/* Payment Currency and Exchange Error Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
-            <div>
-              {errors.price_schedule?.[0]?.payment_currency && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].payment_currency.message}</p>
-              )}
-            </div>
-            <div>
-              {errors.price_schedule?.[0]?.exchange && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].exchange.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Price Schedule Level Error */}
-          <div className="min-h-[20px]">
-            {errors.price_schedule && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule.message}</p>
-            )}
-          </div>
         </div>
-
       </CardContent>
     </Card>
   );
