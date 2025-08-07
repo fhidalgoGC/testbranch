@@ -54,25 +54,10 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
             (val) => ['fixed', 'basis'].includes(val),
             t('selectOption')
           ),
-          price: z.union([z.number(), z.null()]).refine(
-            (val) => val !== null && val !== undefined,
-            t('fieldRequired')
-          ).refine(
-            (val) => val === null || val > 0,
-            t('positiveNumber')
-          ),
-          basis: z.union([z.number(), z.null()]).refine(
-            (val) => val !== null && val !== undefined,
-            t('fieldRequired')
-          ),
+          price: z.union([z.number(), z.null()]).optional(),
+          basis: z.union([z.number(), z.null()]).optional(),
           basis_operation: z.enum(['add', 'subtract']).default('add'),
-          future_price: z.union([z.number(), z.null()]).refine(
-            (val) => val !== null && val !== undefined,
-            t('fieldRequired')
-          ).refine(
-            (val) => val === null || val > 0,
-            t('positiveNumber')
-          ),
+          future_price: z.union([z.number(), z.null()]).optional(),
           option_month: z.string().min(1, t('fieldRequired')),
           option_year: z.number({ required_error: t('fieldRequired') }).min(new Date().getFullYear(), t('validDate')),
           payment_currency: z.string().min(1, t('fieldRequired')).refine(
@@ -80,6 +65,48 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
             t('fieldRequired')
           ),
           exchange: z.string().min(1, t('fieldRequired')),
+        }).superRefine((data, ctx) => {
+          // Conditional validation based on pricing_type
+          if (data.pricing_type === 'fixed') {
+            // For fixed type: price and future_price are required, basis is optional
+            if (data.price === null || data.price === undefined) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['price'],
+              });
+            } else if (data.price <= 0) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('positiveNumber'),
+                path: ['price'],
+              });
+            }
+            
+            if (data.future_price === null || data.future_price === undefined) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['future_price'],
+              });
+            } else if (data.future_price <= 0) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('positiveNumber'),
+                path: ['future_price'],
+              });
+            }
+          } else if (data.pricing_type === 'basis') {
+            // For basis type: basis is required, price and future_price are optional
+            if (data.basis === null || data.basis === undefined) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['basis'],
+              });
+            }
+            // Note: basis can be negative, so no positive number validation
+          }
         })
       )
       .min(1, t('minimumPrices')),

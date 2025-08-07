@@ -315,7 +315,7 @@ export function PriceSection({
                 {/* Basis Field with +/- Button */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Basis <span className="text-red-500">*</span>
+                    Basis
                   </Label>
                   <div className="flex items-center gap-2">
                     {/* Basis Sign Button */}
