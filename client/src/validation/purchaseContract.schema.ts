@@ -64,15 +64,27 @@ export const createPurchaseContractSchema = () => {
     logistic_schedule: z
       .array(
         z.object({
-          logistic_payment_responsability: z.enum(['buyer', 'seller', 'other'], { required_error: 'This field is required' }),
-          logistic_coordination_responsability: z.enum(['buyer', 'seller', 'other'], { required_error: 'This field is required' }),
+          logistic_payment_responsability: z.string().min(1, 'This field is required').refine(
+            (val) => ['buyer', 'seller', 'other'].includes(val),
+            'This field is required'
+          ),
+          logistic_coordination_responsability: z.string().min(1, 'This field is required').refine(
+            (val) => ['buyer', 'seller', 'other'].includes(val),
+            'This field is required'
+          ),
           freight_cost: z.object({
-            type: z.enum(['none', 'fixed', 'variable'], { required_error: 'This field is required' }),
+            type: z.string().min(1, 'This field is required').refine(
+              (val) => ['none', 'fixed', 'variable'].includes(val),
+              'This field is required'
+            ),
             min: z.number().min(0, 'Must be a positive number').default(0),
             max: z.number().min(0, 'Must be a positive number').default(0),
             cost: z.number().min(0, 'Must be a positive number').default(0),
           }),
-          payment_currency: z.enum(['usd', 'mxn'], { required_error: 'This field is required' }),
+          payment_currency: z.string().min(1, 'This field is required').refine(
+            (val) => ['usd', 'mxn'].includes(val),
+            'This field is required'
+          ),
         })
       )
       .min(1, 'At least 1 logistic schedule is required'),
