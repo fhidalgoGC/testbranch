@@ -225,9 +225,27 @@ export function LogisticSection({
                 onValueChange={(value) => {
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
+                  
+                  // Reset freight_cost fields based on selected type
+                  let freightCost = {
+                    type: value,
+                    cost: 0,
+                    min: 0,
+                    max: 0
+                  };
+                  
+                  // Apply logic based on freight cost type
+                  if (value === 'none') {
+                    // All fields stay at 0 and will be hidden
+                  } else if (value === 'fixed') {
+                    // Only cost field will be shown, min and max stay at 0
+                  } else if (value === 'variable') {
+                    // Only min and max fields will be shown, cost stays at 0
+                  }
+                  
                   updatedSchedule[0] = { 
                     ...updatedSchedule[0], 
-                    freight_cost: { ...updatedSchedule[0].freight_cost, type: value }
+                    freight_cost: freightCost
                   };
                   setValue('logistic_schedule', updatedSchedule);
                 }}
@@ -238,89 +256,97 @@ export function LogisticSection({
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
                   <SelectItem value="fixed">Fixed</SelectItem>
-                  <SelectItem value="range">Range</SelectItem>
+                  <SelectItem value="variable">Variable</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          {/* Freight Cost Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Cost */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Freight Cost
-              </Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                defaultValue={formatNumber(currentSchedule.freight_cost?.cost)}
-                onChange={(e) => handleNumberChange('freight_cost.cost', e.target.value)}
-                onBlur={(e) => handleNumberBlur('freight_cost.cost', e)}
-                onKeyDown={(e) => {
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="0.00"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
-            </div>
+          {/* Freight Cost Fields - Conditional based on type */}
+          {currentSchedule.freight_cost?.type && currentSchedule.freight_cost?.type !== 'none' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Cost - Only show for 'fixed' type */}
+              {currentSchedule.freight_cost?.type === 'fixed' && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                    Freight Cost
+                  </Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={formatNumber(currentSchedule.freight_cost?.cost)}
+                    onChange={(e) => handleNumberChange('freight_cost.cost', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('freight_cost.cost', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="0.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
+                </div>
+              )}
 
-            {/* Min */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Freight Min Cost
-              </Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                defaultValue={formatNumber(currentSchedule.freight_cost?.min)}
-                onChange={(e) => handleNumberChange('freight_cost.min', e.target.value)}
-                onBlur={(e) => handleNumberBlur('freight_cost.min', e)}
-                onKeyDown={(e) => {
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="0.00"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
-            </div>
+              {/* Min - Only show for 'variable' type */}
+              {currentSchedule.freight_cost?.type === 'variable' && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                    Freight Min Cost
+                  </Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={formatNumber(currentSchedule.freight_cost?.min)}
+                    onChange={(e) => handleNumberChange('freight_cost.min', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('freight_cost.min', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="0.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
+                </div>
+              )}
 
-            {/* Max */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Freight Max Cost
-              </Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                defaultValue={formatNumber(currentSchedule.freight_cost?.max)}
-                onChange={(e) => handleNumberChange('freight_cost.max', e.target.value)}
-                onBlur={(e) => handleNumberBlur('freight_cost.max', e)}
-                onKeyDown={(e) => {
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="0.00"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
+              {/* Max - Only show for 'variable' type */}
+              {currentSchedule.freight_cost?.type === 'variable' && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                    Freight Max Cost
+                  </Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={formatNumber(currentSchedule.freight_cost?.max)}
+                    onChange={(e) => handleNumberChange('freight_cost.max', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('freight_cost.max', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="0.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>
