@@ -30,7 +30,10 @@ export const createPurchaseContractSchema = () => {
         z.object({
           people_id: z.string().min(1, 'This field is required'),
           name: z.string().min(1, 'This field is required'),
-          role: z.enum(['buyer', 'seller'], { required_error: 'This field is required' }),
+          role: z.string().min(1, 'This field is required').refine(
+            (val) => ['buyer', 'seller'].includes(val),
+            'This field is required'
+          ),
         })
       )
       .min(2, 'Minimum 2 participants required')
@@ -47,14 +50,20 @@ export const createPurchaseContractSchema = () => {
     price_schedule: z
       .array(
         z.object({
-          pricing_type: z.enum(['fixed', 'basis'], { required_error: 'This field is required' }),
-          price: z.number().min(0, 'Must be a positive number'),
-          basis: z.number().min(0, 'Must be a positive number'),
+          pricing_type: z.string().min(1, 'This field is required').refine(
+            (val) => ['fixed', 'basis'].includes(val),
+            'This field is required'
+          ),
+          price: z.number().min(1, 'This field is required'),
+          basis: z.number().min(1, 'This field is required'),
           basis_operation: z.enum(['add', 'subtract']).default('add'),
-          future_price: z.number().min(0, 'Must be a positive number'),
+          future_price: z.number().min(1, 'This field is required'),
           option_month: z.string().min(1, 'This field is required'),
           option_year: z.number().min(new Date().getFullYear(), 'Must be a valid date'),
-          payment_currency: z.enum(['usd', 'mxn'], { required_error: 'This field is required' }),
+          payment_currency: z.string().min(1, 'This field is required').refine(
+            (val) => ['usd', 'mxn'].includes(val),
+            'This field is required'
+          ),
           exchange: z.string().min(1, 'This field is required'),
         })
       )
