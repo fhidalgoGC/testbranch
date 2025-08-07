@@ -209,7 +209,7 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('sub_type')}
-                onValueChange={(value) => setValue('sub_type', value as 'imported' | 'domestic')}
+                onValueChange={(value) => setValue('sub_type', value as 'imported' | 'domestic', { shouldValidate: true })}
               >
                 <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectSubType')} />
@@ -230,10 +230,10 @@ export function ContractInfoSection() {
                 {t('commodity')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <Select
-                value={watch('commodity')}
-                onValueChange={(value) => setValue('commodity', value)}
+                value={watch('commodity_id')}
+                onValueChange={(value) => setValue('commodity_id', value, { shouldValidate: true })}
               >
-                <SelectTrigger className={`h-10 ${errors.commodity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectCommodity')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -244,8 +244,8 @@ export function ContractInfoSection() {
                   <SelectItem value="6839ef25edc3c27f091bdfc4">Cebada / Barley</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.commodity && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity.message}</p>
+              {errors.commodity_id && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
               )}
             </div>
 
@@ -273,7 +273,7 @@ export function ContractInfoSection() {
               <DatePicker
                 id="contract_date"
                 value={watch('contract_date')}
-                onChange={(date) => setValue('contract_date', date)}
+                onChange={(date) => setValue('contract_date', date, { shouldValidate: true })}
                 placeholder={t('contractDate')}
                 error={!!errors.contract_date}
               />
@@ -292,7 +292,7 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('grade')?.toString() || ''}
-                onValueChange={(value) => setValue('grade', parseInt(value))}
+                onValueChange={(value) => setValue('grade', parseInt(value), { shouldValidate: true })}
               >
                 <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder="Select grade" />
@@ -317,9 +317,9 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('characteristics_configuration')}
-                onValueChange={(value) => setValue('characteristics_configuration', value)}
+                onValueChange={(value) => setValue('characteristics_configuration', value, { shouldValidate: true })}
               >
-                <SelectTrigger className={`h-10 ${errors.characteristics_configuration ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder={t('selectConfiguration')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -330,9 +330,6 @@ export function ContractInfoSection() {
                   <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.characteristics_configuration && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration.message}</p>
-              )}
             </div>
 
             {/* Seller */}
@@ -343,20 +340,17 @@ export function ContractInfoSection() {
               <div className="relative">
                 <Input
                   readOnly
-                  value={watch('seller') ? FAKE_SELLERS.find(s => s.id === watch('seller'))?.name || '' : ''}
+                  value=""
                   placeholder={t('selectSeller')}
-                  className={`h-10 pr-10 ${errors.seller ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  className="h-10 pr-10 border-gray-300 focus:border-green-500"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <SellerSelectionModal
-                    selectedSeller={watch('seller')}
-                    onSelect={(seller) => setValue('seller', seller.id)}
+                    selectedSeller=""
+                    onSelect={(seller) => console.log('Seller selected:', seller)}
                   />
                 </div>
               </div>
-              {errors.seller && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
-              )}
             </div>
           </div>
         </div>
@@ -405,7 +399,7 @@ export function ContractInfoSection() {
                 </Label>
                 <Select
                   value={watch('measurement_unit')}
-                  onValueChange={(value) => setValue('measurement_unit', value)}
+                  onValueChange={(value) => setValue('measurement_unit', value, { shouldValidate: true })}
                 >
                   <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                     <SelectValue placeholder={t('selectMeasurementUnit')} />

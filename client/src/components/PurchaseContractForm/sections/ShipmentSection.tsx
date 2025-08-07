@@ -33,7 +33,7 @@ export function ShipmentSection() {
             <DatePicker
               id="shipping_start_date"
               value={watch('shipping_start_date')}
-              onChange={(date) => setValue('shipping_start_date', date)}
+              onChange={(date) => setValue('shipping_start_date', date, { shouldValidate: true })}
               placeholder={t('shippingStartDate')}
               error={!!errors.shipping_start_date}
             />
@@ -49,7 +49,7 @@ export function ShipmentSection() {
             <DatePicker
               id="shipping_end_date"
               value={watch('shipping_end_date')}
-              onChange={(date) => setValue('shipping_end_date', date)}
+              onChange={(date) => setValue('shipping_end_date', date, { shouldValidate: true })}
               placeholder={t('shippingEndDate')}
               error={!!errors.shipping_end_date}
             />
@@ -67,7 +67,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('application_priority')?.toString() || ''}
-              onValueChange={(value) => setValue('application_priority', parseInt(value))}
+              onValueChange={(value) => setValue('application_priority', parseInt(value), { shouldValidate: true })}
             >
               <SelectTrigger className={`h-10 ${errors.application_priority ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select priority" />
@@ -95,7 +95,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('delivered')}
-              onValueChange={(value) => setValue('delivered', value)}
+              onValueChange={(value) => setValue('delivered', value, { shouldValidate: true })}
             >
               <SelectTrigger className={`h-10 ${errors.delivered ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select delivery terms" />
@@ -129,7 +129,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('transport')}
-              onValueChange={(value) => setValue('transport', value)}
+              onValueChange={(value) => setValue('transport', value, { shouldValidate: true })}
             >
               <SelectTrigger className={`h-10 ${errors.transport ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select transport" />
@@ -153,7 +153,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('weights')}
-              onValueChange={(value) => setValue('weights', value)}
+              onValueChange={(value) => setValue('weights', value, { shouldValidate: true })}
             >
               <SelectTrigger className={`h-10 ${errors.weights ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select weights" />
@@ -178,7 +178,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('inspections')}
-              onValueChange={(value) => setValue('inspections', value)}
+              onValueChange={(value) => setValue('inspections', value, { shouldValidate: true })}
             >
               <SelectTrigger className={`h-10 ${errors.inspections ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select inspections" />
@@ -201,7 +201,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('proteins')}
-              onValueChange={(value) => setValue('proteins', value)}
+              onValueChange={(value) => setValue('proteins', value, { shouldValidate: true })}
             >
               <SelectTrigger className={`h-10 ${errors.proteins ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select proteins" />
