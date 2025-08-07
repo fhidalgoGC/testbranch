@@ -453,7 +453,7 @@ export function ContractInfoSection() {
                       {(() => {
                         const quantity = watch('quantity') || 0;
                         const percentage = watch('min_thresholds_percentage') || 0;
-                        const calculatedValue = (quantity * percentage) / 100;
+                        const calculatedValue = quantity - (quantity * percentage) / 100;
                         
                         // Get unit display name
                         const measurementUnit = watch('measurement_unit');
@@ -511,7 +511,7 @@ export function ContractInfoSection() {
                       {(() => {
                         const quantity = watch('quantity') || 0;
                         const percentage = watch('max_thresholds_percentage') || 0;
-                        const calculatedValue = (quantity * percentage) / 100;
+                        const calculatedValue = quantity + (quantity * percentage) / 100;
                         
                         // Get unit display name
                         const measurementUnit = watch('measurement_unit');
