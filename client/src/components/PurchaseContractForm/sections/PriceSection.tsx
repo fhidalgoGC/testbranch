@@ -206,29 +206,73 @@ export function PriceSection({
 
           {/* Price Fields - Conditional rendering based on pricing_type */}
           {currentSchedule.pricing_type === 'basis' ? (
-            /* Basis Type: Show only Basis field */
+            /* Basis Type: Show only Basis field with +/- button */
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 Basis <span className="text-red-500">*</span>
               </Label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
-                onChange={(e) => handleNumberChange('basis', e.target.value)}
-                onBlur={(e) => handleNumberBlur('basis', e)}
-                onKeyDown={(e) => {
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','-'];
-                  if (!allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                className={`h-10 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="0.00"
-                style={{
-                  MozAppearance: 'textfield'
-                }}
-              />
+              <div className="flex items-center gap-2">
+                {/* Basis Sign Button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex items-center justify-center"
+                  onClick={() => {
+                    const currentPriceSchedule = watch('price_schedule') || [{}];
+                    const updatedSchedule = [...currentPriceSchedule];
+                    const currentItem = { ...updatedSchedule[0] };
+                    const currentBasis = currentItem.basis || 0;
+                    
+                    // Toggle sign
+                    currentItem.basis = -currentBasis;
+                    
+                    updatedSchedule[0] = currentItem;
+                    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  }}
+                >
+                  {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
+                </Button>
+                {/* Basis Input Field */}
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  value={currentSchedule.basis ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                  onChange={(e) => {
+                    const currentPriceSchedule = watch('price_schedule') || [{}];
+                    const updatedSchedule = [...currentPriceSchedule];
+                    const currentItem = { ...updatedSchedule[0] };
+                    const isNegative = (currentItem.basis || 0) < 0;
+                    
+                    const numericValue = parseFormattedNumber(e.target.value) || 0;
+                    currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+                    
+                    updatedSchedule[0] = currentItem;
+                    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  }}
+                  onBlur={(e) => {
+                    const inputVal = e.target.value.trim();
+                    if (inputVal !== '') {
+                      const numericValue = parseFormattedNumber(inputVal);
+                      if (numericValue !== null) {
+                        const formatted = formatNumber(Math.abs(numericValue));
+                        e.target.value = formatted;
+                      }
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                    if (!allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  placeholder="0.00"
+                  style={{
+                    MozAppearance: 'textfield'
+                  }}
+                />
+              </div>
               {/* Basis Error */}
               {errors.price_schedule?.[0]?.basis && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
@@ -268,29 +312,85 @@ export function PriceSection({
 
               {/* Basis and Futures Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Basis Field */}
+                {/* Basis Field with +/- Button */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-900 dark:text-white">
                     Basis <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
-                    onChange={(e) => handleNumberChange('basis', e.target.value)}
-                    onBlur={(e) => handleNumberBlur('basis', e)}
-                    onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','-'];
-                      if (!allowedKeys.includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className={`h-10 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0.00"
-                    style={{
-                      MozAppearance: 'textfield'
-                    }}
-                  />
+                  <div className="flex items-center gap-2">
+                    {/* Basis Sign Button */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex items-center justify-center"
+                      onClick={() => {
+                        const currentPriceSchedule = watch('price_schedule') || [{}];
+                        const updatedSchedule = [...currentPriceSchedule];
+                        const currentItem = { ...updatedSchedule[0] };
+                        const currentBasis = currentItem.basis || 0;
+                        
+                        // Toggle sign
+                        currentItem.basis = -currentBasis;
+                        
+                        // Recalculate future_price for fixed type
+                        if (currentItem.pricing_type === 'fixed') {
+                          const currentPrice = currentItem.price || 0;
+                          currentItem.future_price = currentPrice - currentItem.basis;
+                        }
+                        
+                        updatedSchedule[0] = currentItem;
+                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                      }}
+                    >
+                      {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
+                    </Button>
+                    {/* Basis Input Field */}
+                    <Input
+                      type="text"
+                      inputMode="decimal"
+                      value={currentSchedule.basis ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                      onChange={(e) => {
+                        const currentPriceSchedule = watch('price_schedule') || [{}];
+                        const updatedSchedule = [...currentPriceSchedule];
+                        const currentItem = { ...updatedSchedule[0] };
+                        const isNegative = (currentItem.basis || 0) < 0;
+                        
+                        const numericValue = parseFormattedNumber(e.target.value) || 0;
+                        currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+                        
+                        // Recalculate future_price for fixed type
+                        if (currentItem.pricing_type === 'fixed') {
+                          const currentPrice = currentItem.price || 0;
+                          currentItem.future_price = currentPrice - currentItem.basis;
+                        }
+                        
+                        updatedSchedule[0] = currentItem;
+                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                      }}
+                      onBlur={(e) => {
+                        const inputVal = e.target.value.trim();
+                        if (inputVal !== '') {
+                          const numericValue = parseFormattedNumber(inputVal);
+                          if (numericValue !== null) {
+                            const formatted = formatNumber(Math.abs(numericValue));
+                            e.target.value = formatted;
+                          }
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                        if (!allowedKeys.includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      placeholder="0.00"
+                      style={{
+                        MozAppearance: 'textfield'
+                      }}
+                    />
+                  </div>
                   {/* Basis Error */}
                   {errors.price_schedule?.[0]?.basis && (
                     <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
