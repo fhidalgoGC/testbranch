@@ -26,109 +26,6 @@ export function LogisticSection({
   const logisticSchedule = watch('logistic_schedule') || [];
   const currentSchedule = logisticSchedule[0] || {};
 
-  // Helper function to format number for display (2-4 decimals)
-  const formatNumber = (value: number | undefined): string => {
-    if (!value || value === 0) return '';
-    
-    // Determine how many decimal places to show
-    const decimalString = value.toString().split('.')[1] || '';
-    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
-    
-    return value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimalPlaces
-    });
-  };
-
-  // Helper function to handle number input change with strict validation
-  const handleNumberChange = (field: string, inputValue: string) => {
-    // Only allow numbers and one decimal point
-    const validChars = /^[0-9.]*$/;
-    
-    if (!validChars.test(inputValue)) {
-      return; // Reject invalid characters
-    }
-    
-    // Prevent multiple decimal points
-    const decimalCount = (inputValue.match(/\./g) || []).length;
-    if (decimalCount > 1) {
-      return;
-    }
-    
-    // Check decimal places limit (max 4)
-    const parts = inputValue.split('.');
-    if (parts[1] && parts[1].length > 4) {
-      // Truncate to 4 decimals (round down)
-      const truncated = parts[0] + '.' + parts[1].substring(0, 4);
-      const numericValue = parseFloat(truncated);
-      
-      const currentLogisticSchedule = watch('logistic_schedule') || [{}];
-      const updatedSchedule = [...currentLogisticSchedule];
-      if (field.includes('.')) {
-        const [parent, child] = field.split('.');
-        updatedSchedule[0] = { 
-          ...updatedSchedule[0], 
-          [parent]: { ...updatedSchedule[0][parent], [child]: numericValue }
-        };
-      } else {
-        updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
-      }
-      setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
-      return;
-    }
-    
-    // Allow empty string or valid number format
-    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
-      const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
-      
-      const currentLogisticSchedule = watch('logistic_schedule') || [{}];
-      const updatedSchedule = [...currentLogisticSchedule];
-      if (field.includes('.')) {
-        const [parent, child] = field.split('.');
-        updatedSchedule[0] = { 
-          ...updatedSchedule[0], 
-          [parent]: { ...updatedSchedule[0][parent], [child]: numericValue }
-        };
-      } else {
-        updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
-      }
-      setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
-    }
-  };
-
-  // Helper function to format number on blur
-  const handleNumberBlur = (field: string, e: React.FocusEvent<HTMLInputElement>) => {
-    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-    
-    // Truncate to 4 decimals (round down)
-    const factor = Math.pow(10, 4);
-    value = Math.floor(value * factor) / factor;
-    
-    // Determine how many decimal places to show (2-4)
-    const decimalString = value.toString().split('.')[1] || '';
-    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
-    
-    const formatted = value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimalPlaces
-    });
-    
-    e.target.value = formatted;
-    
-    const currentLogisticSchedule = watch('logistic_schedule') || [{}];
-    const updatedSchedule = [...currentLogisticSchedule];
-    if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      updatedSchedule[0] = { 
-        ...updatedSchedule[0], 
-        [parent]: { ...updatedSchedule[0][parent], [child]: value }
-      };
-    } else {
-      updatedSchedule[0] = { ...updatedSchedule[0], [field]: value };
-    }
-    setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
-  };
-
   return (
     <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
       <CardHeader>
@@ -151,7 +48,7 @@ export function LogisticSection({
                 onValueChange={(value) => {
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], logistic_payment_responsability: value };
+                  updatedSchedule[0] = { ...updatedSchedule[0], logistic_payment_responsability: value as any };
                   setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
@@ -179,7 +76,7 @@ export function LogisticSection({
                 onValueChange={(value) => {
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], logistic_coordination_responsability: value };
+                  updatedSchedule[0] = { ...updatedSchedule[0], logistic_coordination_responsability: value as any };
                   setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
@@ -207,7 +104,7 @@ export function LogisticSection({
                 onValueChange={(value) => {
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'usd' | 'mxn' };
+                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as any };
                   setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
@@ -237,20 +134,11 @@ export function LogisticSection({
                   
                   // Reset freight_cost fields based on selected type
                   let freightCost = {
-                    type: value,
+                    type: value as any,
                     cost: 0,
                     min: 0,
                     max: 0
                   };
-                  
-                  // Apply logic based on freight cost type
-                  if (value === 'none') {
-                    // All fields stay at 0 and will be hidden
-                  } else if (value === 'fixed') {
-                    // Only cost field will be shown, min and max stay at 0
-                  } else if (value === 'variable') {
-                    // Only min and max fields will be shown, cost stays at 0
-                  }
                   
                   updatedSchedule[0] = { 
                     ...updatedSchedule[0], 
@@ -265,11 +153,11 @@ export function LogisticSection({
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
                   <SelectItem value="fixed">Fixed</SelectItem>
-                  <SelectItem value="variable">Variable</SelectItem>
+                  <SelectItem value="range">Range</SelectItem>
                 </SelectContent>
               </Select>
               {errors.logistic_schedule?.[0]?.freight_cost?.type && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].freight_cost.type.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">{typeof errors.logistic_schedule[0].freight_cost.type === 'object' ? (errors.logistic_schedule[0].freight_cost.type as any).message : String(errors.logistic_schedule[0].freight_cost.type)}</p>
               )}
             </div>
           </div>
@@ -284,78 +172,83 @@ export function LogisticSection({
                     Freight Cost
                   </Label>
                   <Input
-                    type="text"
-                    inputMode="decimal"
-                    defaultValue={formatNumber(currentSchedule.freight_cost?.cost)}
-                    onChange={(e) => handleNumberChange('freight_cost.cost', e.target.value)}
-                    onBlur={(e) => handleNumberBlur('freight_cost.cost', e)}
-                    onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                      if (!allowedKeys.includes(e.key)) {
-                        e.preventDefault();
-                      }
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    defaultValue={currentSchedule.freight_cost?.cost || 0}
+                    onChange={(e) => {
+                      const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                      const updatedSchedule = [...currentLogisticSchedule];
+                      updatedSchedule[0] = { 
+                        ...updatedSchedule[0], 
+                        freight_cost: { 
+                          ...updatedSchedule[0].freight_cost, 
+                          cost: parseFloat(e.target.value) || 0 
+                        }
+                      };
+                      setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                     }}
                     className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                     placeholder="0.00"
-                    style={{
-                      MozAppearance: 'textfield'
-                    }}
                   />
                 </div>
               )}
 
-              {/* Min - Only show for 'variable' type */}
-              {currentSchedule.freight_cost?.type === 'variable' && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Freight Min Cost
-                  </Label>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    defaultValue={formatNumber(currentSchedule.freight_cost?.min)}
-                    onChange={(e) => handleNumberChange('freight_cost.min', e.target.value)}
-                    onBlur={(e) => handleNumberBlur('freight_cost.min', e)}
-                    onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                      if (!allowedKeys.includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0.00"
-                    style={{
-                      MozAppearance: 'textfield'
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Max - Only show for 'variable' type */}
-              {currentSchedule.freight_cost?.type === 'variable' && (
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Freight Max Cost
-                  </Label>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    defaultValue={formatNumber(currentSchedule.freight_cost?.max)}
-                    onChange={(e) => handleNumberChange('freight_cost.max', e.target.value)}
-                    onBlur={(e) => handleNumberBlur('freight_cost.max', e)}
-                    onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                      if (!allowedKeys.includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0.00"
-                    style={{
-                      MozAppearance: 'textfield'
-                    }}
-                  />
-                </div>
+              {/* Min and Max - Only show for 'range' type */}
+              {currentSchedule.freight_cost?.type === 'range' && (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                      Freight Min Cost
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      defaultValue={currentSchedule.freight_cost?.min || 0}
+                      onChange={(e) => {
+                        const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                        const updatedSchedule = [...currentLogisticSchedule];
+                        updatedSchedule[0] = { 
+                          ...updatedSchedule[0], 
+                          freight_cost: { 
+                            ...updatedSchedule[0].freight_cost, 
+                            min: parseFloat(e.target.value) || 0 
+                          }
+                        };
+                        setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
+                      }}
+                      className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                      Freight Max Cost
+                    </Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      defaultValue={currentSchedule.freight_cost?.max || 0}
+                      onChange={(e) => {
+                        const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                        const updatedSchedule = [...currentLogisticSchedule];
+                        updatedSchedule[0] = { 
+                          ...updatedSchedule[0], 
+                          freight_cost: { 
+                            ...updatedSchedule[0].freight_cost, 
+                            max: parseFloat(e.target.value) || 0 
+                          }
+                        };
+                        setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
+                      }}
+                      className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </>
               )}
             </div>
           )}

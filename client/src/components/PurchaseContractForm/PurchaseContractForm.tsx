@@ -41,11 +41,7 @@ export function PurchaseContractForm() {
         <form onSubmit={onSubmit} className="space-y-8">
             
             {/* Section 1: Contract Info */}
-            <ContractInfoSection
-              addParticipant={addParticipant}
-              removeParticipant={removeParticipant}
-              updateParticipant={updateParticipant}
-            />
+            <ContractInfoSection />
 
             {/* Section 2: Price Contract Per (Bushel 56) */}
             <PriceSection

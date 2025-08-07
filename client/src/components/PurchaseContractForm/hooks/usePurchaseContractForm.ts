@@ -15,7 +15,7 @@ export function usePurchaseContractForm() {
       type: 'purchase',
       sub_type: 'imported',
       commodity_id: '',
-      characteristics_configuration: '',
+      characteristics_configuration_id: '',
       grade: 1,
       quantity: 0,
       reference_number: '',
@@ -275,7 +275,7 @@ export function usePurchaseContractForm() {
   return {
     form,
     isSubmitting,
-    onSubmit: form.handleSubmit(onSubmit),
+    onSubmit: form.handleSubmit(onSubmit as any),
     onCancel,
     // Participant methods
     addParticipant,
