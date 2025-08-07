@@ -46,7 +46,7 @@ export const createPurchaseContractSchema = () => {
         z.object({
           pricing_type: z.enum(['fixed', 'basis'], { required_error: 'This field is required' }),
           price: z.number().min(0, 'Must be a positive number'),
-          basis: z.number().default(0),
+          basis: z.number().min(0, 'Must be a positive number'),
           basis_operation: z.enum(['add', 'subtract']).default('add'),
           future_price: z.number().min(0, 'Must be a positive number'),
           option_month: z.string().min(1, 'This field is required'),

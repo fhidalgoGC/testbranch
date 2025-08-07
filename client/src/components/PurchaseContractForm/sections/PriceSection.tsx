@@ -210,7 +210,7 @@ export function PriceSection({
             {/* Basis */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Basis
+                Basis <span className="text-red-500">*</span>
               </Label>
               <Input
                 type="text"
