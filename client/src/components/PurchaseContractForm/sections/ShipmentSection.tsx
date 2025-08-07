@@ -53,29 +53,23 @@ export function ShipmentSection() {
 
   // Date validation logic
   const handleStartDateChange = (date: string) => {
-    const endDate = watch('shipping_end_date');
-    
-    // Always set the start date first
+    // Always set the selected start date
     setValue('shipping_start_date', date, { shouldValidate: true });
     
-    // Then check if we need to clear it due to conflict
+    const endDate = watch('shipping_end_date');
+    // If start date is greater than existing end date, clear start date
     if (endDate && date > endDate) {
-      // If start date is greater than end date, clear start date after a brief moment
-      setTimeout(() => {
-        setValue('shipping_start_date', '', { shouldValidate: true });
-      }, 100);
+      setValue('shipping_start_date', '', { shouldValidate: true });
     }
   };
 
   const handleEndDateChange = (date: string) => {
-    const startDate = watch('shipping_start_date');
-    
-    // Always set the end date
+    // Always set the selected end date
     setValue('shipping_end_date', date, { shouldValidate: true });
     
-    // Then check if we need to clear start date due to conflict
+    const startDate = watch('shipping_start_date');
+    // If end date is less than existing start date, clear start date
     if (startDate && date < startDate) {
-      // If end date is less than start date, clear start date
       setValue('shipping_start_date', '', { shouldValidate: true });
     }
   };
