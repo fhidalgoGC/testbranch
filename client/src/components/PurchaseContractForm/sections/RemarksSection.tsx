@@ -158,11 +158,21 @@ export function RemarksSection({
                       placeholder={`Enter your comment here...`}
                     />
                   ) : (
-                    <Input
+                    <textarea
                       value={displayValue}
                       onChange={(e) => updateRemark(index, `${remarkLabel}:${e.target.value}`)}
-                      className="h-10 border-gray-300 focus:border-green-500"
+                      className="w-full min-h-[3rem] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white"
                       placeholder={`Enter ${remarkLabel.toLowerCase()} details...`}
+                      rows={2}
+                      style={{
+                        height: 'auto',
+                        minHeight: '3rem'
+                      }}
+                      onInput={(e) => {
+                        const target = e.target as HTMLTextAreaElement;
+                        target.style.height = 'auto';
+                        target.style.height = `${Math.max(48, target.scrollHeight)}px`;
+                      }}
                     />
                   )}
                 </div>
