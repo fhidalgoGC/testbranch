@@ -51,6 +51,28 @@ export function ShipmentSection() {
   const { t } = useTranslation();
   const { register, formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
 
+  // Date validation logic
+  const handleStartDateChange = (date: string) => {
+    const endDate = watch('shipping_end_date');
+    
+    if (endDate && date > endDate) {
+      // If start date is greater than end date, clear start date
+      setValue('shipping_start_date', '', { shouldValidate: true });
+    } else {
+      setValue('shipping_start_date', date, { shouldValidate: true });
+    }
+  };
+
+  const handleEndDateChange = (date: string) => {
+    const startDate = watch('shipping_start_date');
+    
+    if (startDate && date < startDate) {
+      // If end date is less than start date, clear start date
+      setValue('shipping_start_date', '', { shouldValidate: true });
+    }
+    setValue('shipping_end_date', date, { shouldValidate: true });
+  };
+
 
 
   return (
@@ -71,7 +93,7 @@ export function ShipmentSection() {
             <DatePicker
               id="shipping_start_date"
               value={watch('shipping_start_date')}
-              onChange={(date) => setValue('shipping_start_date', date, { shouldValidate: true })}
+              onChange={handleStartDateChange}
               placeholder={t('shippingStartDate')}
               error={!!errors.shipping_start_date}
             />
@@ -87,7 +109,7 @@ export function ShipmentSection() {
             <DatePicker
               id="shipping_end_date"
               value={watch('shipping_end_date')}
-              onChange={(date) => setValue('shipping_end_date', date, { shouldValidate: true })}
+              onChange={handleEndDateChange}
               placeholder={t('shippingEndDate')}
               error={!!errors.shipping_end_date}
             />
