@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,8 +29,24 @@ export function RemarksSection({
   const [isRemarkListModalOpen, setIsRemarkListModalOpen] = useState(false);
   const [selectedRemarkType, setSelectedRemarkType] = useState<string>('');
   const [currentRemarkIndex, setCurrentRemarkIndex] = useState<number>(-1);
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
   
   const remarks = watch('remarks') || [];
+
+  // Function to auto-resize textarea
+  const autoResizeTextarea = (element: HTMLTextAreaElement) => {
+    element.style.height = 'auto';
+    element.style.height = `${Math.max(48, element.scrollHeight)}px`;
+  };
+
+  // Effect to resize textareas when content changes
+  useEffect(() => {
+    textareaRefs.current.forEach((textarea) => {
+      if (textarea) {
+        autoResizeTextarea(textarea);
+      }
+    });
+  }, [remarks]);
   
   // Check if there's already a comment
   const hasComment = remarks.some(remark => remark.startsWith('COMMENT:'));
@@ -166,6 +182,7 @@ export function RemarksSection({
                     />
                   ) : (
                     <textarea
+                      ref={(el) => textareaRefs.current[index] = el}
                       value={displayValue}
                       onChange={(e) => updateRemark(index, `${remarkLabel}:${e.target.value}`)}
                       className="w-full min-h-[3rem] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white"
@@ -177,8 +194,7 @@ export function RemarksSection({
                       }}
                       onInput={(e) => {
                         const target = e.target as HTMLTextAreaElement;
-                        target.style.height = 'auto';
-                        target.style.height = `${Math.max(48, target.scrollHeight)}px`;
+                        autoResizeTextarea(target);
                       }}
                     />
                   )}
