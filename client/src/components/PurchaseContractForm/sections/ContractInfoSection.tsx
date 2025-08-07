@@ -335,7 +335,7 @@ export function ContractInfoSection() {
               )}
             </div>
 
-            {/* Seller */
+            {/* Seller */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
