@@ -432,7 +432,7 @@ export function ContractInfoSection() {
                   {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
                 </Label>
                 <div className="flex items-center gap-3">
-                  <div className="w-1/2">
+                  <div className="w-[100px]">
                     <Input
                       id="min_thresholds_percentage"
                       type="text"
@@ -490,7 +490,7 @@ export function ContractInfoSection() {
                   {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
                 </Label>
                 <div className="flex items-center gap-3">
-                  <div className="w-1/2">
+                  <div className="w-[100px]">
                     <Input
                       id="max_thresholds_percentage"
                       type="text"
