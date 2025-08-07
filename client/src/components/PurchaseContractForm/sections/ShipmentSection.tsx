@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -49,30 +49,60 @@ const DELIVERED_OPTIONS = [
 
 export function ShipmentSection() {
   const { t } = useTranslation();
-  const { register, formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
+  const { register, formState: { errors }, watch, setValue, setError, clearErrors } = useFormContext<PurchaseContractFormData>();
+  const [dateValidationError, setDateValidationError] = useState<string>('');
 
   // Date validation logic
   const handleStartDateChange = (date: string) => {
+    // Clear any previous date validation errors
+    setDateValidationError('');
+    clearErrors(['shipping_start_date', 'shipping_end_date']);
+    
     // Always set the selected start date
     setValue('shipping_start_date', date, { shouldValidate: true });
     
     const endDate = watch('shipping_end_date');
-    // If start date is greater than existing end date, clear start date
+    // If start date is greater than existing end date, clear start date and show error
     if (endDate && date > endDate) {
       setValue('shipping_start_date', '', { shouldValidate: true });
+      setDateValidationError(t('startDateAfterEndDate'));
+      setError('shipping_start_date', {
+        type: 'custom',
+        message: t('startDateAfterEndDate')
+      });
     }
   };
 
   const handleEndDateChange = (date: string) => {
+    // Clear any previous date validation errors
+    setDateValidationError('');
+    clearErrors(['shipping_start_date', 'shipping_end_date']);
+    
     // Always set the selected end date
     setValue('shipping_end_date', date, { shouldValidate: true });
     
     const startDate = watch('shipping_start_date');
-    // If end date is less than existing start date, clear start date
+    // If end date is less than existing start date, clear start date and show error
     if (startDate && date < startDate) {
       setValue('shipping_start_date', '', { shouldValidate: true });
+      setDateValidationError(t('endDateBeforeStartDate'));
+      setError('shipping_start_date', {
+        type: 'custom',
+        message: t('endDateBeforeStartDate')
+      });
     }
   };
+
+  // Clear validation error when dates become valid
+  useEffect(() => {
+    const startDate = watch('shipping_start_date');
+    const endDate = watch('shipping_end_date');
+    
+    if (startDate && endDate && startDate <= endDate) {
+      setDateValidationError('');
+      clearErrors(['shipping_start_date', 'shipping_end_date']);
+    }
+  }, [watch('shipping_start_date'), watch('shipping_end_date'), clearErrors]);
 
 
 
@@ -119,6 +149,18 @@ export function ShipmentSection() {
             )}
           </div>
         </div>
+
+        {/* Date validation error message */}
+        {dateValidationError && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+            <p className="text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {dateValidationError}
+            </p>
+          </div>
+        )}
 
         {/* Application Priority and Delivered */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
