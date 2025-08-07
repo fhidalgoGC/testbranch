@@ -42,7 +42,7 @@ export function PriceSection({
   const currentSchedule = priceSchedule[0] || {};
 
   // Helper function to format number for display (2-4 decimals)
-  const formatNumber = (value: number | undefined): string => {
+  const formatNumber = (value: number | undefined | null): string => {
     if (value === undefined || value === null || value === 0) return '';
     
     // Determine how many decimal places to show
@@ -320,27 +320,16 @@ export function PriceSection({
                 )}
               </div>
               
-              {/* Basis and Futures Errors in vertical stack */}
-              <div className="space-y-1">
-                {/* Basis Error Row */}
-                <div className="flex gap-2">
-                  <div className="w-10"></div> {/* Spacer for button alignment */}
-                  <div className="flex-1">
-                    {errors.price_schedule?.[0]?.basis && (
-                      <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
-                    )}
-                  </div>
-                  <div className="flex-1"></div> {/* Empty space for Futures error */}
-                </div>
-                {/* Futures Error Row */}
-                <div className="flex gap-2">
-                  <div className="w-10"></div> {/* Spacer for button alignment */}
-                  <div className="flex-1"></div> {/* Empty space for Basis error */}
-                  <div className="flex-1">
-                    {errors.price_schedule?.[0]?.future_price && (
-                      <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].future_price.message}</p>
-                    )}
-                  </div>
+              {/* Basis and Futures Errors aligned */}
+              <div className="flex gap-2">
+                <div className="w-10"></div> {/* Spacer for button alignment */}
+                <div className="flex-1 space-y-1">
+                  {errors.price_schedule?.[0]?.basis && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
+                  )}
+                  {errors.price_schedule?.[0]?.future_price && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].future_price.message}</p>
+                  )}
                 </div>
               </div>
             </div>

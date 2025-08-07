@@ -32,10 +32,10 @@ export function usePurchaseContractForm() {
       participants: [],
       price_schedule: [{
         pricing_type: '' as any,
-        price: 0,
-        basis: 0,
+        price: null as any,
+        basis: null as any,
         basis_operation: 'add',
-        future_price: 0,
+        future_price: null as any,
         option_month: '',
         option_year: new Date().getFullYear(),
         payment_currency: APP_CONFIG.defaultCurrency as any,
@@ -94,10 +94,10 @@ export function usePurchaseContractForm() {
     const currentSchedule = form.getValues('price_schedule');
     const newSchedule: PriceSchedule = {
       pricing_type: '' as any,
-      price: 0,
-      basis: 0,
+      price: null as any,
+      basis: null as any,
       basis_operation: 'add',
-      future_price: 0,
+      future_price: null as any,
       option_month: '',
       option_year: new Date().getFullYear(),
       payment_currency: APP_CONFIG.defaultCurrency as any,
