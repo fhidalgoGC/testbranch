@@ -17,6 +17,7 @@ interface AddRemarkModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddRemark: (remarkType: string, content: string) => void;
+  currentRemarks: string[];
 }
 
 const REMARK_TYPES = [
@@ -32,13 +33,28 @@ const REMARK_TYPES = [
   { value: 'special', label: 'Special Instructions' },
 ];
 
-export function AddRemarkModal({ isOpen, onClose, onAddRemark }: AddRemarkModalProps) {
+export function AddRemarkModal({ isOpen, onClose, onAddRemark, currentRemarks }: AddRemarkModalProps) {
   const { t } = useTranslation();
   const [selectedType, setSelectedType] = useState<string>('');
   const [remarkContent, setRemarkContent] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const filteredRemarkTypes = REMARK_TYPES.filter(type =>
+  // Extract already used remark types from current remarks
+  const usedRemarkTypes = (currentRemarks || [])
+    .filter(remark => !remark.startsWith('COMMENT:'))
+    .map(remark => {
+      // Extract the label from remarks that have the format "Label:content" or just "Label"
+      if (remark.includes(':')) {
+        return remark.split(':')[0];
+      }
+      return remark;
+    });
+
+  const availableRemarkTypes = REMARK_TYPES.filter(type => 
+    !usedRemarkTypes.includes(type.label)
+  );
+
+  const filteredRemarkTypes = availableRemarkTypes.filter(type =>
     type.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
     type.value.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -83,7 +99,7 @@ export function AddRemarkModal({ isOpen, onClose, onAddRemark }: AddRemarkModalP
                 <SelectValue placeholder="Select remark type" />
               </SelectTrigger>
               <SelectContent>
-                {REMARK_TYPES.map((type) => (
+                {availableRemarkTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
                   </SelectItem>

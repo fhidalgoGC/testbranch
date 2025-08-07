@@ -103,6 +103,14 @@ export function RemarksSection({
       
       // Replace completely with the new selected content
       updateRemark(currentRemarkIndex, `${remarkLabel}:${remarkContent}`);
+      
+      // Auto-resize textarea after content update
+      setTimeout(() => {
+        const textarea = textareaRefs.current[currentRemarkIndex];
+        if (textarea) {
+          autoResizeTextarea(textarea);
+        }
+      }, 0);
     }
   };
 
@@ -234,6 +242,7 @@ export function RemarksSection({
           isOpen={isRemarkModalOpen}
           onClose={() => setIsRemarkModalOpen(false)}
           onAddRemark={handleAddRemark}
+          currentRemarks={remarks}
         />
 
         <RemarkListModal
