@@ -30,10 +30,10 @@ export function usePurchaseContractForm() {
       participants: [],
       price_schedule: [{
         pricing_type: '' as any,
-        price: 0,
-        basis: 0,
+        price: undefined,
+        basis: undefined,
         basis_operation: 'add',
-        future_price: 0,
+        future_price: undefined,
         option_month: '',
         option_year: new Date().getFullYear(),
         payment_currency: '' as any,
