@@ -41,6 +41,8 @@ export function PriceSection({
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};
 
+  // Use centralized number formatting from environment configuration
+
   // Helper function to handle number input change with format-aware validation and business logic
   const handleNumberChange = (field: keyof PriceSchedule, inputValue: string) => {
     const currentPriceSchedule = watch('price_schedule') || [{}];
@@ -505,7 +507,15 @@ export function PriceSection({
               )}
             </div>
           </div>
+
+          {/* Price Schedule Level Error */}
+          <div className="min-h-[20px]">
+            {errors.price_schedule && (
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule.message}</p>
+            )}
+          </div>
         </div>
+
       </CardContent>
     </Card>
   );

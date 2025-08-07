@@ -46,305 +46,552 @@ const FAKE_SELLERS = [
     phone: '+52 444 777 8899',
     location: 'San Luis Potosí, México',
     type: 'company' as const
+  },
+  {
+    id: '5',
+    name: 'Carlos David Herrera',
+    email: 'carlos.herrera@outlook.com',
+    phone: '+52 477 123 4567',
+    location: 'León, México',
+    type: 'individual' as const
+  },
+  {
+    id: '6',
+    name: 'Luisa Fernanda García',
+    company: 'Agroexportadora del Bajío',
+    email: 'luisa.garcia@agrobajio.com',
+    phone: '+52 462 888 9999',
+    location: 'Celaya, México',
+    type: 'company' as const
   }
 ];
 
-// Fake commodities data
-const FAKE_COMMODITIES = [
-  { id: 'corn-001', name: 'Yellow Corn #2' },
-  { id: 'soy-001', name: 'Soybeans #1' },
-  { id: 'wheat-001', name: 'Hard Red Winter Wheat' },
-  { id: 'sorghum-001', name: 'Grain Sorghum' }
-];
-
-// Fake characteristics data
-const FAKE_CHARACTERISTICS = [
-  { id: 'std-001', name: 'Standard Grade' },
-  { id: 'prem-001', name: 'Premium Grade' },
-  { id: 'feed-001', name: 'Feed Grade' },
-  { id: 'food-001', name: 'Food Grade' }
+// Standardized data structure for select fields
+const SUB_TYPE_OPTIONS = [
+  { key: 'direct', value: 'direct', label: 'Direct' },
+  { key: 'imported', value: 'imported', label: 'Imported' },
+  { key: 'importedFreight', value: 'importedFreight', label: 'Imported Freight' }
 ];
 
 export function ContractInfoSection() {
   const { t } = useTranslation();
-  const { register, formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
-  const [isSellerModalOpen, setIsSellerModalOpen] = React.useState(false);
-  
-  const selectedSeller = watch('seller');
-  const selectedSellerData = FAKE_SELLERS.find(s => s.id === selectedSeller);
+  const {
+    register,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useFormContext<PurchaseContractFormData>();
 
-  // Handle seller selection
-  const handleSellerSelect = (seller: any) => {
-    console.log('Seller selected:', seller);
-    setValue('seller', seller.id);
-    setIsSellerModalOpen(false);
+  // Helper function to format number for display (2-4 decimals)
+  // Use centralized number formatting from environment configuration
+
+  // Helper function to handle number input change with strict validation
+  const handleNumberChange = (field: 'quantity' | 'min_thresholds_percentage' | 'max_thresholds_percentage', inputValue: string) => {
+    // Only allow numbers and one decimal point
+    const validChars = /^[0-9.]*$/;
+    
+    if (!validChars.test(inputValue)) {
+      return; // Reject invalid characters
+    }
+    
+    // Prevent multiple decimal points
+    const decimalCount = (inputValue.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return;
+    }
+    
+    // Check decimal places limit (max 4)
+    const parts = inputValue.split('.');
+    if (parts[1] && parts[1].length > 4) {
+      // Truncate to 4 decimals (round down)
+      const truncated = parts[0] + '.' + parts[1].substring(0, 4);
+      const numericValue = parseFloat(truncated);
+      setValue(field, numericValue, { shouldValidate: true });
+      return;
+    }
+    
+    // Allow empty string or valid number format
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
+      setValue(field, numericValue, { shouldValidate: true });
+    }
+  };
+
+  // Helper function to handle threshold validation (0-100)
+  const handleThresholdChange = (field: 'min_thresholds_percentage' | 'max_thresholds_percentage', inputValue: string) => {
+    // Only allow numbers and one decimal point
+    const validChars = /^[0-9.]*$/;
+    
+    if (!validChars.test(inputValue)) {
+      return; // Reject invalid characters
+    }
+    
+    // Prevent multiple decimal points
+    const decimalCount = (inputValue.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return;
+    }
+    
+    // Allow empty string or valid number format
+    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
+      let numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
+      
+      // Limit to 0-100 range
+      if (numericValue > 100) {
+        numericValue = 100;
+      } else if (numericValue < 0) {
+        numericValue = 0;
+      }
+      
+      setValue(field, numericValue, { shouldValidate: true });
+    }
+  };
+
+  // Helper function to format threshold on blur (0-100 with 2 decimals)
+  const handleThresholdBlur = (field: 'min_thresholds_percentage' | 'max_thresholds_percentage', e: React.FocusEvent<HTMLInputElement>) => {
+    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    
+    // Ensure value is within 0-100 range
+    if (value > 100) value = 100;
+    if (value < 0) value = 0;
+    
+    // Format with 2 decimal places
+    const formatted = value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    
+    e.target.value = formatted;
+    setValue(field, value, { shouldValidate: true });
+  };
+
+  // Helper function to format number on blur
+  const handleNumberBlur = (field: 'quantity', e: React.FocusEvent<HTMLInputElement>) => {
+    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    
+    // Truncate to 4 decimals (round down)
+    const factor = Math.pow(10, 4);
+    value = Math.floor(value * factor) / factor;
+    
+    // Determine how many decimal places to show (2-4)
+    const decimalString = value.toString().split('.')[1] || '';
+    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
+    
+    const formatted = value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: decimalPlaces
+    });
+    
+    e.target.value = formatted;
+    setValue(field, value, { shouldValidate: true });
   };
 
   return (
-    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+    <Card className="border border-gray-200 dark:border-gray-700 shadow-sm">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <div className="h-2 w-2 bg-green-500 rounded-full"></div>
           {t('contractInfo')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Contract Type */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-white">
-            Contract Type <span className="text-red-500">*</span>
-          </Label>
-          <Select
-            value={watch('sub_type') || ''}
-            onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight')}
-          >
-            <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-              <SelectValue placeholder="Select contract type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="direct">Direct</SelectItem>
-              <SelectItem value="imported">Imported</SelectItem>
-              <SelectItem value="importedFreight">Imported Freight</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.sub_type && (
-            <p className="text-sm text-red-600 dark:text-red-400">{errors.sub_type.message}</p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Commodity */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Commodity <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={watch('commodity_id') || ''}
-              onValueChange={(value) => {
-                setValue('commodity_id', value);
-                const commodity = FAKE_COMMODITIES.find(c => c.id === value);
-                if (commodity) {
-                  setValue('commodity_name', commodity.name);
-                }
-              }}
-            >
-              <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                <SelectValue placeholder="Select commodity" />
-              </SelectTrigger>
-              <SelectContent>
-                {FAKE_COMMODITIES.map((commodity) => (
-                  <SelectItem key={commodity.id} value={commodity.id}>
-                    {commodity.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.commodity_id && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
-            )}
+        {/* All fields in 2 columns layout with immediate error rows */}
+        <div className="space-y-4">
+          {/* Row 1: Sub Type and Grade */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="sub_type" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('subType')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('sub_type')}
+                onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight', { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder={t('selectSubType')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {SUB_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.key} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="grade" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('grade')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('grade')?.toString() || ''}
+                onValueChange={(value) => setValue('grade', parseInt(value), { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select grade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-
-          {/* Characteristics */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Characteristics <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={watch('characteristics_configuration_id') || ''}
-              onValueChange={(value) => {
-                setValue('characteristics_configuration_id', value);
-                const characteristic = FAKE_CHARACTERISTICS.find(c => c.id === value);
-                if (characteristic) {
-                  setValue('characteristics_configuration_name', characteristic.name);
-                }
-              }}
-            >
-              <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                <SelectValue placeholder="Select characteristics" />
-              </SelectTrigger>
-              <SelectContent>
-                {FAKE_CHARACTERISTICS.map((characteristic) => (
-                  <SelectItem key={characteristic.id} value={characteristic.id}>
-                    {characteristic.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.characteristics_configuration_id && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Grade */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Grade <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="number"
-              min="1"
-              max="10"
-              {...register('grade', { valueAsNumber: true })}
-              className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="1-10"
-            />
-            {errors.grade && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
-            )}
-          </div>
-
-          {/* Quantity */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Quantity <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="number"
-              min="1"
-              {...register('quantity', { valueAsNumber: true })}
-              className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="Enter quantity"
-            />
-            {errors.quantity && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.quantity.message}</p>
-            )}
-          </div>
-
-          {/* Measurement Unit */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Unit <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={watch('measurement_unit') || ''}
-              onValueChange={(value) => setValue('measurement_unit', value)}
-            >
-              <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                <SelectValue placeholder="Select unit" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bushel">Bushel</SelectItem>
-                <SelectItem value="ton">Ton</SelectItem>
-                <SelectItem value="cwt">CWT</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.measurement_unit && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.measurement_unit.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Reference Number */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Reference Number <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="text"
-              {...register('reference_number')}
-              className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="Enter reference number"
-            />
-            {errors.reference_number && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
-            )}
-          </div>
-
-          {/* Contract Date */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Contract Date <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="date"
-              {...register('contract_date')}
-              className={`h-10 ${errors.contract_date ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-            />
-            {errors.contract_date && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Min Threshold */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Min Threshold % <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="number"
-              min="0"
-              max="100"
-              {...register('min_thresholds_percentage', { valueAsNumber: true })}
-              className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="0-100"
-            />
-            {errors.min_thresholds_percentage && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
-            )}
-          </div>
-
-          {/* Max Threshold */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-900 dark:text-white">
-              Max Threshold % <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              type="number"
-              min="0"
-              max="100"
-              {...register('max_thresholds_percentage', { valueAsNumber: true })}
-              className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="0-100"
-            />
-            {errors.max_thresholds_percentage && (
-              <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Seller Selection */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-gray-900 dark:text-white">
-            Seller <span className="text-red-500">*</span>
-          </Label>
-          <div className="flex gap-2">
-            <div className="flex-1 p-3 border border-gray-300 rounded-md bg-gray-50 dark:bg-gray-700">
-              {selectedSellerData ? (
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-white">{selectedSellerData.name}</p>
-                  {selectedSellerData.company && (
-                    <p className="text-sm text-gray-600 dark:text-gray-300">{selectedSellerData.company}</p>
-                  )}
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{selectedSellerData.location}</p>
-                </div>
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400">No seller selected</p>
+          
+          {/* Row 1 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.sub_type && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.sub_type.message}</p>
               )}
             </div>
-            <button
-              type="button"
-              onClick={() => setIsSellerModalOpen(true)}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-            >
-              Select Seller
-            </button>
+            <div>
+              {errors.grade && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
+              )}
+            </div>
           </div>
-          {errors.seller && (
-            <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
-          )}
+
+          {/* Row 2: Commodity and Characteristics Configuration */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="commodity" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('commodity')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('commodity_id')}
+                onValueChange={(value) => setValue('commodity_id', value, { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder={t('selectCommodity')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="6839ef25edc3c27f091bdfc0">Maíz / Corn</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc1">Soja / Soybean</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc2">Trigo / Wheat</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc3">Sorgo / Sorghum</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc4">Cebada / Barley</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="characteristics_configuration" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('characteristicsConfiguration')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('characteristics_configuration_id')}
+                onValueChange={(value) => setValue('characteristics_configuration_id', value, { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder={t('selectConfiguration')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="config_standard">Estándar / Standard</SelectItem>
+                  <SelectItem value="config_premium">Premium</SelectItem>
+                  <SelectItem value="config_organic">Orgánico / Organic</SelectItem>
+                  <SelectItem value="config_non_gmo">No GMO / Non-GMO</SelectItem>
+                  <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          {/* Row 2 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.commodity_id && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
+              )}
+            </div>
+            <div>
+              {errors.characteristics_configuration_id && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 3: Reference Number and Seller */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('referenceNumber')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Input
+                id="reference_number"
+                {...register('reference_number')}
+                className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder={t('referenceNumberPlaceholder')}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <SellerSelectionModal
+                selectedSeller={watch('seller')}
+                onSelect={(seller) => {
+                  setValue('seller', seller.id, { shouldValidate: true });
+                  console.log('Seller selected:', seller);
+                }}
+                error={!!errors.seller}
+              />
+            </div>
+          </div>
+          
+          {/* Row 3 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.reference_number && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
+              )}
+            </div>
+            <div>
+              {errors.seller && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 4: Contract Date (single field) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <DatePicker
+                id="contract_date"
+                value={watch('contract_date')}
+                onChange={(date) => setValue('contract_date', date, { shouldValidate: true })}
+                placeholder={t('contractDate')}
+                error={!!errors.contract_date}
+              />
+            </div>
+            
+            {/* Empty space for alignment */}
+            <div></div>
+          </div>
+          
+          {/* Row 4 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.contract_date && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
+              )}
+            </div>
+            {/* Empty space for alignment */}
+            <div></div>
+          </div>
         </div>
 
-        {/* Seller Selection Modal */}
-        <SellerSelectionModal
-          isOpen={isSellerModalOpen}
-          onClose={() => setIsSellerModalOpen(false)}
-          onSelect={handleSellerSelect}
-          sellers={FAKE_SELLERS}
-        />
+        {/* Quantity & Thresholds Subsection */}
+        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-800/50">
+          <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+            {t('quantityAndThresholds')}
+          </h4>
+          
+          <div className="space-y-4">
+            {/* First row: Quantity and Measurement Unit */}
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="quantity_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('quantity')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <Input
+                    id="quantity_subsection"
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={formatNumber(watch('quantity'))}
+                    onChange={(e) => handleNumberChange('quantity', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('quantity', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="1,000.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="measurement_unit_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('measurementUnit')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <Select
+                    value={watch('measurement_unit')}
+                    onValueChange={(value) => setValue('measurement_unit', value, { shouldValidate: true })}
+                  >
+                    <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                      <SelectValue placeholder={t('selectMeasurementUnit')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unit_tons">Toneladas / Tons</SelectItem>
+                      <SelectItem value="unit_kg">Kilogramos / Kilograms</SelectItem>
+                      <SelectItem value="unit_bushels">Bushels</SelectItem>
+                      <SelectItem value="unit_cwt">Quintales / Hundredweight</SelectItem>
+                      <SelectItem value="unit_mt">Toneladas Métricas / Metric Tons</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Quantity and Measurement Unit Errors */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
+                <div>
+                  {errors.quantity && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.quantity.message}</p>
+                  )}
+                </div>
+                <div>
+                  {errors.measurement_unit && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.measurement_unit.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Second row: Min and Max Thresholds */}
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Min Threshold */}
+                <div className="space-y-2">
+                  <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-[100px]">
+                      <Input
+                        id="min_thresholds_percentage"
+                        type="text"
+                        inputMode="decimal"
+                        defaultValue={watch('min_thresholds_percentage') ? watch('min_thresholds_percentage').toFixed(2) : ''}
+                        onChange={(e) => handleThresholdChange('min_thresholds_percentage', e.target.value)}
+                        onBlur={(e) => handleThresholdBlur('min_thresholds_percentage', e)}
+                        onKeyDown={(e) => {
+                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                          if (!allowedKeys.includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                        placeholder="0.00"
+                        style={{
+                          MozAppearance: 'textfield'
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {(() => {
+                          const quantity = watch('quantity') || 0;
+                          const percentage = watch('min_thresholds_percentage') || 0;
+                          const calculatedValue = quantity - (quantity * percentage) / 100;
+                          
+                          // Get unit display name
+                          const measurementUnit = watch('measurement_unit');
+                          const unitMap: Record<string, string> = {
+                            'unit_tons': 'Tons',
+                            'unit_kg': 'Kilograms', 
+                            'unit_bushels': 'Bushel 56',
+                            'unit_cwt': 'Hundredweight',
+                            'unit_mt': 'Metric Tons'
+                          };
+                          const unitDisplay = unitMap[measurementUnit] || 'Units';
+                          
+                          return `${calculatedValue.toLocaleString('en-US', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                          })} ${unitDisplay}`;
+                        })()} 
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Max Threshold */}
+                <div className="space-y-2">
+                  <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-[100px]">
+                      <Input
+                        id="max_thresholds_percentage"
+                        type="text"
+                        inputMode="decimal"
+                        defaultValue={watch('max_thresholds_percentage') ? watch('max_thresholds_percentage').toFixed(2) : ''}
+                        onChange={(e) => handleThresholdChange('max_thresholds_percentage', e.target.value)}
+                        onBlur={(e) => handleThresholdBlur('max_thresholds_percentage', e)}
+                        onKeyDown={(e) => {
+                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                          if (!allowedKeys.includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                        placeholder="100.00"
+                        style={{
+                          MozAppearance: 'textfield'
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {(() => {
+                          const quantity = watch('quantity') || 0;
+                          const percentage = watch('max_thresholds_percentage') || 0;
+                          const calculatedValue = quantity + (quantity * percentage) / 100;
+                          
+                          // Get unit display name
+                          const measurementUnit = watch('measurement_unit');
+                          const unitMap: Record<string, string> = {
+                            'unit_tons': 'Tons',
+                            'unit_kg': 'Kilograms', 
+                            'unit_bushels': 'Bushel 56',
+                            'unit_cwt': 'Hundredweight',
+                            'unit_mt': 'Metric Tons'
+                          };
+                          const unitDisplay = unitMap[measurementUnit] || 'Units';
+                          
+                          return `${calculatedValue.toLocaleString('en-US', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                          })} ${unitDisplay}`;
+                        })()} 
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Min and Max Thresholds Errors */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
+                <div>
+                  {errors.min_thresholds_percentage && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
+                  )}
+                </div>
+                <div>
+                  {errors.max_thresholds_percentage && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
