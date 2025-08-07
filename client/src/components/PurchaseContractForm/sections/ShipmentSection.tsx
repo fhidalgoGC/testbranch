@@ -30,6 +30,23 @@ const TRANSPORT_OPTIONS = [
   { key: 'drum', value: 'Drum', label: 'Drum' }
 ];
 
+// Standardized data structure for delivered field
+const DELIVERED_OPTIONS = [
+  { key: 'dlvdAdmCcTx', value: 'Dlvd ADM CC, Tx', label: 'Dlvd ADM CC, Tx' },
+  { key: 'dlvdPortOfBrownsville', value: 'Dlvd Port of Brownsville', label: 'Dlvd Port of Brownsville' },
+  { key: 'dlvdToCorpusChristiTx', value: 'Dlvd to Corpus Christi Tx', label: 'Dlvd to Corpus Christi Tx' },
+  { key: 'pickedUp', value: 'PICKED UP', label: 'PICKED UP' },
+  { key: 'inStore', value: 'In Store', label: 'In Store' },
+  { key: 'dlvdToJrFeedlotLlc', value: 'Dlvd to J&R FeedLot, LLC', label: 'Dlvd to J&R FeedLot, LLC' },
+  { key: 'dlvdKinRanchFeedyarn', value: 'Dlvd Kin RanchFeedyarn', label: 'Dlvd Kin RanchFeedyarn' },
+  { key: 'fobMcCook', value: 'FOB MCCook', label: 'FOB MCCook' },
+  { key: 'dlvdProgresso', value: 'Dlvd Progresso', label: 'Dlvd Progresso' },
+  { key: 'fobProgreso', value: 'FOB Progreso', label: 'FOB Progreso' },
+  { key: 'pickupProgreso', value: 'PICKUP Progreso', label: 'PICKUP Progreso' },
+  { key: 'importerProgreso', value: 'IMPORTER Progreso', label: 'IMPORTER Progreso' },
+  { key: 'dlvdToCustomer', value: 'Dlvd to Customer', label: 'Dlvd to Customer' }
+];
+
 export function ShipmentSection() {
   const { t } = useTranslation();
   const { register, formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
@@ -122,18 +139,11 @@ export function ShipmentSection() {
                 <SelectValue placeholder="Select delivery terms" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="FOB_Origin">FOB Origin</SelectItem>
-                <SelectItem value="FOB_Destination">FOB Destination</SelectItem>
-                <SelectItem value="CIF_Port">CIF Port</SelectItem>
-                <SelectItem value="CFR_Port">CFR Port</SelectItem>
-                <SelectItem value="DAP_Destination">DAP Destination</SelectItem>
-                <SelectItem value="DDP_Destination">DDP Destination</SelectItem>
-                <SelectItem value="EXW_Origin">EXW Origin</SelectItem>
-                <SelectItem value="FCA_Origin">FCA Origin</SelectItem>
-                <SelectItem value="CPT_Destination">CPT Destination</SelectItem>
-                <SelectItem value="CIP_Destination">CIP Destination</SelectItem>
-                <SelectItem value="IMPORTER_Progreso">IMPORTER Progreso</SelectItem>
-                <SelectItem value="EXPORTER_Origin">EXPORTER Origin</SelectItem>
+                {DELIVERED_OPTIONS.map((option) => (
+                  <SelectItem key={option.key} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.delivered && (
