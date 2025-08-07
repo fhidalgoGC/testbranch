@@ -65,15 +65,25 @@ export function ShipmentSection() {
             <Label htmlFor="application_priority" className="text-sm font-medium text-gray-900 dark:text-white">
               Application Priority <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="application_priority"
-              type="number"
-              min="1"
-              max="10"
-              {...register('application_priority', { valueAsNumber: true })}
-              className={`h-10 ${errors.application_priority ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="1"
-            />
+            <Select
+              value={watch('application_priority')?.toString() || ''}
+              onValueChange={(value) => setValue('application_priority', parseInt(value))}
+            >
+              <SelectTrigger className={`h-10 ${errors.application_priority ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="3">3</SelectItem>
+                <SelectItem value="4">4</SelectItem>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="6">6</SelectItem>
+                <SelectItem value="7">7</SelectItem>
+                <SelectItem value="8">8</SelectItem>
+                <SelectItem value="9">9</SelectItem>
+              </SelectContent>
+            </Select>
             {errors.application_priority && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.application_priority.message}</p>
             )}
