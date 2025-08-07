@@ -86,7 +86,7 @@ export function PriceSection({
     
     // Allow empty string or valid number format
     if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
-      const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
+      const numericValue = inputValue === '' ? null : parseFloat(inputValue);
       
       const currentPriceSchedule = watch('price_schedule') || [{}];
       const updatedSchedule = [...currentPriceSchedule];
@@ -97,7 +97,17 @@ export function PriceSection({
 
   // Helper function to format number on blur
   const handleNumberBlur = (field: keyof PriceSchedule, e: React.FocusEvent<HTMLInputElement>) => {
-    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    const inputVal = e.target.value.replace(/,/g, '').trim();
+    if (inputVal === '') {
+      e.target.value = '';
+      const currentPriceSchedule = watch('price_schedule') || [{}];
+      const updatedSchedule = [...currentPriceSchedule];
+      updatedSchedule[0] = { ...updatedSchedule[0], [field]: null };
+      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+      return;
+    }
+    
+    let value = parseFloat(inputVal) || 0;
     
     // Truncate to 4 decimals (round down)
     const factor = Math.pow(10, 4);
@@ -180,7 +190,7 @@ export function PriceSection({
                 <Input
                   type="text"
                   inputMode="decimal"
-                  defaultValue={formatNumber(currentSchedule.price)}
+                  defaultValue={currentSchedule.price ? formatNumber(currentSchedule.price) : ''}
                   onChange={(e) => handleNumberChange('price', e.target.value)}
                   onBlur={(e) => handleNumberBlur('price', e)}
                   onKeyDown={(e) => {
@@ -231,7 +241,7 @@ export function PriceSection({
                       <Input
                         type="text"
                         inputMode="decimal"
-                        defaultValue={formatNumber(currentSchedule.basis)}
+                        defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
                         onChange={(e) => handleNumberChange('basis', e.target.value)}
                         onBlur={(e) => handleNumberBlur('basis', e)}
                         onKeyDown={(e) => {
@@ -274,7 +284,7 @@ export function PriceSection({
                       <Input
                         type="text"
                         inputMode="decimal"
-                        defaultValue={formatNumber(currentSchedule.future_price)}
+                        defaultValue={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
                         onChange={(e) => handleNumberChange('future_price', e.target.value)}
                         onBlur={(e) => handleNumberBlur('future_price', e)}
                         onKeyDown={(e) => {
