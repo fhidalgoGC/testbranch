@@ -45,31 +45,38 @@ export function PriceSection({
 
   // Helper function to handle number input change with format-aware validation and business logic
   const handleNumberChange = (field: keyof PriceSchedule, inputValue: string) => {
-    // Use parseFormattedNumber to handle the input according to configured format
-    const numericValue = parseFormattedNumber(inputValue);
-    
     const currentPriceSchedule = watch('price_schedule') || [{}];
     const updatedSchedule = [...currentPriceSchedule];
     const currentItem = { ...updatedSchedule[0] };
     
-    // Update the field that was changed with explicit type handling
-    const safeValue = numericValue !== null ? numericValue : 0;
-    
-    if (field === 'price') {
-      currentItem.price = safeValue;
-      // For fixed pricing: when price changes, copy value to future
-      if (currentItem.pricing_type === 'fixed') {
-        currentItem.future_price = safeValue;
+    if (inputValue.trim() === '') {
+      // Handle empty input - set to null for validation
+      (currentItem as any)[field] = null;
+    } else {
+      // Use parseFormattedNumber to handle the input according to configured format
+      const numericValue = parseFormattedNumber(inputValue);
+      
+      if (numericValue !== null) {
+        // Update the field that was changed
+        if (field === 'price') {
+          currentItem.price = numericValue;
+          // For fixed pricing: when price changes, copy value to future
+          if (currentItem.pricing_type === 'fixed') {
+            currentItem.future_price = numericValue;
+          }
+        } else if (field === 'basis') {
+          // For basis, respect the current sign from the toggle button
+          const isNegative = (currentItem.basis || 0) < 0;
+          currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+          // For fixed pricing: when basis changes, calculate future = price - basis
+          if (currentItem.pricing_type === 'fixed') {
+            const currentPrice = currentItem.price || 0;
+            currentItem.future_price = currentPrice - currentItem.basis;
+          }
+        } else if (field === 'future_price') {
+          currentItem.future_price = numericValue;
+        }
       }
-    } else if (field === 'basis') {
-      currentItem.basis = safeValue;
-      // For fixed pricing: when basis changes, calculate future = price - basis
-      if (currentItem.pricing_type === 'fixed') {
-        const currentPrice = currentItem.price || 0;
-        currentItem.future_price = currentPrice - safeValue;
-      }
-    } else if (field === 'future_price') {
-      currentItem.future_price = safeValue;
     }
     
     updatedSchedule[0] = currentItem;
@@ -86,21 +93,8 @@ export function PriceSection({
       const updatedSchedule = [...currentPriceSchedule];
       const currentItem = { ...updatedSchedule[0] };
       
-      // Handle field clearing with explicit type handling
-      if (field === 'price') {
-        currentItem.price = 0;
-        if (currentItem.pricing_type === 'fixed') {
-          currentItem.future_price = 0;
-        }
-      } else if (field === 'basis') {
-        currentItem.basis = 0;
-        if (currentItem.pricing_type === 'fixed') {
-          const currentPrice = currentItem.price || 0;
-          currentItem.future_price = currentPrice - 0;
-        }
-      } else if (field === 'future_price') {
-        currentItem.future_price = 0;
-      }
+      // Handle field clearing - set to null for validation
+      (currentItem as any)[field] = null;
       
       updatedSchedule[0] = currentItem;
       setValue('price_schedule', updatedSchedule, { shouldValidate: true });
@@ -110,7 +104,7 @@ export function PriceSection({
     // Parse and format using environment configuration
     const numericValue = parseFormattedNumber(inputVal);
     if (numericValue !== null) {
-      const formatted = formatNumber(numericValue);
+      const formatted = formatNumber(Math.abs(numericValue));
       e.target.value = formatted;
       
       const currentPriceSchedule = watch('price_schedule') || [{}];
@@ -124,10 +118,12 @@ export function PriceSection({
           currentItem.future_price = numericValue;
         }
       } else if (field === 'basis') {
-        currentItem.basis = numericValue;
+        // For basis, respect the current sign from the toggle button
+        const isNegative = (currentItem.basis || 0) < 0;
+        currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
         if (currentItem.pricing_type === 'fixed') {
           const currentPrice = currentItem.price || 0;
-          currentItem.future_price = currentPrice - numericValue;
+          currentItem.future_price = currentPrice - currentItem.basis;
         }
       } else if (field === 'future_price') {
         currentItem.future_price = numericValue;
@@ -178,7 +174,7 @@ export function PriceSection({
                     currentItem.future_price = 0;
                   } else if (value === 'basis') {
                     // For basis: initialize basis field to null to trigger validation
-                    currentItem.basis = null;
+                    (currentItem as any).basis = null;
                     // Keep price and future_price but they won't be shown
                   }
                   
@@ -237,37 +233,9 @@ export function PriceSection({
                 <Input
                   type="text"
                   inputMode="decimal"
-                  value={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
-                  onChange={(e) => {
-                    const currentPriceSchedule = watch('price_schedule') || [{}];
-                    const updatedSchedule = [...currentPriceSchedule];
-                    const currentItem = { ...updatedSchedule[0] };
-                    const isNegative = (currentItem.basis || 0) < 0;
-                    
-                    const inputValue = e.target.value.trim();
-                    if (inputValue === '') {
-                      // When field is empty, set to null to trigger validation
-                      currentItem.basis = null;
-                    } else {
-                      const numericValue = parseFormattedNumber(inputValue);
-                      if (numericValue !== null) {
-                        currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
-                      }
-                    }
-                    
-                    updatedSchedule[0] = currentItem;
-                    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                  }}
-                  onBlur={(e) => {
-                    const inputVal = e.target.value.trim();
-                    if (inputVal !== '') {
-                      const numericValue = parseFormattedNumber(inputVal);
-                      if (numericValue !== null) {
-                        const formatted = formatNumber(Math.abs(numericValue));
-                        e.target.value = formatted;
-                      }
-                    }
-                  }}
+                  defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                  onChange={(e) => handleNumberChange('basis', e.target.value)}
+                  onBlur={(e) => handleNumberBlur('basis', e)}
                   onKeyDown={(e) => {
                     const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                     if (!allowedKeys.includes(e.key)) {
@@ -357,43 +325,9 @@ export function PriceSection({
                     <Input
                       type="text"
                       inputMode="decimal"
-                      value={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
-                      onChange={(e) => {
-                        const currentPriceSchedule = watch('price_schedule') || [{}];
-                        const updatedSchedule = [...currentPriceSchedule];
-                        const currentItem = { ...updatedSchedule[0] };
-                        const isNegative = (currentItem.basis || 0) < 0;
-                        
-                        const inputValue = e.target.value.trim();
-                        if (inputValue === '') {
-                          // When field is empty, set to null to trigger validation
-                          currentItem.basis = null;
-                        } else {
-                          const numericValue = parseFormattedNumber(inputValue);
-                          if (numericValue !== null) {
-                            currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
-                          }
-                        }
-                        
-                        // Recalculate future_price for fixed type
-                        if (currentItem.pricing_type === 'fixed' && currentItem.basis !== null) {
-                          const currentPrice = currentItem.price || 0;
-                          currentItem.future_price = currentPrice - currentItem.basis;
-                        }
-                        
-                        updatedSchedule[0] = currentItem;
-                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                      }}
-                      onBlur={(e) => {
-                        const inputVal = e.target.value.trim();
-                        if (inputVal !== '') {
-                          const numericValue = parseFormattedNumber(inputVal);
-                          if (numericValue !== null) {
-                            const formatted = formatNumber(Math.abs(numericValue));
-                            e.target.value = formatted;
-                          }
-                        }
-                      }}
+                      defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                      onChange={(e) => handleNumberChange('basis', e.target.value)}
+                      onBlur={(e) => handleNumberBlur('basis', e)}
                       onKeyDown={(e) => {
                         const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                         if (!allowedKeys.includes(e.key)) {
@@ -403,7 +337,7 @@ export function PriceSection({
                       className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                       placeholder="0.00"
                       style={{
-                        MozAppearance: 'textfield'
+                        MozAppearance: 'textfield' as any
                       }}
                     />
                   </div>
