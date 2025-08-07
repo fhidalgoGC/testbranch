@@ -54,10 +54,28 @@ export const createPurchaseContractSchema = () => {
             (val) => ['fixed', 'basis'].includes(val),
             'This field is required'
           ),
-          price: z.number({ required_error: 'This field is required' }).min(1, 'This field is required'),
-          basis: z.number({ required_error: 'This field is required' }).min(1, 'This field is required'),
+          price: z.union([z.number(), z.null()]).refine(
+            (val) => val !== null && val !== undefined,
+            'This field is required'
+          ).refine(
+            (val) => val === null || val >= 1,
+            'Must be at least 1'
+          ),
+          basis: z.union([z.number(), z.null()]).refine(
+            (val) => val !== null && val !== undefined,
+            'This field is required'
+          ).refine(
+            (val) => val === null || val >= 1,
+            'Must be at least 1'
+          ),
           basis_operation: z.enum(['add', 'subtract']).default('add'),
-          future_price: z.number({ required_error: 'This field is required' }).min(1, 'This field is required'),
+          future_price: z.union([z.number(), z.null()]).refine(
+            (val) => val !== null && val !== undefined,
+            'This field is required'
+          ).refine(
+            (val) => val === null || val >= 1,
+            'Must be at least 1'
+          ),
           option_month: z.string().min(1, 'This field is required'),
           option_year: z.number({ required_error: 'This field is required' }).min(new Date().getFullYear(), 'This field is required'),
           payment_currency: z.string().min(1, 'This field is required').refine(
