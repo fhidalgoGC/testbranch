@@ -19,6 +19,7 @@ interface Seller {
 interface SellerSelectionModalProps {
   onSelect: (seller: Seller) => void;
   selectedSeller?: string;
+  error?: boolean;
 }
 
 // Datos fake de vendedores
@@ -77,7 +78,7 @@ const FAKE_SELLERS: Seller[] = [
   }
 ];
 
-export function SellerSelectionModal({ onSelect, selectedSeller }: SellerSelectionModalProps) {
+export function SellerSelectionModal({ onSelect, selectedSeller, error }: SellerSelectionModalProps) {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -111,7 +112,7 @@ export function SellerSelectionModal({ onSelect, selectedSeller }: SellerSelecti
             readOnly
             value={selectedSellerData ? `${selectedSellerData.name}${selectedSellerData.company ? ` - ${selectedSellerData.company}` : ''}` : ''}
             placeholder={t('selectSeller')}
-            className="h-10 pr-10 border-gray-300 focus:border-green-500 cursor-pointer"
+            className={`h-10 pr-10 cursor-pointer ${error ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <Search className="h-4 w-4 text-gray-500" />

@@ -27,6 +27,7 @@ export function usePurchaseContractForm() {
       contract_date: new Date().toISOString().split('T')[0],
       min_thresholds_percentage: 10,
       max_thresholds_percentage: 90,
+      seller: '',
       participants: [],
       price_schedule: [{
         pricing_type: '' as any,

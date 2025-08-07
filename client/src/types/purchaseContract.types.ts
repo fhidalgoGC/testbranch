@@ -147,6 +147,9 @@ export interface PurchaseContractFormData {
   min_thresholds_percentage: number;
   max_thresholds_percentage: number;
   
+  // Seller
+  seller: string;
+  
   // Remarks Section
   remarks: string[];
 }

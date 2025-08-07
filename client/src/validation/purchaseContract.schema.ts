@@ -19,6 +19,7 @@ export const createPurchaseContractSchema = () => {
     contract_date: z.string().min(1, 'This field is required'),
     min_thresholds_percentage: z.number().min(0, 'Must be a positive number').max(100, 'Invalid format'),
     max_thresholds_percentage: z.number().min(0, 'Must be a positive number').max(100, 'Invalid format'),
+    seller: z.string().min(1, 'This field is required'),
 
     // Participants validation - minimum 2, must include 1 buyer and 1 seller
     participants: z

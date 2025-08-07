@@ -341,9 +341,16 @@ export function ContractInfoSection() {
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <SellerSelectionModal
-                selectedSeller=""
-                onSelect={(seller) => console.log('Seller selected:', seller)}
+                selectedSeller={watch('seller')}
+                onSelect={(seller) => {
+                  setValue('seller', seller.id, { shouldValidate: true });
+                  console.log('Seller selected:', seller);
+                }}
+                error={!!errors.seller}
               />
+              {errors.seller && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
+              )}
             </div>
           </div>
         </div>
