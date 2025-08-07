@@ -3,28 +3,99 @@
  * Centralizes all environment variables for the application
  */
 
+// Variables override (primera prioridad)
+// Descomenta y define valores aquí para forzar configuraciones específicas
+const OVERRIDE_CONFIG: {
+  // Auth0
+  auth0Url?: string;
+  auth0Audience?: string;
+  auth0GrantType?: string;
+  auth0Realm?: string;
+  auth0ClientId?: string;
+  auth0Scope?: string;
+  
+  // API URLs
+  identityUrl?: string;
+  crmUrl?: string;
+  
+  // Application
+  defaultCurrency?: string;
+  defaultLanguage?: string;
+  environment?: string;
+  apiTimeout?: number;
+} = {
+  // Auth0
+  // auth0Url: 'https://custom-auth0.com/oauth/token',
+  // auth0Audience: 'custom-audience',
+  // auth0GrantType: 'custom-grant-type',
+  // auth0Realm: 'custom-realm',
+  // auth0ClientId: 'custom-client-id',
+  // auth0Scope: 'custom-scope',
+  
+  // API URLs
+  // identityUrl: 'https://custom-identity.com',
+  // crmUrl: 'https://custom-crm.com',
+  
+  // Application
+  // defaultCurrency: 'mxn',
+  // defaultLanguage: 'en',
+  // environment: 'production',
+  // apiTimeout: 60000,
+};
+
+/**
+ * Gets environment value with priority hierarchy:
+ * 1. Override value (defined in code)
+ * 2. Environment variable (.env file)
+ * 3. Default fallback value
+ */
+function getEnvValue<T>(
+  overrideValue: T | undefined,
+  envKey: string,
+  defaultValue: T
+): T {
+  // Primera prioridad: valor override definido en código
+  if (overrideValue !== undefined) {
+    return overrideValue;
+  }
+  
+  // Segunda prioridad: variable de environment
+  const envValue = import.meta.env[envKey];
+  if (envValue !== undefined && envValue !== '') {
+    // Para números, convertir a number
+    if (typeof defaultValue === 'number') {
+      const parsed = parseInt(envValue);
+      return isNaN(parsed) ? defaultValue : (parsed as T);
+    }
+    return envValue as T;
+  }
+  
+  // Tercera prioridad: valor por defecto
+  return defaultValue;
+}
+
 // Auth0 Configuration
 export const AUTH0_CONFIG = {
-  url: import.meta.env.VITE_AUTH0_URL || '',
-  audience: import.meta.env.VITE_AUTH0_AUDIENCE || '',
-  grantType: import.meta.env.VITE_AUTH0_GRANT_TYPE || '',
-  realm: import.meta.env.VITE_AUTH0_REALM || '',
-  clientId: import.meta.env.VITE_AUTH0_CLIENT_ID || '',
-  scope: import.meta.env.VITE_AUTH0_SCOPE || '',
+  url: getEnvValue(OVERRIDE_CONFIG.auth0Url, 'VITE_AUTH0_URL', ''),
+  audience: getEnvValue(OVERRIDE_CONFIG.auth0Audience, 'VITE_AUTH0_AUDIENCE', ''),
+  grantType: getEnvValue(OVERRIDE_CONFIG.auth0GrantType, 'VITE_AUTH0_GRANT_TYPE', ''),
+  realm: getEnvValue(OVERRIDE_CONFIG.auth0Realm, 'VITE_AUTH0_REALM', ''),
+  clientId: getEnvValue(OVERRIDE_CONFIG.auth0ClientId, 'VITE_AUTH0_CLIENT_ID', ''),
+  scope: getEnvValue(OVERRIDE_CONFIG.auth0Scope, 'VITE_AUTH0_SCOPE', ''),
 } as const;
 
 // API URLs
 export const API_URLS = {
-  identity: import.meta.env.VITE_URL_IDENTITY || '',
-  crm: import.meta.env.VITE_URL_CRM || '',
+  identity: getEnvValue(OVERRIDE_CONFIG.identityUrl, 'VITE_URL_IDENTITY', ''),
+  crm: getEnvValue(OVERRIDE_CONFIG.crmUrl, 'VITE_URL_CRM', ''),
 } as const;
 
 // Application Configuration
 export const APP_CONFIG = {
-  defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || 'usd',
-  defaultLanguage: import.meta.env.VITE_DEFAULT_LANGUAGE || 'es',
-  environment: import.meta.env.VITE_ENVIRONMENT || 'development',
-  apiTimeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),
+  defaultCurrency: getEnvValue(OVERRIDE_CONFIG.defaultCurrency, 'VITE_DEFAULT_CURRENCY', 'usd'),
+  defaultLanguage: getEnvValue(OVERRIDE_CONFIG.defaultLanguage, 'VITE_DEFAULT_LANGUAGE', 'es'),
+  environment: getEnvValue(OVERRIDE_CONFIG.environment, 'VITE_ENVIRONMENT', 'development'),
+  apiTimeout: getEnvValue(OVERRIDE_CONFIG.apiTimeout, 'VITE_API_TIMEOUT', 30000),
 } as const;
 
 // Supported currencies
