@@ -100,7 +100,7 @@ export function PriceSection({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Pricing Type <span className="text-red-500">*</span>
+                {t('pricingType')} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={currentSchedule.pricing_type || ''}

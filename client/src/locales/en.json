@@ -114,7 +114,7 @@
   "priceContract": "Price Contract",
   "priceSchedule": "Price Schedule",
   "addPriceSchedule": "Add Price Schedule",
-  "pricingType": "Pricing Type",
+  "pricingType": "Type",
   "selectPricingType": "Select pricing type",
   "fixed": "Fixed",
   "future": "Future",
