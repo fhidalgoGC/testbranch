@@ -106,14 +106,17 @@ export function SellerSelectionModal({ onSelect, selectedSeller }: SellerSelecti
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button 
-          type="button"
-          variant="ghost" 
-          size="sm"
-          className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <Search className="h-4 w-4 text-gray-500" />
-        </Button>
+        <div className="relative">
+          <Input
+            readOnly
+            value={selectedSellerData ? `${selectedSellerData.name}${selectedSellerData.company ? ` - ${selectedSellerData.company}` : ''}` : ''}
+            placeholder={t('selectSeller')}
+            className="h-10 pr-10 border-gray-300 focus:border-green-500 cursor-pointer"
+          />
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+            <Search className="h-4 w-4 text-gray-500" />
+          </div>
+        </div>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>

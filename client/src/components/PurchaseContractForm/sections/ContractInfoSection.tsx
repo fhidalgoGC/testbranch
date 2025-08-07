@@ -340,20 +340,10 @@ export function ContractInfoSection() {
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
-              <div className="relative">
-                <Input
-                  readOnly
-                  value=""
-                  placeholder={t('selectSeller')}
-                  className="h-10 pr-10 border-gray-300 focus:border-green-500"
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                  <SellerSelectionModal
-                    selectedSeller=""
-                    onSelect={(seller) => console.log('Seller selected:', seller)}
-                  />
-                </div>
-              </div>
+              <SellerSelectionModal
+                selectedSeller=""
+                onSelect={(seller) => console.log('Seller selected:', seller)}
+              />
             </div>
           </div>
         </div>
