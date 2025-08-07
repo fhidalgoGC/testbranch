@@ -77,8 +77,15 @@ export function RemarksSection({
 
   const handleSelectFromList = (remarkContent: string) => {
     if (currentRemarkIndex >= 0) {
-      const remarkLabel = remarks[currentRemarkIndex];
-      // Update the remark with the selected content from the list
+      const currentRemark = remarks[currentRemarkIndex];
+      let remarkLabel = currentRemark;
+      
+      // Extract just the label if there's already content
+      if (currentRemark.includes(':')) {
+        remarkLabel = currentRemark.split(':')[0];
+      }
+      
+      // Replace completely with the new selected content
       updateRemark(currentRemarkIndex, `${remarkLabel}:${remarkContent}`);
     }
   };
