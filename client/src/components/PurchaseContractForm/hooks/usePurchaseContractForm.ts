@@ -26,7 +26,17 @@ export function usePurchaseContractForm() {
       seller: '',
       participants: [],
       price_schedule: [],
-      logistic_schedule: [],
+      logistic_schedule: [{
+        logistic_payment_responsability: 'other',
+        logistic_coordination_responsability: 'other',
+        freight_cost: {
+          type: 'none',
+          min: 0,
+          max: 0,
+          cost: 0,
+        },
+        payment_currency: 'usd',
+      }],
       shipping_start_date: '',
       shipping_end_date: '',
       application_priority: 1,
