@@ -316,8 +316,8 @@ export function ContractInfoSection() {
                 {t('characteristicsConfiguration')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <Select
-                value={watch('characteristics_configuration')}
-                onValueChange={(value) => setValue('characteristics_configuration', value, { shouldValidate: true })}
+                value={watch('characteristics_configuration_id')}
+                onValueChange={(value) => setValue('characteristics_configuration_id', value, { shouldValidate: true })}
               >
                 <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
                   <SelectValue placeholder={t('selectConfiguration')} />
@@ -330,9 +330,12 @@ export function ContractInfoSection() {
                   <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.characteristics_configuration_id && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
+              )}
             </div>
 
-            {/* Seller */}
+            {/* Seller */
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>

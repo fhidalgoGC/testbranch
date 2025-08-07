@@ -73,7 +73,7 @@ export function LogisticSection({
       } else {
         updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
       }
-      setValue('logistic_schedule', updatedSchedule);
+      setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
       return;
     }
     
@@ -92,7 +92,7 @@ export function LogisticSection({
       } else {
         updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
       }
-      setValue('logistic_schedule', updatedSchedule);
+      setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
     }
   };
 
@@ -126,7 +126,7 @@ export function LogisticSection({
     } else {
       updatedSchedule[0] = { ...updatedSchedule[0], [field]: value };
     }
-    setValue('logistic_schedule', updatedSchedule);
+    setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
   };
 
   return (
@@ -152,7 +152,7 @@ export function LogisticSection({
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], logistic_payment_responsability: value };
-                  setValue('logistic_schedule', updatedSchedule);
+                  setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.logistic_payment_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -164,6 +164,9 @@ export function LogisticSection({
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.logistic_schedule?.[0]?.logistic_payment_responsability && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].logistic_payment_responsability.message}</p>
+              )}
             </div>
 
             {/* Coordination Responsibility */}
@@ -177,7 +180,7 @@ export function LogisticSection({
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], logistic_coordination_responsability: value };
-                  setValue('logistic_schedule', updatedSchedule);
+                  setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.logistic_coordination_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -189,6 +192,9 @@ export function LogisticSection({
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.logistic_schedule?.[0]?.logistic_coordination_responsability && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].logistic_coordination_responsability.message}</p>
+              )}
             </div>
 
             {/* Payment Currency */}
@@ -201,8 +207,8 @@ export function LogisticSection({
                 onValueChange={(value) => {
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value };
-                  setValue('logistic_schedule', updatedSchedule);
+                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'usd' | 'mxn' };
+                  setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -213,6 +219,9 @@ export function LogisticSection({
                   <SelectItem value="mxn">MXN</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.logistic_schedule?.[0]?.payment_currency && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].payment_currency.message}</p>
+              )}
             </div>
 
             {/* Freight Cost Type */}
@@ -247,7 +256,7 @@ export function LogisticSection({
                     ...updatedSchedule[0], 
                     freight_cost: freightCost
                   };
-                  setValue('logistic_schedule', updatedSchedule);
+                  setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -259,6 +268,9 @@ export function LogisticSection({
                   <SelectItem value="variable">Variable</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.logistic_schedule?.[0]?.freight_cost?.type && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].freight_cost.type.message}</p>
+              )}
             </div>
           </div>
 
