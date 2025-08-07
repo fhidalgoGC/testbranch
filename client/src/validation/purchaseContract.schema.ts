@@ -6,7 +6,10 @@ export const createPurchaseContractSchema = () => {
     // Contract Info Section
     folio: z.string().optional(),
     type: z.enum(['purchase']).default('purchase'),
-    sub_type: z.enum(['direct', 'imported', 'importedFreight'], { required_error: 'This field is required' }),
+    sub_type: z.string().min(1, 'This field is required').refine(
+      (val) => ['direct', 'imported', 'importedFreight'].includes(val),
+      'This field is required'
+    ),
     commodity_id: z.string().min(1, 'This field is required'),
     commodity_name: z.string().optional(),
     characteristics_configuration_id: z.string().min(1, 'This field is required'),
