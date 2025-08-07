@@ -206,202 +206,197 @@ export function ContractInfoSection() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* All fields in 2 columns layout */}
+        {/* All fields in 2 columns layout with immediate error rows */}
         <div className="space-y-4">
+          {/* Row 1: Sub Type and Grade */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left Column */}
-            <div className="space-y-6">
-              {/* Sub Type */}
-              <div className="space-y-2">
-                <Label htmlFor="sub_type" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('subType')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <Select
-                  value={watch('sub_type')}
-                  onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight', { shouldValidate: true })}
-                >
-                  <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder={t('selectSubType')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SUB_TYPE_OPTIONS.map((option) => (
-                      <SelectItem key={option.key} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Commodity */}
-              <div className="space-y-2">
-                <Label htmlFor="commodity" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('commodity')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <Select
-                  value={watch('commodity_id')}
-                  onValueChange={(value) => setValue('commodity_id', value, { shouldValidate: true })}
-                >
-                  <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder={t('selectCommodity')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="6839ef25edc3c27f091bdfc0">Maíz / Corn</SelectItem>
-                    <SelectItem value="6839ef25edc3c27f091bdfc1">Soja / Soybean</SelectItem>
-                    <SelectItem value="6839ef25edc3c27f091bdfc2">Trigo / Wheat</SelectItem>
-                    <SelectItem value="6839ef25edc3c27f091bdfc3">Sorgo / Sorghum</SelectItem>
-                    <SelectItem value="6839ef25edc3c27f091bdfc4">Cebada / Barley</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Reference Number */}
-              <div className="space-y-2">
-                <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('referenceNumber')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <Input
-                  id="reference_number"
-                  {...register('reference_number')}
-                  className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder={t('referenceNumberPlaceholder')}
-                />
-              </div>
-
-              {/* Contract Date */}
-              <div className="space-y-2">
-                <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <DatePicker
-                  id="contract_date"
-                  value={watch('contract_date')}
-                  onChange={(date) => setValue('contract_date', date, { shouldValidate: true })}
-                  placeholder={t('contractDate')}
-                  error={!!errors.contract_date}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="sub_type" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('subType')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('sub_type')}
+                onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight', { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder={t('selectSubType')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {SUB_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.key} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-
-            {/* Right Column */}
-            <div className="space-y-6">
-              {/* Grade */}
-              <div className="space-y-2">
-                <Label htmlFor="grade" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('grade')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <Select
-                  value={watch('grade')?.toString() || ''}
-                  onValueChange={(value) => setValue('grade', parseInt(value), { shouldValidate: true })}
-                >
-                  <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder="Select grade" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1</SelectItem>
-                    <SelectItem value="2">2</SelectItem>
-                    <SelectItem value="3">3</SelectItem>
-                    <SelectItem value="4">4</SelectItem>
-                    <SelectItem value="5">5</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Characteristics Configuration */}
-              <div className="space-y-2">
-                <Label htmlFor="characteristics_configuration" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('characteristicsConfiguration')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <Select
-                  value={watch('characteristics_configuration_id')}
-                  onValueChange={(value) => setValue('characteristics_configuration_id', value, { shouldValidate: true })}
-                >
-                  <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder={t('selectConfiguration')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="config_standard">Estándar / Standard</SelectItem>
-                    <SelectItem value="config_premium">Premium</SelectItem>
-                    <SelectItem value="config_organic">Orgánico / Organic</SelectItem>
-                    <SelectItem value="config_non_gmo">No GMO / Non-GMO</SelectItem>
-                    <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Seller */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <SellerSelectionModal
-                  selectedSeller={watch('seller')}
-                  onSelect={(seller) => {
-                    setValue('seller', seller.id, { shouldValidate: true });
-                    console.log('Seller selected:', seller);
-                  }}
-                  error={!!errors.seller}
-                />
-              </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="grade" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('grade')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('grade')?.toString() || ''}
+                onValueChange={(value) => setValue('grade', parseInt(value), { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select grade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          {/* Row 1 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.sub_type && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.sub_type.message}</p>
+              )}
+            </div>
+            <div>
+              {errors.grade && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
+              )}
             </div>
           </div>
 
-          {/* Error Messages Row - Spans both columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
-            {/* Left Column Errors */}
-            <div className="space-y-4">
-              {/* Sub Type Error */}
-              <div className="min-h-[20px]">
-                {errors.sub_type && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.sub_type.message}</p>
-                )}
-              </div>
-              
-              {/* Commodity Error */}
-              <div className="min-h-[20px]">
-                {errors.commodity_id && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
-                )}
-              </div>
-              
-              {/* Reference Number Error */}
-              <div className="min-h-[20px]">
-                {errors.reference_number && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
-                )}
-              </div>
-              
-              {/* Contract Date Error */}
-              <div className="min-h-[20px]">
-                {errors.contract_date && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
-                )}
-              </div>
+          {/* Row 2: Commodity and Characteristics Configuration */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="commodity" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('commodity')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('commodity_id')}
+                onValueChange={(value) => setValue('commodity_id', value, { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder={t('selectCommodity')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="6839ef25edc3c27f091bdfc0">Maíz / Corn</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc1">Soja / Soybean</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc2">Trigo / Wheat</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc3">Sorgo / Sorghum</SelectItem>
+                  <SelectItem value="6839ef25edc3c27f091bdfc4">Cebada / Barley</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
-            {/* Right Column Errors */}
-            <div className="space-y-4">
-              {/* Grade Error */}
-              <div className="min-h-[20px]">
-                {errors.grade && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
-                )}
-              </div>
-              
-              {/* Characteristics Configuration Error */}
-              <div className="min-h-[20px]">
-                {errors.characteristics_configuration_id && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
-                )}
-              </div>
-              
-              {/* Seller Error */}
-              <div className="min-h-[20px]">
-                {errors.seller && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="characteristics_configuration" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('characteristicsConfiguration')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Select
+                value={watch('characteristics_configuration_id')}
+                onValueChange={(value) => setValue('characteristics_configuration_id', value, { shouldValidate: true })}
+              >
+                <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder={t('selectConfiguration')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="config_standard">Estándar / Standard</SelectItem>
+                  <SelectItem value="config_premium">Premium</SelectItem>
+                  <SelectItem value="config_organic">Orgánico / Organic</SelectItem>
+                  <SelectItem value="config_non_gmo">No GMO / Non-GMO</SelectItem>
+                  <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+          
+          {/* Row 2 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.commodity_id && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
+              )}
+            </div>
+            <div>
+              {errors.characteristics_configuration_id && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 3: Reference Number and Seller */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('referenceNumber')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <Input
+                id="reference_number"
+                {...register('reference_number')}
+                className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder={t('referenceNumberPlaceholder')}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <SellerSelectionModal
+                selectedSeller={watch('seller')}
+                onSelect={(seller) => {
+                  setValue('seller', seller.id, { shouldValidate: true });
+                  console.log('Seller selected:', seller);
+                }}
+                error={!!errors.seller}
+              />
+            </div>
+          </div>
+          
+          {/* Row 3 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.reference_number && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
+              )}
+            </div>
+            <div>
+              {errors.seller && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 4: Contract Date (single field) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <DatePicker
+                id="contract_date"
+                value={watch('contract_date')}
+                onChange={(date) => setValue('contract_date', date, { shouldValidate: true })}
+                placeholder={t('contractDate')}
+                error={!!errors.contract_date}
+              />
+            </div>
+            
+            {/* Empty space for alignment */}
+            <div></div>
+          </div>
+          
+          {/* Row 4 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.contract_date && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
+              )}
+            </div>
+            {/* Empty space for alignment */}
+            <div></div>
           </div>
         </div>
 
