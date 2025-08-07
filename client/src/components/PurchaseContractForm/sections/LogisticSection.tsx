@@ -134,7 +134,7 @@ export function LogisticSection({
             {/* Payment Responsibility */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Payment Responsibility <span className="text-red-500">*</span>
+                {t('paymentResponsibility')} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={currentSchedule.logistic_payment_responsability || ''}
@@ -162,7 +162,7 @@ export function LogisticSection({
             {/* Coordination Responsibility */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Coordination Responsibility <span className="text-red-500">*</span>
+                {t('coordinationResponsibility')} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={currentSchedule.logistic_coordination_responsability || ''}
@@ -190,7 +190,7 @@ export function LogisticSection({
             {/* Payment Currency */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Payment Currency <span className="text-red-500">*</span>
+                {t('paymentCurrency')} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={currentSchedule.payment_currency || APP_CONFIG.defaultCurrency}
@@ -220,7 +220,7 @@ export function LogisticSection({
             {/* Freight Cost Type */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Freight Cost Type <span className="text-red-500">*</span>
+                {t('freightCostType')} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={currentSchedule.freight_cost?.type || ''}
@@ -267,7 +267,7 @@ export function LogisticSection({
               {currentSchedule.freight_cost?.type === 'fixed' && (
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Freight Cost
+                    {t('freightCost')}
                   </Label>
                   <Input
                     type="text"

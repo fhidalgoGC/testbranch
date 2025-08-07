@@ -133,6 +133,7 @@
   "paymentCurrency": "Payment Currency",
   "selectCurrency": "Select currency",
   "freightCost": "Freight Cost",
+  "freightCostType": "Freight Cost Type",
   "type": "Type",
   "selectType": "Select type",
   "none": "None",

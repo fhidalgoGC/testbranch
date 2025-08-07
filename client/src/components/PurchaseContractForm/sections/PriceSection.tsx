@@ -326,7 +326,7 @@ export function PriceSection({
             {/* Payment Currency */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Payment Currency <span className="text-red-500">*</span>
+                {t('paymentCurrency')} <span className="text-red-500">*</span>
               </Label>
               <Select
                 value={currentSchedule.payment_currency || APP_CONFIG.defaultCurrency}

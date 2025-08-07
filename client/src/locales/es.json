@@ -133,6 +133,7 @@
   "paymentCurrency": "Moneda de Pago",
   "selectCurrency": "Seleccionar moneda",
   "freightCost": "Costo de Flete",
+  "freightCostType": "Tipo de Costo de Flete",
   "type": "Tipo",
   "selectType": "Seleccionar tipo",
   "none": "Ninguno",
