@@ -57,10 +57,22 @@ export function PriceSection({
     
     if (field === 'price') {
       currentItem.price = safeValue;
-      // No automatic future_price calculation when price changes
+      // For fixed pricing, copy price to future_price
+      if (currentItem.pricing_type === 'fixed') {
+        currentItem.future_price = safeValue;
+      }
     } else if (field === 'basis') {
       currentItem.basis = safeValue;
-      // No automatic future_price calculation when basis changes
+      // For fixed pricing, recalculate future_price considering basis_operation
+      if (currentItem.pricing_type === 'fixed') {
+        const currentPrice = currentItem.price || 0;
+        const basisOperation = currentItem.basis_operation || 'add';
+        // If operation is 'add', we subtract basis (price - basis)
+        // If operation is 'subtract', we add basis (price + basis)
+        currentItem.future_price = basisOperation === 'add' 
+          ? currentPrice - safeValue 
+          : currentPrice + safeValue;
+      }
     } else if (field === 'future_price') {
       currentItem.future_price = safeValue;
     }
@@ -82,10 +94,15 @@ export function PriceSection({
       // Handle field clearing with explicit type handling
       if (field === 'price') {
         currentItem.price = 0;
-        // No automatic future_price reset when price is cleared
+        if (currentItem.pricing_type === 'fixed') {
+          currentItem.future_price = 0;
+        }
       } else if (field === 'basis') {
         currentItem.basis = 0;
-        // No automatic future_price calculation when basis is cleared
+        if (currentItem.pricing_type === 'fixed') {
+          const currentPrice = currentItem.price || 0;
+          currentItem.future_price = currentPrice;
+        }
       } else if (field === 'future_price') {
         currentItem.future_price = 0;
       }
@@ -108,10 +125,19 @@ export function PriceSection({
       // Handle field updates with explicit type handling
       if (field === 'price') {
         currentItem.price = numericValue;
-        // No automatic future_price sync when price is formatted
+        if (currentItem.pricing_type === 'fixed') {
+          currentItem.future_price = numericValue;
+        }
       } else if (field === 'basis') {
         currentItem.basis = numericValue;
-        // No automatic future_price calculation when basis is formatted
+        if (currentItem.pricing_type === 'fixed') {
+          const currentPrice = currentItem.price || 0;
+          const basisOperation = currentItem.basis_operation || 'add';
+          // Apply basis_operation to the calculation
+          currentItem.future_price = basisOperation === 'add' 
+            ? currentPrice - numericValue 
+            : currentPrice + numericValue;
+        }
       } else if (field === 'future_price') {
         currentItem.future_price = numericValue;
       }
@@ -210,7 +236,14 @@ export function PriceSection({
                     // Toggle operation
                     currentItem.basis_operation = currentOp === 'add' ? 'subtract' : 'add';
                     
-                    // No automatic future_price calculation when basis operation changes
+                    // Recalculate future_price if in fixed mode
+                    if (currentItem.pricing_type === 'fixed') {
+                      const currentPrice = currentItem.price || 0;
+                      const basisValue = currentItem.basis || 0;
+                      currentItem.future_price = currentItem.basis_operation === 'add' 
+                        ? currentPrice - basisValue 
+                        : currentPrice + basisValue;
+                    }
                     
                     updatedSchedule[0] = currentItem;
                     setValue('price_schedule', updatedSchedule, { shouldValidate: true });
@@ -298,7 +331,14 @@ export function PriceSection({
                         // Toggle operation
                         currentItem.basis_operation = currentOp === 'add' ? 'subtract' : 'add';
                         
-                        // No automatic future_price calculation when basis operation changes
+                        // Recalculate future_price if in fixed mode
+                        if (currentItem.pricing_type === 'fixed') {
+                          const currentPrice = currentItem.price || 0;
+                          const basisValue = currentItem.basis || 0;
+                          currentItem.future_price = currentItem.basis_operation === 'add' 
+                            ? currentPrice - basisValue 
+                            : currentPrice + basisValue;
+                        }
                         
                         updatedSchedule[0] = currentItem;
                         setValue('price_schedule', updatedSchedule, { shouldValidate: true });
@@ -332,28 +372,18 @@ export function PriceSection({
                   )}
                 </div>
 
-                {/* Future Price Field */}
+                {/* Future Price Field (read-only for fixed type) */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Futures <span className="text-red-500">*</span>
+                    Futures (Calculated) <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     type="text"
                     inputMode="decimal"
-                    defaultValue={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
-                    onChange={(e) => handleNumberChange('future_price', e.target.value)}
-                    onBlur={(e) => handleNumberBlur('future_price', e)}
-                    onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                      if (!allowedKeys.includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0.00"
-                    style={{
-                      MozAppearance: 'textfield'
-                    }}
+                    value={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
+                    readOnly
+                    className="h-10 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed"
+                    placeholder="Auto calculated"
                   />
                   {/* Future Price Error */}
                   {errors.price_schedule?.[0]?.future_price && (
