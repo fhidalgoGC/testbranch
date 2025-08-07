@@ -29,7 +29,7 @@ export interface PriceSchedule {
 }
 
 export interface FreightCost {
-  type: 'none' | 'fixed' | 'range';
+  type: 'none' | 'fixed' | 'variable';
   min: number;
   max: number;
   cost: number;

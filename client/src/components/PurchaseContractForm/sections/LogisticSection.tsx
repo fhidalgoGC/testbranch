@@ -9,6 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Truck } from 'lucide-react';
 import type { PurchaseContractFormData, LogisticSchedule } from '@/types/purchaseContract.types';
 
+// Standardized data structure for freight cost type field
+const FREIGHT_COST_TYPE_OPTIONS = [
+  { key: 'none', value: 'none', label: 'None' },
+  { key: 'fixed', value: 'fixed', label: 'Fixed' },
+  { key: 'variable', value: 'variable', label: 'Variable' }
+];
+
 interface LogisticSectionProps {
   addLogisticSchedule: () => void;
   removeLogisticSchedule: (index: number) => void;
@@ -151,9 +158,11 @@ export function LogisticSection({
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="fixed">Fixed</SelectItem>
-                  <SelectItem value="range">Range</SelectItem>
+                  {FREIGHT_COST_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.key} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.logistic_schedule?.[0]?.freight_cost?.type && (
@@ -194,8 +203,8 @@ export function LogisticSection({
                 </div>
               )}
 
-              {/* Min and Max - Only show for 'range' type */}
-              {currentSchedule.freight_cost?.type === 'range' && (
+              {/* Min and Max - Only show for 'variable' type */}
+              {currentSchedule.freight_cost?.type === 'variable' && (
                 <>
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-gray-900 dark:text-white">
