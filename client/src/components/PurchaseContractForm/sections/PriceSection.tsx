@@ -57,9 +57,14 @@ export function PriceSection({
     
     if (field === 'price') {
       currentItem.price = safeValue;
-      // For fixed pricing, copy price to future_price
+      // For fixed pricing, recalculate future_price considering existing basis
       if (currentItem.pricing_type === 'fixed') {
-        currentItem.future_price = safeValue;
+        const basisValue = currentItem.basis || 0;
+        const basisOperation = currentItem.basis_operation || 'add';
+        // Apply basis_operation to the calculation
+        currentItem.future_price = basisOperation === 'add' 
+          ? safeValue - basisValue 
+          : safeValue + basisValue;
       }
     } else if (field === 'basis') {
       currentItem.basis = safeValue;
@@ -126,7 +131,12 @@ export function PriceSection({
       if (field === 'price') {
         currentItem.price = numericValue;
         if (currentItem.pricing_type === 'fixed') {
-          currentItem.future_price = numericValue;
+          const basisValue = currentItem.basis || 0;
+          const basisOperation = currentItem.basis_operation || 'add';
+          // Apply basis_operation to the calculation
+          currentItem.future_price = basisOperation === 'add' 
+            ? numericValue - basisValue 
+            : numericValue + basisValue;
         }
       } else if (field === 'basis') {
         currentItem.basis = numericValue;
@@ -380,7 +390,7 @@ export function PriceSection({
                   <Input
                     type="text"
                     inputMode="decimal"
-                    value={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
+                    value={currentSchedule.future_price !== undefined && currentSchedule.future_price !== null ? formatNumber(currentSchedule.future_price) : ''}
                     readOnly
                     className="h-10 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed"
                     placeholder="Auto calculated"
