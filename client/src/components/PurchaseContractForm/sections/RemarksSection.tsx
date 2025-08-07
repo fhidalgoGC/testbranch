@@ -153,84 +153,98 @@ export function RemarksSection({
           </div>
         </div>
 
-        {remarks.map((remark, index) => {
-          const isComment = remark.startsWith('COMMENT:'); // Free text comments
+{(() => {
+          // Separate remarks and comments with their original indices
+          const remarksWithIndex = remarks
+            .map((remark, index) => ({ remark, originalIndex: index }))
+            .filter(item => !item.remark.startsWith('COMMENT:'));
           
-          let displayValue = '';
-          let remarkLabel = 'Remark';
+          const commentsWithIndex = remarks
+            .map((remark, index) => ({ remark, originalIndex: index }))
+            .filter(item => item.remark.startsWith('COMMENT:'));
           
-          if (isComment) {
-            displayValue = remark.replace('COMMENT:', '');
-          } else {
-            // For remarks, check if it has content after the colon
-            if (remark.includes(':')) {
-              const parts = remark.split(':');
-              remarkLabel = parts[0];
-              displayValue = parts.slice(1).join(':'); // In case content has colons
+          // Combine them with remarks first, then comments
+          const orderedItems = [...remarksWithIndex, ...commentsWithIndex];
+          
+          return orderedItems.map(({ remark, originalIndex }) => {
+            const isComment = remark.startsWith('COMMENT:');
+            
+            let displayValue = '';
+            let remarkLabel = 'Remark';
+            
+            if (isComment) {
+              displayValue = remark.replace('COMMENT:', '');
             } else {
-              // No content yet, just the label
-              remarkLabel = remark;
-              displayValue = '';
+              // For remarks, check if it has content after the colon
+              if (remark.includes(':')) {
+                const parts = remark.split(':');
+                remarkLabel = parts[0];
+                displayValue = parts.slice(1).join(':'); // In case content has colons
+              } else {
+                // No content yet, just the label
+                remarkLabel = remark;
+                displayValue = '';
+              }
             }
-          }
-          
-          return (
-            <div key={index} className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                {isComment ? 'Comentario' : `(${remarkLabel})`}
-              </Label>
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  {isComment ? (
-                    <textarea
-                      value={displayValue}
-                      onChange={(e) => updateRemark(index, `COMMENT:${e.target.value}`)}
-                      className="w-full h-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-                      placeholder={`Enter your comment here...`}
-                    />
-                  ) : (
-                    <textarea
-                      ref={(el) => textareaRefs.current[index] = el}
-                      value={displayValue}
-                      onChange={(e) => updateRemark(index, `${remarkLabel}:${e.target.value}`)}
-                      className="w-full min-h-[3rem] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white"
-                      placeholder={`Enter ${remarkLabel.toLowerCase()} details...`}
-                      rows={2}
-                      style={{
-                        height: 'auto',
-                        minHeight: '3rem'
-                      }}
-                      onInput={(e) => {
-                        const target = e.target as HTMLTextAreaElement;
-                        autoResizeTextarea(target);
-                      }}
-                    />
+            
+            return (
+              <div key={`remark-${originalIndex}`} className="space-y-2">
+                <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                  {isComment ? 'Comentario' : `(${remarkLabel})`}
+                </Label>
+                <div className="flex items-start gap-4">
+                  <div className="flex-1">
+                    {isComment ? (
+                      <textarea
+                        value={displayValue}
+                        onChange={(e) => updateRemark(originalIndex, `COMMENT:${e.target.value}`)}
+                        className="w-full h-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+                        placeholder={`Enter your comment here...`}
+                      />
+                    ) : (
+                      <textarea
+                        ref={(el) => textareaRefs.current[originalIndex] = el}
+                        value={displayValue}
+                        onChange={(e) => updateRemark(originalIndex, `${remarkLabel}:${e.target.value}`)}
+                        className="w-full min-h-[3rem] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm resize-none focus:border-green-500 focus:outline-none dark:bg-gray-800 dark:text-white"
+                        placeholder={`Enter ${remarkLabel.toLowerCase()} details...`}
+                        rows={2}
+                        style={{
+                          height: 'auto',
+                          minHeight: '3rem'
+                        }}
+                        onInput={(e) => {
+                          const target = e.target as HTMLTextAreaElement;
+                          autoResizeTextarea(target);
+                        }}
+                      />
+                    )}
+                  </div>
+                  {!isComment && (
+                    <Button
+                      type="button"
+                      onClick={() => handleOpenRemarkList(originalIndex)}
+                      variant="outline"
+                      size="sm"
+                      className="text-gray-600 hover:text-gray-700 border-gray-300 mt-0"
+                    >
+                      <Search className="w-4 h-4" />
+                    </Button>
                   )}
-                </div>
-                {!isComment && (
                   <Button
                     type="button"
-                    onClick={() => handleOpenRemarkList(index)}
+                    onClick={() => removeRemark(originalIndex)}
                     variant="outline"
                     size="sm"
-                    className="text-gray-600 hover:text-gray-700 border-gray-300 mt-0"
+                    className="text-red-600 hover:text-red-700 mt-0"
                   >
-                    <Search className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" />
                   </Button>
-                )}
-                <Button
-                  type="button"
-                  onClick={() => removeRemark(index)}
-                  variant="outline"
-                  size="sm"
-                  className="text-red-600 hover:text-red-700 mt-0"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          });
+        })()}
 
         {remarks.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
