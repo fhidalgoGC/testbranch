@@ -89,13 +89,8 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
                 message: t('fieldRequired'),
                 path: ['future_price'],
               });
-            } else if (data.future_price <= 0) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: t('positiveNumber'),
-                path: ['future_price'],
-              });
             }
+            // Note: future_price can be negative, so no positive number validation
           } else if (data.pricing_type === 'basis') {
             // For basis type: basis is required, price and future_price are optional
             if (data.basis === null || data.basis === undefined) {
