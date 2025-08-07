@@ -177,8 +177,8 @@ export function PriceSection({
                     currentItem.basis = 0;
                     currentItem.future_price = 0;
                   } else if (value === 'basis') {
-                    // For basis: initialize only basis field to 0
-                    currentItem.basis = 0;
+                    // For basis: initialize basis field to null to trigger validation
+                    currentItem.basis = null;
                     // Keep price and future_price but they won't be shown
                   }
                   
@@ -237,15 +237,23 @@ export function PriceSection({
                 <Input
                   type="text"
                   inputMode="decimal"
-                  value={currentSchedule.basis ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                  value={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
                   onChange={(e) => {
                     const currentPriceSchedule = watch('price_schedule') || [{}];
                     const updatedSchedule = [...currentPriceSchedule];
                     const currentItem = { ...updatedSchedule[0] };
                     const isNegative = (currentItem.basis || 0) < 0;
                     
-                    const numericValue = parseFormattedNumber(e.target.value) || 0;
-                    currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+                    const inputValue = e.target.value.trim();
+                    if (inputValue === '') {
+                      // When field is empty, set to null to trigger validation
+                      currentItem.basis = null;
+                    } else {
+                      const numericValue = parseFormattedNumber(inputValue);
+                      if (numericValue !== null) {
+                        currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+                      }
+                    }
                     
                     updatedSchedule[0] = currentItem;
                     setValue('price_schedule', updatedSchedule, { shouldValidate: true });
@@ -349,18 +357,26 @@ export function PriceSection({
                     <Input
                       type="text"
                       inputMode="decimal"
-                      value={currentSchedule.basis ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                      value={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
                       onChange={(e) => {
                         const currentPriceSchedule = watch('price_schedule') || [{}];
                         const updatedSchedule = [...currentPriceSchedule];
                         const currentItem = { ...updatedSchedule[0] };
                         const isNegative = (currentItem.basis || 0) < 0;
                         
-                        const numericValue = parseFormattedNumber(e.target.value) || 0;
-                        currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+                        const inputValue = e.target.value.trim();
+                        if (inputValue === '') {
+                          // When field is empty, set to null to trigger validation
+                          currentItem.basis = null;
+                        } else {
+                          const numericValue = parseFormattedNumber(inputValue);
+                          if (numericValue !== null) {
+                            currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
+                          }
+                        }
                         
                         // Recalculate future_price for fixed type
-                        if (currentItem.pricing_type === 'fixed') {
+                        if (currentItem.pricing_type === 'fixed' && currentItem.basis !== null) {
                           const currentPrice = currentItem.price || 0;
                           currentItem.future_price = currentPrice - currentItem.basis;
                         }
