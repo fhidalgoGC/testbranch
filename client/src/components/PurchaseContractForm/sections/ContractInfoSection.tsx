@@ -207,161 +207,200 @@ export function ContractInfoSection() {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* All fields in 2 columns layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            {/* Sub Type */}
-            <div className="space-y-2">
-              <Label htmlFor="sub_type" className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('subType')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <Select
-                value={watch('sub_type')}
-                onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight', { shouldValidate: true })}
-              >
-                <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                  <SelectValue placeholder={t('selectSubType')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {SUB_TYPE_OPTIONS.map((option) => (
-                    <SelectItem key={option.key} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.sub_type && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.sub_type.message}</p>
-              )}
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column */}
+            <div className="space-y-6">
+              {/* Sub Type */}
+              <div className="space-y-2">
+                <Label htmlFor="sub_type" className="text-sm font-medium text-gray-900 dark:text-white">
+                  {t('subType')} <span className="text-red-500">{t('requiredField')}</span>
+                </Label>
+                <Select
+                  value={watch('sub_type')}
+                  onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight', { shouldValidate: true })}
+                >
+                  <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                    <SelectValue placeholder={t('selectSubType')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SUB_TYPE_OPTIONS.map((option) => (
+                      <SelectItem key={option.key} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Commodity */}
+              <div className="space-y-2">
+                <Label htmlFor="commodity" className="text-sm font-medium text-gray-900 dark:text-white">
+                  {t('commodity')} <span className="text-red-500">{t('requiredField')}</span>
+                </Label>
+                <Select
+                  value={watch('commodity_id')}
+                  onValueChange={(value) => setValue('commodity_id', value, { shouldValidate: true })}
+                >
+                  <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                    <SelectValue placeholder={t('selectCommodity')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="6839ef25edc3c27f091bdfc0">Maíz / Corn</SelectItem>
+                    <SelectItem value="6839ef25edc3c27f091bdfc1">Soja / Soybean</SelectItem>
+                    <SelectItem value="6839ef25edc3c27f091bdfc2">Trigo / Wheat</SelectItem>
+                    <SelectItem value="6839ef25edc3c27f091bdfc3">Sorgo / Sorghum</SelectItem>
+                    <SelectItem value="6839ef25edc3c27f091bdfc4">Cebada / Barley</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Reference Number */}
+              <div className="space-y-2">
+                <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
+                  {t('referenceNumber')} <span className="text-red-500">{t('requiredField')}</span>
+                </Label>
+                <Input
+                  id="reference_number"
+                  {...register('reference_number')}
+                  className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  placeholder={t('referenceNumberPlaceholder')}
+                />
+              </div>
+
+              {/* Contract Date */}
+              <div className="space-y-2">
+                <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
+                  {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
+                </Label>
+                <DatePicker
+                  id="contract_date"
+                  value={watch('contract_date')}
+                  onChange={(date) => setValue('contract_date', date, { shouldValidate: true })}
+                  placeholder={t('contractDate')}
+                  error={!!errors.contract_date}
+                />
+              </div>
             </div>
 
-            {/* Commodity */}
-            <div className="space-y-2">
-              <Label htmlFor="commodity" className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('commodity')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <Select
-                value={watch('commodity_id')}
-                onValueChange={(value) => setValue('commodity_id', value, { shouldValidate: true })}
-              >
-                <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                  <SelectValue placeholder={t('selectCommodity')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="6839ef25edc3c27f091bdfc0">Maíz / Corn</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc1">Soja / Soybean</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc2">Trigo / Wheat</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc3">Sorgo / Sorghum</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc4">Cebada / Barley</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.commodity_id && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
-              )}
-            </div>
+            {/* Right Column */}
+            <div className="space-y-6">
+              {/* Grade */}
+              <div className="space-y-2">
+                <Label htmlFor="grade" className="text-sm font-medium text-gray-900 dark:text-white">
+                  {t('grade')} <span className="text-red-500">{t('requiredField')}</span>
+                </Label>
+                <Select
+                  value={watch('grade')?.toString() || ''}
+                  onValueChange={(value) => setValue('grade', parseInt(value), { shouldValidate: true })}
+                >
+                  <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                    <SelectValue placeholder="Select grade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Reference Number */}
-            <div className="space-y-2">
-              <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('referenceNumber')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <Input
-                id="reference_number"
-                {...register('reference_number')}
-                className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder={t('referenceNumberPlaceholder')}
-              />
-              {errors.reference_number && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
-              )}
-            </div>
+              {/* Characteristics Configuration */}
+              <div className="space-y-2">
+                <Label htmlFor="characteristics_configuration" className="text-sm font-medium text-gray-900 dark:text-white">
+                  {t('characteristicsConfiguration')} <span className="text-red-500">{t('requiredField')}</span>
+                </Label>
+                <Select
+                  value={watch('characteristics_configuration_id')}
+                  onValueChange={(value) => setValue('characteristics_configuration_id', value, { shouldValidate: true })}
+                >
+                  <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                    <SelectValue placeholder={t('selectConfiguration')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="config_standard">Estándar / Standard</SelectItem>
+                    <SelectItem value="config_premium">Premium</SelectItem>
+                    <SelectItem value="config_organic">Orgánico / Organic</SelectItem>
+                    <SelectItem value="config_non_gmo">No GMO / Non-GMO</SelectItem>
+                    <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Contract Date */}
-            <div className="space-y-2">
-              <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('contractDate')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <DatePicker
-                id="contract_date"
-                value={watch('contract_date')}
-                onChange={(date) => setValue('contract_date', date, { shouldValidate: true })}
-                placeholder={t('contractDate')}
-                error={!!errors.contract_date}
-              />
-              {errors.contract_date && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
-              )}
+              {/* Seller */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                  {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
+                </Label>
+                <SellerSelectionModal
+                  selectedSeller={watch('seller')}
+                  onSelect={(seller) => {
+                    setValue('seller', seller.id, { shouldValidate: true });
+                    console.log('Seller selected:', seller);
+                  }}
+                  error={!!errors.seller}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Grade */}
-            <div className="space-y-2">
-              <Label htmlFor="grade" className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('grade')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <Select
-                value={watch('grade')?.toString() || ''}
-                onValueChange={(value) => setValue('grade', parseInt(value), { shouldValidate: true })}
-              >
-                <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                  <SelectValue placeholder="Select grade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.grade && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
-              )}
+          {/* Error Messages Row - Spans both columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            {/* Left Column Errors */}
+            <div className="space-y-4">
+              {/* Sub Type Error */}
+              <div className="min-h-[20px]">
+                {errors.sub_type && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.sub_type.message}</p>
+                )}
+              </div>
+              
+              {/* Commodity Error */}
+              <div className="min-h-[20px]">
+                {errors.commodity_id && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
+                )}
+              </div>
+              
+              {/* Reference Number Error */}
+              <div className="min-h-[20px]">
+                {errors.reference_number && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
+                )}
+              </div>
+              
+              {/* Contract Date Error */}
+              <div className="min-h-[20px]">
+                {errors.contract_date && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
+                )}
+              </div>
             </div>
-
-            {/* Characteristics Configuration */}
-            <div className="space-y-2">
-              <Label htmlFor="characteristics_configuration" className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('characteristicsConfiguration')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <Select
-                value={watch('characteristics_configuration_id')}
-                onValueChange={(value) => setValue('characteristics_configuration_id', value, { shouldValidate: true })}
-              >
-                <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                  <SelectValue placeholder={t('selectConfiguration')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="config_standard">Estándar / Standard</SelectItem>
-                  <SelectItem value="config_premium">Premium</SelectItem>
-                  <SelectItem value="config_organic">Orgánico / Organic</SelectItem>
-                  <SelectItem value="config_non_gmo">No GMO / Non-GMO</SelectItem>
-                  <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.characteristics_configuration_id && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
-              )}
-            </div>
-
-            {/* Seller */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <SellerSelectionModal
-                selectedSeller={watch('seller')}
-                onSelect={(seller) => {
-                  setValue('seller', seller.id, { shouldValidate: true });
-                  console.log('Seller selected:', seller);
-                }}
-                error={!!errors.seller}
-              />
-              {errors.seller && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
-              )}
+            
+            {/* Right Column Errors */}
+            <div className="space-y-4">
+              {/* Grade Error */}
+              <div className="min-h-[20px]">
+                {errors.grade && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.grade.message}</p>
+                )}
+              </div>
+              
+              {/* Characteristics Configuration Error */}
+              <div className="min-h-[20px]">
+                {errors.characteristics_configuration_id && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
+                )}
+              </div>
+              
+              {/* Seller Error */}
+              <div className="min-h-[20px]">
+                {errors.seller && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -375,176 +414,196 @@ export function ContractInfoSection() {
           
           <div className="space-y-4">
             {/* First row: Quantity and Measurement Unit */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="quantity_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('quantity')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <Input
-                  id="quantity_subsection"
-                  type="text"
-                  inputMode="decimal"
-                  defaultValue={formatNumber(watch('quantity'))}
-                  onChange={(e) => handleNumberChange('quantity', e.target.value)}
-                  onBlur={(e) => handleNumberBlur('quantity', e)}
-                  onKeyDown={(e) => {
-                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                    if (!allowedKeys.includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="1,000.00"
-                  style={{
-                    MozAppearance: 'textfield'
-                  }}
-                />
-                {errors.quantity && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.quantity.message}</p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="quantity_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('quantity')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <Input
+                    id="quantity_subsection"
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={formatNumber(watch('quantity'))}
+                    onChange={(e) => handleNumberChange('quantity', e.target.value)}
+                    onBlur={(e) => handleNumberBlur('quantity', e)}
+                    onKeyDown={(e) => {
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      if (!allowedKeys.includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                    placeholder="1,000.00"
+                    style={{
+                      MozAppearance: 'textfield'
+                    }}
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="measurement_unit_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('measurementUnit')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <Select
-                  value={watch('measurement_unit')}
-                  onValueChange={(value) => setValue('measurement_unit', value, { shouldValidate: true })}
-                >
-                  <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                    <SelectValue placeholder={t('selectMeasurementUnit')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="unit_tons">Toneladas / Tons</SelectItem>
-                    <SelectItem value="unit_kg">Kilogramos / Kilograms</SelectItem>
-                    <SelectItem value="unit_bushels">Bushels</SelectItem>
-                    <SelectItem value="unit_cwt">Quintales / Hundredweight</SelectItem>
-                    <SelectItem value="unit_mt">Toneladas Métricas / Metric Tons</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.measurement_unit && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.measurement_unit.message}</p>
-                )}
+                <div className="space-y-2">
+                  <Label htmlFor="measurement_unit_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('measurementUnit')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <Select
+                    value={watch('measurement_unit')}
+                    onValueChange={(value) => setValue('measurement_unit', value, { shouldValidate: true })}
+                  >
+                    <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                      <SelectValue placeholder={t('selectMeasurementUnit')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unit_tons">Toneladas / Tons</SelectItem>
+                      <SelectItem value="unit_kg">Kilogramos / Kilograms</SelectItem>
+                      <SelectItem value="unit_bushels">Bushels</SelectItem>
+                      <SelectItem value="unit_cwt">Quintales / Hundredweight</SelectItem>
+                      <SelectItem value="unit_mt">Toneladas Métricas / Metric Tons</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Quantity and Measurement Unit Errors */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
+                <div>
+                  {errors.quantity && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.quantity.message}</p>
+                  )}
+                </div>
+                <div>
+                  {errors.measurement_unit && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.measurement_unit.message}</p>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Second row: Min and Max Thresholds */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Min Threshold */}
-              <div className="space-y-2">
-                <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <div className="flex items-center gap-3">
-                  <div className="w-[100px]">
-                    <Input
-                      id="min_thresholds_percentage"
-                      type="text"
-                      inputMode="decimal"
-                      defaultValue={watch('min_thresholds_percentage') ? watch('min_thresholds_percentage').toFixed(2) : ''}
-                      onChange={(e) => handleThresholdChange('min_thresholds_percentage', e.target.value)}
-                      onBlur={(e) => handleThresholdBlur('min_thresholds_percentage', e)}
-                      onKeyDown={(e) => {
-                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                        if (!allowedKeys.includes(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                      placeholder="0.00"
-                      style={{
-                        MozAppearance: 'textfield'
-                      }}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {(() => {
-                        const quantity = watch('quantity') || 0;
-                        const percentage = watch('min_thresholds_percentage') || 0;
-                        const calculatedValue = quantity - (quantity * percentage) / 100;
-                        
-                        // Get unit display name
-                        const measurementUnit = watch('measurement_unit');
-                        const unitMap: Record<string, string> = {
-                          'unit_tons': 'Tons',
-                          'unit_kg': 'Kilograms', 
-                          'unit_bushels': 'Bushel 56',
-                          'unit_cwt': 'Hundredweight',
-                          'unit_mt': 'Metric Tons'
-                        };
-                        const unitDisplay = unitMap[measurementUnit] || 'Units';
-                        
-                        return `${calculatedValue.toLocaleString('en-US', { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
-                        })} ${unitDisplay}`;
-                      })()} 
-                    </span>
+            <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Min Threshold */}
+                <div className="space-y-2">
+                  <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-[100px]">
+                      <Input
+                        id="min_thresholds_percentage"
+                        type="text"
+                        inputMode="decimal"
+                        defaultValue={watch('min_thresholds_percentage') ? watch('min_thresholds_percentage').toFixed(2) : ''}
+                        onChange={(e) => handleThresholdChange('min_thresholds_percentage', e.target.value)}
+                        onBlur={(e) => handleThresholdBlur('min_thresholds_percentage', e)}
+                        onKeyDown={(e) => {
+                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                          if (!allowedKeys.includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                        placeholder="0.00"
+                        style={{
+                          MozAppearance: 'textfield'
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {(() => {
+                          const quantity = watch('quantity') || 0;
+                          const percentage = watch('min_thresholds_percentage') || 0;
+                          const calculatedValue = quantity - (quantity * percentage) / 100;
+                          
+                          // Get unit display name
+                          const measurementUnit = watch('measurement_unit');
+                          const unitMap: Record<string, string> = {
+                            'unit_tons': 'Tons',
+                            'unit_kg': 'Kilograms', 
+                            'unit_bushels': 'Bushel 56',
+                            'unit_cwt': 'Hundredweight',
+                            'unit_mt': 'Metric Tons'
+                          };
+                          const unitDisplay = unitMap[measurementUnit] || 'Units';
+                          
+                          return `${calculatedValue.toLocaleString('en-US', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                          })} ${unitDisplay}`;
+                        })()} 
+                      </span>
+                    </div>
                   </div>
                 </div>
-                {errors.min_thresholds_percentage && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
-                )}
-              </div>
 
-              {/* Max Threshold */}
-              <div className="space-y-2">
-                <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
-                </Label>
-                <div className="flex items-center gap-3">
-                  <div className="w-[100px]">
-                    <Input
-                      id="max_thresholds_percentage"
-                      type="text"
-                      inputMode="decimal"
-                      defaultValue={watch('max_thresholds_percentage') ? watch('max_thresholds_percentage').toFixed(2) : ''}
-                      onChange={(e) => handleThresholdChange('max_thresholds_percentage', e.target.value)}
-                      onBlur={(e) => handleThresholdBlur('max_thresholds_percentage', e)}
-                      onKeyDown={(e) => {
-                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                        if (!allowedKeys.includes(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                      placeholder="100.00"
-                      style={{
-                        MozAppearance: 'textfield'
-                      }}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {(() => {
-                        const quantity = watch('quantity') || 0;
-                        const percentage = watch('max_thresholds_percentage') || 0;
-                        const calculatedValue = quantity + (quantity * percentage) / 100;
-                        
-                        // Get unit display name
-                        const measurementUnit = watch('measurement_unit');
-                        const unitMap: Record<string, string> = {
-                          'unit_tons': 'Tons',
-                          'unit_kg': 'Kilograms', 
-                          'unit_bushels': 'Bushel 56',
-                          'unit_cwt': 'Hundredweight',
-                          'unit_mt': 'Metric Tons'
-                        };
-                        const unitDisplay = unitMap[measurementUnit] || 'Units';
-                        
-                        return `${calculatedValue.toLocaleString('en-US', { 
-                          minimumFractionDigits: 2, 
-                          maximumFractionDigits: 2 
-                        })} ${unitDisplay}`;
-                      })()} 
-                    </span>
+                {/* Max Threshold */}
+                <div className="space-y-2">
+                  <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                    {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
+                  </Label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-[100px]">
+                      <Input
+                        id="max_thresholds_percentage"
+                        type="text"
+                        inputMode="decimal"
+                        defaultValue={watch('max_thresholds_percentage') ? watch('max_thresholds_percentage').toFixed(2) : ''}
+                        onChange={(e) => handleThresholdChange('max_thresholds_percentage', e.target.value)}
+                        onBlur={(e) => handleThresholdBlur('max_thresholds_percentage', e)}
+                        onKeyDown={(e) => {
+                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                          if (!allowedKeys.includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
+                        className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                        placeholder="100.00"
+                        style={{
+                          MozAppearance: 'textfield'
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {(() => {
+                          const quantity = watch('quantity') || 0;
+                          const percentage = watch('max_thresholds_percentage') || 0;
+                          const calculatedValue = quantity + (quantity * percentage) / 100;
+                          
+                          // Get unit display name
+                          const measurementUnit = watch('measurement_unit');
+                          const unitMap: Record<string, string> = {
+                            'unit_tons': 'Tons',
+                            'unit_kg': 'Kilograms', 
+                            'unit_bushels': 'Bushel 56',
+                            'unit_cwt': 'Hundredweight',
+                            'unit_mt': 'Metric Tons'
+                          };
+                          const unitDisplay = unitMap[measurementUnit] || 'Units';
+                          
+                          return `${calculatedValue.toLocaleString('en-US', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                          })} ${unitDisplay}`;
+                        })()} 
+                      </span>
+                    </div>
                   </div>
                 </div>
-                {errors.max_thresholds_percentage && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
-                )}
+              </div>
+              
+              {/* Min and Max Thresholds Errors */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
+                <div>
+                  {errors.min_thresholds_percentage && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
+                  )}
+                </div>
+                <div>
+                  {errors.max_thresholds_percentage && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
