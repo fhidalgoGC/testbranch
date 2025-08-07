@@ -28,7 +28,8 @@ export function PriceSection({
 
   // Helper function to format number for display (2-4 decimals)
   const formatNumber = (value: number | undefined): string => {
-    if (!value || value === 0) return '';
+    if (value === undefined || value === null) return '';
+    if (value === 0) return '';
     
     // Determine how many decimal places to show
     const decimalString = value.toString().split('.')[1] || '';

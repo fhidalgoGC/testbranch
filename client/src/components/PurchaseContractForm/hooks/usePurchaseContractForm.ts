@@ -20,13 +20,13 @@ export function usePurchaseContractForm() {
       characteristics_configuration_id: '',
       characteristics_configuration_name: '',
       grade: 1,
-      quantity: 0,
+      quantity: undefined,
       reference_number: '',
       measurement_unit_id: '',
       measurement_unit: '',
       contract_date: new Date().toISOString().split('T')[0],
-      min_thresholds_percentage: 10,
-      max_thresholds_percentage: 90,
+      min_thresholds_percentage: undefined,
+      max_thresholds_percentage: undefined,
       seller: '',
       participants: [],
       price_schedule: [{
@@ -92,14 +92,14 @@ export function usePurchaseContractForm() {
   const addPriceSchedule = () => {
     const currentSchedule = form.getValues('price_schedule');
     const newSchedule: PriceSchedule = {
-      pricing_type: 'fixed',
-      price: 0,
-      basis: 0,
+      pricing_type: '' as any,
+      price: undefined,
+      basis: undefined,
       basis_operation: 'add',
-      future_price: 0,
+      future_price: undefined,
       option_month: '',
       option_year: new Date().getFullYear(),
-      payment_currency: 'usd',
+      payment_currency: '' as any,
       exchange: '',
     };
     form.setValue('price_schedule', [...currentSchedule, newSchedule]);
@@ -123,15 +123,15 @@ export function usePurchaseContractForm() {
   const addLogisticSchedule = () => {
     const currentSchedule = form.getValues('logistic_schedule');
     const newSchedule: LogisticSchedule = {
-      logistic_payment_responsability: 'other',
-      logistic_coordination_responsability: 'other',
+      logistic_payment_responsability: '' as any,
+      logistic_coordination_responsability: '' as any,
       freight_cost: {
-        type: 'none',
+        type: '' as any,
         min: 0,
         max: 0,
         cost: 0,
       },
-      payment_currency: 'usd',
+      payment_currency: '' as any,
     };
     form.setValue('logistic_schedule', [...currentSchedule, newSchedule]);
   };
