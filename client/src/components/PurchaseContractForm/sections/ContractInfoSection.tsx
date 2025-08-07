@@ -65,6 +65,13 @@ const FAKE_SELLERS = [
   }
 ];
 
+// Standardized data structure for select fields
+const SUB_TYPE_OPTIONS = [
+  { key: 'direct', value: 'direct', label: 'Direct' },
+  { key: 'imported', value: 'imported', label: 'Imported' },
+  { key: 'importedFreight', value: 'importedFreight', label: 'Imported Freight' }
+];
+
 export function ContractInfoSection() {
   const { t } = useTranslation();
   const {
@@ -210,14 +217,17 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('sub_type')}
-                onValueChange={(value) => setValue('sub_type', value as 'imported' | 'domestic', { shouldValidate: true })}
+                onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight', { shouldValidate: true })}
               >
                 <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectSubType')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="imported">{t('imported')}</SelectItem>
-                  <SelectItem value="domestic">{t('domestic')}</SelectItem>
+                  {SUB_TYPE_OPTIONS.map((option) => (
+                    <SelectItem key={option.key} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.sub_type && (

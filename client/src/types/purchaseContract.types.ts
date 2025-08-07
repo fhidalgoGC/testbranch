@@ -74,7 +74,7 @@ export interface PurchaseContract {
   created_at?: string;
   folio?: string;
   type: 'purchase';
-  sub_type: 'imported' | 'domestic';
+  sub_type: 'direct' | 'imported' | 'importedFreight';
   commodity: Commodity;
   characteristics: Characteristics;
   grade: number;
@@ -112,7 +112,7 @@ export interface PurchaseContractFormData {
   // Contract Info Section
   folio: string;
   type: 'purchase';
-  sub_type: 'imported' | 'domestic';
+  sub_type: 'direct' | 'imported' | 'importedFreight';
   commodity_id: string;
   commodity_name: string;
   characteristics_configuration_id: string;
