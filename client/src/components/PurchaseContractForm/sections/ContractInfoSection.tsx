@@ -345,7 +345,7 @@ export function ContractInfoSection() {
                   readOnly
                   value=""
                   placeholder={t('selectSeller')}
-                  className={`h-10 pr-10 ${errors.seller ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  className="h-10 pr-10 border-gray-300 focus:border-green-500"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <SellerSelectionModal
