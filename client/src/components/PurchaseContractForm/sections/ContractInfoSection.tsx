@@ -315,20 +315,8 @@ export function ContractInfoSection() {
             </div>
           </div>
 
-          {/* Row 3: Reference Number and Seller */}
+          {/* Row 3: Seller */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('referenceNumber')} <span className="text-red-500">{t('requiredField')}</span>
-              </Label>
-              <Input
-                id="reference_number"
-                {...register('reference_number')}
-                className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder={t('referenceNumberPlaceholder')}
-              />
-            </div>
-            
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
@@ -342,23 +330,23 @@ export function ContractInfoSection() {
                 error={!!errors.seller}
               />
             </div>
+            
+            {/* Empty space for alignment */}
+            <div></div>
           </div>
           
           {/* Row 3 Errors */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
             <div>
-              {errors.reference_number && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
-              )}
-            </div>
-            <div>
               {errors.seller && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
               )}
             </div>
+            {/* Empty space for alignment */}
+            <div></div>
           </div>
 
-          {/* Row 4: Contract Date (single field) */}
+          {/* Row 4: Contract Date and Reference Other Contract */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="contract_date" className="text-sm font-medium text-gray-900 dark:text-white">
@@ -373,8 +361,17 @@ export function ContractInfoSection() {
               />
             </div>
             
-            {/* Empty space for alignment */}
-            <div></div>
+            <div className="space-y-2">
+              <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
+                Reference Other Contract
+              </Label>
+              <Input
+                id="reference_number"
+                {...register('reference_number')}
+                className={`h-10 ${errors.reference_number ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                placeholder="Enter reference to other contract"
+              />
+            </div>
           </div>
           
           {/* Row 4 Errors */}
@@ -384,8 +381,11 @@ export function ContractInfoSection() {
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.contract_date.message}</p>
               )}
             </div>
-            {/* Empty space for alignment */}
-            <div></div>
+            <div>
+              {errors.reference_number && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.reference_number.message}</p>
+              )}
+            </div>
           </div>
         </div>
 

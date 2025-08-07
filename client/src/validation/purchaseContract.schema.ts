@@ -16,7 +16,7 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
     characteristics_configuration_name: z.string().optional(),
     grade: z.number({ required_error: t('fieldRequired') }).min(1, t('positiveNumber')).max(10, t('positiveNumber')),
     quantity: z.number({ required_error: t('fieldRequired') }).min(1, t('positiveNumber')),
-    reference_number: z.string().min(1, t('fieldRequired')),
+    reference_number: z.string().optional(),
     measurement_unit_id: z.string().optional(),
     measurement_unit: z.string().min(1, t('fieldRequired')),
     contract_date: z.string().min(1, t('validDate')),
