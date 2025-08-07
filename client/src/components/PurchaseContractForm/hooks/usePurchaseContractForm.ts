@@ -25,8 +25,8 @@ export function usePurchaseContractForm() {
       measurement_unit_id: '',
       measurement_unit: '',
       contract_date: new Date().toISOString().split('T')[0],
-      min_thresholds_percentage: undefined,
-      max_thresholds_percentage: undefined,
+      min_thresholds_percentage: 10,
+      max_thresholds_percentage: 10,
       seller: '',
       participants: [],
       price_schedule: [{
