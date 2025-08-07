@@ -169,7 +169,7 @@ export function PriceSection({
                   }
                 }}
                 className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="370.00"
+                placeholder="0.00"
                 style={{
                   MozAppearance: 'textfield'
                 }}
@@ -197,7 +197,7 @@ export function PriceSection({
                   }
                 }}
                 className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                placeholder="370.00"
+                placeholder="0.00"
                 style={{
                   MozAppearance: 'textfield'
                 }}
