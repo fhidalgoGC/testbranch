@@ -9,6 +9,15 @@ import { Package } from 'lucide-react';
 import { DatePicker } from '@/components/ui/datepicker';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 
+// Standardized data structure for inspections, proteins, and weights fields
+const INSPECTION_PROTEINS_WEIGHTS_OPTIONS = [
+  { key: 'destination', value: 'Destination', label: 'Destination' },
+  { key: 'origin', value: 'Origin', label: 'Origin' },
+  { key: 'submitCc', value: 'Submit Cc', label: 'Submit Cc' },
+  { key: 'notAppliance', value: 'Not Appliance', label: 'Not Appliance' },
+  { key: 'firstCertification', value: 'First Certification', label: 'First Certification' }
+];
+
 export function ShipmentSection() {
   const { t } = useTranslation();
   const { register, formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
@@ -159,9 +168,11 @@ export function ShipmentSection() {
                 <SelectValue placeholder="Select weights" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="notAppliance">Not Appliance</SelectItem>
-                <SelectItem value="appliance">Appliance</SelectItem>
-                <SelectItem value="required">Required</SelectItem>
+                {INSPECTION_PROTEINS_WEIGHTS_OPTIONS.map((option) => (
+                  <SelectItem key={option.key} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.weights && (
@@ -184,10 +195,11 @@ export function ShipmentSection() {
                 <SelectValue placeholder="Select inspections" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="submitCc">Submit CC</SelectItem>
-                <SelectItem value="required">Required</SelectItem>
-                <SelectItem value="optional">Optional</SelectItem>
-                <SelectItem value="notRequired">Not Required</SelectItem>
+                {INSPECTION_PROTEINS_WEIGHTS_OPTIONS.map((option) => (
+                  <SelectItem key={option.key} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.inspections && (
@@ -207,9 +219,11 @@ export function ShipmentSection() {
                 <SelectValue placeholder="Select proteins" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="notAppliance">Not Appliance</SelectItem>
-                <SelectItem value="appliance">Appliance</SelectItem>
-                <SelectItem value="required">Required</SelectItem>
+                {INSPECTION_PROTEINS_WEIGHTS_OPTIONS.map((option) => (
+                  <SelectItem key={option.key} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.proteins && (
