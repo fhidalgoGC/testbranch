@@ -11,7 +11,7 @@ export function usePurchaseContractForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<PurchaseContractFormData>({
-    resolver: zodResolver(createPurchaseContractSchema()),
+    resolver: zodResolver(createPurchaseContractSchema(t)),
     defaultValues: {
       folio: '',
       type: 'purchase',
