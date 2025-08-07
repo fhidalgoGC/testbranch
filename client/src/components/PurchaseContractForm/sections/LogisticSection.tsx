@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Truck } from 'lucide-react';
 import type { PurchaseContractFormData, LogisticSchedule } from '@/types/purchaseContract.types';
-import { APP_CONFIG, CURRENCY_OPTIONS } from '@/environment/environment';
+import { APP_CONFIG, CURRENCY_OPTIONS, formatNumber, parseFormattedNumber } from '@/environment/environment';
 
 // Standardized data structure for freight cost type field
 const FREIGHT_COST_TYPE_OPTIONS = [
@@ -34,20 +34,7 @@ export function LogisticSection({
   const logisticSchedule = watch('logistic_schedule') || [];
   const currentSchedule = logisticSchedule[0] || {};
 
-  // Helper function to format number for display (2-4 decimals)
-  const formatNumber = (value: number | undefined): string => {
-    if (value === undefined || value === null) return '';
-    if (value === 0) return '';
-    
-    // Determine how many decimal places to show
-    const decimalString = value.toString().split('.')[1] || '';
-    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
-    
-    return value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimalPlaces
-    });
-  };
+  // Use centralized number formatting from environment configuration
 
   // Helper function to handle number input change with strict validation
   const handleFreightNumberChange = (field: 'cost' | 'min' | 'max', inputValue: string) => {

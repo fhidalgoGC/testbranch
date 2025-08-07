@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, DollarSign, X } from 'lucide-react';
 import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
-import { APP_CONFIG, CURRENCY_OPTIONS } from '@/environment/environment';
+import { APP_CONFIG, CURRENCY_OPTIONS, formatNumber, parseFormattedNumber } from '@/environment/environment';
 
 // Standardized exchange options
 const EXCHANGE_OPTIONS = [
@@ -41,63 +41,23 @@ export function PriceSection({
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};
 
-  // Helper function to format number for display (2-4 decimals)
-  const formatNumber = (value: number | undefined | null): string => {
-    if (value === undefined || value === null || value === 0) return '';
-    
-    // Determine how many decimal places to show
-    const decimalString = value.toString().split('.')[1] || '';
-    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
-    
-    return value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimalPlaces
-    });
-  };
+  // Use centralized number formatting from environment configuration
 
-  // Helper function to handle number input change with strict validation
+  // Helper function to handle number input change with format-aware validation
   const handleNumberChange = (field: keyof PriceSchedule, inputValue: string) => {
-    // Only allow numbers and one decimal point
-    const validChars = /^[0-9.]*$/;
+    // Use parseFormattedNumber to handle the input according to configured format
+    const numericValue = parseFormattedNumber(inputValue);
     
-    if (!validChars.test(inputValue)) {
-      return; // Reject invalid characters
-    }
-    
-    // Prevent multiple decimal points
-    const decimalCount = (inputValue.match(/\./g) || []).length;
-    if (decimalCount > 1) {
-      return;
-    }
-    
-    // Check decimal places limit (max 4)
-    const parts = inputValue.split('.');
-    if (parts[1] && parts[1].length > 4) {
-      // Truncate to 4 decimals (round down)
-      const truncated = parts[0] + '.' + parts[1].substring(0, 4);
-      const numericValue = parseFloat(truncated);
-      
-      const currentPriceSchedule = watch('price_schedule') || [{}];
-      const updatedSchedule = [...currentPriceSchedule];
-      updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
-      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-      return;
-    }
-    
-    // Allow empty string or valid number format
-    if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
-      const numericValue = inputValue === '' ? null : parseFloat(inputValue);
-      
-      const currentPriceSchedule = watch('price_schedule') || [{}];
-      const updatedSchedule = [...currentPriceSchedule];
-      updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
-      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-    }
+    const currentPriceSchedule = watch('price_schedule') || [{}];
+    const updatedSchedule = [...currentPriceSchedule];
+    updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
   };
 
-  // Helper function to format number on blur
+  // Helper function to format number on blur using environment configuration
   const handleNumberBlur = (field: keyof PriceSchedule, e: React.FocusEvent<HTMLInputElement>) => {
-    const inputVal = e.target.value.replace(/,/g, '').trim();
+    const inputVal = e.target.value.trim();
+    
     if (inputVal === '') {
       e.target.value = '';
       const currentPriceSchedule = watch('price_schedule') || [{}];
@@ -107,27 +67,17 @@ export function PriceSection({
       return;
     }
     
-    let value = parseFloat(inputVal) || 0;
-    
-    // Truncate to 4 decimals (round down)
-    const factor = Math.pow(10, 4);
-    value = Math.floor(value * factor) / factor;
-    
-    // Determine how many decimal places to show (2-4)
-    const decimalString = value.toString().split('.')[1] || '';
-    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
-    
-    const formatted = value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimalPlaces
-    });
-    
-    e.target.value = formatted;
-    
-    const currentPriceSchedule = watch('price_schedule') || [{}];
-    const updatedSchedule = [...currentPriceSchedule];
-    updatedSchedule[0] = { ...updatedSchedule[0], [field]: value };
-    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+    // Parse and format using environment configuration
+    const numericValue = parseFormattedNumber(inputVal);
+    if (numericValue !== null) {
+      const formatted = formatNumber(numericValue);
+      e.target.value = formatted;
+      
+      const currentPriceSchedule = watch('price_schedule') || [{}];
+      const updatedSchedule = [...currentPriceSchedule];
+      updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+    }
   };
 
   const months = [

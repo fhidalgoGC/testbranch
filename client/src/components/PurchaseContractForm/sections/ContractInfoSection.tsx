@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePicker } from '@/components/ui/datepicker';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
+import { formatNumber, parseFormattedNumber } from '@/environment/environment';
 
 // Fake sellers data for display
 const FAKE_SELLERS = [
@@ -82,19 +83,7 @@ export function ContractInfoSection() {
   } = useFormContext<PurchaseContractFormData>();
 
   // Helper function to format number for display (2-4 decimals)
-  const formatNumber = (value: number | undefined): string => {
-    if (value === undefined || value === null) return '';
-    if (value === 0) return '';
-    
-    // Determine how many decimal places to show
-    const decimalString = value.toString().split('.')[1] || '';
-    const decimalPlaces = Math.min(Math.max(decimalString.length, 2), 4);
-    
-    return value.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: decimalPlaces
-    });
-  };
+  // Use centralized number formatting from environment configuration
 
   // Helper function to handle number input change with strict validation
   const handleNumberChange = (field: 'quantity' | 'min_thresholds_percentage' | 'max_thresholds_percentage', inputValue: string) => {

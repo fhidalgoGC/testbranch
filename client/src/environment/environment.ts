@@ -23,6 +23,11 @@ const OVERRIDE_CONFIG: {
   defaultLanguage?: string;
   environment?: string;
   apiTimeout?: number;
+  
+  // Number Format
+  thousandsSeparator?: string;
+  decimalSeparator?: string;
+  decimalPlaces?: number;
 } = {
   // Auth0
   // auth0Url: 'https://custom-auth0.com/oauth/token',
@@ -41,6 +46,11 @@ const OVERRIDE_CONFIG: {
   // defaultLanguage: 'en',
   // environment: 'production',
   // apiTimeout: 60000,
+  
+  // Number Format
+  // thousandsSeparator: '.',
+  // decimalSeparator: ',',
+  // decimalPlaces: 2,
 };
 
 /**
@@ -98,6 +108,13 @@ export const APP_CONFIG = {
   apiTimeout: getEnvValue(OVERRIDE_CONFIG.apiTimeout, 'VITE_API_TIMEOUT', 30000),
 } as const;
 
+// Number Format Configuration
+export const NUMBER_FORMAT_CONFIG = {
+  thousandsSeparator: getEnvValue(OVERRIDE_CONFIG.thousandsSeparator, 'VITE_THOUSANDS_SEPARATOR', ','),
+  decimalSeparator: getEnvValue(OVERRIDE_CONFIG.decimalSeparator, 'VITE_DECIMAL_SEPARATOR', '.'),
+  decimalPlaces: getEnvValue(OVERRIDE_CONFIG.decimalPlaces, 'VITE_DECIMAL_PLACES', 4),
+} as const;
+
 // Supported currencies
 export const SUPPORTED_CURRENCIES = ['usd', 'mxn'] as const;
 export type SupportedCurrency = typeof SUPPORTED_CURRENCIES[number];
@@ -113,9 +130,54 @@ if (!SUPPORTED_CURRENCIES.includes(APP_CONFIG.defaultCurrency as SupportedCurren
   console.warn(`Default currency "${APP_CONFIG.defaultCurrency}" is not supported. Using "usd" as fallback.`);
 }
 
+/**
+ * Format a number according to the configured format settings
+ * @param value - The number to format
+ * @param decimals - Optional decimal places override
+ * @returns Formatted number string
+ */
+export const formatNumber = (value: number | undefined | null, decimals?: number): string => {
+  if (value === undefined || value === null || value === 0) return '';
+  
+  const decimalPlaces = decimals ?? NUMBER_FORMAT_CONFIG.decimalPlaces;
+  const { thousandsSeparator, decimalSeparator } = NUMBER_FORMAT_CONFIG;
+  
+  // Convert to fixed decimal places
+  const fixedValue = value.toFixed(decimalPlaces);
+  
+  // Split integer and decimal parts
+  const [integerPart, decimalPart] = fixedValue.split('.');
+  
+  // Add thousands separator to integer part
+  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+  
+  // Combine with configured decimal separator
+  return decimalPart ? `${formattedInteger}${decimalSeparator}${decimalPart}` : formattedInteger;
+};
+
+/**
+ * Parse a formatted number string back to a number
+ * @param formattedValue - The formatted string to parse
+ * @returns Parsed number or null if invalid
+ */
+export const parseFormattedNumber = (formattedValue: string): number | null => {
+  if (!formattedValue || formattedValue.trim() === '') return null;
+  
+  const { thousandsSeparator, decimalSeparator } = NUMBER_FORMAT_CONFIG;
+  
+  // Remove thousands separators and replace decimal separator with dot
+  const normalizedValue = formattedValue
+    .replace(new RegExp('\\' + thousandsSeparator, 'g'), '')
+    .replace(decimalSeparator, '.');
+  
+  const parsed = parseFloat(normalizedValue);
+  return isNaN(parsed) ? null : parsed;
+};
+
 // Export environment object for easy access
 export const environment = {
   auth0: AUTH0_CONFIG,
   api: API_URLS,
   app: APP_CONFIG,
+  numberFormat: NUMBER_FORMAT_CONFIG,
 } as const;
