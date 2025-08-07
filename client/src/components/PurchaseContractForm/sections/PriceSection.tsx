@@ -224,12 +224,15 @@ export function PriceSection({
                     e.preventDefault();
                   }
                 }}
-                className="h-10 border-gray-300 focus:border-green-500"
+                className={`h-10 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="0.00"
                 style={{
                   MozAppearance: 'textfield'
                 }}
               />
+              {errors.price_schedule?.[0]?.basis && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
+              )}
             </div>
 
             {/* Basis Operation */}
