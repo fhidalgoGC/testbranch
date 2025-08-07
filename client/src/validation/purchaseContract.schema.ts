@@ -125,9 +125,9 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
           ),
           freight_cost: z.object({
             type: z.string().min(1, t('fieldRequired')).refine(
-              (val) => ['none', 'fixed', 'variable'].includes(val),
+              (val: string) => ['none', 'fixed', 'variable'].includes(val),
               t('fieldRequired')
-            ),
+            ).default('none'),
             min: z.number().min(0, t('positiveNumber')).default(0),
             max: z.number().min(0, t('positiveNumber')).default(0),
             cost: z.number().min(0, t('positiveNumber')).default(0),
