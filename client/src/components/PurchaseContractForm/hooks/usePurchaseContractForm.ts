@@ -204,8 +204,8 @@ export function usePurchaseContractForm() {
     const userId = localStorage.getItem('user_id') || '';
     
     // Calculate thresholds weights based on quantity and percentages
-    const minThresholdWeight = formData.quantity * (1 - formData.min_thresholds_percentage / 100);
-    const maxThresholdWeight = formData.quantity * (1 + formData.max_thresholds_percentage / 100);
+    const minThresholdWeight = formData.quantity - (formData.quantity * formData.min_thresholds_percentage / 100);
+    const maxThresholdWeight = formData.quantity + (formData.quantity * formData.max_thresholds_percentage / 100);
 
     // Calculate inventory values (simplified calculation)
     const totalValue = formData.quantity * (formData.price_schedule[0]?.price || 0);
