@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -10,8 +10,13 @@ export function usePurchaseContractForm() {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Create reactive resolver that updates when language changes
+  const resolver = useMemo(() => {
+    return zodResolver(createPurchaseContractSchema(t));
+  }, [t]);
+
   const form = useForm<PurchaseContractFormData>({
-    resolver: zodResolver(createPurchaseContractSchema(t)),
+    resolver,
     defaultValues: {
       folio: '',
       type: 'purchase',
@@ -63,6 +68,12 @@ export function usePurchaseContractForm() {
       remarks: [],
     },
   });
+
+  // Update validation messages when language changes
+  useEffect(() => {
+    // Force revalidation when language changes to update error messages
+    form.trigger();
+  }, [t, form]);
 
   // Participant management
   const addParticipant = () => {
