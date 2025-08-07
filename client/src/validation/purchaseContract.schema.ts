@@ -58,22 +58,19 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
             (val) => val !== null && val !== undefined,
             t('fieldRequired')
           ).refine(
-            (val) => val === null || val >= 1,
+            (val) => val === null || val > 0,
             t('positiveNumber')
           ),
           basis: z.union([z.number(), z.null()]).refine(
             (val) => val !== null && val !== undefined,
             t('fieldRequired')
-          ).refine(
-            (val) => val === null || val >= 1,
-            t('positiveNumber')
           ),
           basis_operation: z.enum(['add', 'subtract']).default('add'),
           future_price: z.union([z.number(), z.null()]).refine(
             (val) => val !== null && val !== undefined,
             t('fieldRequired')
           ).refine(
-            (val) => val === null || val >= 1,
+            (val) => val === null || val > 0,
             t('positiveNumber')
           ),
           option_month: z.string().min(1, t('fieldRequired')),
