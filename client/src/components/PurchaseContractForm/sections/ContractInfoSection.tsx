@@ -426,57 +426,117 @@ export function ContractInfoSection() {
 
             {/* Second row: Min and Max Thresholds */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Min Threshold */}
               <div className="space-y-2">
                 <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
                   {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
                 </Label>
-                <Input
-                  id="min_thresholds_percentage"
-                  type="text"
-                  inputMode="decimal"
-                  defaultValue={watch('min_thresholds_percentage') ? watch('min_thresholds_percentage').toFixed(2) : ''}
-                  onChange={(e) => handleThresholdChange('min_thresholds_percentage', e.target.value)}
-                  onBlur={(e) => handleThresholdBlur('min_thresholds_percentage', e)}
-                  onKeyDown={(e) => {
-                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                    if (!allowedKeys.includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="0.00"
-                  style={{
-                    MozAppearance: 'textfield'
-                  }}
-                />
+                <div className="flex items-center gap-3">
+                  <div className="w-1/2">
+                    <Input
+                      id="min_thresholds_percentage"
+                      type="text"
+                      inputMode="decimal"
+                      defaultValue={watch('min_thresholds_percentage') ? watch('min_thresholds_percentage').toFixed(2) : ''}
+                      onChange={(e) => handleThresholdChange('min_thresholds_percentage', e.target.value)}
+                      onBlur={(e) => handleThresholdBlur('min_thresholds_percentage', e)}
+                      onKeyDown={(e) => {
+                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                        if (!allowedKeys.includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      placeholder="0.00"
+                      style={{
+                        MozAppearance: 'textfield'
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {(() => {
+                        const quantity = watch('quantity') || 0;
+                        const percentage = watch('min_thresholds_percentage') || 0;
+                        const calculatedValue = (quantity * percentage) / 100;
+                        
+                        // Get unit display name
+                        const measurementUnit = watch('measurement_unit');
+                        const unitMap: Record<string, string> = {
+                          'unit_tons': 'Tons',
+                          'unit_kg': 'Kilograms', 
+                          'unit_bushels': 'Bushel 56',
+                          'unit_cwt': 'Hundredweight',
+                          'unit_mt': 'Metric Tons'
+                        };
+                        const unitDisplay = unitMap[measurementUnit] || 'Units';
+                        
+                        return `${calculatedValue.toLocaleString('en-US', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })} ${unitDisplay}`;
+                      })()} 
+                    </span>
+                  </div>
+                </div>
                 {errors.min_thresholds_percentage && (
                   <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
                 )}
               </div>
 
+              {/* Max Threshold */}
               <div className="space-y-2">
                 <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
                   {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
                 </Label>
-                <Input
-                  id="max_thresholds_percentage"
-                  type="text"
-                  inputMode="decimal"
-                  defaultValue={watch('max_thresholds_percentage') ? watch('max_thresholds_percentage').toFixed(2) : ''}
-                  onChange={(e) => handleThresholdChange('max_thresholds_percentage', e.target.value)}
-                  onBlur={(e) => handleThresholdBlur('max_thresholds_percentage', e)}
-                  onKeyDown={(e) => {
-                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                    if (!allowedKeys.includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="100.00"
-                  style={{
-                    MozAppearance: 'textfield'
-                  }}
-                />
+                <div className="flex items-center gap-3">
+                  <div className="w-1/2">
+                    <Input
+                      id="max_thresholds_percentage"
+                      type="text"
+                      inputMode="decimal"
+                      defaultValue={watch('max_thresholds_percentage') ? watch('max_thresholds_percentage').toFixed(2) : ''}
+                      onChange={(e) => handleThresholdChange('max_thresholds_percentage', e.target.value)}
+                      onBlur={(e) => handleThresholdBlur('max_thresholds_percentage', e)}
+                      onKeyDown={(e) => {
+                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                        if (!allowedKeys.includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      placeholder="100.00"
+                      style={{
+                        MozAppearance: 'textfield'
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {(() => {
+                        const quantity = watch('quantity') || 0;
+                        const percentage = watch('max_thresholds_percentage') || 0;
+                        const calculatedValue = (quantity * percentage) / 100;
+                        
+                        // Get unit display name
+                        const measurementUnit = watch('measurement_unit');
+                        const unitMap: Record<string, string> = {
+                          'unit_tons': 'Tons',
+                          'unit_kg': 'Kilograms', 
+                          'unit_bushels': 'Bushel 56',
+                          'unit_cwt': 'Hundredweight',
+                          'unit_mt': 'Metric Tons'
+                        };
+                        const unitDisplay = unitMap[measurementUnit] || 'Units';
+                        
+                        return `${calculatedValue.toLocaleString('en-US', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })} ${unitDisplay}`;
+                      })()} 
+                    </span>
+                  </div>
+                </div>
                 {errors.max_thresholds_percentage && (
                   <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
                 )}
