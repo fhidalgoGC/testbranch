@@ -49,17 +49,37 @@ export function RemarksSection({
   };
 
   const handleOpenRemarkList = (index: number) => {
-    // Extract remark type from the remark content if possible
+    // Extract remark type from the remark content
     const remarkContent = remarks[index] || '';
-    // For now, we'll use 'general' as default, but this could be improved
-    setSelectedRemarkType('general');
+    let remarkType = 'general';
+    
+    // Map the remark label to the correct type value for the modal
+    const typeMapping: Record<string, string> = {
+      'Delivery Instructions': 'delivery',
+      'Quality Requirements': 'quality',
+      'Payment Terms': 'payment',
+      'Inspection Requirements': 'inspection',
+      'Shipping Instructions': 'shipping',
+      'Storage Requirements': 'storage',
+      'Grading Specifications': 'grading',
+      'Contract Conditions': 'contract',
+      'General Notes': 'general',
+      'Special Instructions': 'special'
+    };
+    
+    // Find the correct type based on the remark label
+    remarkType = typeMapping[remarkContent] || 'general';
+    
+    setSelectedRemarkType(remarkType);
     setCurrentRemarkIndex(index);
     setIsRemarkListModalOpen(true);
   };
 
   const handleSelectFromList = (remarkContent: string) => {
     if (currentRemarkIndex >= 0) {
-      updateRemark(currentRemarkIndex, remarkContent);
+      const remarkLabel = remarks[currentRemarkIndex];
+      // Update the remark with the selected content from the list
+      updateRemark(currentRemarkIndex, `${remarkLabel}:${remarkContent}`);
     }
   };
 
@@ -111,9 +131,16 @@ export function RemarksSection({
           if (isComment) {
             displayValue = remark.replace('COMMENT:', '');
           } else {
-            // For remarks, the remark value is the label itself (empty input for user to fill)
-            remarkLabel = remark;
-            displayValue = ''; // Always empty for user to fill
+            // For remarks, check if it has content after the colon
+            if (remark.includes(':')) {
+              const parts = remark.split(':');
+              remarkLabel = parts[0];
+              displayValue = parts.slice(1).join(':'); // In case content has colons
+            } else {
+              // No content yet, just the label
+              remarkLabel = remark;
+              displayValue = '';
+            }
           }
           
           return (
