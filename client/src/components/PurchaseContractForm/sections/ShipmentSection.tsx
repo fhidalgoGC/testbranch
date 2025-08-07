@@ -83,12 +83,28 @@ export function ShipmentSection() {
             <Label htmlFor="delivered" className="text-sm font-medium text-gray-900 dark:text-white">
               Delivered <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="delivered"
-              {...register('delivered')}
-              className={`h-10 ${errors.delivered ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-              placeholder="IMPORTER Progreso"
-            />
+            <Select
+              value={watch('delivered')}
+              onValueChange={(value) => setValue('delivered', value)}
+            >
+              <SelectTrigger className={`h-10 ${errors.delivered ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectValue placeholder="Select delivery terms" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="FOB_Origin">FOB Origin</SelectItem>
+                <SelectItem value="FOB_Destination">FOB Destination</SelectItem>
+                <SelectItem value="CIF_Port">CIF Port</SelectItem>
+                <SelectItem value="CFR_Port">CFR Port</SelectItem>
+                <SelectItem value="DAP_Destination">DAP Destination</SelectItem>
+                <SelectItem value="DDP_Destination">DDP Destination</SelectItem>
+                <SelectItem value="EXW_Origin">EXW Origin</SelectItem>
+                <SelectItem value="FCA_Origin">FCA Origin</SelectItem>
+                <SelectItem value="CPT_Destination">CPT Destination</SelectItem>
+                <SelectItem value="CIP_Destination">CIP Destination</SelectItem>
+                <SelectItem value="IMPORTER_Progreso">IMPORTER Progreso</SelectItem>
+                <SelectItem value="EXPORTER_Origin">EXPORTER Origin</SelectItem>
+              </SelectContent>
+            </Select>
             {errors.delivered && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.delivered.message}</p>
             )}
