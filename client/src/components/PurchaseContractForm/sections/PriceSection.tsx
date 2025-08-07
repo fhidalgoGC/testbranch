@@ -9,6 +9,20 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2, DollarSign, X } from 'lucide-react';
 import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
 
+// Standardized exchange options
+const EXCHANGE_OPTIONS = [
+  {
+    key: "chicagoBoardOfTrade",
+    value: "Chicago Board of Trade",
+    label: "Chicago Board of Trade"
+  },
+  {
+    key: "kansasCityBoardOfTrade", 
+    value: "Kansas City Board of Trade",
+    label: "Kansas City Board of Trade"
+  }
+];
+
 interface PriceSectionProps {
   addPriceSchedule: () => void;
   removePriceSchedule: (index: number) => void;
@@ -423,12 +437,11 @@ export function PriceSection({
                   <SelectValue placeholder="Select exchange" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="cbot">Chicago Board of Trade (CBOT)</SelectItem>
-                  <SelectItem value="kcbt">Kansas City Board of Trade (KCBT)</SelectItem>
-                  <SelectItem value="mgex">Minneapolis Grain Exchange (MGEX)</SelectItem>
-                  <SelectItem value="ice">Intercontinental Exchange (ICE)</SelectItem>
-                  <SelectItem value="nybot">New York Board of Trade (NYBOT)</SelectItem>
-                  <SelectItem value="liffe">London International Financial Futures Exchange (LIFFE)</SelectItem>
+                  {EXCHANGE_OPTIONS.map((exchange) => (
+                    <SelectItem key={exchange.key} value={exchange.value}>
+                      {exchange.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.price_schedule?.[0]?.exchange && (
