@@ -63,10 +63,15 @@ export function PriceSection({
       }
     } else if (field === 'basis') {
       currentItem.basis = safeValue;
-      // For fixed pricing, recalculate future_price = price - basis
+      // For fixed pricing, recalculate future_price considering basis_operation
       if (currentItem.pricing_type === 'fixed') {
         const currentPrice = currentItem.price || 0;
-        currentItem.future_price = currentPrice - safeValue;
+        const basisOperation = currentItem.basis_operation || 'add';
+        // If operation is 'add', we subtract basis (price - basis)
+        // If operation is 'subtract', we add basis (price + basis)
+        currentItem.future_price = basisOperation === 'add' 
+          ? currentPrice - safeValue 
+          : currentPrice + safeValue;
       }
     } else if (field === 'future_price') {
       currentItem.future_price = safeValue;
@@ -127,7 +132,11 @@ export function PriceSection({
         currentItem.basis = numericValue;
         if (currentItem.pricing_type === 'fixed') {
           const currentPrice = currentItem.price || 0;
-          currentItem.future_price = currentPrice - numericValue;
+          const basisOperation = currentItem.basis_operation || 'add';
+          // Apply basis_operation to the calculation
+          currentItem.future_price = basisOperation === 'add' 
+            ? currentPrice - numericValue 
+            : currentPrice + numericValue;
         }
       } else if (field === 'future_price') {
         currentItem.future_price = numericValue;
@@ -221,8 +230,22 @@ export function PriceSection({
                   onClick={() => {
                     const currentPriceSchedule = watch('price_schedule') || [{}];
                     const updatedSchedule = [...currentPriceSchedule];
-                    const currentOp = updatedSchedule[0].basis_operation || 'add';
-                    updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: currentOp === 'add' ? 'subtract' : 'add' };
+                    const currentItem = { ...updatedSchedule[0] };
+                    const currentOp = currentItem.basis_operation || 'add';
+                    
+                    // Toggle operation
+                    currentItem.basis_operation = currentOp === 'add' ? 'subtract' : 'add';
+                    
+                    // Recalculate future_price if in fixed mode
+                    if (currentItem.pricing_type === 'fixed') {
+                      const currentPrice = currentItem.price || 0;
+                      const basisValue = currentItem.basis || 0;
+                      currentItem.future_price = currentItem.basis_operation === 'add' 
+                        ? currentPrice - basisValue 
+                        : currentPrice + basisValue;
+                    }
+                    
+                    updatedSchedule[0] = currentItem;
                     setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                   }}
                 >
@@ -302,8 +325,22 @@ export function PriceSection({
                       onClick={() => {
                         const currentPriceSchedule = watch('price_schedule') || [{}];
                         const updatedSchedule = [...currentPriceSchedule];
-                        const currentOp = updatedSchedule[0].basis_operation || 'add';
-                        updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: currentOp === 'add' ? 'subtract' : 'add' };
+                        const currentItem = { ...updatedSchedule[0] };
+                        const currentOp = currentItem.basis_operation || 'add';
+                        
+                        // Toggle operation
+                        currentItem.basis_operation = currentOp === 'add' ? 'subtract' : 'add';
+                        
+                        // Recalculate future_price if in fixed mode
+                        if (currentItem.pricing_type === 'fixed') {
+                          const currentPrice = currentItem.price || 0;
+                          const basisValue = currentItem.basis || 0;
+                          currentItem.future_price = currentItem.basis_operation === 'add' 
+                            ? currentPrice - basisValue 
+                            : currentPrice + basisValue;
+                        }
+                        
+                        updatedSchedule[0] = currentItem;
                         setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                       }}
                     >
