@@ -223,7 +223,7 @@ export function LogisticSection({
                 {t('freightCostType')} <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.freight_cost?.type || ''}
+                value={currentSchedule.freight_cost?.type || 'none'}
                 onValueChange={(value) => {
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];

@@ -36,7 +36,7 @@ export function usePurchaseContractForm() {
       seller: '',
       participants: [],
       price_schedule: [{
-        pricing_type: '' as any,
+        pricing_type: 'fixed',
         price: null as any,
         basis: null as any,
         basis_operation: 'add',
@@ -50,7 +50,7 @@ export function usePurchaseContractForm() {
         logistic_payment_responsability: '' as any,
         logistic_coordination_responsability: '' as any,
         freight_cost: {
-          type: '' as any,
+          type: 'none',
           min: 0,
           max: 0,
           cost: 0,
@@ -104,7 +104,7 @@ export function usePurchaseContractForm() {
   const addPriceSchedule = () => {
     const currentSchedule = form.getValues('price_schedule');
     const newSchedule: PriceSchedule = {
-      pricing_type: '' as any,
+      pricing_type: 'fixed',
       price: null as any,
       basis: null as any,
       basis_operation: 'add',
@@ -138,7 +138,7 @@ export function usePurchaseContractForm() {
       logistic_payment_responsability: '' as any,
       logistic_coordination_responsability: '' as any,
       freight_cost: {
-        type: '' as any,
+        type: 'none',
         min: 0,
         max: 0,
         cost: 0,
