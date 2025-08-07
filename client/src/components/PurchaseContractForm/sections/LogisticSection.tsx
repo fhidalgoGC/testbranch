@@ -128,7 +128,7 @@ export function LogisticSection({
         [field]: value 
       }
     };
-    setValue('logistic_schedule', updatedSchedule);
+    setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
   };
 
   return (

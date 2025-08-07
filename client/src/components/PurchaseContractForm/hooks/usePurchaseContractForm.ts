@@ -31,10 +31,10 @@ export function usePurchaseContractForm() {
       participants: [],
       price_schedule: [{
         pricing_type: '' as any,
-        price: undefined,
-        basis: undefined,
+        price: 0,
+        basis: 0,
         basis_operation: 'add',
-        future_price: undefined,
+        future_price: 0,
         option_month: '',
         option_year: new Date().getFullYear(),
         payment_currency: '' as any,
@@ -71,13 +71,13 @@ export function usePurchaseContractForm() {
       name: '',
       role: 'buyer',
     };
-    form.setValue('participants', [...currentParticipants, newParticipant]);
+    form.setValue('participants', [...currentParticipants, newParticipant], { shouldValidate: true });
   };
 
   const removeParticipant = (index: number) => {
     const currentParticipants = form.getValues('participants');
     const updatedParticipants = currentParticipants.filter((_, i) => i !== index);
-    form.setValue('participants', updatedParticipants);
+    form.setValue('participants', updatedParticipants, { shouldValidate: true });
   };
 
   const updateParticipant = (index: number, field: keyof Participant, value: string) => {
@@ -85,7 +85,7 @@ export function usePurchaseContractForm() {
     const updatedParticipants = currentParticipants.map((participant, i) =>
       i === index ? { ...participant, [field]: value } : participant
     );
-    form.setValue('participants', updatedParticipants);
+    form.setValue('participants', updatedParticipants, { shouldValidate: true });
   };
 
   // Price Schedule management
@@ -93,22 +93,22 @@ export function usePurchaseContractForm() {
     const currentSchedule = form.getValues('price_schedule');
     const newSchedule: PriceSchedule = {
       pricing_type: '' as any,
-      price: undefined,
-      basis: undefined,
+      price: 0,
+      basis: 0,
       basis_operation: 'add',
-      future_price: undefined,
+      future_price: 0,
       option_month: '',
       option_year: new Date().getFullYear(),
       payment_currency: '' as any,
       exchange: '',
     };
-    form.setValue('price_schedule', [...currentSchedule, newSchedule]);
+    form.setValue('price_schedule', [...currentSchedule, newSchedule], { shouldValidate: true });
   };
 
   const removePriceSchedule = (index: number) => {
     const currentSchedule = form.getValues('price_schedule');
     const updatedSchedule = currentSchedule.filter((_, i) => i !== index);
-    form.setValue('price_schedule', updatedSchedule);
+    form.setValue('price_schedule', updatedSchedule, { shouldValidate: true });
   };
 
   const updatePriceSchedule = (index: number, field: keyof PriceSchedule, value: any) => {
@@ -116,7 +116,7 @@ export function usePurchaseContractForm() {
     const updatedSchedule = currentSchedule.map((schedule, i) =>
       i === index ? { ...schedule, [field]: value } : schedule
     );
-    form.setValue('price_schedule', updatedSchedule);
+    form.setValue('price_schedule', updatedSchedule, { shouldValidate: true });
   };
 
   // Logistic Schedule management
@@ -133,13 +133,13 @@ export function usePurchaseContractForm() {
       },
       payment_currency: '' as any,
     };
-    form.setValue('logistic_schedule', [...currentSchedule, newSchedule]);
+    form.setValue('logistic_schedule', [...currentSchedule, newSchedule], { shouldValidate: true });
   };
 
   const removeLogisticSchedule = (index: number) => {
     const currentSchedule = form.getValues('logistic_schedule');
     const updatedSchedule = currentSchedule.filter((_, i) => i !== index);
-    form.setValue('logistic_schedule', updatedSchedule);
+    form.setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
   };
 
   const updateLogisticSchedule = (index: number, field: string, value: any) => {
@@ -160,19 +160,19 @@ export function usePurchaseContractForm() {
       }
       return schedule;
     });
-    form.setValue('logistic_schedule', updatedSchedule);
+    form.setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
   };
 
   // Remarks management
   const addRemark = () => {
     const currentRemarks = form.getValues('remarks');
-    form.setValue('remarks', [...currentRemarks, '']);
+    form.setValue('remarks', [...currentRemarks, ''], { shouldValidate: true });
   };
 
   const removeRemark = (index: number) => {
     const currentRemarks = form.getValues('remarks');
     const updatedRemarks = currentRemarks.filter((_, i) => i !== index);
-    form.setValue('remarks', updatedRemarks);
+    form.setValue('remarks', updatedRemarks, { shouldValidate: true });
   };
 
   const updateRemark = (index: number, value: string) => {
@@ -180,7 +180,7 @@ export function usePurchaseContractForm() {
     const updatedRemarks = currentRemarks.map((remark, i) =>
       i === index ? value : remark
     );
-    form.setValue('remarks', updatedRemarks);
+    form.setValue('remarks', updatedRemarks, { shouldValidate: true });
   };
 
   // Generate final JSON

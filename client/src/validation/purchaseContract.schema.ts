@@ -14,14 +14,14 @@ export const createPurchaseContractSchema = () => {
     commodity_name: z.string().optional(),
     characteristics_configuration_id: z.string().min(1, 'This field is required'),
     characteristics_configuration_name: z.string().optional(),
-    grade: z.number().min(1, 'Must be a positive number').max(10, 'Invalid format'),
-    quantity: z.number().min(1, 'This field is required'),
+    grade: z.number({ required_error: 'This field is required' }).min(1, 'This field is required').max(10, 'This field is required'),
+    quantity: z.number({ required_error: 'This field is required' }).min(1, 'This field is required'),
     reference_number: z.string().min(1, 'This field is required'),
     measurement_unit_id: z.string().optional(),
     measurement_unit: z.string().min(1, 'This field is required'),
     contract_date: z.string().min(1, 'This field is required'),
-    min_thresholds_percentage: z.number().min(0, 'Must be a positive number').max(100, 'Invalid format'),
-    max_thresholds_percentage: z.number().min(0, 'Must be a positive number').max(100, 'Invalid format'),
+    min_thresholds_percentage: z.number({ required_error: 'This field is required' }).min(0, 'This field is required').max(100, 'This field is required'),
+    max_thresholds_percentage: z.number({ required_error: 'This field is required' }).min(0, 'This field is required').max(100, 'This field is required'),
     seller: z.string().min(1, 'This field is required'),
 
     // Participants validation - minimum 2, must include 1 buyer and 1 seller
@@ -54,12 +54,12 @@ export const createPurchaseContractSchema = () => {
             (val) => ['fixed', 'basis'].includes(val),
             'This field is required'
           ),
-          price: z.number().min(1, 'This field is required'),
-          basis: z.number().min(1, 'This field is required'),
+          price: z.number({ required_error: 'This field is required' }).min(1, 'This field is required'),
+          basis: z.number({ required_error: 'This field is required' }).min(1, 'This field is required'),
           basis_operation: z.enum(['add', 'subtract']).default('add'),
-          future_price: z.number().min(1, 'This field is required'),
+          future_price: z.number({ required_error: 'This field is required' }).min(1, 'This field is required'),
           option_month: z.string().min(1, 'This field is required'),
-          option_year: z.number().min(new Date().getFullYear(), 'Must be a valid date'),
+          option_year: z.number({ required_error: 'This field is required' }).min(new Date().getFullYear(), 'This field is required'),
           payment_currency: z.string().min(1, 'This field is required').refine(
             (val) => ['usd', 'mxn'].includes(val),
             'This field is required'
@@ -101,7 +101,7 @@ export const createPurchaseContractSchema = () => {
     // Shipment & Delivery Section
     shipping_start_date: z.string().min(1, 'This field is required'),
     shipping_end_date: z.string().min(1, 'This field is required'),
-    application_priority: z.number().min(1, 'Must be a positive number').max(10, 'Invalid format'),
+    application_priority: z.number({ required_error: 'This field is required' }).min(1, 'This field is required').max(10, 'This field is required'),
     delivered: z.string().min(1, 'This field is required'),
     transport: z.string().min(1, 'This field is required'),
     weights: z.string().min(1, 'This field is required'),

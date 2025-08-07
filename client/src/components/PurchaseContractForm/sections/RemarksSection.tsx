@@ -61,7 +61,7 @@ export function RemarksSection({
   const handleAddComment = () => {
     const currentRemarks = watch('remarks') || [];
     const newComment = 'COMMENT:';
-    setValue('remarks', [...currentRemarks, newComment]);
+    setValue('remarks', [...currentRemarks, newComment], { shouldValidate: true });
   };
 
   const handleOpenRemarkList = (index: number) => {
