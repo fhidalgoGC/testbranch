@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
 import type { PurchaseContractFormData, PurchaseContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseContract.types';
+import { APP_CONFIG } from '@/environment/environment';
 
 export function usePurchaseContractForm() {
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ export function usePurchaseContractForm() {
         future_price: 0,
         option_month: '',
         option_year: new Date().getFullYear(),
-        payment_currency: '' as any,
+        payment_currency: APP_CONFIG.defaultCurrency as any,
         exchange: '',
       }],
       logistic_schedule: [{
@@ -49,7 +50,7 @@ export function usePurchaseContractForm() {
           max: 0,
           cost: 0,
         },
-        payment_currency: '' as any,
+        payment_currency: APP_CONFIG.defaultCurrency as any,
       }],
       shipping_start_date: '',
       shipping_end_date: '',
@@ -99,7 +100,7 @@ export function usePurchaseContractForm() {
       future_price: 0,
       option_month: '',
       option_year: new Date().getFullYear(),
-      payment_currency: '' as any,
+      payment_currency: APP_CONFIG.defaultCurrency as any,
       exchange: '',
     };
     form.setValue('price_schedule', [...currentSchedule, newSchedule], { shouldValidate: true });
@@ -131,7 +132,7 @@ export function usePurchaseContractForm() {
         max: 0,
         cost: 0,
       },
-      payment_currency: '' as any,
+      payment_currency: APP_CONFIG.defaultCurrency as any,
     };
     form.setValue('logistic_schedule', [...currentSchedule, newSchedule], { shouldValidate: true });
   };

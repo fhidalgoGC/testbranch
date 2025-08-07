@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, DollarSign, X } from 'lucide-react';
 import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
+import { APP_CONFIG, CURRENCY_OPTIONS } from '@/environment/environment';
 
 // Standardized exchange options
 const EXCHANGE_OPTIONS = [
@@ -421,7 +422,7 @@ export function PriceSection({
                 Payment Currency <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.payment_currency || ''}
+                value={currentSchedule.payment_currency || APP_CONFIG.defaultCurrency}
                 onValueChange={(value) => {
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
@@ -433,8 +434,11 @@ export function PriceSection({
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="usd">USD</SelectItem>
-                  <SelectItem value="mxn">MXN</SelectItem>
+                  {CURRENCY_OPTIONS.map((currency) => (
+                    <SelectItem key={currency.key} value={currency.value}>
+                      {currency.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

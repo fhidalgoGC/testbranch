@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Truck } from 'lucide-react';
 import type { PurchaseContractFormData, LogisticSchedule } from '@/types/purchaseContract.types';
+import { APP_CONFIG, CURRENCY_OPTIONS } from '@/environment/environment';
 
 // Standardized data structure for freight cost type field
 const FREIGHT_COST_TYPE_OPTIONS = [
@@ -205,7 +206,7 @@ export function LogisticSection({
                 Payment Currency <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.payment_currency || ''}
+                value={currentSchedule.payment_currency || APP_CONFIG.defaultCurrency}
                 onValueChange={(value) => {
                   const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                   const updatedSchedule = [...currentLogisticSchedule];
@@ -217,8 +218,11 @@ export function LogisticSection({
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="usd">USD</SelectItem>
-                  <SelectItem value="mxn">MXN</SelectItem>
+                  {CURRENCY_OPTIONS.map((currency) => (
+                    <SelectItem key={currency.key} value={currency.value}>
+                      {currency.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.logistic_schedule?.[0]?.payment_currency && (
