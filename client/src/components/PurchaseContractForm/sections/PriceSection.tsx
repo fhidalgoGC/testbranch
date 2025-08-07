@@ -158,10 +158,14 @@ export function PriceSection({
                   <SelectItem value="basis">Basis</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.price_schedule?.[0]?.pricing_type && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].pricing_type.message}</p>
-              )}
             </div>
+          </div>
+
+          {/* Pricing Type Error Row */}
+          <div className="min-h-[20px]">
+            {errors.price_schedule?.[0]?.pricing_type && (
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].pricing_type.message}</p>
+            )}
           </div>
 
           {/* Two Column Price Layout */}
@@ -359,9 +363,6 @@ export function PriceSection({
                   ))}
                 </SelectContent>
               </Select>
-              {errors.price_schedule?.[0]?.option_month && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].option_month.message}</p>
-              )}
             </div>
 
             {/* Option Year */}
@@ -387,11 +388,24 @@ export function PriceSection({
                   <SelectItem value="2027">2027</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          {/* Option Month and Year Error Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
+            <div>
+              {errors.price_schedule?.[0]?.option_month && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].option_month.message}</p>
+              )}
+            </div>
+            <div>
               {errors.price_schedule?.[0]?.option_year && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].option_year.message}</p>
               )}
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Payment Currency */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
@@ -414,9 +428,6 @@ export function PriceSection({
                   <SelectItem value="mxn">MXN</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.price_schedule?.[0]?.payment_currency && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].payment_currency.message}</p>
-              )}
             </div>
 
             {/* Exchange */}
@@ -444,16 +455,31 @@ export function PriceSection({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          {/* Payment Currency and Exchange Error Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
+            <div>
+              {errors.price_schedule?.[0]?.payment_currency && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].payment_currency.message}</p>
+              )}
+            </div>
+            <div>
               {errors.price_schedule?.[0]?.exchange && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].exchange.message}</p>
               )}
             </div>
           </div>
+
+          {/* Price Schedule Level Error */}
+          <div className="min-h-[20px]">
+            {errors.price_schedule && (
+              <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule.message}</p>
+            )}
+          </div>
         </div>
 
-        {errors.price_schedule && (
-          <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule.message}</p>
-        )}
       </CardContent>
     </Card>
   );
