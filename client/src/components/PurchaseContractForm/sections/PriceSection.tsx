@@ -65,7 +65,7 @@ export function PriceSection({
       const currentPriceSchedule = watch('price_schedule') || [{}];
       const updatedSchedule = [...currentPriceSchedule];
       updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
-      setValue('price_schedule', updatedSchedule);
+      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
       return;
     }
     
@@ -76,7 +76,7 @@ export function PriceSection({
       const currentPriceSchedule = watch('price_schedule') || [{}];
       const updatedSchedule = [...currentPriceSchedule];
       updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
-      setValue('price_schedule', updatedSchedule);
+      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
     }
   };
 
@@ -102,7 +102,7 @@ export function PriceSection({
     const currentPriceSchedule = watch('price_schedule') || [{}];
     const updatedSchedule = [...currentPriceSchedule];
     updatedSchedule[0] = { ...updatedSchedule[0], [field]: value };
-    setValue('price_schedule', updatedSchedule);
+    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
   };
 
   const months = [
@@ -132,8 +132,8 @@ export function PriceSection({
                 onValueChange={(value) => {
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], pricing_type: value };
-                  setValue('price_schedule', updatedSchedule);
+                  updatedSchedule[0] = { ...updatedSchedule[0], pricing_type: value as 'fixed' | 'basis' };
+                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.pricing_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -144,6 +144,9 @@ export function PriceSection({
                   <SelectItem value="basis">Basis</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.price_schedule?.[0]?.pricing_type && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].pricing_type.message}</p>
+              )}
             </div>
 
             {/* Price */}
@@ -170,6 +173,9 @@ export function PriceSection({
                   MozAppearance: 'textfield'
                 }}
               />
+              {errors.price_schedule?.[0]?.price && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].price.message}</p>
+              )}
             </div>
 
             {/* Future Price */}
@@ -195,6 +201,9 @@ export function PriceSection({
                   MozAppearance: 'textfield'
                 }}
               />
+              {errors.price_schedule?.[0]?.future_price && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].future_price.message}</p>
+              )}
             </div>
 
             {/* Basis */}
@@ -232,8 +241,8 @@ export function PriceSection({
                 onValueChange={(value) => {
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: value };
-                  setValue('price_schedule', updatedSchedule);
+                  updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: value as 'add' | 'subtract' };
+                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
@@ -257,7 +266,7 @@ export function PriceSection({
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], option_month: value };
-                  setValue('price_schedule', updatedSchedule);
+                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_month ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -271,6 +280,9 @@ export function PriceSection({
                   ))}
                 </SelectContent>
               </Select>
+              {errors.price_schedule?.[0]?.option_month && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].option_month.message}</p>
+              )}
             </div>
 
             {/* Option Year */}
@@ -284,7 +296,7 @@ export function PriceSection({
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], option_year: parseInt(value) };
-                  setValue('price_schedule', updatedSchedule);
+                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -296,6 +308,9 @@ export function PriceSection({
                   <SelectItem value="2027">2027</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.price_schedule?.[0]?.option_year && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].option_year.message}</p>
+              )}
             </div>
 
             {/* Payment Currency */}
@@ -305,7 +320,12 @@ export function PriceSection({
               </Label>
               <Select
                 value={currentSchedule.payment_currency || ''}
-                onValueChange={(value) => updatePriceSchedule(0, 'payment_currency', value)}
+                onValueChange={(value) => {
+                  const currentPriceSchedule = watch('price_schedule') || [{}];
+                  const updatedSchedule = [...currentPriceSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'usd' | 'mxn' };
+                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder="Select currency" />
@@ -315,6 +335,9 @@ export function PriceSection({
                   <SelectItem value="mxn">MXN</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.price_schedule?.[0]?.payment_currency && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].payment_currency.message}</p>
+              )}
             </div>
 
             {/* Exchange */}
@@ -324,7 +347,12 @@ export function PriceSection({
               </Label>
               <Select
                 value={currentSchedule.exchange || ''}
-                onValueChange={(value) => updatePriceSchedule(0, 'exchange', value)}
+                onValueChange={(value) => {
+                  const currentPriceSchedule = watch('price_schedule') || [{}];
+                  const updatedSchedule = [...currentPriceSchedule];
+                  updatedSchedule[0] = { ...updatedSchedule[0], exchange: value };
+                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.exchange ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder="Select exchange" />
@@ -338,6 +366,9 @@ export function PriceSection({
                   <SelectItem value="liffe">London International Financial Futures Exchange (LIFFE)</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.price_schedule?.[0]?.exchange && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].exchange.message}</p>
+              )}
             </div>
           </div>
         </div>
