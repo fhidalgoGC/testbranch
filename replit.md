@@ -154,6 +154,17 @@ shared/
 
 ## Recent Changes
 
+### Price Section Dynamic Behavior Implementation (August 7, 2025)
+- **Smart pricing logic**: Implemented conditional behavior based on pricing_type selection
+- **Fixed pricing type**: Shows all fields (price, basis, futures) with automatic calculations
+- **Basis pricing type**: Shows only basis field, hides price and futures fields
+- **Automatic calculations**: When pricing_type is 'fixed', futures = price - basis automatically calculated
+- **Price synchronization**: When price changes in fixed mode, value automatically copied to futures
+- **Negative basis support**: Allows negative values in basis field for both pricing types
+- **Read-only futures**: Futures field is calculated and read-only in fixed pricing mode
+- **Type-safe implementation**: Resolved TypeScript issues with explicit field handling
+- **Business logic integration**: Implements exact mathematical relationship: price = future + basis
+
 ### Flag Validation System with Fallback Assets (July 20, 2025)
 - **Robust flag validation**: Intelligent detection of invalid, empty, or broken flag URLs
 - **Automatic fallback system**: Uses user-provided flag assets for Colombia and Guatemala

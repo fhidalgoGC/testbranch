@@ -43,18 +43,40 @@ export function PriceSection({
 
   // Use centralized number formatting from environment configuration
 
-  // Helper function to handle number input change with format-aware validation
+  // Helper function to handle number input change with format-aware validation and business logic
   const handleNumberChange = (field: keyof PriceSchedule, inputValue: string) => {
     // Use parseFormattedNumber to handle the input according to configured format
     const numericValue = parseFormattedNumber(inputValue);
     
     const currentPriceSchedule = watch('price_schedule') || [{}];
     const updatedSchedule = [...currentPriceSchedule];
-    updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+    const currentItem = { ...updatedSchedule[0] };
+    
+    // Update the field that was changed with explicit type handling
+    const safeValue = numericValue !== null ? numericValue : 0;
+    
+    if (field === 'price') {
+      currentItem.price = safeValue;
+      // For fixed pricing, copy price to future_price
+      if (currentItem.pricing_type === 'fixed') {
+        currentItem.future_price = safeValue;
+      }
+    } else if (field === 'basis') {
+      currentItem.basis = safeValue;
+      // For fixed pricing, recalculate future_price = price - basis
+      if (currentItem.pricing_type === 'fixed') {
+        const currentPrice = currentItem.price || 0;
+        currentItem.future_price = currentPrice - safeValue;
+      }
+    } else if (field === 'future_price') {
+      currentItem.future_price = safeValue;
+    }
+    
+    updatedSchedule[0] = currentItem;
     setValue('price_schedule', updatedSchedule, { shouldValidate: true });
   };
 
-  // Helper function to format number on blur using environment configuration
+  // Helper function to format number on blur using environment configuration and apply business logic
   const handleNumberBlur = (field: keyof PriceSchedule, e: React.FocusEvent<HTMLInputElement>) => {
     const inputVal = e.target.value.trim();
     
@@ -62,7 +84,25 @@ export function PriceSection({
       e.target.value = '';
       const currentPriceSchedule = watch('price_schedule') || [{}];
       const updatedSchedule = [...currentPriceSchedule];
-      updatedSchedule[0] = { ...updatedSchedule[0], [field]: null };
+      const currentItem = { ...updatedSchedule[0] };
+      
+      // Handle field clearing with explicit type handling
+      if (field === 'price') {
+        currentItem.price = 0;
+        if (currentItem.pricing_type === 'fixed') {
+          currentItem.future_price = 0;
+        }
+      } else if (field === 'basis') {
+        currentItem.basis = 0;
+        if (currentItem.pricing_type === 'fixed') {
+          const currentPrice = currentItem.price || 0;
+          currentItem.future_price = currentPrice;
+        }
+      } else if (field === 'future_price') {
+        currentItem.future_price = 0;
+      }
+      
+      updatedSchedule[0] = currentItem;
       setValue('price_schedule', updatedSchedule, { shouldValidate: true });
       return;
     }
@@ -75,7 +115,25 @@ export function PriceSection({
       
       const currentPriceSchedule = watch('price_schedule') || [{}];
       const updatedSchedule = [...currentPriceSchedule];
-      updatedSchedule[0] = { ...updatedSchedule[0], [field]: numericValue };
+      const currentItem = { ...updatedSchedule[0] };
+      
+      // Handle field updates with explicit type handling
+      if (field === 'price') {
+        currentItem.price = numericValue;
+        if (currentItem.pricing_type === 'fixed') {
+          currentItem.future_price = numericValue;
+        }
+      } else if (field === 'basis') {
+        currentItem.basis = numericValue;
+        if (currentItem.pricing_type === 'fixed') {
+          const currentPrice = currentItem.price || 0;
+          currentItem.future_price = currentPrice - numericValue;
+        }
+      } else if (field === 'future_price') {
+        currentItem.future_price = numericValue;
+      }
+      
+      updatedSchedule[0] = currentItem;
       setValue('price_schedule', updatedSchedule, { shouldValidate: true });
     }
   };
@@ -107,7 +165,24 @@ export function PriceSection({
                 onValueChange={(value) => {
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], pricing_type: value as 'fixed' | 'basis' };
+                  const currentItem = { ...updatedSchedule[0] };
+                  
+                  // Update pricing type
+                  currentItem.pricing_type = value as 'fixed' | 'basis';
+                  
+                  // Initialize values based on pricing type
+                  if (value === 'fixed') {
+                    // For fixed: initialize all fields to 0
+                    currentItem.price = currentItem.price || 0;
+                    currentItem.basis = currentItem.basis || 0;
+                    currentItem.future_price = currentItem.future_price || 0;
+                  } else if (value === 'basis') {
+                    // For basis: initialize only basis field
+                    currentItem.basis = currentItem.basis || 0;
+                    // We keep price and future_price values but they won't be shown
+                  }
+                  
+                  updatedSchedule[0] = currentItem;
                   setValue('price_schedule', updatedSchedule, { shouldValidate: true });
                 }}
               >
@@ -129,64 +204,72 @@ export function PriceSection({
             )}
           </div>
 
-          {/* Two Column Price Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* First Column: Price Field */}
+          {/* Price Fields - Conditional rendering based on pricing_type */}
+          {currentSchedule.pricing_type === 'basis' ? (
+            /* Basis Type: Show only Basis field */
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Price <span className="text-red-500">*</span>
+                Basis <span className="text-red-500">*</span>
               </Label>
               <Input
                 type="text"
                 inputMode="decimal"
-                defaultValue={currentSchedule.price ? formatNumber(currentSchedule.price) : ''}
-                onChange={(e) => handleNumberChange('price', e.target.value)}
-                onBlur={(e) => handleNumberBlur('price', e)}
+                defaultValue={currentSchedule.basis ? formatNumber(currentSchedule.basis) : ''}
+                onChange={(e) => handleNumberChange('basis', e.target.value)}
+                onBlur={(e) => handleNumberBlur('basis', e)}
                 onKeyDown={(e) => {
-                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                  const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','-'];
                   if (!allowedKeys.includes(e.key)) {
                     e.preventDefault();
                   }
                 }}
-                className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                className={`h-10 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                 placeholder="0.00"
                 style={{
                   MozAppearance: 'textfield'
                 }}
               />
-              {/* Price Error */}
-              {errors.price_schedule?.[0]?.price && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].price.message}</p>
+              {/* Basis Error */}
+              {errors.price_schedule?.[0]?.basis && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
               )}
             </div>
+          ) : (
+            /* Fixed Type: Show all fields with calculations */
+            <div className="space-y-4">
+              {/* Price Field */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                  Price <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  inputMode="decimal"
+                  defaultValue={currentSchedule.price ? formatNumber(currentSchedule.price) : ''}
+                  onChange={(e) => handleNumberChange('price', e.target.value)}
+                  onBlur={(e) => handleNumberBlur('price', e)}
+                  onKeyDown={(e) => {
+                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                    if (!allowedKeys.includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                  placeholder="0.00"
+                  style={{
+                    MozAppearance: 'textfield'
+                  }}
+                />
+                {/* Price Error */}
+                {errors.price_schedule?.[0]?.price && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].price.message}</p>
+                )}
+              </div>
 
-            {/* Second Column: Basis Operation, Basis, and Futures in horizontal layout */}
-            <div className="space-y-2">
-              <div className="flex items-end gap-2">
-                {/* Basis Operation Button */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white opacity-0">
-                    Op
-                  </Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-10 w-10 p-0 border-gray-300 hover:bg-gray-50 flex items-center justify-center"
-                    onClick={() => {
-                      const currentPriceSchedule = watch('price_schedule') || [{}];
-                      const updatedSchedule = [...currentPriceSchedule];
-                      const currentOp = updatedSchedule[0].basis_operation || 'add';
-                      updatedSchedule[0] = { ...updatedSchedule[0], basis_operation: currentOp === 'add' ? 'subtract' : 'add' };
-                      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
-                    }}
-                  >
-                    {currentSchedule.basis_operation === 'subtract' ? '-' : '+'}
-                  </Button>
-                </div>
-
+              {/* Basis and Futures Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Basis Field */}
-                <div className="flex-1 space-y-2">
+                <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-900 dark:text-white">
                     Basis <span className="text-red-500">*</span>
                   </Label>
@@ -197,7 +280,7 @@ export function PriceSection({
                     onChange={(e) => handleNumberChange('basis', e.target.value)}
                     onBlur={(e) => handleNumberBlur('basis', e)}
                     onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','-'];
                       if (!allowedKeys.includes(e.key)) {
                         e.preventDefault();
                       }
@@ -208,50 +291,33 @@ export function PriceSection({
                       MozAppearance: 'textfield'
                     }}
                   />
-                </div>
-
-                {/* Future Price Field */}
-                <div className="flex-1 space-y-2">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Futures <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    defaultValue={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
-                    onChange={(e) => handleNumberChange('future_price', e.target.value)}
-                    onBlur={(e) => handleNumberBlur('future_price', e)}
-                    onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                      if (!allowedKeys.includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="0.00"
-                    style={{
-                      MozAppearance: 'textfield'
-                    }}
-                  />
-                </div>
-              </div>
-              
-              {/* Basis and Futures Errors aligned below their inputs */}
-              <div className="flex gap-2">
-                <div className="w-10"></div> {/* Spacer for button alignment */}
-                <div className="flex-1">
+                  {/* Basis Error */}
                   {errors.price_schedule?.[0]?.basis && (
                     <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].basis.message}</p>
                   )}
                 </div>
-                <div className="flex-1">
+
+                {/* Future Price Field (read-only for fixed type) */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                    Futures (Calculated) <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
+                    readOnly
+                    className="h-10 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed"
+                    placeholder="Auto calculated"
+                  />
+                  {/* Future Price Error */}
                   {errors.price_schedule?.[0]?.future_price && (
                     <p className="text-sm text-red-600 dark:text-red-400">{errors.price_schedule[0].future_price.message}</p>
                   )}
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
