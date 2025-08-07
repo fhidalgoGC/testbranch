@@ -37,6 +37,24 @@ export function PurchaseContractForm() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 p-6">
+      {/* Header with title and debug button */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          {t('createContract')}
+        </h1>
+        <button
+          type="button"
+          onClick={() => {
+            const formValues = form.getValues();
+            console.log('🔍 Form Values Debug:', JSON.stringify(formValues, null, 2));
+            console.log('📋 Form Values Object:', formValues);
+          }}
+          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
+        >
+          🔍 Debug JSON
+        </button>
+      </div>
+
       <FormProvider {...form}>
         <form onSubmit={onSubmit} className="space-y-8">
             
