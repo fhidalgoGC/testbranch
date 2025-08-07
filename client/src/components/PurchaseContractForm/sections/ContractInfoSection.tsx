@@ -73,6 +73,22 @@ const SUB_TYPE_OPTIONS = [
   { key: 'importedFreight', value: 'importedFreight', label: 'Imported Freight' }
 ];
 
+const COMMODITY_OPTIONS = [
+  { key: 'corn', value: '6839ef25edc3c27f091bdfc0', label: 'Maíz / Corn' },
+  { key: 'soybean', value: '6839ef25edc3c27f091bdfc1', label: 'Soja / Soybean' },
+  { key: 'wheat', value: '6839ef25edc3c27f091bdfc2', label: 'Trigo / Wheat' },
+  { key: 'sorghum', value: '6839ef25edc3c27f091bdfc3', label: 'Sorgo / Sorghum' },
+  { key: 'barley', value: '6839ef25edc3c27f091bdfc4', label: 'Cebada / Barley' }
+];
+
+const CHARACTERISTICS_CONFIG_OPTIONS = [
+  { key: 'standard', value: 'config_standard', label: 'Estándar / Standard' },
+  { key: 'premium', value: 'config_premium', label: 'Premium' },
+  { key: 'organic', value: 'config_organic', label: 'Orgánico / Organic' },
+  { key: 'non_gmo', value: 'config_non_gmo', label: 'No GMO / Non-GMO' },
+  { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
+];
+
 export function ContractInfoSection() {
   const { t } = useTranslation();
   const {
@@ -270,11 +286,11 @@ export function ContractInfoSection() {
                   <SelectValue placeholder={t('selectCommodity')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="6839ef25edc3c27f091bdfc0">Maíz / Corn</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc1">Soja / Soybean</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc2">Trigo / Wheat</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc3">Sorgo / Sorghum</SelectItem>
-                  <SelectItem value="6839ef25edc3c27f091bdfc4">Cebada / Barley</SelectItem>
+                  {COMMODITY_OPTIONS.map((option) => (
+                    <SelectItem key={option.key} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -291,11 +307,11 @@ export function ContractInfoSection() {
                   <SelectValue placeholder={t('selectConfiguration')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="config_standard">Estándar / Standard</SelectItem>
-                  <SelectItem value="config_premium">Premium</SelectItem>
-                  <SelectItem value="config_organic">Orgánico / Organic</SelectItem>
-                  <SelectItem value="config_non_gmo">No GMO / Non-GMO</SelectItem>
-                  <SelectItem value="config_export">Exportación / Export Grade</SelectItem>
+                  {CHARACTERISTICS_CONFIG_OPTIONS.map((option) => (
+                    <SelectItem key={option.key} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
