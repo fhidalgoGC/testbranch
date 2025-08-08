@@ -270,7 +270,7 @@ export function LogisticSection({
                         }
                       }}
                       className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                      placeholder={formatNumber(0) || "0"}
+                      placeholder="0.00"
                       style={{
                         MozAppearance: 'textfield'
                       }}
@@ -300,7 +300,7 @@ export function LogisticSection({
                           }
                         }}
                         className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder={formatNumber(0) || "0"}
+                        placeholder="0.00"
                         style={{
                           MozAppearance: 'textfield'
                         }}
@@ -326,7 +326,7 @@ export function LogisticSection({
                           }
                         }}
                         className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder={formatNumber(0) || "0"}
+                        placeholder="0.00"
                         style={{
                           MozAppearance: 'textfield'
                         }}

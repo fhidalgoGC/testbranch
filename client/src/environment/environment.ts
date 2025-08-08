@@ -140,7 +140,7 @@ if (!SUPPORTED_CURRENCIES.includes(APP_CONFIG.defaultCurrency as SupportedCurren
  * @returns Formatted number string
  */
 export const formatNumber = (value: number | undefined | null, maxDecimals?: number, minDecimals?: number): string => {
-  if (value === undefined || value === null || value === 0) return '';
+  if (value === undefined || value === null) return '';
   
   const maxDecimalPlaces = maxDecimals ?? NUMBER_FORMAT_CONFIG.decimalPlaces;
   const minDecimalPlaces = minDecimals ?? NUMBER_FORMAT_CONFIG.minDecimalPlaces;
