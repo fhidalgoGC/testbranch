@@ -129,10 +129,22 @@ export function ShipmentSection() {
                   id="shipping_start_date"
                   value={field.value}
                   onChange={(date) => {
+                    // Clear any previous date validation errors
+                    setDateValidationError('');
+                    clearErrors(['shipping_start_date', 'shipping_end_date']);
+                    
+                    // Always set the selected start date
                     field.onChange(date);
-                    // Also trigger end date validation if start date changes
-                    if (watch('shipping_end_date') && date && new Date(date) > new Date(watch('shipping_end_date'))) {
-                      setValue('shipping_end_date', date);
+                    
+                    const endDate = watch('shipping_end_date');
+                    // If start date is greater than existing end date, clear start date and show error
+                    if (endDate && date > endDate) {
+                      field.onChange('');
+                      setDateValidationError(t('startDateAfterEndDate'));
+                      setError('shipping_start_date', {
+                        type: 'custom',
+                        message: t('startDateAfterEndDate')
+                      });
                     }
                   }}
                   placeholder={t('shippingStartDate')}
@@ -157,7 +169,23 @@ export function ShipmentSection() {
                   id="shipping_end_date"
                   value={field.value}
                   onChange={(date) => {
+                    // Clear any previous date validation errors
+                    setDateValidationError('');
+                    clearErrors(['shipping_start_date', 'shipping_end_date']);
+                    
+                    // Always set the selected end date
                     field.onChange(date);
+                    
+                    const startDate = watch('shipping_start_date');
+                    // If end date is less than existing start date, clear start date and show error
+                    if (startDate && date < startDate) {
+                      setValue('shipping_start_date', '');
+                      setDateValidationError(t('endDateBeforeStartDate'));
+                      setError('shipping_start_date', {
+                        type: 'custom',
+                        message: t('endDateBeforeStartDate')
+                      });
+                    }
                   }}
                   placeholder={t('shippingEndDate')}
                   error={!!errors.shipping_end_date}
