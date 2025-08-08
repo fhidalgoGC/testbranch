@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Truck } from 'lucide-react';
 import type { PurchaseContractFormData, LogisticSchedule } from '@/types/purchaseContract.types';
-import { APP_CONFIG, CURRENCY_OPTIONS, formatNumber, parseFormattedNumber } from '@/environment/environment';
+import { APP_CONFIG, CURRENCY_OPTIONS, formatNumber, parseFormattedNumber, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 
 // Standardized data structure for freight cost type field
 const FREIGHT_COST_TYPE_OPTIONS = [
@@ -44,55 +44,40 @@ export function LogisticSection({
   const currentSchedule = logisticSchedule[0] || {};
 
   // Use centralized number formatting from environment configuration
-  // Helper function to format freight cost numbers (0 decimals)
-  const formatFreightNumber = (value: number | undefined | null): string => {
-    if (value === undefined || value === null || value === 0) return '';
-    
-    // Format with 0 decimals and thousands separator
-    return value.toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-  };
 
-  // Helper function to handle number input change with strict validation (integers only)
+  // Helper function to handle number input change with environment configuration
   const handleFreightNumberChange = (field: 'cost' | 'min' | 'max', inputValue: string) => {
-    // Only allow numbers (no decimal points for freight costs)
-    const validChars = /^[0-9]*$/;
+    const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
     
-    if (!validChars.test(inputValue)) {
+    // Allow numbers, decimal separator, and thousands separator
+    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const validCharsPattern = new RegExp(`^[0-9${escapeRegExp(decimalSeparator)}${escapeRegExp(thousandsSeparator)}]*$`);
+    
+    if (!validCharsPattern.test(inputValue)) {
       return; // Reject invalid characters
     }
     
-    // Allow empty string or valid integer format
-    if (inputValue === '' || /^\d*$/.test(inputValue)) {
-      const numericValue = inputValue === '' ? 0 : parseInt(inputValue, 10);
-      
-      const currentLogisticSchedule = watch('logistic_schedule') || [{}];
-      const updatedSchedule = [...currentLogisticSchedule];
-      updatedSchedule[0] = { 
-        ...updatedSchedule[0], 
-        freight_cost: { 
-          ...updatedSchedule[0].freight_cost, 
-          [field]: numericValue 
-        }
-      };
-      setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
-    }
+    // Parse the value using the environment configuration
+    const numericValue = parseFormattedNumber(inputValue) || 0;
+    
+    const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+    const updatedSchedule = [...currentLogisticSchedule];
+    updatedSchedule[0] = { 
+      ...updatedSchedule[0], 
+      freight_cost: { 
+        ...updatedSchedule[0].freight_cost, 
+        [field]: numericValue 
+      }
+    };
+    setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
   };
 
-  // Helper function to format number on blur
+  // Helper function to format number on blur using environment configuration
   const handleFreightNumberBlur = (field: 'cost' | 'min' | 'max', e: React.FocusEvent<HTMLInputElement>) => {
-    let value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+    const value = parseFormattedNumber(e.target.value) || 0;
     
-    // Round to integer (0 decimals) for freight costs
-    value = Math.round(value);
-    
-    // Format with 0 decimals and thousands separator
-    const formatted = value.toLocaleString('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
+    // Format using environment configuration
+    const formatted = formatNumber(value);
     
     e.target.value = formatted;
     
@@ -273,18 +258,19 @@ export function LogisticSection({
                     <Input
                       type="text"
                       inputMode="decimal"
-                      defaultValue={formatFreightNumber(currentSchedule.freight_cost?.cost)}
+                      defaultValue={formatNumber(currentSchedule.freight_cost?.cost)}
                       onChange={(e) => handleFreightNumberChange('cost', e.target.value)}
                       onBlur={(e) => handleFreightNumberBlur('cost', e)}
                       onKeyDown={(e) => {
-                        // Allow only numbers, backspace, delete, tab, enter, arrow keys (no decimal point)
-                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                        // Allow numbers, decimal separator, thousands separator and navigation keys
+                        const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
+                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                         if (!allowedKeys.includes(e.key)) {
                           e.preventDefault();
                         }
                       }}
                       className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                      placeholder="0"
+                      placeholder={formatNumber(0) || "0"}
                       style={{
                         MozAppearance: 'textfield'
                       }}
@@ -302,18 +288,19 @@ export function LogisticSection({
                       <Input
                         type="text"
                         inputMode="decimal"
-                        defaultValue={formatFreightNumber(currentSchedule.freight_cost?.min)}
+                        defaultValue={formatNumber(currentSchedule.freight_cost?.min)}
                         onChange={(e) => handleFreightNumberChange('min', e.target.value)}
                         onBlur={(e) => handleFreightNumberBlur('min', e)}
                         onKeyDown={(e) => {
-                          // Allow only numbers, backspace, delete, tab, enter, arrow keys (no decimal point)
-                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                          // Allow numbers, decimal separator, thousands separator and navigation keys
+                          const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
+                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                           if (!allowedKeys.includes(e.key)) {
                             e.preventDefault();
                           }
                         }}
                         className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder="0"
+                        placeholder={formatNumber(0) || "0"}
                         style={{
                           MozAppearance: 'textfield'
                         }}
@@ -327,18 +314,19 @@ export function LogisticSection({
                       <Input
                         type="text"
                         inputMode="decimal"
-                        defaultValue={formatFreightNumber(currentSchedule.freight_cost?.max)}
+                        defaultValue={formatNumber(currentSchedule.freight_cost?.max)}
                         onChange={(e) => handleFreightNumberChange('max', e.target.value)}
                         onBlur={(e) => handleFreightNumberBlur('max', e)}
                         onKeyDown={(e) => {
-                          // Allow only numbers, backspace, delete, tab, enter, arrow keys (no decimal point)
-                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                          // Allow numbers, decimal separator, thousands separator and navigation keys
+                          const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
+                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                           if (!allowedKeys.includes(e.key)) {
                             e.preventDefault();
                           }
                         }}
                         className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder="0"
+                        placeholder={formatNumber(0) || "0"}
                         style={{
                           MozAppearance: 'textfield'
                         }}
