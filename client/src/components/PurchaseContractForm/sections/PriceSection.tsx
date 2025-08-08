@@ -355,12 +355,6 @@ export function PriceSection({
                             const numericValue = parseFloat(displayValue.replace(/,/g, ''));
                             field.onChange(numericValue);
                             setDisplayValue(formatNumber(numericValue));
-                            
-                            // Auto-calculate future_price for fixed type
-                            if (currentSchedule.pricing_type === 'fixed') {
-                              const basis = currentSchedule.basis || 0;
-                              setValue('price_schedule.0.future_price', numericValue - basis);
-                            }
                           }
                         }}
                         onChange={(e) => {
@@ -375,11 +369,6 @@ export function PriceSection({
                           const numericValue = parseFloat(inputValue.replace(/,/g, ''));
                           if (!isNaN(numericValue)) {
                             field.onChange(numericValue);
-                            // Auto-calculate future_price for fixed type
-                            if (currentSchedule.pricing_type === 'fixed') {
-                              const basis = currentSchedule.basis || 0;
-                              setValue('price_schedule.0.future_price', numericValue - basis);
-                            }
                           }
                         }}
                         onKeyDown={(e) => {
@@ -426,11 +415,7 @@ export function PriceSection({
                         // Toggle sign
                         currentItem.basis = -currentBasis;
                         
-                        // Recalculate future_price for fixed type
-                        if (currentItem.pricing_type === 'fixed') {
-                          const currentPrice = currentItem.price || 0;
-                          currentItem.future_price = currentPrice - currentItem.basis;
-                        }
+
                         
                         updatedSchedule[0] = currentItem;
                         setValue('price_schedule', updatedSchedule, { shouldValidate: true });
@@ -442,43 +427,78 @@ export function PriceSection({
                     <Controller
                       name="price_schedule.0.basis"
                       control={control}
-                      render={({ field }) => (
-                        <Input
-                          key={`basis-fixed-${currentSchedule.pricing_type || 'fixed'}`}
-                          type="text"
-                          inputMode="decimal"
-                          value={field.value !== null && field.value !== undefined && field.value !== 0 ? formatNumber(Math.abs(field.value)) : ''}
-                          onChange={(e) => {
-                            const inputValue = e.target.value;
-                            if (inputValue === '') {
-                              field.onChange(0 as number);
-                              return;
+                      render={({ field }) => {
+                        const [displayValue, setDisplayValue] = React.useState(() => {
+                          if (field.value !== null && field.value !== undefined && field.value !== 0) {
+                            return Math.abs(field.value).toString();
+                          }
+                          return '';
+                        });
+                        
+                        const [isFocused, setIsFocused] = React.useState(false);
+
+                        // Update display value when field value changes externally
+                        React.useEffect(() => {
+                          if (!isFocused) {
+                            if (field.value !== null && field.value !== undefined && field.value !== 0) {
+                              setDisplayValue(formatNumber(Math.abs(field.value)));
+                            } else {
+                              setDisplayValue('');
                             }
-                            const numericValue = parseFormattedNumber(inputValue);
-                            if (!isNaN(numericValue)) {
-                              // Apply sign based on button state
-                              const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
-                              field.onChange(numericValue * sign);
-                              // Auto-calculate future_price for fixed type
-                              if (currentSchedule.pricing_type === 'fixed') {
-                                const price = currentSchedule.price || 0;
-                                setValue('price_schedule.0.future_price', price - (numericValue * sign));
+                          }
+                        }, [field.value, isFocused]);
+
+                        return (
+                          <Input
+                            key={`basis-fixed-${currentSchedule.pricing_type || 'fixed'}`}
+                            type="text"
+                            inputMode="decimal"
+                            value={displayValue}
+                            onFocus={() => {
+                              setIsFocused(true);
+                              // Show raw number when focused for easier editing
+                              if (field.value !== null && field.value !== undefined && field.value !== 0) {
+                                setDisplayValue(Math.abs(field.value).toString());
                               }
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                            if (!allowedKeys.includes(e.key)) {
-                              e.preventDefault();
-                            }
-                          }}
-                          className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                          placeholder="0.00"
-                          style={{
-                            MozAppearance: 'textfield' as any
-                          }}
-                        />
-                      )}
+                            }}
+                            onBlur={() => {
+                              setIsFocused(false);
+                              if (displayValue && !isNaN(parseFloat(displayValue))) {
+                                const numericValue = parseFloat(displayValue);
+                                const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
+                                field.onChange(numericValue * sign);
+                                setDisplayValue(formatNumber(numericValue));
+                              }
+                            }}
+                            onChange={(e) => {
+                              const inputValue = e.target.value;
+                              setDisplayValue(inputValue);
+                              
+                              if (inputValue === '') {
+                                field.onChange(0);
+                                return;
+                              }
+                              
+                              const numericValue = parseFloat(inputValue);
+                              if (!isNaN(numericValue)) {
+                                const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
+                                field.onChange(numericValue * sign);
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                              if (!allowedKeys.includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
+                            className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                            placeholder="0.00"
+                            style={{
+                              MozAppearance: 'textfield'
+                            }}
+                          />
+                        );
+                      }}
                     />
                   </div>
                   {/* Basis Error */}
@@ -487,19 +507,81 @@ export function PriceSection({
                   )}
                 </div>
 
-                {/* Future Price Field (read-only for fixed type) */}
+                {/* Future Price Field - Editable */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                    Futures (Calculated) <span className="text-red-500">*</span>
+                    Futures <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    key={`future-price-${currentSchedule.pricing_type || 'fixed'}`}
-                    type="text"
-                    inputMode="decimal"
-                    value={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
-                    readOnly
-                    className="h-10 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed"
-                    placeholder="Auto calculated"
+                  <Controller
+                    name="price_schedule.0.future_price"
+                    control={control}
+                    render={({ field }) => {
+                      const [displayValue, setDisplayValue] = React.useState(() => {
+                        return field.value ? field.value.toString() : '';
+                      });
+                      
+                      const [isFocused, setIsFocused] = React.useState(false);
+
+                      // Update display value when field value changes externally
+                      React.useEffect(() => {
+                        if (!isFocused) {
+                          if (field.value) {
+                            setDisplayValue(formatNumber(field.value));
+                          } else {
+                            setDisplayValue('');
+                          }
+                        }
+                      }, [field.value, isFocused]);
+
+                      return (
+                        <Input
+                          key={`future-price-${currentSchedule.pricing_type || 'fixed'}`}
+                          type="text"
+                          inputMode="decimal"
+                          value={displayValue}
+                          onFocus={() => {
+                            setIsFocused(true);
+                            // Show raw number when focused for easier editing
+                            if (field.value) {
+                              setDisplayValue(field.value.toString());
+                            }
+                          }}
+                          onBlur={() => {
+                            setIsFocused(false);
+                            if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
+                              const numericValue = parseFloat(displayValue.replace(/,/g, ''));
+                              field.onChange(numericValue);
+                              setDisplayValue(formatNumber(numericValue));
+                            }
+                          }}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            setDisplayValue(inputValue);
+                            
+                            if (inputValue === '') {
+                              field.onChange(0);
+                              return;
+                            }
+                            
+                            const numericValue = parseFloat(inputValue.replace(/,/g, ''));
+                            if (!isNaN(numericValue)) {
+                              field.onChange(numericValue);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className={`h-10 ${errors.price_schedule?.[0]?.future_price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                          placeholder="0.00"
+                          style={{
+                            MozAppearance: 'textfield'
+                          }}
+                        />
+                      );
+                    }}
                   />
                   {/* Future Price Error */}
                   {errors.price_schedule?.[0]?.future_price && (
