@@ -203,6 +203,37 @@ export function usePurchaseContractForm() {
     const partitionKey = localStorage.getItem('partition_key') || '';
     const userId = localStorage.getItem('user_id') || '';
     
+    // Define options arrays to find labels
+    const COMMODITY_OPTIONS = [
+      { key: 'corn', value: '6839ef25edc3c27f091bdfc0', label: 'Maíz / Corn' },
+      { key: 'soybean', value: '6839ef25edc3c27f091bdfc1', label: 'Soja / Soybean' },
+      { key: 'wheat', value: '6839ef25edc3c27f091bdfc2', label: 'Trigo / Wheat' },
+      { key: 'sorghum', value: '6839ef25edc3c27f091bdfc3', label: 'Sorgo / Sorghum' },
+      { key: 'barley', value: '6839ef25edc3c27f091bdfc4', label: 'Cebada / Barley' }
+    ];
+    
+    const CHARACTERISTICS_CONFIG_OPTIONS = [
+      { key: 'standard', value: 'config_standard', label: 'Estándar / Standard' },
+      { key: 'premium', value: 'config_premium', label: 'Premium' },
+      { key: 'organic', value: 'config_organic', label: 'Orgánico / Organic' },
+      { key: 'non_gmo', value: 'config_non_gmo', label: 'No GMO / Non-GMO' },
+      { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
+    ];
+    
+    const MEASUREMENT_UNIT_OPTIONS = [
+      { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
+      { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
+      { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
+      { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
+      { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
+    ];
+    
+    // Helper function to find label by value
+    const findLabel = (options: any[], value: string) => {
+      const option = options.find(opt => opt.value === value);
+      return option ? option.label : '';
+    };
+    
     // Calculate thresholds weights based on quantity and percentages
     const minThresholdWeight = formData.quantity - (formData.quantity * formData.min_thresholds_percentage / 100);
     const maxThresholdWeight = formData.quantity + (formData.quantity * formData.max_thresholds_percentage / 100);
@@ -220,11 +251,11 @@ export function usePurchaseContractForm() {
       sub_type: formData.sub_type,
       commodity: {
         commodity_id: formData.commodity_id,
-        name: formData.commodity_name,
+        name: findLabel(COMMODITY_OPTIONS, formData.commodity_id),
       },
       characteristics: {
         configuration_id: formData.characteristics_configuration_id,
-        configuration_name: formData.characteristics_configuration_name,
+        configuration_name: findLabel(CHARACTERISTICS_CONFIG_OPTIONS, formData.characteristics_configuration_id),
       },
       grade: formData.grade,
       participants: formData.participants,
@@ -247,8 +278,8 @@ export function usePurchaseContractForm() {
       },
       quantity: formData.quantity,
       reference_number: formData.reference_number,
-      measurement_unit_id: formData.measurement_unit_id,
-      measurement_unit: formData.measurement_unit,
+      measurement_unit_id: formData.measurement_unit,
+      measurement_unit: findLabel(MEASUREMENT_UNIT_OPTIONS, formData.measurement_unit),
       shipping_start_date: new Date(formData.shipping_start_date).toISOString(),
       shipping_end_date: new Date(formData.shipping_end_date).toISOString(),
       application_priority: formData.application_priority,

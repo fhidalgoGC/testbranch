@@ -89,6 +89,14 @@ const CHARACTERISTICS_CONFIG_OPTIONS = [
   { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
 ];
 
+const MEASUREMENT_UNIT_OPTIONS = [
+  { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
+  { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
+  { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
+  { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
+  { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
+];
+
 export function ContractInfoSection() {
   const { t } = useTranslation();
   const {
@@ -453,11 +461,11 @@ export function ContractInfoSection() {
                       <SelectValue placeholder={t('selectMeasurementUnit')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="unit_tons">Toneladas / Tons</SelectItem>
-                      <SelectItem value="unit_kg">Kilogramos / Kilograms</SelectItem>
-                      <SelectItem value="unit_bushels">Bushels</SelectItem>
-                      <SelectItem value="unit_cwt">Quintales / Hundredweight</SelectItem>
-                      <SelectItem value="unit_mt">Toneladas Métricas / Metric Tons</SelectItem>
+                      {MEASUREMENT_UNIT_OPTIONS.map((option) => (
+                        <SelectItem key={option.key} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

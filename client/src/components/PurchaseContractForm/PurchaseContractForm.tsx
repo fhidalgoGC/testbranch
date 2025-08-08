@@ -47,14 +47,49 @@ export function PurchaseContractForm() {
           onClick={() => {
             const formValues = form.getValues();
             
+            // Define options arrays (same as in ContractInfoSection)
+            const COMMODITY_OPTIONS = [
+              { key: 'corn', value: '6839ef25edc3c27f091bdfc0', label: 'Maíz / Corn' },
+              { key: 'soybean', value: '6839ef25edc3c27f091bdfc1', label: 'Soja / Soybean' },
+              { key: 'wheat', value: '6839ef25edc3c27f091bdfc2', label: 'Trigo / Wheat' },
+              { key: 'sorghum', value: '6839ef25edc3c27f091bdfc3', label: 'Sorgo / Sorghum' },
+              { key: 'barley', value: '6839ef25edc3c27f091bdfc4', label: 'Cebada / Barley' }
+            ];
+            
+            const CHARACTERISTICS_CONFIG_OPTIONS = [
+              { key: 'standard', value: 'config_standard', label: 'Estándar / Standard' },
+              { key: 'premium', value: 'config_premium', label: 'Premium' },
+              { key: 'organic', value: 'config_organic', label: 'Orgánico / Organic' },
+              { key: 'non_gmo', value: 'config_non_gmo', label: 'No GMO / Non-GMO' },
+              { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
+            ];
+            
+            const MEASUREMENT_UNIT_OPTIONS = [
+              { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
+              { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
+              { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
+              { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
+              { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
+            ];
+            
+            // Helper function to find label by value
+            const findLabel = (options: any[], value: string) => {
+              const option = options.find((opt: any) => opt.value === value);
+              return option ? option.label : '';
+            };
+            
             // Calculate threshold weights
             const quantity = formValues.quantity || 0;
             const minThresholdWeight = quantity - (quantity * formValues.min_thresholds_percentage / 100);
             const maxThresholdWeight = quantity + (quantity * formValues.max_thresholds_percentage / 100);
             
-            // Create enhanced debug object with calculated thresholds
+            // Create enhanced debug object with calculated thresholds and names
             const debugData = {
               ...formValues,
+              commodity_name: findLabel(COMMODITY_OPTIONS, formValues.commodity_id),
+              characteristics_configuration_name: findLabel(CHARACTERISTICS_CONFIG_OPTIONS, formValues.characteristics_configuration_id),
+              measurement_unit_id: formValues.measurement_unit,
+              measurement_unit: findLabel(MEASUREMENT_UNIT_OPTIONS, formValues.measurement_unit),
               thresholds: {
                 min_thresholds_percentage: formValues.min_thresholds_percentage,
                 min_thresholds_weight: minThresholdWeight,
