@@ -160,8 +160,10 @@ export function PurchaseContractForm() {
             }
             
             // Create enhanced debug object with calculated thresholds and names
+            const { min_thresholds_percentage, max_thresholds_percentage, ...formValuesWithoutThresholds } = formValues;
+            
             const debugData = {
-              ...formValues,
+              ...formValuesWithoutThresholds,
               ...(formValues.folio && formValues.folio.trim() !== '' && { folio: formValues.folio }),
               commodity_name: findLabel(COMMODITY_OPTIONS, formValues.commodity_id),
               characteristics_configuration_name: findLabel(CHARACTERISTICS_CONFIG_OPTIONS, formValues.characteristics_configuration_id),
