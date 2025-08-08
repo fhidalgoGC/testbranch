@@ -49,7 +49,7 @@ const DELIVERED_OPTIONS = [
 
 export function ShipmentSection() {
   const { t } = useTranslation();
-  const { register, formState: { errors }, watch, setValue, setError, clearErrors } = useFormContext<PurchaseContractFormData>();
+  const { register, formState: { errors }, watch, setValue, setError, clearErrors, control } = useFormContext<PurchaseContractFormData>();
   const [dateValidationError, setDateValidationError] = useState<string>('');
 
   // Date validation logic
