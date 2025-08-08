@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -104,6 +104,7 @@ export function ContractInfoSection() {
     formState: { errors },
     watch,
     setValue,
+    control
   } = useFormContext<PurchaseContractFormData>();
 
   // Helper function to format number for display (2-4 decimals)

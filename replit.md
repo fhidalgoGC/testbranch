@@ -155,13 +155,16 @@ shared/
 ## Recent Changes
 
 ### Complete React Hook Form Integration with Controllers (August 8, 2025)
-- **Full RHF integration**: Migrated all form inputs to use react-hook-form Controller for complete state management
+- **Full RHF integration**: Migrated critical form inputs to use react-hook-form Controller for complete state management
 - **Unified state control**: Price, basis, and freight cost fields now fully controlled by RHF with zodResolver validation
 - **Real-time calculations**: Auto-calculation of future_price maintained while using RHF Controller pattern
 - **Type-safe field handling**: Added null checks and proper TypeScript validation for all numeric inputs
 - **Centralized form state**: All form changes now flow through RHF's setValue and watch mechanisms
 - **Improved validation**: Field-level validation now works seamlessly with Controller render props
 - **Enhanced debugging**: Form state is now completely traceable through RHF's built-in debugging tools
+- **Controller pattern**: All sections now import Controller and have access to control prop for future field migrations
+- **JSON output cleanup**: Removed seller, min/max thresholds from root, folio exclusion when empty
+- **Basis field behavior**: Appears empty when value is 0 but maintains 0 in JSON output
 
 ### Price Section Dynamic Behavior Implementation (August 7, 2025)
 - **Smart pricing logic**: Implemented conditional behavior based on pricing_type selection

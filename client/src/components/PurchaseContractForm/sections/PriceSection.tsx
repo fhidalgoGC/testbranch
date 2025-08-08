@@ -243,7 +243,7 @@ export function PriceSection({
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         if (inputValue === '') {
-                          field.onChange(0);
+                          field.onChange(0 as number);
                           return;
                         }
                         const numericValue = parseFormattedNumber(inputValue);
@@ -293,7 +293,7 @@ export function PriceSection({
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         if (inputValue === '') {
-                          field.onChange(null);
+                          field.onChange(null as number | null);
                           return;
                         }
                         const numericValue = parseFormattedNumber(inputValue);
@@ -374,7 +374,7 @@ export function PriceSection({
                           onChange={(e) => {
                             const inputValue = e.target.value;
                             if (inputValue === '') {
-                              field.onChange(0);
+                              field.onChange(0 as number);
                               return;
                             }
                             const numericValue = parseFormattedNumber(inputValue);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,7 @@ export function RemarksSection({
   addComment 
 }: RemarksSectionProps) {
   const { t } = useTranslation();
-  const { watch, setValue } = useFormContext<PurchaseContractFormData>();
+  const { watch, setValue, control } = useFormContext<PurchaseContractFormData>();
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
   const [isRemarkListModalOpen, setIsRemarkListModalOpen] = useState(false);
   const [selectedRemarkType, setSelectedRemarkType] = useState<string>('');
