@@ -253,7 +253,7 @@ export function ShipmentSection() {
               </SelectTrigger>
               <SelectContent>
                 {DELIVERED_OPTIONS.map((option) => (
-                  <SelectItem key={option.key} value={option.value}>
+                  <SelectItem key={option.key} value={option.key}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -280,7 +280,7 @@ export function ShipmentSection() {
               </SelectTrigger>
               <SelectContent>
                 {TRANSPORT_OPTIONS.map((option) => (
-                  <SelectItem key={option.key} value={option.value}>
+                  <SelectItem key={option.key} value={option.key}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -304,7 +304,7 @@ export function ShipmentSection() {
               </SelectTrigger>
               <SelectContent>
                 {INSPECTION_PROTEINS_WEIGHTS_OPTIONS.map((option) => (
-                  <SelectItem key={option.key} value={option.value}>
+                  <SelectItem key={option.key} value={option.key}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -331,7 +331,7 @@ export function ShipmentSection() {
               </SelectTrigger>
               <SelectContent>
                 {INSPECTION_PROTEINS_WEIGHTS_OPTIONS.map((option) => (
-                  <SelectItem key={option.key} value={option.value}>
+                  <SelectItem key={option.key} value={option.key}>
                     {option.label}
                   </SelectItem>
                 ))}
@@ -355,7 +355,7 @@ export function ShipmentSection() {
               </SelectTrigger>
               <SelectContent>
                 {INSPECTION_PROTEINS_WEIGHTS_OPTIONS.map((option) => (
-                  <SelectItem key={option.key} value={option.value}>
+                  <SelectItem key={option.key} value={option.key}>
                     {option.label}
                   </SelectItem>
                 ))}
