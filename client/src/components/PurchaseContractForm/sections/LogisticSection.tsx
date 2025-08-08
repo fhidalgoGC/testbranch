@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -38,7 +38,7 @@ export function LogisticSection({
   updateLogisticSchedule 
 }: LogisticSectionProps) {
   const { t } = useTranslation();
-  const { formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
+  const { formState: { errors }, watch, setValue, control } = useFormContext<PurchaseContractFormData>();
   
   const logisticSchedule = watch('logistic_schedule') || [];
   const currentSchedule = logisticSchedule[0] || {};

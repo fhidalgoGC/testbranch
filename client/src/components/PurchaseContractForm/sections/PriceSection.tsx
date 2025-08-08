@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,7 @@ export function PriceSection({
   updatePriceSchedule 
 }: PriceSectionProps) {
   const { t } = useTranslation();
-  const { formState: { errors }, watch, setValue } = useFormContext<PurchaseContractFormData>();
+  const { formState: { errors }, watch, setValue, control } = useFormContext<PurchaseContractFormData>();
   
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};
@@ -230,25 +230,42 @@ export function PriceSection({
                 >
                   {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
                 </Button>
-                {/* Basis Input Field */}
-                <Input
-                  key={`basis-${currentSchedule.pricing_type || 'fixed'}`}
-                  type="text"
-                  inputMode="decimal"
-                  defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined && currentSchedule.basis !== 0 ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
-                  onChange={(e) => handleNumberChange('basis', e.target.value)}
-                  onBlur={(e) => handleNumberBlur('basis', e)}
-                  onKeyDown={(e) => {
-                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                    if (!allowedKeys.includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="0.00"
-                  style={{
-                    MozAppearance: 'textfield'
-                  }}
+                {/* Basis Input Field with Controller */}
+                <Controller
+                  name="price_schedule.0.basis"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      key={`basis-${currentSchedule.pricing_type || 'fixed'}`}
+                      type="text"
+                      inputMode="decimal"
+                      value={field.value !== null && field.value !== undefined && field.value !== 0 ? formatNumber(Math.abs(field.value)) : ''}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        if (inputValue === '') {
+                          field.onChange(0);
+                          return;
+                        }
+                        const numericValue = parseFormattedNumber(inputValue);
+                        if (!isNaN(numericValue) && numericValue !== null) {
+                          // Apply sign based on button state
+                          const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
+                          field.onChange(numericValue * sign);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                        if (!allowedKeys.includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      placeholder="0.00"
+                      style={{
+                        MozAppearance: 'textfield'
+                      }}
+                    />
+                  )}
                 />
               </div>
               {/* Basis Error */}
@@ -264,24 +281,44 @@ export function PriceSection({
                 <Label className="text-sm font-medium text-gray-900 dark:text-white">
                   Price <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  key={`price-${currentSchedule.pricing_type || 'fixed'}`}
-                  type="text"
-                  inputMode="decimal"
-                  defaultValue={currentSchedule.price ? formatNumber(currentSchedule.price) : ''}
-                  onChange={(e) => handleNumberChange('price', e.target.value)}
-                  onBlur={(e) => handleNumberBlur('price', e)}
-                  onKeyDown={(e) => {
-                    const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                    if (!allowedKeys.includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                  placeholder="0.00"
-                  style={{
-                    MozAppearance: 'textfield'
-                  }}
+                <Controller
+                  name="price_schedule.0.price"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      key={`price-${currentSchedule.pricing_type || 'fixed'}`}
+                      type="text"
+                      inputMode="decimal"
+                      value={field.value ? formatNumber(field.value) : ''}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        if (inputValue === '') {
+                          field.onChange(null);
+                          return;
+                        }
+                        const numericValue = parseFormattedNumber(inputValue);
+                        if (!isNaN(numericValue) && numericValue !== null) {
+                          field.onChange(numericValue);
+                          // Auto-calculate future_price for fixed type
+                          if (currentSchedule.pricing_type === 'fixed') {
+                            const basis = currentSchedule.basis || 0;
+                            setValue('price_schedule.0.future_price', numericValue - basis);
+                          }
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                        if (!allowedKeys.includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className={`h-10 ${errors.price_schedule?.[0]?.price ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                      placeholder="0.00"
+                      style={{
+                        MozAppearance: 'textfield'
+                      }}
+                    />
+                  )}
                 />
                 {/* Price Error */}
                 {errors.price_schedule?.[0]?.price && (
@@ -324,25 +361,47 @@ export function PriceSection({
                     >
                       {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
                     </Button>
-                    {/* Basis Input Field */}
-                    <Input
-                      key={`basis-fixed-${currentSchedule.pricing_type || 'fixed'}`}
-                      type="text"
-                      inputMode="decimal"
-                      defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined && currentSchedule.basis !== 0 ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
-                      onChange={(e) => handleNumberChange('basis', e.target.value)}
-                      onBlur={(e) => handleNumberBlur('basis', e)}
-                      onKeyDown={(e) => {
-                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                        if (!allowedKeys.includes(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                      placeholder="0.00"
-                      style={{
-                        MozAppearance: 'textfield' as any
-                      }}
+                    {/* Basis Input Field with Controller */}
+                    <Controller
+                      name="price_schedule.0.basis"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          key={`basis-fixed-${currentSchedule.pricing_type || 'fixed'}`}
+                          type="text"
+                          inputMode="decimal"
+                          value={field.value !== null && field.value !== undefined && field.value !== 0 ? formatNumber(Math.abs(field.value)) : ''}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            if (inputValue === '') {
+                              field.onChange(0);
+                              return;
+                            }
+                            const numericValue = parseFormattedNumber(inputValue);
+                            if (!isNaN(numericValue) && numericValue !== null) {
+                              // Apply sign based on button state
+                              const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
+                              field.onChange(numericValue * sign);
+                              // Auto-calculate future_price for fixed type
+                              if (currentSchedule.pricing_type === 'fixed') {
+                                const price = currentSchedule.price || 0;
+                                setValue('price_schedule.0.future_price', price - (numericValue * sign));
+                              }
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className={`h-10 flex-1 ${errors.price_schedule?.[0]?.basis ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                          placeholder="0.00"
+                          style={{
+                            MozAppearance: 'textfield' as any
+                          }}
+                        />
+                      )}
                     />
                   </div>
                   {/* Basis Error */}
