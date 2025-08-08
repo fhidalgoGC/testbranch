@@ -162,6 +162,7 @@ export function PurchaseContractForm() {
             // Create enhanced debug object with calculated thresholds and names
             const debugData = {
               ...formValues,
+              ...(formValues.folio && formValues.folio.trim() !== '' && { folio: formValues.folio }),
               commodity_name: findLabel(COMMODITY_OPTIONS, formValues.commodity_id),
               characteristics_configuration_name: findLabel(CHARACTERISTICS_CONFIG_OPTIONS, formValues.characteristics_configuration_id),
               measurement_unit_id: formValues.measurement_unit,
@@ -174,6 +175,11 @@ export function PurchaseContractForm() {
                 max_thresholds_weight: maxThresholdWeight
               }
             };
+            
+            // Remove folio if it's empty from the copy
+            if (!formValues.folio || formValues.folio.trim() === '') {
+              delete (debugData as any).folio;
+            }
             
             console.log('🔍 Form Values Debug:', JSON.stringify(debugData, null, 2));
             console.log('📋 Form Values Object:', debugData);

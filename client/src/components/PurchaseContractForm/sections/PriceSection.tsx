@@ -168,14 +168,15 @@ export function PriceSection({
                   
                   // Initialize values based on pricing type
                   if (value === 'fixed') {
-                    // For fixed: initialize all fields to 0
-                    currentItem.price = 0;
-                    currentItem.basis = 0;
-                    currentItem.future_price = 0;
-                  } else if (value === 'basis') {
-                    // For basis: initialize basis field to null to trigger validation
+                    // For fixed: reset all fields to null for empty appearance
+                    (currentItem as any).price = null;
                     (currentItem as any).basis = null;
-                    // Keep price and future_price but they won't be shown
+                    (currentItem as any).future_price = null;
+                  } else if (value === 'basis') {
+                    // For basis: reset all fields to null for empty appearance
+                    (currentItem as any).price = null;
+                    (currentItem as any).basis = null;
+                    (currentItem as any).future_price = null;
                   }
                   
                   updatedSchedule[0] = currentItem;
@@ -231,6 +232,7 @@ export function PriceSection({
                 </Button>
                 {/* Basis Input Field */}
                 <Input
+                  key={`basis-${currentSchedule.pricing_type || 'fixed'}`}
                   type="text"
                   inputMode="decimal"
                   defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
@@ -263,6 +265,7 @@ export function PriceSection({
                   Price <span className="text-red-500">*</span>
                 </Label>
                 <Input
+                  key={`price-${currentSchedule.pricing_type || 'fixed'}`}
                   type="text"
                   inputMode="decimal"
                   defaultValue={currentSchedule.price ? formatNumber(currentSchedule.price) : ''}
@@ -323,6 +326,7 @@ export function PriceSection({
                     </Button>
                     {/* Basis Input Field */}
                     <Input
+                      key={`basis-fixed-${currentSchedule.pricing_type || 'fixed'}`}
                       type="text"
                       inputMode="decimal"
                       defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
@@ -353,6 +357,7 @@ export function PriceSection({
                     Futures (Calculated) <span className="text-red-500">*</span>
                   </Label>
                   <Input
+                    key={`future-price-${currentSchedule.pricing_type || 'fixed'}`}
                     type="text"
                     inputMode="decimal"
                     value={currentSchedule.future_price ? formatNumber(currentSchedule.future_price) : ''}
