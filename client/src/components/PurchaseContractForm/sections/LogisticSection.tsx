@@ -312,9 +312,9 @@ export function LogisticSection({
                   </div>
                 )}
 
-                {/* Min and Max - Only show for 'variable' type - Both in same column */}
+                {/* Min and Max - Only show for 'variable' type - Side by side horizontally */}
                 {currentSchedule.freight_cost?.type === 'variable' && (
-                  <>
+                  <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white">
                         Freight Min Cost
@@ -364,7 +364,7 @@ export function LogisticSection({
                         }}
                       />
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
 
