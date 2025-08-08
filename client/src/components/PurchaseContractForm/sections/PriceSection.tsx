@@ -247,7 +247,7 @@ export function PriceSection({
                           return;
                         }
                         const numericValue = parseFormattedNumber(inputValue);
-                        if (!isNaN(numericValue) && numericValue !== null) {
+                        if (!isNaN(numericValue)) {
                           // Apply sign based on button state
                           const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
                           field.onChange(numericValue * sign);
@@ -293,11 +293,11 @@ export function PriceSection({
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         if (inputValue === '') {
-                          field.onChange(null as number | null);
+                          field.onChange(0);
                           return;
                         }
                         const numericValue = parseFormattedNumber(inputValue);
-                        if (!isNaN(numericValue) && numericValue !== null) {
+                        if (!isNaN(numericValue)) {
                           field.onChange(numericValue);
                           // Auto-calculate future_price for fixed type
                           if (currentSchedule.pricing_type === 'fixed') {
@@ -378,7 +378,7 @@ export function PriceSection({
                               return;
                             }
                             const numericValue = parseFormattedNumber(inputValue);
-                            if (!isNaN(numericValue) && numericValue !== null) {
+                            if (!isNaN(numericValue)) {
                               // Apply sign based on button state
                               const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
                               field.onChange(numericValue * sign);
