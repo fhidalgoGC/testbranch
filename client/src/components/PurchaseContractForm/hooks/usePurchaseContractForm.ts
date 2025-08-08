@@ -202,17 +202,18 @@ export function usePurchaseContractForm() {
     form.setValue('remarks', updatedRemarks);
   };
 
-  // Helper function to recursively remove empty fields from objects
+  // Helper function to recursively remove empty string fields from objects (keep empty arrays)
   const removeEmptyFields = (obj: any): any => {
     if (obj === null || obj === undefined) {
       return obj;
     }
     
     if (Array.isArray(obj)) {
+      // Keep empty arrays, but clean their contents
       return obj.map(item => removeEmptyFields(item)).filter(item => {
         if (item === null || item === undefined) return false;
         if (typeof item === 'string' && item.trim() === '') return false;
-        if (typeof item === 'object' && Object.keys(item).length === 0) return false;
+        if (typeof item === 'object' && !Array.isArray(item) && Object.keys(item).length === 0) return false;
         return true;
       });
     }
@@ -234,16 +235,12 @@ export function usePurchaseContractForm() {
         // Recursively clean nested objects/arrays
         const cleanedValue = removeEmptyFields(value);
         
-        // Skip empty objects
+        // Skip empty objects (but keep empty arrays)
         if (typeof cleanedValue === 'object' && !Array.isArray(cleanedValue) && Object.keys(cleanedValue).length === 0) {
           continue;
         }
         
-        // Skip empty arrays
-        if (Array.isArray(cleanedValue) && cleanedValue.length === 0) {
-          continue;
-        }
-        
+        // Keep empty arrays - don't skip them
         cleaned[key] = cleanedValue;
       }
       
