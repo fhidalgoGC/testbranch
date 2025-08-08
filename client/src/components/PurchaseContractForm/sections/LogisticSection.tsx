@@ -345,7 +345,7 @@ export function LogisticSection({
                   {t('measurementUnit')}
                 </Label>
                 <Select
-                  value={currentSchedule.freight_cost_measurement_unit || ''}
+                  value={currentSchedule.freight_cost_measurement_unit_id || ''}
                   onValueChange={(value) => {
                     const currentLogisticSchedule = watch('logistic_schedule') || [{}];
                     const updatedSchedule = [...currentLogisticSchedule];
@@ -356,7 +356,7 @@ export function LogisticSection({
                     updatedSchedule[0] = { 
                       ...updatedSchedule[0], 
                       freight_cost_measurement_unit_id: value,
-                      freight_cost_measurement_unit: selectedOption?.key || ''
+                      freight_cost_measurement_unit: selectedOption?.label || ''
                     };
                     setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                   }}
