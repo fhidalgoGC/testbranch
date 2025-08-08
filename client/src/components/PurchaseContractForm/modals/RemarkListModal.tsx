@@ -21,75 +21,58 @@ interface RemarkListModalProps {
 
 // Sample remark options based on type
 const REMARK_OPTIONS: Record<string, string[]> = {
-  delivery: [
-    'Delivery must be completed during business hours',
-    'Special handling required for fragile items',
-    'Coordinate delivery with warehouse manager',
-    'Loading dock access required',
-    'Advance notice of 24 hours required'
+  contact: [
+    'Primary contact: John Smith - Operations Manager',
+    'Secondary contact: Maria Garcia - Logistics Coordinator',
+    'Emergency contact: 24/7 hotline +1-800-555-0123',
+    'Email notifications to logistics@company.com',
+    'WhatsApp coordination group available'
   ],
-  quality: [
-    'Moisture content must not exceed 14%',
-    'Foreign material tolerance: 2% maximum',
-    'Test weight minimum 56 lbs/bushel',
-    'No visible damage or contamination',
-    'Grade certificate required'
-  ],
-  payment: [
-    'Payment due within 30 days of delivery',
-    'Early payment discount available',
-    'Wire transfer preferred',
-    'Invoice required before payment',
-    'Credit terms subject to approval'
-  ],
-  inspection: [
-    'Third-party inspection required',
-    'Inspection at point of origin',
-    'GAFTA inspection standards apply',
-    'Sample retention for 90 days',
-    'Inspection certificate mandatory'
-  ],
-  shipping: [
+  shipment: [
     'Container must be clean and dry',
     'Fumigation certificate required',
     'Loading supervision required',
     'Tarpaulin covering mandatory',
-    'GPS tracking throughout transport'
+    'GPS tracking throughout transport',
+    'Special handling for fragile cargo',
+    'Temperature-controlled transport required'
   ],
-  storage: [
-    'Store in dry, ventilated warehouse',
-    'Temperature control required',
-    'Pest control measures in place',
-    'FIFO inventory management',
-    'Regular quality monitoring'
+  routing: [
+    'Direct route only - no transshipment',
+    'Avoid congested ports during peak season',
+    'Preferred routing via Port of Houston',
+    'Alternative route through Port of New Orleans',
+    'Land bridge option available',
+    'Express delivery service required',
+    'Standard routing with cost optimization'
   ],
-  grading: [
-    'US Grade #2 Yellow Corn',
-    'Protein content minimum 12%',
-    'Oil content specification',
-    'Color standards as per USDA',
-    'Size uniformity requirements'
+  prem_disc: [
+    'Premium for early delivery: $5/MT',
+    'Discount for delayed shipment: $3/MT',
+    'Quality premium for Grade A: $10/MT',
+    'Location premium for inland delivery: $15/MT',
+    'Volume discount for orders >1000 MT: $2/MT',
+    'Seasonal premium during harvest: $8/MT',
+    'Express delivery surcharge: $20/MT'
   ],
-  contract: [
+  terms: [
+    'Payment due within 30 days of delivery',
+    'Letter of credit required',
+    'Cash against documents (CAD)',
+    'Wire transfer within 15 days',
+    'Credit terms subject to approval',
+    'Early payment discount 2% if paid within 10 days',
+    'Late payment penalty 1.5% per month'
+  ],
+  remarks: [
     'Force majeure clause applies',
     'Arbitration in case of disputes',
-    'Governing law: [State/Country]',
-    'Assignment rights restricted',
-    'Confidentiality agreement required'
-  ],
-  general: [
-    'All documents in English',
-    'Compliance with local regulations',
-    'Insurance coverage required',
-    'Emergency contact information',
-    'Regular progress updates'
-  ],
-  special: [
-    'Organic certification required',
-    'Non-GMO verification needed',
-    'Halal/Kosher certification',
-    'Sustainability requirements',
-    'Traceability documentation'
+    'Contract subject to local regulations',
+    'All amendments must be in writing',
+    'Inspection rights reserved',
+    'Quality specifications as per industry standards',
+    'Delivery schedule subject to weather conditions',
+    'Insurance coverage required during transport'
   ]
 };
 

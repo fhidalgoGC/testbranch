@@ -21,16 +21,12 @@ interface AddRemarkModalProps {
 }
 
 const REMARK_TYPES = [
-  { value: 'delivery', label: 'Delivery Instructions' },
-  { value: 'quality', label: 'Quality Requirements' },
-  { value: 'payment', label: 'Payment Terms' },
-  { value: 'inspection', label: 'Inspection Requirements' },
-  { value: 'shipping', label: 'Shipping Instructions' },
-  { value: 'storage', label: 'Storage Requirements' },
-  { value: 'grading', label: 'Grading Specifications' },
-  { value: 'contract', label: 'Contract Conditions' },
-  { value: 'general', label: 'General Notes' },
-  { value: 'special', label: 'Special Instructions' },
+  { value: 'contact', label: 'Contact' },
+  { value: 'shipment', label: 'Shipment' },
+  { value: 'routing', label: 'Routing' },
+  { value: 'prem_disc', label: 'Prem/Disc' },
+  { value: 'terms', label: 'Terms' },
+  { value: 'remarks', label: 'Remarks' },
 ];
 
 export function AddRemarkModal({ isOpen, onClose, onAddRemark, currentRemarks }: AddRemarkModalProps) {
