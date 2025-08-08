@@ -235,7 +235,7 @@ export function PriceSection({
                   key={`basis-${currentSchedule.pricing_type || 'fixed'}`}
                   type="text"
                   inputMode="decimal"
-                  defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                  defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined && currentSchedule.basis !== 0 ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
                   onChange={(e) => handleNumberChange('basis', e.target.value)}
                   onBlur={(e) => handleNumberBlur('basis', e)}
                   onKeyDown={(e) => {
@@ -329,7 +329,7 @@ export function PriceSection({
                       key={`basis-fixed-${currentSchedule.pricing_type || 'fixed'}`}
                       type="text"
                       inputMode="decimal"
-                      defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
+                      defaultValue={currentSchedule.basis !== null && currentSchedule.basis !== undefined && currentSchedule.basis !== 0 ? formatNumber(Math.abs(currentSchedule.basis)) : ''}
                       onChange={(e) => handleNumberChange('basis', e.target.value)}
                       onBlur={(e) => handleNumberBlur('basis', e)}
                       onKeyDown={(e) => {
