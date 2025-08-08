@@ -48,6 +48,61 @@ export function PurchaseContractForm() {
             const formValues = form.getValues();
             
             // Define options arrays (same as in ContractInfoSection)
+            const FAKE_SELLERS = [
+              {
+                id: '1',
+                name: 'Juan Carlos Rodríguez',
+                company: 'Agricola San Miguel',
+                email: 'juan.rodriguez@sanmiguel.com',
+                phone: '+52 55 1234 5678',
+                location: 'Guadalajara, México',
+                type: 'company' as const
+              },
+              {
+                id: '2',
+                name: 'María Elena Vásquez',
+                email: 'maria.vasquez@email.com',
+                phone: '+52 33 9876 5432',
+                location: 'Zapopan, México',
+                type: 'individual' as const
+              },
+              {
+                id: '3',
+                name: 'Roberto Fernández',
+                company: 'Granos del Norte SA',
+                email: 'r.fernandez@granoselnorte.com',
+                phone: '+52 81 5555 0123',
+                location: 'Monterrey, México',
+                type: 'company' as const
+              },
+              {
+                id: '4',
+                name: 'Ana Patricia Morales',
+                company: 'Cooperativa El Campo',
+                email: 'ana.morales@elcampo.mx',
+                phone: '+52 444 777 8899',
+                location: 'San Luis Potosí, México',
+                type: 'company' as const
+              },
+              {
+                id: '5',
+                name: 'Carlos David Herrera',
+                email: 'carlos.herrera@outlook.com',
+                phone: '+52 477 123 4567',
+                location: 'León, México',
+                type: 'individual' as const
+              },
+              {
+                id: '6',
+                name: 'Luisa Fernanda García',
+                company: 'Agroexportadora del Bajío',
+                email: 'luisa.garcia@agrobajio.com',
+                phone: '+52 462 888 9999',
+                location: 'Celaya, México',
+                type: 'company' as const
+              }
+            ];
+            
             const COMMODITY_OPTIONS = [
               { key: 'corn', value: '6839ef25edc3c27f091bdfc0', label: 'Maíz / Corn' },
               { key: 'soybean', value: '6839ef25edc3c27f091bdfc1', label: 'Soja / Soybean' },
@@ -83,6 +138,27 @@ export function PurchaseContractForm() {
             const minThresholdWeight = quantity - (quantity * formValues.min_thresholds_percentage / 100);
             const maxThresholdWeight = quantity + (quantity * formValues.max_thresholds_percentage / 100);
             
+            // Process participants - add/replace seller in position 0
+            let processedParticipants = [...formValues.participants];
+            if (formValues.seller) {
+              const selectedSeller = FAKE_SELLERS.find(seller => seller.id === formValues.seller);
+              if (selectedSeller) {
+                const sellerParticipant = {
+                  people_id: selectedSeller.id,
+                  name: selectedSeller.name,
+                  role: 'seller' as const
+                };
+                
+                // Check if position 0 exists and has role 'seller', if so replace it
+                if (processedParticipants.length > 0 && processedParticipants[0].role === 'seller') {
+                  processedParticipants[0] = sellerParticipant;
+                } else {
+                  // Add seller at position 0
+                  processedParticipants.unshift(sellerParticipant);
+                }
+              }
+            }
+            
             // Create enhanced debug object with calculated thresholds and names
             const debugData = {
               ...formValues,
@@ -90,6 +166,7 @@ export function PurchaseContractForm() {
               characteristics_configuration_name: findLabel(CHARACTERISTICS_CONFIG_OPTIONS, formValues.characteristics_configuration_id),
               measurement_unit_id: formValues.measurement_unit,
               measurement_unit: findLabel(MEASUREMENT_UNIT_OPTIONS, formValues.measurement_unit),
+              participants: processedParticipants,
               thresholds: {
                 min_thresholds_percentage: formValues.min_thresholds_percentage,
                 min_thresholds_weight: minThresholdWeight,
