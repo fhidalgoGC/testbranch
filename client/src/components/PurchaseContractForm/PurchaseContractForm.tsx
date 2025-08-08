@@ -17,6 +17,7 @@ export function PurchaseContractForm() {
     isSubmitting,
     onSubmit,
     onCancel,
+    generateContractJSON, // Add this for debug button
     // Participant methods
     addParticipant,
     removeParticipant,
@@ -47,144 +48,11 @@ export function PurchaseContractForm() {
           onClick={() => {
             const formValues = form.getValues();
             
-            // Define options arrays (same as in ContractInfoSection)
-            const FAKE_SELLERS = [
-              {
-                id: '1',
-                name: 'Juan Carlos Rodríguez',
-                company: 'Agricola San Miguel',
-                email: 'juan.rodriguez@sanmiguel.com',
-                phone: '+52 55 1234 5678',
-                location: 'Guadalajara, México',
-                type: 'company' as const
-              },
-              {
-                id: '2',
-                name: 'María Elena Vásquez',
-                email: 'maria.vasquez@email.com',
-                phone: '+52 33 9876 5432',
-                location: 'Zapopan, México',
-                type: 'individual' as const
-              },
-              {
-                id: '3',
-                name: 'Roberto Fernández',
-                company: 'Granos del Norte SA',
-                email: 'r.fernandez@granoselnorte.com',
-                phone: '+52 81 5555 0123',
-                location: 'Monterrey, México',
-                type: 'company' as const
-              },
-              {
-                id: '4',
-                name: 'Ana Patricia Morales',
-                company: 'Cooperativa El Campo',
-                email: 'ana.morales@elcampo.mx',
-                phone: '+52 444 777 8899',
-                location: 'San Luis Potosí, México',
-                type: 'company' as const
-              },
-              {
-                id: '5',
-                name: 'Carlos David Herrera',
-                email: 'carlos.herrera@outlook.com',
-                phone: '+52 477 123 4567',
-                location: 'León, México',
-                type: 'individual' as const
-              },
-              {
-                id: '6',
-                name: 'Luisa Fernanda García',
-                company: 'Agroexportadora del Bajío',
-                email: 'luisa.garcia@agrobajio.com',
-                phone: '+52 462 888 9999',
-                location: 'Celaya, México',
-                type: 'company' as const
-              }
-            ];
+            // Use the same function as Submit to generate the exact final JSON
+            const finalJSON = generateContractJSON(formValues);
             
-            const COMMODITY_OPTIONS = [
-              { key: 'corn', value: '6839ef25edc3c27f091bdfc0', label: 'Maíz / Corn' },
-              { key: 'soybean', value: '6839ef25edc3c27f091bdfc1', label: 'Soja / Soybean' },
-              { key: 'wheat', value: '6839ef25edc3c27f091bdfc2', label: 'Trigo / Wheat' },
-              { key: 'sorghum', value: '6839ef25edc3c27f091bdfc3', label: 'Sorgo / Sorghum' },
-              { key: 'barley', value: '6839ef25edc3c27f091bdfc4', label: 'Cebada / Barley' }
-            ];
-            
-            const CHARACTERISTICS_CONFIG_OPTIONS = [
-              { key: 'standard', value: 'config_standard', label: 'Estándar / Standard' },
-              { key: 'premium', value: 'config_premium', label: 'Premium' },
-              { key: 'organic', value: 'config_organic', label: 'Orgánico / Organic' },
-              { key: 'non_gmo', value: 'config_non_gmo', label: 'No GMO / Non-GMO' },
-              { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
-            ];
-            
-            const MEASUREMENT_UNIT_OPTIONS = [
-              { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
-              { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
-              { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
-              { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
-              { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
-            ];
-            
-            // Helper function to find label by value
-            const findLabel = (options: any[], value: string) => {
-              const option = options.find((opt: any) => opt.value === value);
-              return option ? option.label : '';
-            };
-            
-            // Calculate threshold weights
-            const quantity = formValues.quantity || 0;
-            const minThresholdWeight = quantity - (quantity * formValues.min_thresholds_percentage / 100);
-            const maxThresholdWeight = quantity + (quantity * formValues.max_thresholds_percentage / 100);
-            
-            // Process participants - add/replace seller in position 0
-            let processedParticipants = [...formValues.participants];
-            if (formValues.seller) {
-              const selectedSeller = FAKE_SELLERS.find(seller => seller.id === formValues.seller);
-              if (selectedSeller) {
-                const sellerParticipant = {
-                  people_id: selectedSeller.id,
-                  name: selectedSeller.name,
-                  role: 'seller' as const
-                };
-                
-                // Check if position 0 exists and has role 'seller', if so replace it
-                if (processedParticipants.length > 0 && processedParticipants[0].role === 'seller') {
-                  processedParticipants[0] = sellerParticipant;
-                } else {
-                  // Add seller at position 0
-                  processedParticipants.unshift(sellerParticipant);
-                }
-              }
-            }
-            
-            // Create enhanced debug object with calculated thresholds and names
-            const { min_thresholds_percentage, max_thresholds_percentage, seller, ...formValuesWithoutThresholds } = formValues;
-            
-            const debugData = {
-              ...formValuesWithoutThresholds,
-              ...(formValues.folio && formValues.folio.trim() !== '' && { folio: formValues.folio }),
-              commodity_name: findLabel(COMMODITY_OPTIONS, formValues.commodity_id),
-              characteristics_configuration_name: findLabel(CHARACTERISTICS_CONFIG_OPTIONS, formValues.characteristics_configuration_id),
-              measurement_unit_id: formValues.measurement_unit,
-              measurement_unit: findLabel(MEASUREMENT_UNIT_OPTIONS, formValues.measurement_unit),
-              participants: processedParticipants,
-              thresholds: {
-                min_thresholds_percentage: formValues.min_thresholds_percentage,
-                min_thresholds_weight: minThresholdWeight,
-                max_thresholds_percentage: formValues.max_thresholds_percentage,
-                max_thresholds_weight: maxThresholdWeight
-              }
-            };
-            
-            // Remove folio if it's empty from the copy
-            if (!formValues.folio || formValues.folio.trim() === '') {
-              delete (debugData as any).folio;
-            }
-            
-            console.log('🔍 Form Values Debug:', JSON.stringify(debugData, null, 2));
-            console.log('📋 Form Values Object:', debugData);
+            console.log('🔍 DEBUG: Final JSON (same as Submit):', JSON.stringify(finalJSON, null, 2));
+            console.log('📋 DEBUG: Final JSON Object:', finalJSON);
           }}
           className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
         >

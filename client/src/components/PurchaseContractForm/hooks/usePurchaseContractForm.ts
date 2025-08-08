@@ -475,6 +475,7 @@ export function usePurchaseContractForm() {
     isSubmitting,
     onSubmit: form.handleSubmit(onSubmit as any),
     onCancel,
+    generateContractJSON, // Export for debug button
     // Participant methods
     addParticipant,
     removeParticipant,
