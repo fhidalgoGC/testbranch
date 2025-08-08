@@ -372,12 +372,15 @@ export function usePurchaseContractForm() {
       }
     }
     
-    // Calculate thresholds weights based on quantity and percentages
-    const minThresholdWeight = formData.quantity - (formData.quantity * formData.min_thresholds_percentage / 100);
-    const maxThresholdWeight = formData.quantity + (formData.quantity * formData.max_thresholds_percentage / 100);
+    // Calculate thresholds weights based on quantity and percentages (handle null/undefined)
+    const quantity = formData.quantity || 0;
+    const price = formData.price_schedule[0]?.price || 0;
+    
+    const minThresholdWeight = quantity > 0 ? quantity - (quantity * (formData.min_thresholds_percentage || 0) / 100) : 0;
+    const maxThresholdWeight = quantity > 0 ? quantity + (quantity * (formData.max_thresholds_percentage || 0) / 100) : 0;
 
     // Calculate inventory values (simplified calculation)
-    const totalValue = formData.quantity * (formData.price_schedule[0]?.price || 0);
+    const totalValue = quantity > 0 && price > 0 ? quantity * price : 0;
 
     const contractJSON: PurchaseContract = {
       _partitionKey: partitionKey,
@@ -400,10 +403,10 @@ export function usePurchaseContractForm() {
       price_schedule: formData.price_schedule,
       logistic_schedule: formData.logistic_schedule,
       inventory: {
-        total: formData.quantity,
+        total: quantity,
         open: 0,
-        fixed: formData.quantity,
-        unsettled: formData.quantity,
+        fixed: quantity,
+        unsettled: quantity,
         settled: 0,
         reserved: 0,
       },
@@ -414,7 +417,7 @@ export function usePurchaseContractForm() {
         unsettled: totalValue,
         settled: 0,
       },
-      quantity: formData.quantity,
+      quantity: quantity,
       reference_number: formData.reference_number,
       measurement_unit_id: findLabel(MEASUREMENT_UNIT_OPTIONS, formData.measurement_unit),
       measurement_unit: formData.measurement_unit,
