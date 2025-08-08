@@ -41,6 +41,24 @@ export function PriceSection({
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};
 
+  // Watch para los cálculos automáticos basados en state
+  const watchedPrice = watch('price_schedule.0.price');
+  const watchedBasis = watch('price_schedule.0.basis');
+  const watchedPricingType = watch('price_schedule.0.pricing_type');
+
+  // Cálculos automáticos: future = price - basis
+  React.useEffect(() => {
+    if (watchedPricingType === 'fixed' && watchedPrice !== undefined && watchedBasis !== undefined) {
+      const calculatedFuture = watchedPrice - watchedBasis;
+      
+      // Solo actualizar si el valor calculado es diferente al actual
+      const currentFuture = watch('price_schedule.0.future_price');
+      if (currentFuture !== calculatedFuture) {
+        setValue('price_schedule.0.future_price', calculatedFuture, { shouldValidate: false });
+      }
+    }
+  }, [watchedPrice, watchedBasis, watchedPricingType, setValue, watch]);
+
   // Use centralized number formatting from environment configuration
 
   // Helper function to handle number input change with format-aware validation and business logic
@@ -60,19 +78,12 @@ export function PriceSection({
         // Update the field that was changed
         if (field === 'price') {
           currentItem.price = numericValue;
-          // For fixed pricing: when price changes, copy value to future
-          if (currentItem.pricing_type === 'fixed') {
-            currentItem.future_price = numericValue;
-          }
+          // Los cálculos automáticos ahora se manejan en useEffect
         } else if (field === 'basis') {
           // For basis, respect the current sign from the toggle button
           const isNegative = (currentItem.basis || 0) < 0;
           currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
-          // For fixed pricing: when basis changes, calculate future = price - basis
-          if (currentItem.pricing_type === 'fixed') {
-            const currentPrice = currentItem.price || 0;
-            currentItem.future_price = currentPrice - currentItem.basis;
-          }
+          // Los cálculos automáticos ahora se manejan en useEffect
         } else if (field === 'future_price') {
           currentItem.future_price = numericValue;
         }
@@ -114,17 +125,12 @@ export function PriceSection({
       // Handle field updates with explicit type handling
       if (field === 'price') {
         currentItem.price = numericValue;
-        if (currentItem.pricing_type === 'fixed') {
-          currentItem.future_price = numericValue;
-        }
+        // Los cálculos automáticos ahora se manejan en useEffect
       } else if (field === 'basis') {
         // For basis, respect the current sign from the toggle button
         const isNegative = (currentItem.basis || 0) < 0;
         currentItem.basis = isNegative ? -Math.abs(numericValue) : Math.abs(numericValue);
-        if (currentItem.pricing_type === 'fixed') {
-          const currentPrice = currentItem.price || 0;
-          currentItem.future_price = currentPrice - currentItem.basis;
-        }
+        // Los cálculos automáticos ahora se manejan en useEffect
       } else if (field === 'future_price') {
         currentItem.future_price = numericValue;
       }
