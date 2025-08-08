@@ -256,9 +256,10 @@ export function LogisticSection({
                       {t('freightCost')}
                     </Label>
                     <Input
+                      key={`cost-${currentSchedule.freight_cost?.type || 'none'}`}
                       type="text"
                       inputMode="decimal"
-                      value={currentSchedule.freight_cost?.cost ? formatNumber(currentSchedule.freight_cost.cost) : ""}
+                      defaultValue={currentSchedule.freight_cost?.cost ? formatNumber(currentSchedule.freight_cost.cost) : ""}
                       onChange={(e) => handleFreightNumberChange('cost', e.target.value)}
                       onBlur={(e) => handleFreightNumberBlur('cost', e)}
                       onKeyDown={(e) => {
@@ -286,9 +287,10 @@ export function LogisticSection({
                         Freight Min Cost
                       </Label>
                       <Input
+                        key={`min-${currentSchedule.freight_cost?.type || 'none'}`}
                         type="text"
                         inputMode="decimal"
-                        value={currentSchedule.freight_cost?.min ? formatNumber(currentSchedule.freight_cost.min) : ""}
+                        defaultValue={currentSchedule.freight_cost?.min ? formatNumber(currentSchedule.freight_cost.min) : ""}
                         onChange={(e) => handleFreightNumberChange('min', e.target.value)}
                         onBlur={(e) => handleFreightNumberBlur('min', e)}
                         onKeyDown={(e) => {
@@ -312,9 +314,10 @@ export function LogisticSection({
                         Freight Max Cost
                       </Label>
                       <Input
+                        key={`max-${currentSchedule.freight_cost?.type || 'none'}`}
                         type="text"
                         inputMode="decimal"
-                        value={currentSchedule.freight_cost?.max ? formatNumber(currentSchedule.freight_cost.max) : ""}
+                        defaultValue={currentSchedule.freight_cost?.max ? formatNumber(currentSchedule.freight_cost.max) : ""}
                         onChange={(e) => handleFreightNumberChange('max', e.target.value)}
                         onBlur={(e) => handleFreightNumberBlur('max', e)}
                         onKeyDown={(e) => {
