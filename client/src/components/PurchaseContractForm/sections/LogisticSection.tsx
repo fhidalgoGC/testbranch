@@ -205,9 +205,9 @@ export function LogisticSection({
                   // Reset freight_cost fields based on selected type
                   let freightCost = {
                     type: value as any,
-                    cost: undefined,
-                    min: undefined,
-                    max: undefined
+                    cost: 0,
+                    min: 0,
+                    max: 0
                   };
                   
                   // Clear measurement unit fields when type is 'none'
@@ -355,8 +355,8 @@ export function LogisticSection({
                     
                     updatedSchedule[0] = { 
                       ...updatedSchedule[0], 
-                      freight_cost_measurement_unit_id: selectedOption?.key || '',
-                      freight_cost_measurement_unit: value
+                      freight_cost_measurement_unit_id: value,
+                      freight_cost_measurement_unit: selectedOption?.key || ''
                     };
                     setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
                   }}
