@@ -39,6 +39,8 @@ export interface LogisticSchedule {
   logistic_payment_responsability: 'buyer' | 'seller' | 'other';
   logistic_coordination_responsability: 'buyer' | 'seller' | 'other';
   freight_cost: FreightCost;
+  freight_cost_measurement_unit_id?: string;
+  freight_cost_measurement_unit?: string;
   payment_currency: 'usd' | 'mxn';
 }
 

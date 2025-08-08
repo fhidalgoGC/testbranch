@@ -17,6 +17,15 @@ const FREIGHT_COST_TYPE_OPTIONS = [
   { key: 'variable', value: 'variable', label: 'Variable' }
 ];
 
+// Standardized data structure for measurement units
+const MEASUREMENT_UNIT_OPTIONS = [
+  { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
+  { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
+  { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
+  { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
+  { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
+];
+
 interface LogisticSectionProps {
   addLogisticSchedule: () => void;
   removeLogisticSchedule: (index: number) => void;
@@ -256,6 +265,44 @@ export function LogisticSection({
               </Select>
               {errors.logistic_schedule?.[0]?.freight_cost?.type && (
                 <p className="text-sm text-red-600 dark:text-red-400">{typeof errors.logistic_schedule[0].freight_cost.type === 'object' ? (errors.logistic_schedule[0].freight_cost.type as any).message : String(errors.logistic_schedule[0].freight_cost.type)}</p>
+              )}
+            </div>
+
+            {/* Freight Cost Measurement Unit */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                {t('measurementUnit')}
+              </Label>
+              <Select
+                value={currentSchedule.freight_cost_measurement_unit || ''}
+                onValueChange={(value) => {
+                  const currentLogisticSchedule = watch('logistic_schedule') || [{}];
+                  const updatedSchedule = [...currentLogisticSchedule];
+                  
+                  // Find the selected option to get both ID and value
+                  const selectedOption = MEASUREMENT_UNIT_OPTIONS.find(option => option.value === value);
+                  
+                  updatedSchedule[0] = { 
+                    ...updatedSchedule[0], 
+                    freight_cost_measurement_unit_id: selectedOption?.key || '',
+                    freight_cost_measurement_unit: value
+                  };
+                  setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
+                }}
+              >
+                <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost_measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                  <SelectValue placeholder="Select measurement unit" />
+                </SelectTrigger>
+                <SelectContent>
+                  {MEASUREMENT_UNIT_OPTIONS.map((option) => (
+                    <SelectItem key={option.key} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.logistic_schedule?.[0]?.freight_cost_measurement_unit && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].freight_cost_measurement_unit.message}</p>
               )}
             </div>
           </div>

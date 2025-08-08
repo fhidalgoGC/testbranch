@@ -127,6 +127,8 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
             max: z.number().min(0, t('positiveNumber')).default(0),
             cost: z.number().min(0, t('positiveNumber')).default(0),
           }),
+          freight_cost_measurement_unit_id: z.string().optional(),
+          freight_cost_measurement_unit: z.string().optional(),
           payment_currency: z.string().min(1, t('fieldRequired')).refine(
             (val) => ['usd', 'mxn'].includes(val),
             t('fieldRequired')

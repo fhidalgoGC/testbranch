@@ -56,6 +56,8 @@ export function usePurchaseContractForm() {
           max: 0,
           cost: 0,
         },
+        freight_cost_measurement_unit_id: '',
+        freight_cost_measurement_unit: '',
         payment_currency: APP_CONFIG.defaultCurrency as any,
       }],
       shipping_start_date: new Date().toISOString().split('T')[0],
@@ -146,6 +148,8 @@ export function usePurchaseContractForm() {
         max: 0,
         cost: 0,
       },
+      freight_cost_measurement_unit_id: '',
+      freight_cost_measurement_unit: '',
       payment_currency: APP_CONFIG.defaultCurrency as any,
     };
     form.setValue('logistic_schedule', [...currentSchedule, newSchedule], { shouldValidate: true });
