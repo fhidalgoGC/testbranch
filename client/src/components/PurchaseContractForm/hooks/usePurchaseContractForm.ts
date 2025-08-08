@@ -17,7 +17,7 @@ export function usePurchaseContractForm() {
 
   const form = useForm<PurchaseContractFormData>({
     resolver,
-    mode: 'onChange', // Validate and update state on every change
+    mode: 'onSubmit', // Validate only on submit, but always update state on every change
     defaultValues: {
       folio: '',
       type: 'purchase',
@@ -88,13 +88,13 @@ export function usePurchaseContractForm() {
       name: '',
       role: 'buyer',
     };
-    form.setValue('participants', [...currentParticipants, newParticipant], { shouldValidate: true });
+    form.setValue('participants', [...currentParticipants, newParticipant]);
   };
 
   const removeParticipant = (index: number) => {
     const currentParticipants = form.getValues('participants');
     const updatedParticipants = currentParticipants.filter((_, i) => i !== index);
-    form.setValue('participants', updatedParticipants, { shouldValidate: true });
+    form.setValue('participants', updatedParticipants);
   };
 
   const updateParticipant = (index: number, field: keyof Participant, value: string) => {
@@ -102,7 +102,7 @@ export function usePurchaseContractForm() {
     const updatedParticipants = currentParticipants.map((participant, i) =>
       i === index ? { ...participant, [field]: value } : participant
     );
-    form.setValue('participants', updatedParticipants, { shouldValidate: true });
+    form.setValue('participants', updatedParticipants);
   };
 
   // Price Schedule management
@@ -119,13 +119,13 @@ export function usePurchaseContractForm() {
       payment_currency: APP_CONFIG.defaultCurrency as any,
       exchange: '',
     };
-    form.setValue('price_schedule', [...currentSchedule, newSchedule], { shouldValidate: true });
+    form.setValue('price_schedule', [...currentSchedule, newSchedule]);
   };
 
   const removePriceSchedule = (index: number) => {
     const currentSchedule = form.getValues('price_schedule');
     const updatedSchedule = currentSchedule.filter((_, i) => i !== index);
-    form.setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+    form.setValue('price_schedule', updatedSchedule);
   };
 
   const updatePriceSchedule = (index: number, field: keyof PriceSchedule, value: any) => {
@@ -133,7 +133,7 @@ export function usePurchaseContractForm() {
     const updatedSchedule = currentSchedule.map((schedule, i) =>
       i === index ? { ...schedule, [field]: value } : schedule
     );
-    form.setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+    form.setValue('price_schedule', updatedSchedule);
   };
 
   // Logistic Schedule management
@@ -152,13 +152,13 @@ export function usePurchaseContractForm() {
       freight_cost_measurement_unit: '',
       payment_currency: APP_CONFIG.defaultCurrency as any,
     };
-    form.setValue('logistic_schedule', [...currentSchedule, newSchedule], { shouldValidate: true });
+    form.setValue('logistic_schedule', [...currentSchedule, newSchedule]);
   };
 
   const removeLogisticSchedule = (index: number) => {
     const currentSchedule = form.getValues('logistic_schedule');
     const updatedSchedule = currentSchedule.filter((_, i) => i !== index);
-    form.setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
+    form.setValue('logistic_schedule', updatedSchedule);
   };
 
   const updateLogisticSchedule = (index: number, field: string, value: any) => {
@@ -179,19 +179,19 @@ export function usePurchaseContractForm() {
       }
       return schedule;
     });
-    form.setValue('logistic_schedule', updatedSchedule, { shouldValidate: true });
+    form.setValue('logistic_schedule', updatedSchedule);
   };
 
   // Remarks management
   const addRemark = () => {
     const currentRemarks = form.getValues('remarks');
-    form.setValue('remarks', [...currentRemarks, ''], { shouldValidate: true });
+    form.setValue('remarks', [...currentRemarks, '']);
   };
 
   const removeRemark = (index: number) => {
     const currentRemarks = form.getValues('remarks');
     const updatedRemarks = currentRemarks.filter((_, i) => i !== index);
-    form.setValue('remarks', updatedRemarks, { shouldValidate: true });
+    form.setValue('remarks', updatedRemarks);
   };
 
   const updateRemark = (index: number, value: string) => {
@@ -199,7 +199,7 @@ export function usePurchaseContractForm() {
     const updatedRemarks = currentRemarks.map((remark, i) =>
       i === index ? value : remark
     );
-    form.setValue('remarks', updatedRemarks, { shouldValidate: true });
+    form.setValue('remarks', updatedRemarks);
   };
 
   // Generate final JSON

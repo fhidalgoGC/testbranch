@@ -59,12 +59,12 @@ export function ShipmentSection() {
     clearErrors(['shipping_start_date', 'shipping_end_date']);
     
     // Always set the selected start date
-    setValue('shipping_start_date', date, { shouldValidate: true });
+    setValue('shipping_start_date', date);
     
     const endDate = watch('shipping_end_date');
     // If start date is greater than existing end date, clear start date and show error
     if (endDate && date > endDate) {
-      setValue('shipping_start_date', '', { shouldValidate: true });
+      setValue('shipping_start_date', '');
       setDateValidationError(t('startDateAfterEndDate'));
       setError('shipping_start_date', {
         type: 'custom',
@@ -79,12 +79,12 @@ export function ShipmentSection() {
     clearErrors(['shipping_start_date', 'shipping_end_date']);
     
     // Always set the selected end date
-    setValue('shipping_end_date', date, { shouldValidate: true });
+    setValue('shipping_end_date', date);
     
     const startDate = watch('shipping_start_date');
     // If end date is less than existing start date, clear start date and show error
     if (startDate && date < startDate) {
-      setValue('shipping_start_date', '', { shouldValidate: true });
+      setValue('shipping_start_date', '');
       setDateValidationError(t('endDateBeforeStartDate'));
       setError('shipping_start_date', {
         type: 'custom',
@@ -218,7 +218,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('application_priority')?.toString() || ''}
-              onValueChange={(value) => setValue('application_priority', parseInt(value), { shouldValidate: true })}
+              onValueChange={(value) => setValue('application_priority', parseInt(value))}
             >
               <SelectTrigger className={`h-10 ${errors.application_priority ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select priority" />
@@ -246,7 +246,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('delivered')}
-              onValueChange={(value) => setValue('delivered', value, { shouldValidate: true })}
+              onValueChange={(value) => setValue('delivered', value)}
             >
               <SelectTrigger className={`h-10 ${errors.delivered ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select delivery terms" />
@@ -273,7 +273,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('transport')}
-              onValueChange={(value) => setValue('transport', value, { shouldValidate: true })}
+              onValueChange={(value) => setValue('transport', value)}
             >
               <SelectTrigger className={`h-10 ${errors.transport ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select transport" />
@@ -297,7 +297,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('weights')}
-              onValueChange={(value) => setValue('weights', value, { shouldValidate: true })}
+              onValueChange={(value) => setValue('weights', value)}
             >
               <SelectTrigger className={`h-10 ${errors.weights ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select weights" />
@@ -324,7 +324,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('inspections')}
-              onValueChange={(value) => setValue('inspections', value, { shouldValidate: true })}
+              onValueChange={(value) => setValue('inspections', value)}
             >
               <SelectTrigger className={`h-10 ${errors.inspections ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select inspections" />
@@ -348,7 +348,7 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('proteins')}
-              onValueChange={(value) => setValue('proteins', value, { shouldValidate: true })}
+              onValueChange={(value) => setValue('proteins', value)}
             >
               <SelectTrigger className={`h-10 ${errors.proteins ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select proteins" />

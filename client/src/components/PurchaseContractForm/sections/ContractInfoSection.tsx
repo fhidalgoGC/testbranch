@@ -131,14 +131,14 @@ export function ContractInfoSection() {
       // Truncate to 4 decimals (round down)
       const truncated = parts[0] + '.' + parts[1].substring(0, 4);
       const numericValue = parseFloat(truncated);
-      setValue(field, numericValue, { shouldValidate: true });
+      setValue(field, numericValue);
       return;
     }
     
     // Allow empty string or valid number format
     if (inputValue === '' || /^\d*\.?\d*$/.test(inputValue)) {
       const numericValue = inputValue === '' ? 0 : parseFloat(inputValue);
-      setValue(field, numericValue, { shouldValidate: true });
+      setValue(field, numericValue);
     }
   };
 
@@ -168,7 +168,7 @@ export function ContractInfoSection() {
         numericValue = 0;
       }
       
-      setValue(field, numericValue, { shouldValidate: true });
+      setValue(field, numericValue);
     }
   };
 
@@ -187,7 +187,7 @@ export function ContractInfoSection() {
     });
     
     e.target.value = formatted;
-    setValue(field, value, { shouldValidate: true });
+    setValue(field, value);
   };
 
   // Helper function to format number on blur
@@ -208,7 +208,7 @@ export function ContractInfoSection() {
     });
     
     e.target.value = formatted;
-    setValue(field, value, { shouldValidate: true });
+    setValue(field, value);
   };
 
   return (
@@ -230,7 +230,7 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('sub_type')}
-                onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight', { shouldValidate: true })}
+                onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight')}
               >
                 <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectSubType')} />
@@ -251,7 +251,7 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('grade')?.toString() || ''}
-                onValueChange={(value) => setValue('grade', parseInt(value), { shouldValidate: true })}
+                onValueChange={(value) => setValue('grade', parseInt(value))}
               >
                 <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder="Select grade" />
@@ -289,7 +289,7 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('commodity_id')}
-                onValueChange={(value) => setValue('commodity_id', value, { shouldValidate: true })}
+                onValueChange={(value) => setValue('commodity_id', value)}
               >
                 <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectCommodity')} />
@@ -310,7 +310,7 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('characteristics_configuration_id')}
-                onValueChange={(value) => setValue('characteristics_configuration_id', value, { shouldValidate: true })}
+                onValueChange={(value) => setValue('characteristics_configuration_id', value)}
               >
                 <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectConfiguration')} />
@@ -349,7 +349,7 @@ export function ContractInfoSection() {
               <DatePicker
                 id="contract_date"
                 value={watch('contract_date')}
-                onChange={(date) => setValue('contract_date', date, { shouldValidate: true })}
+                onChange={(date) => setValue('contract_date', date)}
                 placeholder={t('contractDate')}
                 error={!!errors.contract_date}
               />
@@ -362,7 +362,7 @@ export function ContractInfoSection() {
               <SellerSelectionModal
                 selectedSeller={watch('seller')}
                 onSelect={(seller) => {
-                  setValue('seller', seller.id, { shouldValidate: true });
+                  setValue('seller', seller.id);
                   console.log('Seller selected:', seller);
                 }}
                 error={!!errors.seller}
@@ -508,7 +508,7 @@ export function ContractInfoSection() {
                   </Label>
                   <Select
                     value={watch('measurement_unit')}
-                    onValueChange={(value) => setValue('measurement_unit', value, { shouldValidate: true })}
+                    onValueChange={(value) => setValue('measurement_unit', value)}
                   >
                     <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                       <SelectValue placeholder={t('selectMeasurementUnit')} />

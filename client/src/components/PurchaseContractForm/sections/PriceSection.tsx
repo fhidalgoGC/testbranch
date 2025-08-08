@@ -91,7 +91,7 @@ export function PriceSection({
     }
     
     updatedSchedule[0] = currentItem;
-    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+    setValue('price_schedule', updatedSchedule);
   };
 
   // Helper function to format number on blur using environment configuration and apply business logic
@@ -108,7 +108,7 @@ export function PriceSection({
       (currentItem as any)[field] = null;
       
       updatedSchedule[0] = currentItem;
-      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+      setValue('price_schedule', updatedSchedule);
       return;
     }
     
@@ -136,7 +136,7 @@ export function PriceSection({
       }
       
       updatedSchedule[0] = currentItem;
-      setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+      setValue('price_schedule', updatedSchedule);
     }
   };
 
@@ -186,7 +186,7 @@ export function PriceSection({
                   }
                   
                   updatedSchedule[0] = currentItem;
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  setValue('price_schedule', updatedSchedule);
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.pricing_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -231,7 +231,7 @@ export function PriceSection({
                     currentItem.basis = -currentBasis;
                     
                     updatedSchedule[0] = currentItem;
-                    setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                    setValue('price_schedule', updatedSchedule);
                   }}
                 >
                   {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
@@ -424,7 +424,7 @@ export function PriceSection({
 
                         
                         updatedSchedule[0] = currentItem;
-                        setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                        setValue('price_schedule', updatedSchedule);
                       }}
                     >
                       {(currentSchedule.basis || 0) >= 0 ? '+' : '-'}
@@ -611,7 +611,7 @@ export function PriceSection({
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], option_month: value };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  setValue('price_schedule', updatedSchedule);
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_month ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -638,7 +638,7 @@ export function PriceSection({
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], option_year: parseInt(value) };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  setValue('price_schedule', updatedSchedule);
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -679,7 +679,7 @@ export function PriceSection({
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'usd' | 'mxn' };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  setValue('price_schedule', updatedSchedule);
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -706,7 +706,7 @@ export function PriceSection({
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], exchange: value };
-                  setValue('price_schedule', updatedSchedule, { shouldValidate: true });
+                  setValue('price_schedule', updatedSchedule);
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.exchange ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
