@@ -28,6 +28,7 @@ const OVERRIDE_CONFIG: {
   thousandsSeparator?: string;
   decimalSeparator?: string;
   decimalPlaces?: number;
+  minDecimalPlaces?: number;
 } = {
   // Auth0
   // auth0Url: 'https://custom-auth0.com/oauth/token',
@@ -113,6 +114,7 @@ export const NUMBER_FORMAT_CONFIG = {
   thousandsSeparator: getEnvValue(OVERRIDE_CONFIG.thousandsSeparator, 'VITE_THOUSANDS_SEPARATOR', ','),
   decimalSeparator: getEnvValue(OVERRIDE_CONFIG.decimalSeparator, 'VITE_DECIMAL_SEPARATOR', '.'),
   decimalPlaces: getEnvValue(OVERRIDE_CONFIG.decimalPlaces, 'VITE_DECIMAL_PLACES', 4),
+  minDecimalPlaces: getEnvValue(OVERRIDE_CONFIG.minDecimalPlaces, 'VITE_MIN_DECIMAL_PLACES', 2),
 } as const;
 
 // Supported currencies
@@ -131,28 +133,49 @@ if (!SUPPORTED_CURRENCIES.includes(APP_CONFIG.defaultCurrency as SupportedCurren
 }
 
 /**
- * Format a number according to the configured format settings
+ * Format a number according to the configured format settings with intelligent decimal handling
  * @param value - The number to format
- * @param decimals - Optional decimal places override
+ * @param maxDecimals - Optional max decimal places override
+ * @param minDecimals - Optional min decimal places override
  * @returns Formatted number string
  */
-export const formatNumber = (value: number | undefined | null, decimals?: number): string => {
+export const formatNumber = (value: number | undefined | null, maxDecimals?: number, minDecimals?: number): string => {
   if (value === undefined || value === null || value === 0) return '';
   
-  const decimalPlaces = decimals ?? NUMBER_FORMAT_CONFIG.decimalPlaces;
+  const maxDecimalPlaces = maxDecimals ?? NUMBER_FORMAT_CONFIG.decimalPlaces;
+  const minDecimalPlaces = minDecimals ?? NUMBER_FORMAT_CONFIG.minDecimalPlaces;
   const { thousandsSeparator, decimalSeparator } = NUMBER_FORMAT_CONFIG;
   
-  // Convert to fixed decimal places
-  const fixedValue = value.toFixed(decimalPlaces);
+  // First, truncate to max decimal places (don't round, truncate)
+  const factor = Math.pow(10, maxDecimalPlaces);
+  const truncatedValue = Math.floor(value * factor) / factor;
   
-  // Split integer and decimal parts
-  const [integerPart, decimalPart] = fixedValue.split('.');
+  // Convert to string to count actual decimal places
+  const valueStr = truncatedValue.toString();
+  const [integerPart, decimalPart = ''] = valueStr.split('.');
+  
+  // Determine how many decimal places to show
+  let finalDecimalPlaces;
+  if (decimalPart.length < minDecimalPlaces) {
+    // If less than minimum, pad to minimum
+    finalDecimalPlaces = minDecimalPlaces;
+  } else if (decimalPart.length > maxDecimalPlaces) {
+    // If more than maximum, truncate to maximum
+    finalDecimalPlaces = maxDecimalPlaces;
+  } else {
+    // If between min and max, keep actual decimal places
+    finalDecimalPlaces = decimalPart.length;
+  }
+  
+  // Format with the determined decimal places
+  const fixedValue = truncatedValue.toFixed(finalDecimalPlaces);
+  const [formattedInteger, formattedDecimal] = fixedValue.split('.');
   
   // Add thousands separator to integer part
-  const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+  const integerWithSeparator = formattedInteger.replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
   
   // Combine with configured decimal separator
-  return decimalPart ? `${formattedInteger}${decimalSeparator}${decimalPart}` : formattedInteger;
+  return formattedDecimal ? `${integerWithSeparator}${decimalSeparator}${formattedDecimal}` : integerWithSeparator;
 };
 
 /**
