@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -121,12 +121,24 @@ export function ShipmentSection() {
             <Label htmlFor="shipping_start_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('shippingStartDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
-            <DatePicker
-              id="shipping_start_date"
-              value={watch('shipping_start_date')}
-              onChange={handleStartDateChange}
-              placeholder={t('shippingStartDate')}
-              error={!!errors.shipping_start_date}
+            <Controller
+              name="shipping_start_date"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  id="shipping_start_date"
+                  value={field.value}
+                  onChange={(date) => {
+                    field.onChange(date);
+                    // Also trigger end date validation if start date changes
+                    if (watch('shipping_end_date') && date && new Date(date) > new Date(watch('shipping_end_date'))) {
+                      setValue('shipping_end_date', date);
+                    }
+                  }}
+                  placeholder={t('shippingStartDate')}
+                  error={!!errors.shipping_start_date}
+                />
+              )}
             />
             {errors.shipping_start_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_start_date.message}</p>
@@ -137,12 +149,20 @@ export function ShipmentSection() {
             <Label htmlFor="shipping_end_date" className="text-sm font-medium text-gray-900 dark:text-white">
               {t('shippingEndDate')} <span className="text-red-500">{t('requiredField')}</span>
             </Label>
-            <DatePicker
-              id="shipping_end_date"
-              value={watch('shipping_end_date')}
-              onChange={handleEndDateChange}
-              placeholder={t('shippingEndDate')}
-              error={!!errors.shipping_end_date}
+            <Controller
+              name="shipping_end_date"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  id="shipping_end_date"
+                  value={field.value}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                  placeholder={t('shippingEndDate')}
+                  error={!!errors.shipping_end_date}
+                />
+              )}
             />
             {errors.shipping_end_date && (
               <p className="text-sm text-red-600 dark:text-red-400">{errors.shipping_end_date.message}</p>

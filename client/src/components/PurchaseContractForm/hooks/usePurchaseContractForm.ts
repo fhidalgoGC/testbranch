@@ -17,7 +17,7 @@ export function usePurchaseContractForm() {
 
   const form = useForm<PurchaseContractFormData>({
     resolver,
-    mode: 'onSubmit', // Only validate on submit, not immediately
+    mode: 'onChange', // Validate and update state on every change
     defaultValues: {
       folio: '',
       type: 'purchase',

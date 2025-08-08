@@ -429,23 +429,75 @@ export function ContractInfoSection() {
                   <Label htmlFor="quantity_subsection" className="text-sm font-medium text-gray-900 dark:text-white">
                     {t('quantity')} <span className="text-red-500">{t('requiredField')}</span>
                   </Label>
-                  <Input
-                    id="quantity_subsection"
-                    type="text"
-                    inputMode="decimal"
-                    defaultValue={formatNumber(watch('quantity'))}
-                    onChange={(e) => handleNumberChange('quantity', e.target.value)}
-                    onBlur={(e) => handleNumberBlur('quantity', e)}
-                    onKeyDown={(e) => {
-                      const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                      if (!allowedKeys.includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                    className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                    placeholder="1,000.00"
-                    style={{
-                      MozAppearance: 'textfield'
+                  <Controller
+                    name="quantity"
+                    control={control}
+                    render={({ field }) => {
+                      const [displayValue, setDisplayValue] = React.useState(() => {
+                        return field.value ? field.value.toString() : '';
+                      });
+                      
+                      const [isFocused, setIsFocused] = React.useState(false);
+
+                      // Update display value when field value changes externally
+                      React.useEffect(() => {
+                        if (!isFocused) {
+                          if (field.value) {
+                            setDisplayValue(formatNumber(field.value));
+                          } else {
+                            setDisplayValue('');
+                          }
+                        }
+                      }, [field.value, isFocused]);
+
+                      return (
+                        <Input
+                          id="quantity_subsection"
+                          type="text"
+                          inputMode="decimal"
+                          value={displayValue}
+                          onFocus={() => {
+                            setIsFocused(true);
+                            // Show raw number when focused for easier editing
+                            if (field.value) {
+                              setDisplayValue(field.value.toString());
+                            }
+                          }}
+                          onBlur={() => {
+                            setIsFocused(false);
+                            if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
+                              const numericValue = parseFloat(displayValue.replace(/,/g, ''));
+                              field.onChange(numericValue);
+                              setDisplayValue(formatNumber(numericValue));
+                            }
+                          }}
+                          onChange={(e) => {
+                            const inputValue = e.target.value;
+                            setDisplayValue(inputValue);
+                            
+                            if (inputValue === '') {
+                              field.onChange(undefined);
+                              return;
+                            }
+                            
+                            const numericValue = parseFloat(inputValue.replace(/,/g, ''));
+                            if (!isNaN(numericValue)) {
+                              field.onChange(numericValue);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className={`h-10 ${errors.quantity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                          placeholder="1,000.00"
+                          style={{
+                            MozAppearance: 'textfield'
+                          }}
+                        />
+                      );
                     }}
                   />
                 </div>
@@ -497,23 +549,76 @@ export function ContractInfoSection() {
                   </Label>
                   <div className="flex items-center gap-3">
                     <div className="w-[100px]">
-                      <Input
-                        id="min_thresholds_percentage"
-                        type="text"
-                        inputMode="decimal"
-                        defaultValue={watch('min_thresholds_percentage') ? watch('min_thresholds_percentage').toFixed(2) : ''}
-                        onChange={(e) => handleThresholdChange('min_thresholds_percentage', e.target.value)}
-                        onBlur={(e) => handleThresholdBlur('min_thresholds_percentage', e)}
-                        onKeyDown={(e) => {
-                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                          if (!allowedKeys.includes(e.key)) {
-                            e.preventDefault();
-                          }
-                        }}
-                        className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder="0.00"
-                        style={{
-                          MozAppearance: 'textfield'
+                      <Controller
+                        name="min_thresholds_percentage"
+                        control={control}
+                        render={({ field }) => {
+                          const [displayValue, setDisplayValue] = React.useState(() => {
+                            return field.value ? field.value.toString() : '';
+                          });
+                          
+                          const [isFocused, setIsFocused] = React.useState(false);
+
+                          // Update display value when field value changes externally
+                          React.useEffect(() => {
+                            if (!isFocused) {
+                              if (field.value !== undefined && field.value !== null) {
+                                setDisplayValue(field.value.toFixed(2));
+                              } else {
+                                setDisplayValue('');
+                              }
+                            }
+                          }, [field.value, isFocused]);
+
+                          return (
+                            <Input
+                              id="min_thresholds_percentage"
+                              type="text"
+                              inputMode="decimal"
+                              value={displayValue}
+                              onFocus={() => {
+                                setIsFocused(true);
+                                // Show raw number when focused for easier editing
+                                if (field.value !== undefined && field.value !== null) {
+                                  setDisplayValue(field.value.toString());
+                                }
+                              }}
+                              onBlur={() => {
+                                setIsFocused(false);
+                                if (displayValue && !isNaN(parseFloat(displayValue))) {
+                                  const numericValue = Math.max(0, Math.min(100, parseFloat(displayValue)));
+                                  field.onChange(numericValue);
+                                  setDisplayValue(numericValue.toFixed(2));
+                                }
+                              }}
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+                                setDisplayValue(inputValue);
+                                
+                                if (inputValue === '') {
+                                  field.onChange(0);
+                                  return;
+                                }
+                                
+                                const numericValue = parseFloat(inputValue);
+                                if (!isNaN(numericValue)) {
+                                  const clampedValue = Math.max(0, Math.min(100, numericValue));
+                                  field.onChange(clampedValue);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                                if (!allowedKeys.includes(e.key)) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                              placeholder="0.00"
+                              style={{
+                                MozAppearance: 'textfield'
+                              }}
+                            />
+                          );
                         }}
                       />
                     </div>
@@ -552,23 +657,76 @@ export function ContractInfoSection() {
                   </Label>
                   <div className="flex items-center gap-3">
                     <div className="w-[100px]">
-                      <Input
-                        id="max_thresholds_percentage"
-                        type="text"
-                        inputMode="decimal"
-                        defaultValue={watch('max_thresholds_percentage') ? watch('max_thresholds_percentage').toFixed(2) : ''}
-                        onChange={(e) => handleThresholdChange('max_thresholds_percentage', e.target.value)}
-                        onBlur={(e) => handleThresholdBlur('max_thresholds_percentage', e)}
-                        onKeyDown={(e) => {
-                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                          if (!allowedKeys.includes(e.key)) {
-                            e.preventDefault();
-                          }
-                        }}
-                        className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder="100.00"
-                        style={{
-                          MozAppearance: 'textfield'
+                      <Controller
+                        name="max_thresholds_percentage"
+                        control={control}
+                        render={({ field }) => {
+                          const [displayValue, setDisplayValue] = React.useState(() => {
+                            return field.value ? field.value.toString() : '';
+                          });
+                          
+                          const [isFocused, setIsFocused] = React.useState(false);
+
+                          // Update display value when field value changes externally
+                          React.useEffect(() => {
+                            if (!isFocused) {
+                              if (field.value !== undefined && field.value !== null) {
+                                setDisplayValue(field.value.toFixed(2));
+                              } else {
+                                setDisplayValue('');
+                              }
+                            }
+                          }, [field.value, isFocused]);
+
+                          return (
+                            <Input
+                              id="max_thresholds_percentage"
+                              type="text"
+                              inputMode="decimal"
+                              value={displayValue}
+                              onFocus={() => {
+                                setIsFocused(true);
+                                // Show raw number when focused for easier editing
+                                if (field.value !== undefined && field.value !== null) {
+                                  setDisplayValue(field.value.toString());
+                                }
+                              }}
+                              onBlur={() => {
+                                setIsFocused(false);
+                                if (displayValue && !isNaN(parseFloat(displayValue))) {
+                                  const numericValue = Math.max(0, Math.min(100, parseFloat(displayValue)));
+                                  field.onChange(numericValue);
+                                  setDisplayValue(numericValue.toFixed(2));
+                                }
+                              }}
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+                                setDisplayValue(inputValue);
+                                
+                                if (inputValue === '') {
+                                  field.onChange(0);
+                                  return;
+                                }
+                                
+                                const numericValue = parseFloat(inputValue);
+                                if (!isNaN(numericValue)) {
+                                  const clampedValue = Math.max(0, Math.min(100, numericValue));
+                                  field.onChange(clampedValue);
+                                }
+                              }}
+                              onKeyDown={(e) => {
+                                const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                                if (!allowedKeys.includes(e.key)) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                              placeholder="100.00"
+                              style={{
+                                MozAppearance: 'textfield'
+                              }}
+                            />
+                          );
                         }}
                       />
                     </div>
