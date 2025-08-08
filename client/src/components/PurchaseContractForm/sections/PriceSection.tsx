@@ -243,7 +243,8 @@ export function PriceSection({
                   render={({ field }) => {
                     const [displayValue, setDisplayValue] = React.useState(() => {
                       if (field.value !== null && field.value !== undefined && field.value !== 0) {
-                        return Math.abs(field.value).toString();
+                        const absValue = Math.abs(field.value);
+                        return formatNumber(absValue);
                       }
                       return '';
                     });
@@ -254,7 +255,9 @@ export function PriceSection({
                     React.useEffect(() => {
                       if (!isFocused) {
                         if (field.value !== null && field.value !== undefined && field.value !== 0) {
-                          setDisplayValue(Math.abs(field.value).toString());
+                          const absValue = Math.abs(field.value);
+                          const formatted = formatNumber(absValue);
+                          setDisplayValue(formatted);
                         } else {
                           setDisplayValue('');
                         }
@@ -274,7 +277,10 @@ export function PriceSection({
                             const numericValue = parseFloat(displayValue);
                             const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
                             field.onChange(numericValue * sign);
-                            setDisplayValue(numericValue.toString());
+                            
+                            // Format the display value with proper thousands separators and decimals
+                            const formatted = formatNumber(numericValue);
+                            setDisplayValue(formatted);
                           }
                         }}
                         onChange={(e) => {
@@ -286,7 +292,9 @@ export function PriceSection({
                             return;
                           }
                           
-                          const numericValue = parseFloat(inputValue);
+                          // Remove commas before parsing
+                          const cleanValue = inputValue.replace(/,/g, '');
+                          const numericValue = parseFloat(cleanValue);
                           if (!isNaN(numericValue)) {
                             const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
                             field.onChange(numericValue * sign);
