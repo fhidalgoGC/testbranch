@@ -414,7 +414,6 @@ export function usePurchaseContractForm() {
       weights: formData.weights,
       inspections: formData.inspections,
       proteins: formData.proteins,
-      purchase_orders: [],
       thresholds: {
         min_thresholds_percentage: formData.min_thresholds_percentage,
         min_thresholds_weight: minThresholdWeight,
