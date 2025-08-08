@@ -234,26 +234,59 @@ export function PriceSection({
                 <Controller
                   name="price_schedule.0.basis"
                   control={control}
-                  render={({ field }) => (
-                    <Input
-                      key={`basis-${currentSchedule.pricing_type || 'fixed'}`}
-                      type="text"
-                      inputMode="decimal"
-                      value={field.value !== null && field.value !== undefined && field.value !== 0 ? Math.abs(field.value).toString() : ''}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        if (inputValue === '') {
-                          field.onChange(0);
-                          return;
+                  render={({ field }) => {
+                    const [displayValue, setDisplayValue] = React.useState(() => {
+                      if (field.value !== null && field.value !== undefined && field.value !== 0) {
+                        return Math.abs(field.value).toString();
+                      }
+                      return '';
+                    });
+                    
+                    const [isFocused, setIsFocused] = React.useState(false);
+
+                    // Update display value when field value changes externally
+                    React.useEffect(() => {
+                      if (!isFocused) {
+                        if (field.value !== null && field.value !== undefined && field.value !== 0) {
+                          setDisplayValue(Math.abs(field.value).toString());
+                        } else {
+                          setDisplayValue('');
                         }
-                        const numericValue = parseFloat(inputValue.replace(/,/g, ''));
-                        if (!isNaN(numericValue)) {
-                          // Apply sign based on button state
-                          const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
-                          field.onChange(numericValue * sign);
-                        }
-                      }}
-                      onKeyDown={(e) => {
+                      }
+                    }, [field.value, isFocused]);
+
+                    return (
+                      <Input
+                        key={`basis-${currentSchedule.pricing_type || 'fixed'}`}
+                        type="text"
+                        inputMode="decimal"
+                        value={displayValue}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => {
+                          setIsFocused(false);
+                          if (displayValue && !isNaN(parseFloat(displayValue))) {
+                            const numericValue = parseFloat(displayValue);
+                            const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
+                            field.onChange(numericValue * sign);
+                            setDisplayValue(numericValue.toString());
+                          }
+                        }}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          setDisplayValue(inputValue);
+                          
+                          if (inputValue === '') {
+                            field.onChange(0);
+                            return;
+                          }
+                          
+                          const numericValue = parseFloat(inputValue);
+                          if (!isNaN(numericValue)) {
+                            const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
+                            field.onChange(numericValue * sign);
+                          }
+                        }}
+                        onKeyDown={(e) => {
                         const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                         if (!allowedKeys.includes(e.key)) {
                           e.preventDefault();
@@ -265,7 +298,8 @@ export function PriceSection({
                         MozAppearance: 'textfield'
                       }}
                     />
-                  )}
+                    );
+                  }}
                 />
               </div>
               {/* Basis Error */}
@@ -284,29 +318,71 @@ export function PriceSection({
                 <Controller
                   name="price_schedule.0.price"
                   control={control}
-                  render={({ field }) => (
-                    <Input
-                      key={`price-${currentSchedule.pricing_type || 'fixed'}`}
-                      type="text"
-                      inputMode="decimal"
-                      value={field.value ? field.value.toString() : ''}
-                      onChange={(e) => {
-                        const inputValue = e.target.value;
-                        if (inputValue === '') {
-                          field.onChange(0);
-                          return;
+                  render={({ field }) => {
+                    const [displayValue, setDisplayValue] = React.useState(() => {
+                      return field.value ? field.value.toString() : '';
+                    });
+                    
+                    const [isFocused, setIsFocused] = React.useState(false);
+
+                    // Update display value when field value changes externally
+                    React.useEffect(() => {
+                      if (!isFocused) {
+                        if (field.value) {
+                          setDisplayValue(formatNumber(field.value));
+                        } else {
+                          setDisplayValue('');
                         }
-                        const numericValue = parseFloat(inputValue.replace(/,/g, ''));
-                        if (!isNaN(numericValue)) {
-                          field.onChange(numericValue);
-                          // Auto-calculate future_price for fixed type
-                          if (currentSchedule.pricing_type === 'fixed') {
-                            const basis = currentSchedule.basis || 0;
-                            setValue('price_schedule.0.future_price', numericValue - basis);
+                      }
+                    }, [field.value, isFocused]);
+
+                    return (
+                      <Input
+                        key={`price-${currentSchedule.pricing_type || 'fixed'}`}
+                        type="text"
+                        inputMode="decimal"
+                        value={displayValue}
+                        onFocus={() => {
+                          setIsFocused(true);
+                          // Show raw number when focused for easier editing
+                          if (field.value) {
+                            setDisplayValue(field.value.toString());
                           }
-                        }
-                      }}
-                      onKeyDown={(e) => {
+                        }}
+                        onBlur={() => {
+                          setIsFocused(false);
+                          if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
+                            const numericValue = parseFloat(displayValue.replace(/,/g, ''));
+                            field.onChange(numericValue);
+                            setDisplayValue(formatNumber(numericValue));
+                            
+                            // Auto-calculate future_price for fixed type
+                            if (currentSchedule.pricing_type === 'fixed') {
+                              const basis = currentSchedule.basis || 0;
+                              setValue('price_schedule.0.future_price', numericValue - basis);
+                            }
+                          }
+                        }}
+                        onChange={(e) => {
+                          const inputValue = e.target.value;
+                          setDisplayValue(inputValue);
+                          
+                          if (inputValue === '') {
+                            field.onChange(0);
+                            return;
+                          }
+                          
+                          const numericValue = parseFloat(inputValue.replace(/,/g, ''));
+                          if (!isNaN(numericValue)) {
+                            field.onChange(numericValue);
+                            // Auto-calculate future_price for fixed type
+                            if (currentSchedule.pricing_type === 'fixed') {
+                              const basis = currentSchedule.basis || 0;
+                              setValue('price_schedule.0.future_price', numericValue - basis);
+                            }
+                          }
+                        }}
+                        onKeyDown={(e) => {
                         const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
                         if (!allowedKeys.includes(e.key)) {
                           e.preventDefault();
@@ -318,7 +394,8 @@ export function PriceSection({
                         MozAppearance: 'textfield'
                       }}
                     />
-                  )}
+                    );
+                  }}
                 />
                 {/* Price Error */}
                 {errors.price_schedule?.[0]?.price && (
