@@ -204,49 +204,58 @@ export function usePurchaseContractForm() {
 
   // Helper function to recursively remove empty string fields from objects (keep empty arrays)
   const removeEmptyFields = (obj: any): any => {
+    // Return null/undefined as-is to be filtered out at parent level
     if (obj === null || obj === undefined) {
-      return obj;
+      return null;
     }
     
     if (Array.isArray(obj)) {
-      // Keep empty arrays, but clean their contents
-      return obj.map(item => removeEmptyFields(item)).filter(item => {
-        if (item === null || item === undefined) return false;
-        if (typeof item === 'string' && item.trim() === '') return false;
-        if (typeof item === 'object' && !Array.isArray(item) && Object.keys(item).length === 0) return false;
-        return true;
-      });
+      // Clean array contents first, then filter out null/undefined/empty
+      const cleanedArray = obj
+        .map(item => removeEmptyFields(item))
+        .filter(item => {
+          // Remove null, undefined
+          if (item === null || item === undefined) return false;
+          // Remove empty strings
+          if (typeof item === 'string' && item.trim() === '') return false;
+          // Remove empty objects (but keep empty arrays)
+          if (typeof item === 'object' && !Array.isArray(item) && Object.keys(item).length === 0) return false;
+          return true;
+        });
+      
+      return cleanedArray;
     }
     
     if (typeof obj === 'object') {
       const cleaned: any = {};
       
       for (const [key, value] of Object.entries(obj)) {
-        // Skip empty strings
-        if (typeof value === 'string' && value.trim() === '') {
-          continue;
-        }
-        
-        // Skip null or undefined values
-        if (value === null || value === undefined) {
-          continue;
-        }
-        
-        // Recursively clean nested objects/arrays
+        // Recursively clean nested objects/arrays first
         const cleanedValue = removeEmptyFields(value);
+        
+        // Skip null or undefined values (including those returned from cleaning)
+        if (cleanedValue === null || cleanedValue === undefined) {
+          continue;
+        }
+        
+        // Skip empty strings
+        if (typeof cleanedValue === 'string' && cleanedValue.trim() === '') {
+          continue;
+        }
         
         // Skip empty objects (but keep empty arrays)
         if (typeof cleanedValue === 'object' && !Array.isArray(cleanedValue) && Object.keys(cleanedValue).length === 0) {
           continue;
         }
         
-        // Keep empty arrays - don't skip them
+        // Keep the cleaned value
         cleaned[key] = cleanedValue;
       }
       
       return cleaned;
     }
     
+    // For primitive values, return as-is (strings, numbers, booleans)
     return obj;
   };
 
