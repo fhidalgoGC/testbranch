@@ -202,6 +202,57 @@ export function usePurchaseContractForm() {
     form.setValue('remarks', updatedRemarks);
   };
 
+  // Helper function to recursively remove empty fields from objects
+  const removeEmptyFields = (obj: any): any => {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => removeEmptyFields(item)).filter(item => {
+        if (item === null || item === undefined) return false;
+        if (typeof item === 'string' && item.trim() === '') return false;
+        if (typeof item === 'object' && Object.keys(item).length === 0) return false;
+        return true;
+      });
+    }
+    
+    if (typeof obj === 'object') {
+      const cleaned: any = {};
+      
+      for (const [key, value] of Object.entries(obj)) {
+        // Skip empty strings
+        if (typeof value === 'string' && value.trim() === '') {
+          continue;
+        }
+        
+        // Skip null or undefined values
+        if (value === null || value === undefined) {
+          continue;
+        }
+        
+        // Recursively clean nested objects/arrays
+        const cleanedValue = removeEmptyFields(value);
+        
+        // Skip empty objects
+        if (typeof cleanedValue === 'object' && !Array.isArray(cleanedValue) && Object.keys(cleanedValue).length === 0) {
+          continue;
+        }
+        
+        // Skip empty arrays
+        if (Array.isArray(cleanedValue) && cleanedValue.length === 0) {
+          continue;
+        }
+        
+        cleaned[key] = cleanedValue;
+      }
+      
+      return cleaned;
+    }
+    
+    return obj;
+  };
+
   // Generate final JSON
   const generateContractJSON = (formData: PurchaseContractFormData): PurchaseContract => {
     const partitionKey = localStorage.getItem('partition_key') || '';
@@ -386,7 +437,8 @@ export function usePurchaseContractForm() {
       remarks: formData.remarks.filter(remark => remark.trim() !== ''),
     };
 
-    return contractJSON;
+    // Remove all empty fields from the final JSON
+    return removeEmptyFields(contractJSON);
   };
 
   const onSubmit = async (data: PurchaseContractFormData) => {
