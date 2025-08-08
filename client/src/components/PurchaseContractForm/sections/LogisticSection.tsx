@@ -312,7 +312,7 @@ export function LogisticSection({
                   </div>
                 )}
 
-                {/* Min and Max - Only show for 'variable' type */}
+                {/* Min and Max - Only show for 'variable' type - Both in same column */}
                 {currentSchedule.freight_cost?.type === 'variable' && (
                   <>
                     <div className="space-y-2">
