@@ -239,14 +239,14 @@ export function PriceSection({
                       key={`basis-${currentSchedule.pricing_type || 'fixed'}`}
                       type="text"
                       inputMode="decimal"
-                      value={field.value !== null && field.value !== undefined && field.value !== 0 ? formatNumber(Math.abs(field.value)) : ''}
+                      value={field.value !== null && field.value !== undefined && field.value !== 0 ? Math.abs(field.value).toString() : ''}
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         if (inputValue === '') {
-                          field.onChange(0 as number);
+                          field.onChange(0);
                           return;
                         }
-                        const numericValue = parseFormattedNumber(inputValue);
+                        const numericValue = parseFloat(inputValue.replace(/,/g, ''));
                         if (!isNaN(numericValue)) {
                           // Apply sign based on button state
                           const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
@@ -289,14 +289,14 @@ export function PriceSection({
                       key={`price-${currentSchedule.pricing_type || 'fixed'}`}
                       type="text"
                       inputMode="decimal"
-                      value={field.value ? formatNumber(field.value) : ''}
+                      value={field.value ? field.value.toString() : ''}
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         if (inputValue === '') {
                           field.onChange(0);
                           return;
                         }
-                        const numericValue = parseFormattedNumber(inputValue);
+                        const numericValue = parseFloat(inputValue.replace(/,/g, ''));
                         if (!isNaN(numericValue)) {
                           field.onChange(numericValue);
                           // Auto-calculate future_price for fixed type
