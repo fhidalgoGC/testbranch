@@ -207,8 +207,8 @@ export function PriceSection({
             )}
           </div>
 
-          {/* Price Fields - Conditional rendering based on pricing_type */}
-          {currentSchedule.pricing_type === 'basis' ? (
+          {/* Price Fields - Conditional rendering based on state value */}
+          {watchedPricingType === 'basis' ? (
             /* Basis Type: Show only Basis field with +/- button */
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">

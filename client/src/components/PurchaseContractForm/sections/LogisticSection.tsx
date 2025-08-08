@@ -43,6 +43,9 @@ export function LogisticSection({
   const logisticSchedule = watch('logistic_schedule') || [];
   const currentSchedule = logisticSchedule[0] || {};
 
+  // Watch para lógica condicional basada en state
+  const watchedFreightCostType = watch('logistic_schedule.0.freight_cost.type');
+
   // Use centralized number formatting from environment configuration
 
   // Helper function to handle number input change with environment configuration
@@ -244,13 +247,13 @@ export function LogisticSection({
             </div>
           </div>
 
-          {/* Freight Cost Fields - Conditional based on type */}
-          {currentSchedule.freight_cost?.type && currentSchedule.freight_cost?.type !== 'none' && (
+          {/* Freight Cost Fields - Conditional based on state value */}
+          {watchedFreightCostType && watchedFreightCostType !== 'none' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Left Column - Cost Fields */}
               <div className="space-y-4">
-                {/* Cost - Only show for 'fixed' type */}
-                {currentSchedule.freight_cost?.type === 'fixed' && (
+                {/* Cost - Only show for 'fixed' type based on state */}
+                {watchedFreightCostType === 'fixed' && (
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-gray-900 dark:text-white">
                       {t('freightCost')}
@@ -279,8 +282,8 @@ export function LogisticSection({
                   </div>
                 )}
 
-                {/* Min and Max - Only show for 'variable' type - Side by side horizontally */}
-                {currentSchedule.freight_cost?.type === 'variable' && (
+                {/* Min and Max - Only show for 'variable' type based on state */}
+                {watchedFreightCostType === 'variable' && (
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white">
