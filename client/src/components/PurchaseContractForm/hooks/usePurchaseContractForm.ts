@@ -434,8 +434,16 @@ export function usePurchaseContractForm() {
       remarks: formData.remarks.filter(remark => remark.trim() !== ''),
     };
 
+    // Debug: Log before cleaning
+    console.log('🔍 Contract JSON Before Cleaning:', JSON.stringify(contractJSON, null, 2));
+    
     // Remove all empty fields from the final JSON
-    return removeEmptyFields(contractJSON);
+    const cleanedJSON = removeEmptyFields(contractJSON);
+    
+    // Debug: Log after cleaning
+    console.log('✨ Contract JSON After Cleaning:', JSON.stringify(cleanedJSON, null, 2));
+    
+    return cleanedJSON;
   };
 
   const onSubmit = async (data: PurchaseContractFormData) => {
@@ -444,7 +452,7 @@ export function usePurchaseContractForm() {
       console.log('Form validation passed');
       
       const contractJSON = generateContractJSON(data);
-      console.log('Generated Contract JSON:', JSON.stringify(contractJSON, null, 2));
+      console.log('✨ Generated Contract JSON (After Cleaning):', JSON.stringify(contractJSON, null, 2));
       
       // Here you would typically send the JSON to your API
       // await createPurchaseContract(contractJSON);
