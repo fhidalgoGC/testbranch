@@ -160,7 +160,7 @@ export function PurchaseContractForm() {
             }
             
             // Create enhanced debug object with calculated thresholds and names
-            const { min_thresholds_percentage, max_thresholds_percentage, ...formValuesWithoutThresholds } = formValues;
+            const { min_thresholds_percentage, max_thresholds_percentage, seller, ...formValuesWithoutThresholds } = formValues;
             
             const debugData = {
               ...formValuesWithoutThresholds,
