@@ -205,9 +205,9 @@ export function LogisticSection({
                   // Reset freight_cost fields based on selected type
                   let freightCost = {
                     type: value as any,
-                    cost: 0,
-                    min: 0,
-                    max: 0
+                    cost: undefined,
+                    min: undefined,
+                    max: undefined
                   };
                   
                   // Clear measurement unit fields when type is 'none'
@@ -258,7 +258,7 @@ export function LogisticSection({
                     <Input
                       type="text"
                       inputMode="decimal"
-                      defaultValue={formatNumber(currentSchedule.freight_cost?.cost)}
+                      value={currentSchedule.freight_cost?.cost ? formatNumber(currentSchedule.freight_cost.cost) : ""}
                       onChange={(e) => handleFreightNumberChange('cost', e.target.value)}
                       onBlur={(e) => handleFreightNumberBlur('cost', e)}
                       onKeyDown={(e) => {
@@ -288,7 +288,7 @@ export function LogisticSection({
                       <Input
                         type="text"
                         inputMode="decimal"
-                        defaultValue={formatNumber(currentSchedule.freight_cost?.min)}
+                        value={currentSchedule.freight_cost?.min ? formatNumber(currentSchedule.freight_cost.min) : ""}
                         onChange={(e) => handleFreightNumberChange('min', e.target.value)}
                         onBlur={(e) => handleFreightNumberBlur('min', e)}
                         onKeyDown={(e) => {
@@ -314,7 +314,7 @@ export function LogisticSection({
                       <Input
                         type="text"
                         inputMode="decimal"
-                        defaultValue={formatNumber(currentSchedule.freight_cost?.max)}
+                        value={currentSchedule.freight_cost?.max ? formatNumber(currentSchedule.freight_cost.max) : ""}
                         onChange={(e) => handleFreightNumberChange('max', e.target.value)}
                         onBlur={(e) => handleFreightNumberBlur('max', e)}
                         onKeyDown={(e) => {
