@@ -133,6 +133,60 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
             (val) => ['USD', 'MXN'].includes(val),
             t('fieldRequired')
           ),
+        }).superRefine((data, ctx) => {
+          // Conditional validation based on freight_cost.type
+          if (data.freight_cost.type === 'fixed') {
+            // For fixed type: cost and measurement unit are required
+            if (data.freight_cost.cost === null || data.freight_cost.cost === undefined || data.freight_cost.cost <= 0) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['freight_cost', 'cost'],
+              });
+            }
+            
+            if (!data.freight_cost_measurement_unit || data.freight_cost_measurement_unit.trim() === '') {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['freight_cost_measurement_unit'],
+              });
+            }
+          } else if (data.freight_cost.type === 'variable') {
+            // For variable type: min_cost, max_cost, and measurement unit are required
+            if (data.freight_cost.min === null || data.freight_cost.min === undefined || data.freight_cost.min <= 0) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['freight_cost', 'min'],
+              });
+            }
+            
+            if (data.freight_cost.max === null || data.freight_cost.max === undefined || data.freight_cost.max <= 0) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['freight_cost', 'max'],
+              });
+            }
+            
+            if (!data.freight_cost_measurement_unit || data.freight_cost_measurement_unit.trim() === '') {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('fieldRequired'),
+                path: ['freight_cost_measurement_unit'],
+              });
+            }
+            
+            // Additional validation: max should be greater than min
+            if (data.freight_cost.min && data.freight_cost.max && data.freight_cost.max <= data.freight_cost.min) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: t('maxGreaterThanMin'),
+                path: ['freight_cost', 'max'],
+              });
+            }
+          }
         })
       )
       .min(1, t('minimumLogistics')),

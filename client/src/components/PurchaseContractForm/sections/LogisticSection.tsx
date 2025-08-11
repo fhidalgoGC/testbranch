@@ -224,7 +224,7 @@ export function LogisticSection({
                 {watchedFreightCostType === 'fixed' && (
                   <div className="space-y-2">
                     <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                      {t('freightCost')}
+                      {t('freightCost')} <span className="text-red-500">*</span>
                     </Label>
                     <Controller
                       name={`logistic_schedule.0.freight_cost.cost`}
@@ -232,11 +232,17 @@ export function LogisticSection({
                       render={({ field }) => (
                         <FormattedNumberInput
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(value) => {
+                            field.onChange(value);
+                            clearErrors('logistic_schedule.0.freight_cost.cost');
+                          }}
                           error={!!errors.logistic_schedule?.[0]?.freight_cost?.cost}
                         />
                       )}
                     />
+                    {errors.logistic_schedule?.[0]?.freight_cost?.cost && (
+                      <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].freight_cost.cost.message}</p>
+                    )}
                   </div>
                 )}
 
@@ -245,7 +251,7 @@ export function LogisticSection({
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                        Freight Min Cost
+                        Freight Min Cost <span className="text-red-500">*</span>
                       </Label>
                       <Controller
                         name={`logistic_schedule.0.freight_cost.min`}
@@ -253,16 +259,22 @@ export function LogisticSection({
                         render={({ field }) => (
                           <FormattedNumberInput
                             value={field.value}
-                            onChange={field.onChange}
+                            onChange={(value) => {
+                              field.onChange(value);
+                              clearErrors('logistic_schedule.0.freight_cost.min');
+                            }}
                             error={!!errors.logistic_schedule?.[0]?.freight_cost?.min}
                           />
                         )}
                       />
+                      {errors.logistic_schedule?.[0]?.freight_cost?.min && (
+                        <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].freight_cost.min.message}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
                       <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                        Freight Max Cost
+                        Freight Max Cost <span className="text-red-500">*</span>
                       </Label>
                       <Controller
                         name={`logistic_schedule.0.freight_cost.max`}
@@ -270,11 +282,17 @@ export function LogisticSection({
                         render={({ field }) => (
                           <FormattedNumberInput
                             value={field.value}
-                            onChange={field.onChange}
+                            onChange={(value) => {
+                              field.onChange(value);
+                              clearErrors('logistic_schedule.0.freight_cost.max');
+                            }}
                             error={!!errors.logistic_schedule?.[0]?.freight_cost?.max}
                           />
                         )}
                       />
+                      {errors.logistic_schedule?.[0]?.freight_cost?.max && (
+                        <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].freight_cost.max.message}</p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -283,7 +301,7 @@ export function LogisticSection({
               {/* Right Column - Measurement Unit */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  {t('measurementUnit')}
+                  {t('measurementUnit')} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={currentSchedule.freight_cost_measurement_unit_id || ''}
