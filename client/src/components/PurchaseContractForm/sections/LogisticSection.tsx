@@ -236,17 +236,11 @@ export function LogisticSection({
                         <Input
                           type="text"
                           inputMode="decimal"
-                          value={field.value ? String(field.value) : ''}
+                          value={formatFieldValue(field.value)}
                           onChange={(e) => {
-                            const value = e.target.value;
-                            // Allow any input during typing
-                            const numericValue = value === '' ? 0 : parseFloat(value.replace(/,/g, '')) || 0;
-                            field.onChange(numericValue);
-                          }}
-                          onBlur={(e) => {
-                            // Format on blur
-                            const numericValue = field.value || 0;
-                            e.target.value = formatNumber(numericValue);
+                            const rawValue = e.target.value;
+                            const numericValue = parseFieldValue(rawValue);
+                            setValue(`logistic_schedule.0.freight_cost.cost`, numericValue);
                           }}
                           onKeyDown={(e) => {
                             if (!isValidNumberInput(e.key)) {
@@ -278,15 +272,11 @@ export function LogisticSection({
                           <Input
                             type="text"
                             inputMode="decimal"
-                            value={field.value ? String(field.value) : ''}
+                            value={formatFieldValue(field.value)}
                             onChange={(e) => {
-                              const value = e.target.value;
-                              const numericValue = value === '' ? 0 : parseFloat(value.replace(/,/g, '')) || 0;
-                              field.onChange(numericValue);
-                            }}
-                            onBlur={(e) => {
-                              const numericValue = field.value || 0;
-                              e.target.value = formatNumber(numericValue);
+                              const rawValue = e.target.value;
+                              const numericValue = parseFieldValue(rawValue);
+                              setValue(`logistic_schedule.0.freight_cost.min`, numericValue);
                             }}
                             onKeyDown={(e) => {
                               if (!isValidNumberInput(e.key)) {
@@ -314,15 +304,11 @@ export function LogisticSection({
                           <Input
                             type="text"
                             inputMode="decimal"
-                            value={field.value ? String(field.value) : ''}
+                            value={formatFieldValue(field.value)}
                             onChange={(e) => {
-                              const value = e.target.value;
-                              const numericValue = value === '' ? 0 : parseFloat(value.replace(/,/g, '')) || 0;
-                              field.onChange(numericValue);
-                            }}
-                            onBlur={(e) => {
-                              const numericValue = field.value || 0;
-                              e.target.value = formatNumber(numericValue);
+                              const rawValue = e.target.value;
+                              const numericValue = parseFieldValue(rawValue);
+                              setValue(`logistic_schedule.0.freight_cost.max`, numericValue);
                             }}
                             onKeyDown={(e) => {
                               if (!isValidNumberInput(e.key)) {
