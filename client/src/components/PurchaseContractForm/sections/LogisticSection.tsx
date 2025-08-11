@@ -130,26 +130,29 @@ export function LogisticSection({
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
                 {t('paymentCurrency')} <span className="text-red-500">*</span>
               </Label>
-              <Select
-                value={currentSchedule.payment_currency || APP_CONFIG.defaultCurrency}
-                onValueChange={(value) => {
-                  const currentLogisticSchedule = watch('logistic_schedule') || [{}];
-                  const updatedSchedule = [...currentLogisticSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as any };
-                  setValue('logistic_schedule', updatedSchedule);
-                }}
-              >
-                <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CURRENCY_OPTIONS.map((currency) => (
-                    <SelectItem key={currency.key} value={currency.value}>
-                      {currency.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                name="logistic_schedule.0.payment_currency"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value || ''}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCY_OPTIONS.map((currency) => (
+                        <SelectItem key={currency.key} value={currency.value}>
+                          {currency.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {errors.logistic_schedule?.[0]?.payment_currency && (
                 <p className="text-sm text-red-600 dark:text-red-400">{errors.logistic_schedule[0].payment_currency.message}</p>
               )}

@@ -61,7 +61,7 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
           option_month: z.string().min(1, t('fieldRequired')),
           option_year: z.number({ required_error: t('fieldRequired') }).min(new Date().getFullYear(), t('validDate')),
           payment_currency: z.string().min(1, t('fieldRequired')).refine(
-            (val) => ['usd', 'mxn'].includes(val),
+            (val) => ['usd', 'eur', 'mxn', 'gtq', 'cop'].includes(val),
             t('fieldRequired')
           ),
           exchange: z.string().min(1, t('fieldRequired')),
@@ -130,7 +130,7 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
           freight_cost_measurement_unit_id: z.string().optional(),
           freight_cost_measurement_unit: z.string().optional(),
           payment_currency: z.string().min(1, t('fieldRequired')).refine(
-            (val) => ['usd', 'mxn'].includes(val),
+            (val) => ['usd', 'eur', 'mxn', 'gtq', 'cop'].includes(val),
             t('fieldRequired')
           ),
         })

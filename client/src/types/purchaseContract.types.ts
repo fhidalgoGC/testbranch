@@ -24,7 +24,7 @@ export interface PriceSchedule {
   future_price: number;
   option_month: string;
   option_year: number;
-  payment_currency: 'usd' | 'mxn';
+  payment_currency: 'usd' | 'eur' | 'mxn' | 'gtq' | 'cop';
   exchange: string;
 }
 
@@ -41,7 +41,7 @@ export interface LogisticSchedule {
   freight_cost: FreightCost;
   freight_cost_measurement_unit_id?: string;
   freight_cost_measurement_unit?: string;
-  payment_currency: 'usd' | 'mxn';
+  payment_currency: 'usd' | 'eur' | 'mxn' | 'gtq' | 'cop';
 }
 
 export interface Inventory {
