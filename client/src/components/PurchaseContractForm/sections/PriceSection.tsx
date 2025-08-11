@@ -37,7 +37,7 @@ export function PriceSection({
   updatePriceSchedule 
 }: PriceSectionProps) {
   const { t } = useTranslation();
-  const { formState: { errors }, watch, setValue, control } = useFormContext<PurchaseContractFormData>();
+  const { formState: { errors }, watch, setValue, control, clearErrors } = useFormContext<PurchaseContractFormData>();
   
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};
@@ -109,6 +109,7 @@ export function PriceSection({
                   
                   updatedSchedule[0] = currentItem;
                   setValue('price_schedule', updatedSchedule);
+                  clearErrors('price_schedule.0.pricing_type');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.pricing_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -596,6 +597,7 @@ export function PriceSection({
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], option_month: value };
                   setValue('price_schedule', updatedSchedule);
+                  clearErrors('price_schedule.0.option_month');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_month ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -623,6 +625,7 @@ export function PriceSection({
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], option_year: parseInt(value) };
                   setValue('price_schedule', updatedSchedule);
+                  clearErrors('price_schedule.0.option_year');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.option_year ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -664,6 +667,7 @@ export function PriceSection({
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'usd' | 'mxn' };
                   setValue('price_schedule', updatedSchedule);
+                  clearErrors('price_schedule.0.payment_currency');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -691,6 +695,7 @@ export function PriceSection({
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], exchange: value };
                   setValue('price_schedule', updatedSchedule);
+                  clearErrors('price_schedule.0.exchange');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.price_schedule?.[0]?.exchange ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
