@@ -55,17 +55,14 @@ export function LogisticSection({
     return parseFormattedNumber(value);
   };
 
-  // Helper function to allow only valid number characters
-  const isValidNumberChar = (key: string, currentValue: string): boolean => {
-    // Allow navigation keys
-    const navigationKeys = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
-    if (navigationKeys.includes(key)) return true;
+  // Helper function to allow only valid number characters based on state
+  const isValidNumberInput = (key: string): boolean => {
+    // Allow navigation and control keys
+    const controlKeys = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Escape'];
+    if (controlKeys.includes(key)) return true;
 
-    // Allow numbers
-    if (/[0-9]/.test(key)) return true;
-
-    // Allow decimal point (only one)
-    if (key === '.' && !currentValue.includes('.')) return true;
+    // Allow numbers and decimal point
+    if (/[0-9.]/.test(key)) return true;
 
     return false;
   };
@@ -252,7 +249,7 @@ export function LogisticSection({
                             e.target.value = formatNumber(numericValue);
                           }}
                           onKeyDown={(e) => {
-                            if (!isValidNumberChar(e.key, e.currentTarget.value)) {
+                            if (!isValidNumberInput(e.key)) {
                               e.preventDefault();
                             }
                           }}
@@ -292,7 +289,7 @@ export function LogisticSection({
                               e.target.value = formatNumber(numericValue);
                             }}
                             onKeyDown={(e) => {
-                              if (!isValidNumberChar(e.key, e.currentTarget.value)) {
+                              if (!isValidNumberInput(e.key)) {
                                 e.preventDefault();
                               }
                             }}
@@ -328,7 +325,7 @@ export function LogisticSection({
                               e.target.value = formatNumber(numericValue);
                             }}
                             onKeyDown={(e) => {
-                              if (!isValidNumberChar(e.key, e.currentTarget.value)) {
+                              if (!isValidNumberInput(e.key)) {
                                 e.preventDefault();
                               }
                             }}
