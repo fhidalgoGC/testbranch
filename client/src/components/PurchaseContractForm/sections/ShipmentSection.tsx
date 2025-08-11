@@ -218,7 +218,10 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('application_priority')?.toString() || ''}
-              onValueChange={(value) => setValue('application_priority', parseInt(value))}
+              onValueChange={(value) => {
+                setValue('application_priority', parseInt(value));
+                clearErrors('application_priority');
+              }}
             >
               <SelectTrigger className={`h-10 ${errors.application_priority ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select priority" />
@@ -246,7 +249,10 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('delivered')}
-              onValueChange={(value) => setValue('delivered', value)}
+              onValueChange={(value) => {
+                setValue('delivered', value);
+                clearErrors('delivered');
+              }}
             >
               <SelectTrigger className={`h-10 ${errors.delivered ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select delivery terms" />
