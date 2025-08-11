@@ -11,6 +11,7 @@ import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { formatNumber } from '@/lib/numberFormatter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
+import { useCommodities } from '@/hooks/useCommodities';
 
 // Fake sellers data for display
 const FAKE_SELLERS = [
@@ -75,13 +76,7 @@ const SUB_TYPE_OPTIONS = [
   { key: 'importedFreight', value: 'importedFreight', label: 'Imported Freight' }
 ];
 
-const COMMODITY_OPTIONS = [
-  { key: 'corn', value: '6839ef25edc3c27f091bdfc0', label: 'Maíz / Corn' },
-  { key: 'soybean', value: '6839ef25edc3c27f091bdfc1', label: 'Soja / Soybean' },
-  { key: 'wheat', value: '6839ef25edc3c27f091bdfc2', label: 'Trigo / Wheat' },
-  { key: 'sorghum', value: '6839ef25edc3c27f091bdfc3', label: 'Sorgo / Sorghum' },
-  { key: 'barley', value: '6839ef25edc3c27f091bdfc4', label: 'Cebada / Barley' }
-];
+// Commodities are now loaded from API via useCommodities hook
 
 const CHARACTERISTICS_CONFIG_OPTIONS = [
   { key: 'standard', value: 'config_standard', label: 'Estándar / Standard' },
@@ -96,6 +91,7 @@ const CHARACTERISTICS_CONFIG_OPTIONS = [
 export function ContractInfoSection() {
   const { t } = useTranslation();
   const { data: measurementUnits = [], isLoading: loadingUnits } = useMeasurementUnits();
+  const { commodities, loading: loadingCommodities, error: commoditiesError } = useCommodities();
   const {
     register,
     formState: { errors },
@@ -103,6 +99,13 @@ export function ContractInfoSection() {
     setValue,
     control
   } = useFormContext<PurchaseContractFormData>();
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('ContractInfoSection - Commodities loaded:', commodities);
+    console.log('ContractInfoSection - Loading state:', loadingCommodities);
+    console.log('ContractInfoSection - Error state:', commoditiesError);
+  }, [commodities, loadingCommodities, commoditiesError]);
 
 
 
@@ -184,17 +187,30 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('commodity_id')}
-                onValueChange={(value) => setValue('commodity_id', value)}
+                onValueChange={(value) => {
+                  // Find the selected commodity to get both ID and name
+                  const selectedCommodity = commodities.find(commodity => commodity.key === value);
+                  setValue('commodity_id', value);
+                  setValue('commodity_name', selectedCommodity?.label || '');
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectCommodity')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {COMMODITY_OPTIONS.map((option) => (
-                    <SelectItem key={option.key} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
+                  {loadingCommodities ? (
+                    <SelectItem value="loading" disabled>Loading commodities...</SelectItem>
+                  ) : commoditiesError ? (
+                    <SelectItem value="error" disabled>Error loading commodities</SelectItem>
+                  ) : commodities.length === 0 ? (
+                    <SelectItem value="empty" disabled>No commodities available</SelectItem>
+                  ) : (
+                    commodities.map((option) => (
+                      <SelectItem key={option.key} value={option.key}>
+                        {option.label}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
