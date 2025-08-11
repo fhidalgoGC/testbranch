@@ -45,6 +45,11 @@ export function LogisticSection({
 
   // Helper function to handle number input change with environment configuration
   const handleFreightNumberChange = (field: 'cost' | 'min' | 'max', inputValue: string) => {
+    // Handle undefined or null values
+    if (!inputValue || typeof inputValue !== 'string') {
+      inputValue = '';
+    }
+    
     const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
     
     // Allow numbers, decimal separator, and thousands separator
@@ -72,7 +77,8 @@ export function LogisticSection({
 
   // Helper function to format number on blur using environment configuration
   const handleFreightNumberBlur = (field: 'cost' | 'min' | 'max', e: React.FocusEvent<HTMLInputElement>) => {
-    const value = parseFormattedNumber(e.target.value) || 0;
+    const inputValue = e.target.value || '';
+    const value = parseFormattedNumber(inputValue) || 0;
     
     // Format using environment configuration
     const formatted = formatNumber(value);
