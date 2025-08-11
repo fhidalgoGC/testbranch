@@ -97,7 +97,8 @@ export function ContractInfoSection() {
     formState: { errors },
     watch,
     setValue,
-    control
+    control,
+    clearErrors
   } = useFormContext<PurchaseContractFormData>();
 
   // Debug logging
@@ -128,7 +129,10 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('sub_type')}
-                onValueChange={(value) => setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight')}
+                onValueChange={(value) => {
+                  setValue('sub_type', value as 'direct' | 'imported' | 'importedFreight');
+                  clearErrors('sub_type');
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.sub_type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectSubType')} />
@@ -149,7 +153,10 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('grade')?.toString() || ''}
-                onValueChange={(value) => setValue('grade', parseInt(value))}
+                onValueChange={(value) => {
+                  setValue('grade', parseInt(value));
+                  clearErrors('grade');
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.grade ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder="Select grade" />
@@ -192,6 +199,8 @@ export function ContractInfoSection() {
                   const selectedCommodity = commodities.find(commodity => commodity.key === value);
                   setValue('commodity_id', value);
                   setValue('commodity_name', selectedCommodity?.label || '');
+                  clearErrors('commodity_id');
+                  clearErrors('commodity_name');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -221,7 +230,10 @@ export function ContractInfoSection() {
               </Label>
               <Select
                 value={watch('characteristics_configuration_id')}
-                onValueChange={(value) => setValue('characteristics_configuration_id', value)}
+                onValueChange={(value) => {
+                  setValue('characteristics_configuration_id', value);
+                  clearErrors('characteristics_configuration_id');
+                }}
               >
                 <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectConfiguration')} />
@@ -274,6 +286,7 @@ export function ContractInfoSection() {
                 selectedSeller={watch('seller')}
                 onSelect={(seller) => {
                   setValue('seller', seller.id);
+                  clearErrors('seller');
                   console.log('Seller selected:', seller);
                 }}
                 error={!!errors.seller}
@@ -431,7 +444,10 @@ export function ContractInfoSection() {
                   </Label>
                   <Select
                     value={watch('measurement_unit')}
-                    onValueChange={(value) => setValue('measurement_unit', value)}
+                    onValueChange={(value) => {
+                      setValue('measurement_unit', value);
+                      clearErrors('measurement_unit');
+                    }}
                   >
                     <SelectTrigger className={`h-10 ${errors.measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                       <SelectValue placeholder={t('selectMeasurementUnit')} />
