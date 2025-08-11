@@ -12,6 +12,7 @@ import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { formatNumber } from '@/lib/numberFormatter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { useCommodities } from '@/hooks/useCommodities';
+import { useCharacteristicsConfigurations } from '@/hooks/useCharacteristicsConfigurations';
 
 // Fake sellers data for display
 const FAKE_SELLERS = [
@@ -76,15 +77,7 @@ const SUB_TYPE_OPTIONS = [
   { key: 'importedFreight', value: 'importedFreight', label: 'Imported Freight' }
 ];
 
-// Commodities are now loaded from API via useCommodities hook
-
-const CHARACTERISTICS_CONFIG_OPTIONS = [
-  { key: 'standard', value: 'config_standard', label: 'Estándar / Standard' },
-  { key: 'premium', value: 'config_premium', label: 'Premium' },
-  { key: 'organic', value: 'config_organic', label: 'Orgánico / Organic' },
-  { key: 'non_gmo', value: 'config_non_gmo', label: 'No GMO / Non-GMO' },
-  { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
-];
+// Commodities and characteristics configurations are now loaded from API via hooks
 
 // Remove static measurement units - now loaded from API
 
@@ -100,6 +93,19 @@ export function ContractInfoSection() {
     control,
     clearErrors
   } = useFormContext<PurchaseContractFormData>();
+  
+  // Watch for selected commodity to get commodity_id and subcategory_id
+  const selectedCommodityId = watch('commodity_id');
+  const selectedCommodity = commodities.find(c => c.key === selectedCommodityId);
+  
+  // Extract subcategory_id from commodity data (original_name_id.subcategory._id)
+  // The commodities hook stores the raw data in the 'data' property
+  const subcategoryId = selectedCommodity?.data?.original_name_id?.subcategory?._id;
+  
+  const { data: characteristicsConfigurations = [], isLoading: loadingConfigurations } = useCharacteristicsConfigurations({
+    commodityId: selectedCommodityId,
+    subcategoryId: subcategoryId
+  });
 
   // Debug logging
   React.useEffect(() => {
@@ -199,8 +205,11 @@ export function ContractInfoSection() {
                   const selectedCommodity = commodities.find(commodity => commodity.key === value);
                   setValue('commodity_id', value);
                   setValue('commodity_name', selectedCommodity?.label || '');
+                  // Clear characteristics configuration when commodity changes
+                  setValue('characteristics_configuration_id', '');
                   clearErrors('commodity_id');
                   clearErrors('commodity_name');
+                  clearErrors('characteristics_configuration_id');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -239,11 +248,19 @@ export function ContractInfoSection() {
                   <SelectValue placeholder={t('selectConfiguration')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {CHARACTERISTICS_CONFIG_OPTIONS.map((option) => (
-                    <SelectItem key={option.key} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
+                  {!selectedCommodityId ? (
+                    <SelectItem value="no-commodity" disabled>Selecciona un commodity primero</SelectItem>
+                  ) : loadingConfigurations ? (
+                    <SelectItem value="loading" disabled>Cargando configuraciones...</SelectItem>
+                  ) : characteristicsConfigurations.length === 0 ? (
+                    <SelectItem value="empty" disabled>No hay configuraciones disponibles</SelectItem>
+                  ) : (
+                    characteristicsConfigurations.map((option) => (
+                      <SelectItem key={option.key} value={option.key}>
+                        {option.label}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>

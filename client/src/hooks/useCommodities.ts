@@ -4,6 +4,7 @@ interface CommodityOption {
   key: string;
   value: string;
   label: string;
+  data?: any; // Store original data for subcategory access
 }
 
 interface CommodityResponse {
@@ -86,7 +87,8 @@ export const useCommodities = () => {
           .map(commodity => ({
             key: commodity._id,           // _id -> key
             value: commodity.name,        // name -> value  
-            label: commodity.name         // name -> label
+            label: commodity.name,        // name -> label
+            data: commodity               // Store original data for subcategory access
           }));
 
         console.log('Mapped commodities for UI:', mappedCommodities);
