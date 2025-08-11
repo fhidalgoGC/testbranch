@@ -43,58 +43,16 @@ export function LogisticSection({
 
   // Use centralized number formatting from environment configuration
 
-  // Helper function to handle number input change with environment configuration
-  const handleFreightNumberChange = (field: 'cost' | 'min' | 'max', inputValue: string) => {
-    // Handle undefined or null values
-    if (!inputValue || typeof inputValue !== 'string') {
-      inputValue = '';
-    }
-    
-    const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
-    
-    // Allow numbers, decimal separator, and thousands separator
-    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const validCharsPattern = new RegExp(`^[0-9${escapeRegExp(decimalSeparator)}${escapeRegExp(thousandsSeparator)}]*$`);
-    
-    if (!validCharsPattern.test(inputValue)) {
-      return; // Reject invalid characters
-    }
-    
-    // Parse the value using the environment configuration
-    const numericValue = parseFormattedNumber(inputValue) || 0;
-    
-    const currentLogisticSchedule = watch('logistic_schedule') || [{}];
-    const updatedSchedule = [...currentLogisticSchedule];
-    updatedSchedule[0] = { 
-      ...updatedSchedule[0], 
-      freight_cost: { 
-        ...updatedSchedule[0].freight_cost, 
-        [field]: numericValue 
-      }
-    };
-    setValue('logistic_schedule', updatedSchedule);
+  // Helper function to handle number formatting for display
+  const formatFieldValue = (value: number | undefined | null): string => {
+    if (!value && value !== 0) return '';
+    return formatNumber(value);
   };
 
-  // Helper function to format number on blur using environment configuration
-  const handleFreightNumberBlur = (field: 'cost' | 'min' | 'max', e: React.FocusEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value || '';
-    const value = parseFormattedNumber(inputValue) || 0;
-    
-    // Format using environment configuration
-    const formatted = formatNumber(value);
-    
-    e.target.value = formatted;
-    
-    const currentLogisticSchedule = watch('logistic_schedule') || [{}];
-    const updatedSchedule = [...currentLogisticSchedule];
-    updatedSchedule[0] = { 
-      ...updatedSchedule[0], 
-      freight_cost: { 
-        ...updatedSchedule[0].freight_cost, 
-        [field]: value 
-      }
-    };
-    setValue('logistic_schedule', updatedSchedule);
+  // Helper function to parse input value from formatted string
+  const parseFieldValue = (value: string | undefined | null): number => {
+    if (!value) return 0;
+    return parseFormattedNumber(value);
   };
 
   return (
@@ -259,26 +217,33 @@ export function LogisticSection({
                     <Label className="text-sm font-medium text-gray-900 dark:text-white">
                       {t('freightCost')}
                     </Label>
-                    <Input
-                      key={`cost-${currentSchedule.freight_cost?.type || 'none'}`}
-                      type="text"
-                      inputMode="decimal"
-                      defaultValue={currentSchedule.freight_cost?.cost ? formatNumber(currentSchedule.freight_cost.cost) : ""}
-                      onChange={(e) => handleFreightNumberChange('cost', e.target.value)}
-                      onBlur={(e) => handleFreightNumberBlur('cost', e)}
-                      onKeyDown={(e) => {
-                        // Allow numbers, decimal separator, thousands separator and navigation keys
-                        const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
-                        const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                        if (!allowedKeys.includes(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                      placeholder="0.00"
-                      style={{
-                        MozAppearance: 'textfield'
-                      }}
+                    <Controller
+                      name={`logistic_schedule.0.freight_cost.cost`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          type="text"
+                          inputMode="decimal"
+                          value={formatFieldValue(field.value)}
+                          onChange={(e) => {
+                            const numericValue = parseFieldValue(e.target.value);
+                            field.onChange(numericValue);
+                          }}
+                          onKeyDown={(e) => {
+                            // Allow numbers, decimal separator, thousands separator and navigation keys
+                            const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
+                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                            if (!allowedKeys.includes(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                          placeholder="0.00"
+                          style={{
+                            MozAppearance: 'textfield'
+                          }}
+                        />
+                      )}
                     />
                   </div>
                 )}
@@ -290,26 +255,33 @@ export function LogisticSection({
                       <Label className="text-sm font-medium text-gray-900 dark:text-white">
                         Freight Min Cost
                       </Label>
-                      <Input
-                        key={`min-${currentSchedule.freight_cost?.type || 'none'}`}
-                        type="text"
-                        inputMode="decimal"
-                        defaultValue={currentSchedule.freight_cost?.min ? formatNumber(currentSchedule.freight_cost.min) : ""}
-                        onChange={(e) => handleFreightNumberChange('min', e.target.value)}
-                        onBlur={(e) => handleFreightNumberBlur('min', e)}
-                        onKeyDown={(e) => {
-                          // Allow numbers, decimal separator, thousands separator and navigation keys
-                          const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
-                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                          if (!allowedKeys.includes(e.key)) {
-                            e.preventDefault();
-                          }
-                        }}
-                        className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder="0.00"
-                        style={{
-                          MozAppearance: 'textfield'
-                        }}
+                      <Controller
+                        name={`logistic_schedule.0.freight_cost.min`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            type="text"
+                            inputMode="decimal"
+                            value={formatFieldValue(field.value)}
+                            onChange={(e) => {
+                              const numericValue = parseFieldValue(e.target.value);
+                              field.onChange(numericValue);
+                            }}
+                            onKeyDown={(e) => {
+                              // Allow numbers, decimal separator, thousands separator and navigation keys
+                              const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
+                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                              if (!allowedKeys.includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
+                            className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                            placeholder="0.00"
+                            style={{
+                              MozAppearance: 'textfield'
+                            }}
+                          />
+                        )}
                       />
                     </div>
                     
@@ -317,26 +289,33 @@ export function LogisticSection({
                       <Label className="text-sm font-medium text-gray-900 dark:text-white">
                         Freight Max Cost
                       </Label>
-                      <Input
-                        key={`max-${currentSchedule.freight_cost?.type || 'none'}`}
-                        type="text"
-                        inputMode="decimal"
-                        defaultValue={currentSchedule.freight_cost?.max ? formatNumber(currentSchedule.freight_cost.max) : ""}
-                        onChange={(e) => handleFreightNumberChange('max', e.target.value)}
-                        onBlur={(e) => handleFreightNumberBlur('max', e)}
-                        onKeyDown={(e) => {
-                          // Allow numbers, decimal separator, thousands separator and navigation keys
-                          const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
-                          const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                          if (!allowedKeys.includes(e.key)) {
-                            e.preventDefault();
-                          }
-                        }}
-                        className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                        placeholder="0.00"
-                        style={{
-                          MozAppearance: 'textfield'
-                        }}
+                      <Controller
+                        name={`logistic_schedule.0.freight_cost.max`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            type="text"
+                            inputMode="decimal"
+                            value={formatFieldValue(field.value)}
+                            onChange={(e) => {
+                              const numericValue = parseFieldValue(e.target.value);
+                              field.onChange(numericValue);
+                            }}
+                            onKeyDown={(e) => {
+                              // Allow numbers, decimal separator, thousands separator and navigation keys
+                              const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
+                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                              if (!allowedKeys.includes(e.key)) {
+                                e.preventDefault();
+                              }
+                            }}
+                            className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                            placeholder="0.00"
+                            style={{
+                              MozAppearance: 'textfield'
+                            }}
+                          />
+                        )}
                       />
                     </div>
                   </div>
