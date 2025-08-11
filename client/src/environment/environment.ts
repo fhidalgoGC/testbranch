@@ -15,28 +15,7 @@ export const NUMBER_FORMAT_CONFIG = {
   maxDecimals: 2
 };
 
-// Import the new number formatter
-import { formatNumber as formatNumberWithPattern, parseFormattedNumber as parseFormattedNumberWithPattern } from '@/lib/numberFormatter';
 
-// Number formatting utilities using the new formatter
-export const formatNumber = (value: number | string | undefined | null): string => {
-  // Return empty string for null, undefined, empty string, or 0
-  if (value === null || value === undefined || value === '' || value === 0) {
-    return '';
-  }
-  
-  return formatNumberWithPattern({
-    minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
-    maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
-    value: value,
-    formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
-    roundMode: NUMBER_FORMAT_CONFIG.roundMode
-  });
-};
-
-export const parseFormattedNumber = (value: string | undefined | null): number => {
-  return parseFormattedNumberWithPattern(value, NUMBER_FORMAT_CONFIG.formatPattern);
-};
 
 // Currency options
 export const CURRENCY_OPTIONS = [

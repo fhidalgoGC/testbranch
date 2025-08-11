@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePicker } from '@/components/ui/datepicker';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
-import { formatNumber, parseFormattedNumber } from '@/environment/environment';
+import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
+import { formatNumber as formatNumberWithPattern, parseFormattedNumber as parseFormattedNumberWithPattern } from '@/lib/numberFormatter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 
 // Fake sellers data for display

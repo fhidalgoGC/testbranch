@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, DollarSign, X } from 'lucide-react';
 import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
-import { APP_CONFIG, CURRENCY_OPTIONS, formatNumber, parseFormattedNumber } from '@/environment/environment';
+import { APP_CONFIG, CURRENCY_OPTIONS, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
+import { formatNumber as formatNumberWithPattern, parseFormattedNumber as parseFormattedNumberWithPattern } from '@/lib/numberFormatter';
 
 // Standardized exchange options
 const EXCHANGE_OPTIONS = [
@@ -72,7 +73,7 @@ export function PriceSection({
       (currentItem as any)[field] = null;
     } else {
       // Use parseFormattedNumber to handle the input according to configured format
-      const numericValue = parseFormattedNumber(inputValue);
+      const numericValue = parseFormattedNumberWithPattern(inputValue, NUMBER_FORMAT_CONFIG.formatPattern);
       
       if (numericValue !== null) {
         // Update the field that was changed
@@ -113,9 +114,15 @@ export function PriceSection({
     }
     
     // Parse and format using environment configuration
-    const numericValue = parseFormattedNumber(inputVal);
+    const numericValue = parseFormattedNumberWithPattern(inputVal, NUMBER_FORMAT_CONFIG.formatPattern);
     if (numericValue !== null) {
-      const formatted = formatNumber(Math.abs(numericValue));
+      const formatted = formatNumberWithPattern({
+        minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+        maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+        value: Math.abs(numericValue),
+        formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+        roundMode: NUMBER_FORMAT_CONFIG.roundMode
+      });
       e.target.value = formatted;
       
       const currentPriceSchedule = watch('price_schedule') || [{}];
