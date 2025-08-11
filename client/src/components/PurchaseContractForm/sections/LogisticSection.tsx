@@ -43,17 +43,28 @@ export function LogisticSection({
 
   // Use centralized number formatting from environment configuration
 
-  // Helper function to handle number formatting for display
+  // Helper function to handle number formatting for display - shows empty for 0 or null
   const formatFieldValue = (value: number | undefined | null): string => {
-    if (!value && value !== 0) return '';
+    if (!value || value === 0) return '';
     return formatNumber(value);
   };
 
-  // Helper function to parse input value from formatted string
-  const parseFieldValue = (value: string | undefined | null): number => {
-    if (!value) return 0;
-    return parseFormattedNumber(value);
+  // Helper function to parse input value from formatted string - returns null for empty
+  const parseFieldValue = (value: string | undefined | null): number | null => {
+    if (!value || value.trim() === '') return null;
+    const parsed = parseFormattedNumber(value);
+    return parsed || null;
   };
+
+  // Effect to clear freight cost fields when type changes
+  React.useEffect(() => {
+    if (watchedFreightCostType) {
+      // Clear all freight cost values when type changes
+      setValue('logistic_schedule.0.freight_cost.cost', null);
+      setValue('logistic_schedule.0.freight_cost.min', null);
+      setValue('logistic_schedule.0.freight_cost.max', null);
+    }
+  }, [watchedFreightCostType, setValue]);
 
   // Helper function to allow only valid number characters based on state
   const isValidNumberInput = (key: string): boolean => {
