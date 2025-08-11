@@ -7,8 +7,14 @@ export const environment = {
 export const APP_CONFIG = environment;
 
 // Number formatting utilities
-export const formatNumber = (value: number | string): string => {
+export const formatNumber = (value: number | string | undefined | null): string => {
+  // Handle null, undefined, or empty values
+  if (value === null || value === undefined) {
+    return '0.00';
+  }
+  
   if (typeof value === 'string') {
+    if (value === '') return '0.00';
     const num = parseFloat(value);
     if (isNaN(num)) return '0.00';
     return num.toLocaleString('en-US', {
@@ -16,13 +22,21 @@ export const formatNumber = (value: number | string): string => {
       maximumFractionDigits: 2
     });
   }
+  
+  if (isNaN(value)) return '0.00';
+  
   return value.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 };
 
-export const parseFormattedNumber = (value: string): number => {
+export const parseFormattedNumber = (value: string | undefined | null): number => {
+  // Handle null, undefined, or empty values
+  if (!value || typeof value !== 'string') {
+    return 0;
+  }
+  
   // Remove commas and parse
   const cleaned = value.replace(/,/g, '');
   const parsed = parseFloat(cleaned);
