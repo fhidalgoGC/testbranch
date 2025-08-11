@@ -56,7 +56,9 @@ export class MeasurementUnitsService {
       const data = await response.json();
       console.log('Measurement units response:', data);
 
-      return Array.isArray(data) ? data : [];
+      // Handle response structure - could be direct array or wrapped in data property
+      const units = data.data ? data.data : (Array.isArray(data) ? data : []);
+      return units;
     } catch (error) {
       console.error('Error fetching measurement units:', error);
       return [];

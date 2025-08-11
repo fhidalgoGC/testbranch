@@ -511,7 +511,7 @@ export function ContractInfoSection() {
                     </SelectTrigger>
                     <SelectContent>
                       {loadingUnits ? (
-                        <SelectItem value="" disabled>Loading units...</SelectItem>
+                        <SelectItem value="loading" disabled>Loading units...</SelectItem>
                       ) : (
                         measurementUnits.map((option) => (
                           <SelectItem key={option.key} value={option.value}>
