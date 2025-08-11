@@ -10,6 +10,7 @@ import { Plus, Trash2, Truck } from 'lucide-react';
 import type { PurchaseContractFormData, LogisticSchedule } from '@/types/purchaseContract.types';
 import { APP_CONFIG, CURRENCY_OPTIONS, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { formatNumber } from '@/lib/numberFormatter';
+import { FormattedNumberInput } from '../components/FormattedNumberInput';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 
 // Standardized data structure for freight cost type field
@@ -222,34 +223,10 @@ export function LogisticSection({
                       name={`logistic_schedule.0.freight_cost.cost`}
                       control={control}
                       render={({ field }) => (
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                          onChange={(e) => {
-                            const inputValue = e.target.value;
-                            
-                            if (inputValue === '') {
-                              field.onChange(0);
-                              return;
-                            }
-                            
-                            const numericValue = parseFloat(inputValue.replace(/,/g, ''));
-                            if (!isNaN(numericValue)) {
-                              field.onChange(numericValue);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                            if (!allowedKeys.includes(e.key)) {
-                              e.preventDefault();
-                            }
-                          }}
-                          className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.cost ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                          placeholder="0.00"
-                          style={{
-                            MozAppearance: 'textfield'
-                          }}
+                        <FormattedNumberInput
+                          value={field.value}
+                          onChange={field.onChange}
+                          error={!!errors.logistic_schedule?.[0]?.freight_cost?.cost}
                         />
                       )}
                     />
@@ -267,34 +244,10 @@ export function LogisticSection({
                         name={`logistic_schedule.0.freight_cost.min`}
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            type="text"
-                            inputMode="decimal"
-                            value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-                              
-                              if (inputValue === '') {
-                                field.onChange(0);
-                                return;
-                              }
-                              
-                              const numericValue = parseFloat(inputValue.replace(/,/g, ''));
-                              if (!isNaN(numericValue)) {
-                                field.onChange(numericValue);
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                              if (!allowedKeys.includes(e.key)) {
-                                e.preventDefault();
-                              }
-                            }}
-                            className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.min ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                            placeholder="0.00"
-                            style={{
-                              MozAppearance: 'textfield'
-                            }}
+                          <FormattedNumberInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            error={!!errors.logistic_schedule?.[0]?.freight_cost?.min}
                           />
                         )}
                       />
@@ -308,34 +261,10 @@ export function LogisticSection({
                         name={`logistic_schedule.0.freight_cost.max`}
                         control={control}
                         render={({ field }) => (
-                          <Input
-                            type="text"
-                            inputMode="decimal"
-                            value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-                              
-                              if (inputValue === '') {
-                                field.onChange(0);
-                                return;
-                              }
-                              
-                              const numericValue = parseFloat(inputValue.replace(/,/g, ''));
-                              if (!isNaN(numericValue)) {
-                                field.onChange(numericValue);
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                              if (!allowedKeys.includes(e.key)) {
-                                e.preventDefault();
-                              }
-                            }}
-                            className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.max ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
-                            placeholder="0.00"
-                            style={{
-                              MozAppearance: 'textfield'
-                            }}
+                          <FormattedNumberInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            error={!!errors.logistic_schedule?.[0]?.freight_cost?.max}
                           />
                         )}
                       />
