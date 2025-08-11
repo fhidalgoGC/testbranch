@@ -273,7 +273,10 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('transport')}
-              onValueChange={(value) => setValue('transport', value)}
+              onValueChange={(value) => {
+                setValue('transport', value);
+                clearErrors('transport');
+              }}
             >
               <SelectTrigger className={`h-10 ${errors.transport ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select transport" />
@@ -297,7 +300,10 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('weights')}
-              onValueChange={(value) => setValue('weights', value)}
+              onValueChange={(value) => {
+                setValue('weights', value);
+                clearErrors('weights');
+              }}
             >
               <SelectTrigger className={`h-10 ${errors.weights ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select weights" />
@@ -324,7 +330,10 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('inspections')}
-              onValueChange={(value) => setValue('inspections', value)}
+              onValueChange={(value) => {
+                setValue('inspections', value);
+                clearErrors('inspections');
+              }}
             >
               <SelectTrigger className={`h-10 ${errors.inspections ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select inspections" />
@@ -348,7 +357,10 @@ export function ShipmentSection() {
             </Label>
             <Select
               value={watch('proteins')}
-              onValueChange={(value) => setValue('proteins', value)}
+              onValueChange={(value) => {
+                setValue('proteins', value);
+                clearErrors('proteins');
+              }}
             >
               <SelectTrigger className={`h-10 ${errors.proteins ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                 <SelectValue placeholder="Select proteins" />

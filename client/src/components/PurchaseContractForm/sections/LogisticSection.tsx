@@ -35,7 +35,7 @@ export function LogisticSection({
 }: LogisticSectionProps) {
   const { t } = useTranslation();
   const { data: measurementUnits = [], isLoading: loadingUnits } = useMeasurementUnits();
-  const { formState: { errors }, watch, setValue, control } = useFormContext<PurchaseContractFormData>();
+  const { formState: { errors }, watch, setValue, control, clearErrors } = useFormContext<PurchaseContractFormData>();
   
   const logisticSchedule = watch('logistic_schedule') || [];
   const currentSchedule = logisticSchedule[0] || {};
@@ -81,6 +81,7 @@ export function LogisticSection({
                   const updatedSchedule = [...currentLogisticSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], logistic_payment_responsability: value as any };
                   setValue('logistic_schedule', updatedSchedule);
+                  clearErrors('logistic_schedule.0.logistic_payment_responsability');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.logistic_payment_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -109,6 +110,7 @@ export function LogisticSection({
                   const updatedSchedule = [...currentLogisticSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], logistic_coordination_responsability: value as any };
                   setValue('logistic_schedule', updatedSchedule);
+                  clearErrors('logistic_schedule.0.logistic_coordination_responsability');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.logistic_coordination_responsability ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -138,6 +140,7 @@ export function LogisticSection({
                     value={field.value || ''}
                     onValueChange={(value) => {
                       field.onChange(value);
+                      clearErrors('logistic_schedule.0.payment_currency');
                     }}
                   >
                     <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.payment_currency ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -192,6 +195,7 @@ export function LogisticSection({
                     };
                   }
                   setValue('logistic_schedule', updatedSchedule);
+                  clearErrors('logistic_schedule.0.freight_cost.type');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost?.type ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -296,6 +300,7 @@ export function LogisticSection({
                       freight_cost_measurement_unit: selectedOption?.label || ''
                     };
                     setValue('logistic_schedule', updatedSchedule);
+                    clearErrors('logistic_schedule.0.freight_cost_measurement_unit');
                   }}
                 >
                   <SelectTrigger className={`h-10 ${errors.logistic_schedule?.[0]?.freight_cost_measurement_unit ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
