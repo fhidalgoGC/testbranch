@@ -9,6 +9,7 @@ import { DatePicker } from '@/components/ui/datepicker';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 import { formatNumber, parseFormattedNumber } from '@/environment/environment';
+import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 
 // Fake sellers data for display
 const FAKE_SELLERS = [
@@ -89,16 +90,11 @@ const CHARACTERISTICS_CONFIG_OPTIONS = [
   { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
 ];
 
-const MEASUREMENT_UNIT_OPTIONS = [
-  { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
-  { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
-  { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
-  { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
-  { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
-];
+// Remove static measurement units - now loaded from API
 
 export function ContractInfoSection() {
   const { t } = useTranslation();
+  const { data: measurementUnits = [], isLoading: loadingUnits } = useMeasurementUnits();
   const {
     register,
     formState: { errors },
@@ -514,11 +510,15 @@ export function ContractInfoSection() {
                       <SelectValue placeholder={t('selectMeasurementUnit')} />
                     </SelectTrigger>
                     <SelectContent>
-                      {MEASUREMENT_UNIT_OPTIONS.map((option) => (
-                        <SelectItem key={option.key} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
+                      {loadingUnits ? (
+                        <SelectItem value="" disabled>Loading units...</SelectItem>
+                      ) : (
+                        measurementUnits.map((option) => (
+                          <SelectItem key={option.key} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>

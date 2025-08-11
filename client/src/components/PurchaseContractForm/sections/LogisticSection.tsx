@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Truck } from 'lucide-react';
 import type { PurchaseContractFormData, LogisticSchedule } from '@/types/purchaseContract.types';
 import { APP_CONFIG, CURRENCY_OPTIONS, formatNumber, parseFormattedNumber, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
+import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 
 // Standardized data structure for freight cost type field
 const FREIGHT_COST_TYPE_OPTIONS = [
@@ -17,14 +18,7 @@ const FREIGHT_COST_TYPE_OPTIONS = [
   { key: 'variable', value: 'variable', label: 'Variable' }
 ];
 
-// Standardized data structure for measurement units
-const MEASUREMENT_UNIT_OPTIONS = [
-  { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
-  { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
-  { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
-  { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
-  { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
-];
+// Remove static measurement units - now loaded from API
 
 interface LogisticSectionProps {
   addLogisticSchedule: () => void;
@@ -38,6 +32,7 @@ export function LogisticSection({
   updateLogisticSchedule 
 }: LogisticSectionProps) {
   const { t } = useTranslation();
+  const { data: measurementUnits = [], isLoading: loadingUnits } = useMeasurementUnits();
   const { formState: { errors }, watch, setValue, control } = useFormContext<PurchaseContractFormData>();
   
   const logisticSchedule = watch('logistic_schedule') || [];
@@ -354,7 +349,7 @@ export function LogisticSection({
                     const updatedSchedule = [...currentLogisticSchedule];
                     
                     // Find the selected option to get both ID and value
-                    const selectedOption = MEASUREMENT_UNIT_OPTIONS.find(option => option.value === value);
+                    const selectedOption = measurementUnits.find(option => option.value === value);
                     
                     updatedSchedule[0] = { 
                       ...updatedSchedule[0], 
@@ -368,11 +363,15 @@ export function LogisticSection({
                     <SelectValue placeholder="Select measurement unit" />
                   </SelectTrigger>
                   <SelectContent>
-                    {MEASUREMENT_UNIT_OPTIONS.map((option) => (
-                      <SelectItem key={option.key} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
+                    {loadingUnits ? (
+                      <SelectItem value="" disabled>Loading units...</SelectItem>
+                    ) : (
+                      measurementUnits.map((option) => (
+                        <SelectItem key={option.key} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
                 {errors.logistic_schedule?.[0]?.freight_cost_measurement_unit && (
