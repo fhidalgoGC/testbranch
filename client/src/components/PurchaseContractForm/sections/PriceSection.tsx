@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2, DollarSign, X } from 'lucide-react';
 import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
 import { APP_CONFIG, CURRENCY_OPTIONS, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
-import { formatNumber as formatNumberWithPattern, parseFormattedNumber as parseFormattedNumberWithPattern } from '@/lib/numberFormatter';
+import { formatNumber } from '@/lib/numberFormatter';
 
 // Standardized exchange options
 const EXCHANGE_OPTIONS = [
@@ -166,7 +166,7 @@ export function PriceSection({
                     const [displayValue, setDisplayValue] = React.useState(() => {
                       if (field.value !== null && field.value !== undefined && field.value !== 0) {
                         const absValue = Math.abs(field.value);
-                        return formatNumberWithPattern({
+                        return formatNumber({
                           minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                           maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                           value: absValue,
@@ -184,7 +184,7 @@ export function PriceSection({
                       if (!isFocused) {
                         if (field.value !== null && field.value !== undefined && field.value !== 0) {
                           const absValue = Math.abs(field.value);
-                          const formatted = formatNumberWithPattern({
+                          const formatted = formatNumber({
                             minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                             maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                             value: absValue,
@@ -213,7 +213,7 @@ export function PriceSection({
                             field.onChange(numericValue * sign);
                             
                             // Format the display value with proper thousands separators and decimals
-                            const formatted = formatNumberWithPattern({
+                            const formatted = formatNumber({
                               minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                               maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                               value: numericValue,
@@ -283,7 +283,7 @@ export function PriceSection({
                     React.useEffect(() => {
                       if (!isFocused) {
                         if (field.value) {
-                          setDisplayValue(formatNumberWithPattern({
+                          setDisplayValue(formatNumber({
                             minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                             maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                             value: field.value,
@@ -314,7 +314,7 @@ export function PriceSection({
                           if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
                             const numericValue = parseFloat(displayValue.replace(/,/g, ''));
                             field.onChange(numericValue);
-                            setDisplayValue(formatNumberWithPattern({
+                            setDisplayValue(formatNumber({
                               minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                               maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                               value: numericValue,
@@ -407,7 +407,7 @@ export function PriceSection({
                         React.useEffect(() => {
                           if (!isFocused) {
                             if (field.value !== null && field.value !== undefined && field.value !== 0) {
-                              setDisplayValue(formatNumberWithPattern({
+                              setDisplayValue(formatNumber({
                                 minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                                 maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                                 value: Math.abs(field.value),
@@ -439,7 +439,7 @@ export function PriceSection({
                                 const numericValue = parseFloat(displayValue);
                                 const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
                                 field.onChange(numericValue * sign);
-                                setDisplayValue(formatNumberWithPattern({
+                                setDisplayValue(formatNumber({
                                   minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                                   maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                                   value: numericValue,
@@ -504,7 +504,7 @@ export function PriceSection({
                       React.useEffect(() => {
                         if (!isFocused) {
                           if (field.value) {
-                            setDisplayValue(formatNumberWithPattern({
+                            setDisplayValue(formatNumber({
                               minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                               maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                               value: field.value,
@@ -535,7 +535,7 @@ export function PriceSection({
                             if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
                               const numericValue = parseFloat(displayValue.replace(/,/g, ''));
                               field.onChange(numericValue);
-                              setDisplayValue(formatNumberWithPattern({
+                              setDisplayValue(formatNumber({
                                 minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                                 maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                                 value: numericValue,

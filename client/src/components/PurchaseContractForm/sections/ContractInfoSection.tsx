@@ -9,7 +9,7 @@ import { DatePicker } from '@/components/ui/datepicker';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
-import { formatNumber as formatNumberWithPattern, parseFormattedNumber as parseFormattedNumberWithPattern } from '@/lib/numberFormatter';
+import { formatNumber } from '@/lib/numberFormatter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 
 // Fake sellers data for display
@@ -338,7 +338,7 @@ export function ContractInfoSection() {
                       React.useEffect(() => {
                         if (!isFocused) {
                           if (field.value) {
-                            setDisplayValue(formatNumberWithPattern({
+                            setDisplayValue(formatNumber({
                               minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                               maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                               value: field.value,
@@ -369,7 +369,7 @@ export function ContractInfoSection() {
                             if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
                               const numericValue = parseFloat(displayValue.replace(/,/g, ''));
                               field.onChange(numericValue);
-                              setDisplayValue(formatNumberWithPattern({
+                              setDisplayValue(formatNumber({
                                 minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
                                 maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
                                 value: numericValue,

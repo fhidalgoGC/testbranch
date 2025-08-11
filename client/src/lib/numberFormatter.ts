@@ -6,135 +6,112 @@ export interface NumberFormatterOptions {
   roundMode: "up" | "down" | "truncate";
 }
 
+export type RoundMode = "up" | "down" | "truncate";
+export type FormatPattern = "0.000,00" | "0,000.00";
+
+export interface NumberFormatterOptions {
+  minDecimals: number;
+  maxDecimals: number;
+  value: number | string | null | undefined;
+  formatPattern: FormatPattern;
+  roundMode: RoundMode;
+}
+
 export function formatNumber({
   minDecimals,
   maxDecimals,
   value,
   formatPattern,
-  roundMode
+  roundMode,
 }: NumberFormatterOptions): string {
-  // Handle null, undefined, NaN or invalid values
-  if (value === null || value === undefined || value === "" || 
-      (typeof value === 'string' && isNaN(parseFloat(value))) ||
-      (typeof value === 'number' && isNaN(value))) {
-    // Return "0" formatted according to pattern
-    const decimalSeparator = formatPattern === "0.000,00" ? "," : ".";
-    const zeros = "0".repeat(minDecimals);
-    return minDecimals > 0 ? `0${decimalSeparator}${zeros}` : "0";
+  // Validar y convertir a número
+  let num: number;
+
+  if (
+    value === null ||
+    value === undefined ||
+    (typeof value === "string" && value.trim() === "") ||
+    (typeof value === "string" && isNaN(Number(value))) ||
+    (typeof value === "number" && isNaN(value))
+  ) {
+    num = 0;
+  } else {
+    num = typeof value === "number" ? value : Number(value);
   }
 
-  // Convert to number
-  const numValue = typeof value === 'string' ? parseFloat(value) : value;
-  const isNegative = numValue < 0;
-  const absValue = Math.abs(numValue);
+  const isNegative = num < 0;
+  let absNum = Math.abs(num);
 
-  // Determine separators from pattern
+  // Separadores según patrón
   const thousandsSeparator = formatPattern === "0.000,00" ? "." : ",";
   const decimalSeparator = formatPattern === "0.000,00" ? "," : ".";
 
-  // Convert to string with maximum precision to avoid floating point issues
-  let numStr = absValue.toFixed(20);
-  
-  // Find decimal point position
-  const decimalIndex = numStr.indexOf('.');
-  let integerPart = decimalIndex >= 0 ? numStr.substring(0, decimalIndex) : numStr;
-  let decimalPart = decimalIndex >= 0 ? numStr.substring(decimalIndex + 1) : '';
+  // Aplicar redondeo/truncado solo si excede maxDecimals
+  const factor = Math.pow(10, maxDecimals);
 
-  // Remove trailing zeros from decimal part
-  decimalPart = decimalPart.replace(/0+$/, '');
+  // Detectar cantidad decimales originales
+  const valueStr = absNum.toString();
+  const decimalPos = valueStr.indexOf(".");
+  const originalDecimals = decimalPos === -1 ? 0 : valueStr.length - decimalPos - 1;
 
-  // Apply rounding/truncating based on maxDecimals
+  if (originalDecimals > maxDecimals) {
+    switch (roundMode) {
+      case "up":
+        absNum = Math.ceil(absNum * factor) / factor;
+        break;
+      case "down":
+        absNum = Math.floor(absNum * factor) / factor;
+        break;
+      case "truncate":
+        absNum = absNum >= 0
+          ? Math.floor(absNum * factor) / factor
+          : Math.ceil(absNum * factor) / factor;
+        break;
+    }
+  }
+
+  // Convertir con maxDecimals para fijar cantidad decimales a mostrar mínimo
+  let [integerPart, decimalPart = ""] = absNum
+    .toFixed(Math.max(maxDecimals, minDecimals))
+    .split(".");
+
+  // Quitar ceros extras a la derecha para que no exceda maxDecimals
   if (decimalPart.length > maxDecimals) {
-    if (roundMode === "truncate") {
-      decimalPart = decimalPart.substring(0, maxDecimals);
-    } else {
-      // Get the digit at maxDecimals position for rounding decision
-      const nextDigit = parseInt(decimalPart.charAt(maxDecimals));
-      decimalPart = decimalPart.substring(0, maxDecimals);
-      
-      if (roundMode === "up" && nextDigit >= 5) {
-        // Round up
-        let carry = 1;
-        let newDecimal = '';
-        for (let i = decimalPart.length - 1; i >= 0; i--) {
-          const digit = parseInt(decimalPart.charAt(i)) + carry;
-          if (digit >= 10) {
-            newDecimal = '0' + newDecimal;
-            carry = 1;
-          } else {
-            newDecimal = digit.toString() + newDecimal;
-            carry = 0;
-            newDecimal = decimalPart.substring(0, i) + newDecimal;
-            break;
-          }
-        }
-        
-        if (carry === 1) {
-          // Need to carry to integer part
-          const intVal = parseInt(integerPart) + 1;
-          integerPart = intVal.toString();
-          decimalPart = '0'.repeat(maxDecimals);
-        } else {
-          decimalPart = newDecimal;
-        }
-      } else if (roundMode === "down" && nextDigit >= 5) {
-        // For "down", we don't round up even if nextDigit >= 5
-        // Just truncate (already done above)
-      }
+    decimalPart = decimalPart.substring(0, maxDecimals);
+  }
+
+  // Rellenar con ceros si es menos que minDecimals
+  if (decimalPart.length < minDecimals) {
+    decimalPart = decimalPart.padEnd(minDecimals, "0");
+  }
+
+  // Insertar separadores de miles en entero
+  let intWithThousands = "";
+  for (let i = integerPart.length - 1, count = 1; i >= 0; i--, count++) {
+    intWithThousands = integerPart[i] + intWithThousands;
+    if (count % 3 === 0 && i !== 0) {
+      intWithThousands = thousandsSeparator + intWithThousands;
     }
   }
 
-  // Pad with zeros if needed for minDecimals
-  while (decimalPart.length < minDecimals) {
-    decimalPart += '0';
-  }
+  // Construir resultado
+  let result = intWithThousands;
 
-  // Add thousands separators to integer part
-  let formattedInteger = '';
-  const intReversed = integerPart.split('').reverse();
-  
-  for (let i = 0; i < intReversed.length; i++) {
-    if (i > 0 && i % 3 === 0) {
-      formattedInteger = thousandsSeparator + formattedInteger;
-    }
-    formattedInteger = intReversed[i] + formattedInteger;
-  }
-
-  // Combine parts
-  let result = formattedInteger;
-  if (decimalPart.length > 0) {
+  // Añadir parte decimal si corresponde
+  if (minDecimals > 0 || decimalPart.length > 0) {
     result += decimalSeparator + decimalPart;
   }
 
-  // Add negative sign if needed
-  if (isNegative) {
-    result = '-' + result;
+  // Signo negativo si aplica
+  if (isNegative && num !== 0) {
+    result = "-" + result;
   }
-
+  console.log(minDecimals,
+    maxDecimals,
+    value,
+    formatPattern,
+    roundMode,result)
   return result;
 }
 
-export function parseFormattedNumber(
-  formattedValue: string | null | undefined,
-  formatPattern: "0.000,00" | "0,000.00"
-): number {
-  if (!formattedValue || typeof formattedValue !== 'string') {
-    return 0;
-  }
 
-  // Determine separators from pattern
-  const thousandsSeparator = formatPattern === "0.000,00" ? "." : ",";
-  const decimalSeparator = formatPattern === "0.000,00" ? "," : ".";
-
-  // Remove thousands separators
-  let cleanValue = formattedValue.replace(new RegExp(`\\${thousandsSeparator}`, 'g'), '');
-  
-  // Replace decimal separator with standard dot
-  if (decimalSeparator !== '.') {
-    cleanValue = cleanValue.replace(decimalSeparator, '.');
-  }
-
-  // Parse as float
-  const parsed = parseFloat(cleanValue);
-  return isNaN(parsed) ? 0 : parsed;
-}

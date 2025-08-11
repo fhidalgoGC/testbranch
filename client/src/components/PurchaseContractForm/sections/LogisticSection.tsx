@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Truck } from 'lucide-react';
 import type { PurchaseContractFormData, LogisticSchedule } from '@/types/purchaseContract.types';
 import { APP_CONFIG, CURRENCY_OPTIONS, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
-import { formatNumber as formatNumberWithPattern, parseFormattedNumber as parseFormattedNumberWithPattern } from '@/lib/numberFormatter';
+import { formatNumber } from '@/lib/numberFormatter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 
 // Standardized data structure for freight cost type field
@@ -47,7 +47,7 @@ export function LogisticSection({
   // Helper function to handle number formatting for display - shows empty for 0 or null
   const formatFieldValue = (value: number | undefined | null): string => {
     if (!value || value === 0) return '';
-    return formatNumberWithPattern({
+    return formatNumber({
       minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
       maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
       value: value,
@@ -59,7 +59,7 @@ export function LogisticSection({
   // Helper function to parse input value from formatted string - returns null for empty
   const parseFieldValue = (value: string | undefined | null): number | null => {
     if (!value || value.trim() === '') return null;
-    const parsed = parseFormattedNumberWithPattern(value, NUMBER_FORMAT_CONFIG.formatPattern);
+    const parsed = parseFloat(value.replace(/,/g, ''));
     return parsed || null;
   };
 

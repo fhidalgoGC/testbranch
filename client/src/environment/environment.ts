@@ -13,7 +13,7 @@ export const NUMBER_FORMAT_CONFIG = {
   formatPattern: "0,000.00" as const,
   roundMode: "up" as const,
   minDecimals: 2,
-  maxDecimals: 2
+  maxDecimals: 4
 };
 
 
