@@ -2,7 +2,7 @@ export const environment = {
   API_LIMIT: 100,
   CRM_BASE_URL: 'https://crm-develop.grainchain.io/api/v1',
   UNIT_CONVERSIONS_ENDPOINT: '/unit-conversions/units',
-  defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || 'usd'
+  defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || 'USD'
 };
 
 export const APP_CONFIG = environment;
@@ -20,11 +20,8 @@ export const NUMBER_FORMAT_CONFIG = {
 
 // Currency options
 export const CURRENCY_OPTIONS = [
-  { key: 'usd', value: 'usd', label: 'USD - US Dollar' },
-  { key: 'eur', value: 'eur', label: 'EUR - Euro' },
-  { key: 'mxn', value: 'mxn', label: 'MXN - Mexican Peso' },
-  { key: 'gtq', value: 'gtq', label: 'GTQ - Guatemalan Quetzal' },
-  { key: 'cop', value: 'cop', label: 'COP - Colombian Peso' }
+  { key: 'usd', value: 'USD', label: 'USD' },
+  { key: 'mxn', value: 'MXN', label: 'MXN' }
 ];
 
 // Pricing type options

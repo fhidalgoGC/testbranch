@@ -44,7 +44,7 @@ export function usePurchaseContractForm() {
         future_price: 0,
         option_month: '',
         option_year: new Date().getFullYear(),
-        payment_currency: APP_CONFIG.defaultCurrency as any,
+        payment_currency: APP_CONFIG.defaultCurrency as 'USD' | 'MXN',
         exchange: '',
       }],
       logistic_schedule: [{
@@ -58,7 +58,7 @@ export function usePurchaseContractForm() {
         },
         freight_cost_measurement_unit_id: '',
         freight_cost_measurement_unit: '',
-        payment_currency: APP_CONFIG.defaultCurrency as any,
+        payment_currency: APP_CONFIG.defaultCurrency as 'USD' | 'MXN',
       }],
       shipping_start_date: new Date().toISOString().split('T')[0],
       shipping_end_date: new Date().toISOString().split('T')[0],
