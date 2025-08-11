@@ -440,7 +440,13 @@ export function ContractInfoSection() {
                       React.useEffect(() => {
                         if (!isFocused) {
                           if (field.value) {
-                            setDisplayValue(formatNumber(field.value));
+                            setDisplayValue(formatNumberWithPattern({
+                              minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                              maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                              value: field.value,
+                              formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                              roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                            }));
                           } else {
                             setDisplayValue('');
                           }
@@ -465,7 +471,13 @@ export function ContractInfoSection() {
                             if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
                               const numericValue = parseFloat(displayValue.replace(/,/g, ''));
                               field.onChange(numericValue);
-                              setDisplayValue(formatNumber(numericValue));
+                              setDisplayValue(formatNumberWithPattern({
+                                minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                                maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                                value: numericValue,
+                                formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                                roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                              }));
                             }
                           }}
                           onChange={(e) => {

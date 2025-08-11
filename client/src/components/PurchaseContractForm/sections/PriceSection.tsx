@@ -251,7 +251,13 @@ export function PriceSection({
                     const [displayValue, setDisplayValue] = React.useState(() => {
                       if (field.value !== null && field.value !== undefined && field.value !== 0) {
                         const absValue = Math.abs(field.value);
-                        return formatNumber(absValue);
+                        return formatNumberWithPattern({
+                          minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                          maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                          value: absValue,
+                          formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                          roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                        });
                       }
                       return '';
                     });
@@ -263,7 +269,13 @@ export function PriceSection({
                       if (!isFocused) {
                         if (field.value !== null && field.value !== undefined && field.value !== 0) {
                           const absValue = Math.abs(field.value);
-                          const formatted = formatNumber(absValue);
+                          const formatted = formatNumberWithPattern({
+                            minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                            maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                            value: absValue,
+                            formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                            roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                          });
                           setDisplayValue(formatted);
                         } else {
                           setDisplayValue('');
@@ -286,7 +298,13 @@ export function PriceSection({
                             field.onChange(numericValue * sign);
                             
                             // Format the display value with proper thousands separators and decimals
-                            const formatted = formatNumber(numericValue);
+                            const formatted = formatNumberWithPattern({
+                              minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                              maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                              value: numericValue,
+                              formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                              roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                            });
                             setDisplayValue(formatted);
                           }
                         }}
@@ -350,7 +368,13 @@ export function PriceSection({
                     React.useEffect(() => {
                       if (!isFocused) {
                         if (field.value) {
-                          setDisplayValue(formatNumber(field.value));
+                          setDisplayValue(formatNumberWithPattern({
+                            minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                            maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                            value: field.value,
+                            formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                            roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                          }));
                         } else {
                           setDisplayValue('');
                         }
@@ -375,7 +399,13 @@ export function PriceSection({
                           if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
                             const numericValue = parseFloat(displayValue.replace(/,/g, ''));
                             field.onChange(numericValue);
-                            setDisplayValue(formatNumber(numericValue));
+                            setDisplayValue(formatNumberWithPattern({
+                              minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                              maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                              value: numericValue,
+                              formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                              roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                            }));
                           }
                         }}
                         onChange={(e) => {
@@ -462,7 +492,13 @@ export function PriceSection({
                         React.useEffect(() => {
                           if (!isFocused) {
                             if (field.value !== null && field.value !== undefined && field.value !== 0) {
-                              setDisplayValue(formatNumber(Math.abs(field.value)));
+                              setDisplayValue(formatNumberWithPattern({
+                                minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                                maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                                value: Math.abs(field.value),
+                                formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                                roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                              }));
                             } else {
                               setDisplayValue('');
                             }
@@ -488,7 +524,13 @@ export function PriceSection({
                                 const numericValue = parseFloat(displayValue);
                                 const sign = (currentSchedule.basis || 0) >= 0 ? 1 : -1;
                                 field.onChange(numericValue * sign);
-                                setDisplayValue(formatNumber(numericValue));
+                                setDisplayValue(formatNumberWithPattern({
+                                  minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                                  maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                                  value: numericValue,
+                                  formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                                  roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                                }));
                               }
                             }}
                             onChange={(e) => {
@@ -547,7 +589,13 @@ export function PriceSection({
                       React.useEffect(() => {
                         if (!isFocused) {
                           if (field.value) {
-                            setDisplayValue(formatNumber(field.value));
+                            setDisplayValue(formatNumberWithPattern({
+                              minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                              maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                              value: field.value,
+                              formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                              roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                            }));
                           } else {
                             setDisplayValue('');
                           }
@@ -572,7 +620,13 @@ export function PriceSection({
                             if (displayValue && !isNaN(parseFloat(displayValue.replace(/,/g, '')))) {
                               const numericValue = parseFloat(displayValue.replace(/,/g, ''));
                               field.onChange(numericValue);
-                              setDisplayValue(formatNumber(numericValue));
+                              setDisplayValue(formatNumberWithPattern({
+                                minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+                                maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+                                value: numericValue,
+                                formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+                                roundMode: NUMBER_FORMAT_CONFIG.roundMode
+                              }));
                             }
                           }}
                           onChange={(e) => {

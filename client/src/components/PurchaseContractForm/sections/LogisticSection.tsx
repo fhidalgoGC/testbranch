@@ -67,9 +67,9 @@ export function LogisticSection({
   React.useEffect(() => {
     if (watchedFreightCostType) {
       // Clear all freight cost values when type changes
-      setValue('logistic_schedule.0.freight_cost.cost', null);
-      setValue('logistic_schedule.0.freight_cost.min', null);
-      setValue('logistic_schedule.0.freight_cost.max', null);
+      setValue('logistic_schedule.0.freight_cost.cost', 0);
+      setValue('logistic_schedule.0.freight_cost.min', 0);
+      setValue('logistic_schedule.0.freight_cost.max', 0);
     }
   }, [watchedFreightCostType, setValue]);
 
@@ -258,7 +258,7 @@ export function LogisticSection({
                           onChange={(e) => {
                             const rawValue = e.target.value;
                             const numericValue = parseFieldValue(rawValue);
-                            setValue(`logistic_schedule.0.freight_cost.cost`, numericValue);
+                            setValue(`logistic_schedule.0.freight_cost.cost`, numericValue || 0);
                           }}
                           onKeyDown={(e) => {
                             if (!isValidNumberInput(e.key)) {
@@ -294,7 +294,7 @@ export function LogisticSection({
                             onChange={(e) => {
                               const rawValue = e.target.value;
                               const numericValue = parseFieldValue(rawValue);
-                              setValue(`logistic_schedule.0.freight_cost.min`, numericValue);
+                              setValue(`logistic_schedule.0.freight_cost.min`, numericValue || 0);
                             }}
                             onKeyDown={(e) => {
                               if (!isValidNumberInput(e.key)) {
@@ -326,7 +326,7 @@ export function LogisticSection({
                             onChange={(e) => {
                               const rawValue = e.target.value;
                               const numericValue = parseFieldValue(rawValue);
-                              setValue(`logistic_schedule.0.freight_cost.max`, numericValue);
+                              setValue(`logistic_schedule.0.freight_cost.max`, numericValue || 0);
                             }}
                             onKeyDown={(e) => {
                               if (!isValidNumberInput(e.key)) {
