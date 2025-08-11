@@ -260,6 +260,14 @@ export function LogisticSection({
                           <FormattedNumberInput
                             value={field.value}
                             onChange={(value) => {
+                              const currentMax = watch('logistic_schedule.0.freight_cost.max');
+                              
+                              // If min is greater than max, clear min
+                              if (currentMax && value > currentMax) {
+                                field.onChange(0);
+                                return;
+                              }
+                              
                               field.onChange(value);
                               clearErrors('logistic_schedule.0.freight_cost.min');
                             }}
@@ -283,6 +291,14 @@ export function LogisticSection({
                           <FormattedNumberInput
                             value={field.value}
                             onChange={(value) => {
+                              const currentMin = watch('logistic_schedule.0.freight_cost.min');
+                              
+                              // If max is less than min, clear max
+                              if (currentMin && value < currentMin) {
+                                field.onChange(0);
+                                return;
+                              }
+                              
                               field.onChange(value);
                               clearErrors('logistic_schedule.0.freight_cost.max');
                             }}
