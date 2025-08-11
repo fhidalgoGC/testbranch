@@ -12,43 +12,34 @@ export const NUMBER_FORMAT_CONFIG = {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
   decimalSeparator: '.',
-  thousandsSeparator: ','
+  thousandsSeparator: ',',
+  formatPattern: "0,000.00" as const,
+  roundMode: "up" as const,
+  minDecimals: 2,
+  maxDecimals: 2
 };
 
-// Number formatting utilities - updated to handle empty values correctly
+// Import the new number formatter
+import { formatNumber as formatNumberWithPattern, parseFormattedNumber as parseFormattedNumberWithPattern } from '@/lib/numberFormatter';
+
+// Number formatting utilities using the new formatter
 export const formatNumber = (value: number | string | undefined | null): string => {
   // Return empty string for null, undefined, empty string, or 0
   if (value === null || value === undefined || value === '' || value === 0) {
     return '';
   }
   
-  if (typeof value === 'string') {
-    const num = parseFloat(value);
-    if (isNaN(num) || num === 0) return '';
-    return num.toLocaleString(NUMBER_FORMAT_CONFIG.locale, {
-      minimumFractionDigits: NUMBER_FORMAT_CONFIG.minimumFractionDigits,
-      maximumFractionDigits: NUMBER_FORMAT_CONFIG.maximumFractionDigits
-    });
-  }
-  
-  if (isNaN(value) || value === 0) return '';
-  
-  return value.toLocaleString(NUMBER_FORMAT_CONFIG.locale, {
-    minimumFractionDigits: NUMBER_FORMAT_CONFIG.minimumFractionDigits,
-    maximumFractionDigits: NUMBER_FORMAT_CONFIG.maximumFractionDigits
+  return formatNumberWithPattern({
+    minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+    maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+    value: value,
+    formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+    roundMode: NUMBER_FORMAT_CONFIG.roundMode
   });
 };
 
 export const parseFormattedNumber = (value: string | undefined | null): number => {
-  // Handle null, undefined, or empty values
-  if (!value || typeof value !== 'string' || value.trim() === '') {
-    return 0;
-  }
-  
-  // Remove thousands separators and parse
-  const cleaned = value.replace(new RegExp(`\\${NUMBER_FORMAT_CONFIG.thousandsSeparator}`, 'g'), '');
-  const parsed = parseFloat(cleaned);
-  return isNaN(parsed) ? 0 : parsed;
+  return parseFormattedNumberWithPattern(value, NUMBER_FORMAT_CONFIG.formatPattern);
 };
 
 // Currency options
