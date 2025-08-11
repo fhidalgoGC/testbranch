@@ -9,10 +9,6 @@ export const APP_CONFIG = environment;
 // Number format configuration
 export const NUMBER_FORMAT_CONFIG = {
   locale: 'en-US',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-  decimalSeparator: '.',
-  thousandsSeparator: ',',
   formatPattern: "0,000.00" as const,
   roundMode: "up" as const,
   minDecimals: 2,
