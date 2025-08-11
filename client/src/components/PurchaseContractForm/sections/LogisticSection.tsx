@@ -44,25 +44,6 @@ export function LogisticSection({
 
   // Use centralized number formatting from environment configuration
 
-  // Helper function to handle number formatting for display - shows empty for 0 or null
-  const formatFieldValue = (value: number | undefined | null): string => {
-    if (!value || value === 0) return '';
-    return formatNumber({
-      minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
-      maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
-      value: value,
-      formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
-      roundMode: NUMBER_FORMAT_CONFIG.roundMode
-    });
-  };
-
-  // Helper function to parse input value from formatted string - returns null for empty
-  const parseFieldValue = (value: string | undefined | null): number | null => {
-    if (!value || value.trim() === '') return null;
-    const parsed = parseFloat(value.replace(/,/g, ''));
-    return parsed || null;
-  };
-
   // Effect to clear freight cost fields when type changes
   React.useEffect(() => {
     if (watchedFreightCostType) {
@@ -73,17 +54,7 @@ export function LogisticSection({
     }
   }, [watchedFreightCostType, setValue]);
 
-  // Helper function to allow only valid number characters based on state
-  const isValidNumberInput = (key: string): boolean => {
-    // Allow navigation and control keys
-    const controlKeys = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'Escape'];
-    if (controlKeys.includes(key)) return true;
 
-    // Allow numbers and decimal point
-    if (/[0-9.]/.test(key)) return true;
-
-    return false;
-  };
 
   return (
     <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
@@ -254,14 +225,23 @@ export function LogisticSection({
                         <Input
                           type="text"
                           inputMode="decimal"
-                          value={formatFieldValue(field.value)}
+                          value={field.value && field.value !== 0 ? field.value.toString() : ''}
                           onChange={(e) => {
-                            const rawValue = e.target.value;
-                            const numericValue = parseFieldValue(rawValue);
-                            setValue(`logistic_schedule.0.freight_cost.cost`, numericValue || 0);
+                            const inputValue = e.target.value;
+                            
+                            if (inputValue === '') {
+                              field.onChange(0);
+                              return;
+                            }
+                            
+                            const numericValue = parseFloat(inputValue.replace(/,/g, ''));
+                            if (!isNaN(numericValue)) {
+                              field.onChange(numericValue);
+                            }
                           }}
                           onKeyDown={(e) => {
-                            if (!isValidNumberInput(e.key)) {
+                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                            if (!allowedKeys.includes(e.key)) {
                               e.preventDefault();
                             }
                           }}
@@ -290,14 +270,23 @@ export function LogisticSection({
                           <Input
                             type="text"
                             inputMode="decimal"
-                            value={formatFieldValue(field.value)}
+                            value={field.value && field.value !== 0 ? field.value.toString() : ''}
                             onChange={(e) => {
-                              const rawValue = e.target.value;
-                              const numericValue = parseFieldValue(rawValue);
-                              setValue(`logistic_schedule.0.freight_cost.min`, numericValue || 0);
+                              const inputValue = e.target.value;
+                              
+                              if (inputValue === '') {
+                                field.onChange(0);
+                                return;
+                              }
+                              
+                              const numericValue = parseFloat(inputValue.replace(/,/g, ''));
+                              if (!isNaN(numericValue)) {
+                                field.onChange(numericValue);
+                              }
                             }}
                             onKeyDown={(e) => {
-                              if (!isValidNumberInput(e.key)) {
+                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                              if (!allowedKeys.includes(e.key)) {
                                 e.preventDefault();
                               }
                             }}
@@ -322,14 +311,23 @@ export function LogisticSection({
                           <Input
                             type="text"
                             inputMode="decimal"
-                            value={formatFieldValue(field.value)}
+                            value={field.value && field.value !== 0 ? field.value.toString() : ''}
                             onChange={(e) => {
-                              const rawValue = e.target.value;
-                              const numericValue = parseFieldValue(rawValue);
-                              setValue(`logistic_schedule.0.freight_cost.max`, numericValue || 0);
+                              const inputValue = e.target.value;
+                              
+                              if (inputValue === '') {
+                                field.onChange(0);
+                                return;
+                              }
+                              
+                              const numericValue = parseFloat(inputValue.replace(/,/g, ''));
+                              if (!isNaN(numericValue)) {
+                                field.onChange(numericValue);
+                              }
                             }}
                             onKeyDown={(e) => {
-                              if (!isValidNumberInput(e.key)) {
+                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','.','Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+                              if (!allowedKeys.includes(e.key)) {
                                 e.preventDefault();
                               }
                             }}
