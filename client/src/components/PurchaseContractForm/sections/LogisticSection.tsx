@@ -55,6 +55,21 @@ export function LogisticSection({
     return parseFormattedNumber(value);
   };
 
+  // Helper function to allow only valid number characters
+  const isValidNumberChar = (key: string, currentValue: string): boolean => {
+    // Allow navigation keys
+    const navigationKeys = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+    if (navigationKeys.includes(key)) return true;
+
+    // Allow numbers
+    if (/[0-9]/.test(key)) return true;
+
+    // Allow decimal point (only one)
+    if (key === '.' && !currentValue.includes('.')) return true;
+
+    return false;
+  };
+
   return (
     <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
       <CardHeader>
@@ -224,16 +239,20 @@ export function LogisticSection({
                         <Input
                           type="text"
                           inputMode="decimal"
-                          value={formatFieldValue(field.value)}
+                          value={field.value ? String(field.value) : ''}
                           onChange={(e) => {
-                            const numericValue = parseFieldValue(e.target.value);
+                            const value = e.target.value;
+                            // Allow any input during typing
+                            const numericValue = value === '' ? 0 : parseFloat(value.replace(/,/g, '')) || 0;
                             field.onChange(numericValue);
                           }}
+                          onBlur={(e) => {
+                            // Format on blur
+                            const numericValue = field.value || 0;
+                            e.target.value = formatNumber(numericValue);
+                          }}
                           onKeyDown={(e) => {
-                            // Allow numbers, decimal separator, thousands separator and navigation keys
-                            const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
-                            const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                            if (!allowedKeys.includes(e.key)) {
+                            if (!isValidNumberChar(e.key, e.currentTarget.value)) {
                               e.preventDefault();
                             }
                           }}
@@ -262,16 +281,18 @@ export function LogisticSection({
                           <Input
                             type="text"
                             inputMode="decimal"
-                            value={formatFieldValue(field.value)}
+                            value={field.value ? String(field.value) : ''}
                             onChange={(e) => {
-                              const numericValue = parseFieldValue(e.target.value);
+                              const value = e.target.value;
+                              const numericValue = value === '' ? 0 : parseFloat(value.replace(/,/g, '')) || 0;
                               field.onChange(numericValue);
                             }}
+                            onBlur={(e) => {
+                              const numericValue = field.value || 0;
+                              e.target.value = formatNumber(numericValue);
+                            }}
                             onKeyDown={(e) => {
-                              // Allow numbers, decimal separator, thousands separator and navigation keys
-                              const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
-                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                              if (!allowedKeys.includes(e.key)) {
+                              if (!isValidNumberChar(e.key, e.currentTarget.value)) {
                                 e.preventDefault();
                               }
                             }}
@@ -296,16 +317,18 @@ export function LogisticSection({
                           <Input
                             type="text"
                             inputMode="decimal"
-                            value={formatFieldValue(field.value)}
+                            value={field.value ? String(field.value) : ''}
                             onChange={(e) => {
-                              const numericValue = parseFieldValue(e.target.value);
+                              const value = e.target.value;
+                              const numericValue = value === '' ? 0 : parseFloat(value.replace(/,/g, '')) || 0;
                               field.onChange(numericValue);
                             }}
+                            onBlur={(e) => {
+                              const numericValue = field.value || 0;
+                              e.target.value = formatNumber(numericValue);
+                            }}
                             onKeyDown={(e) => {
-                              // Allow numbers, decimal separator, thousands separator and navigation keys
-                              const { decimalSeparator, thousandsSeparator } = NUMBER_FORMAT_CONFIG;
-                              const allowedKeys = ['0','1','2','3','4','5','6','7','8','9',decimalSeparator,thousandsSeparator,'Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
-                              if (!allowedKeys.includes(e.key)) {
+                              if (!isValidNumberChar(e.key, e.currentTarget.value)) {
                                 e.preventDefault();
                               }
                             }}
