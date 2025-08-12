@@ -445,8 +445,10 @@ export default function PurchaseContracts() {
     setSortDirection(direction);
   };
   const handleSearchChange = (search: string) => {
-    setSearchValue(search);
-    setCurrentPage(1);
+    if (search !== searchValue) {
+      setSearchValue(search);
+      setCurrentPage(1);
+    }
   };
 
   return (

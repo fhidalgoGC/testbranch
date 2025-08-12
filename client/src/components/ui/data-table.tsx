@@ -66,11 +66,13 @@ export function DataTable<T>({
   // Debounced search effect
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      onSearchChange(searchInput);
+      if (searchInput !== searchValue) {
+        onSearchChange(searchInput);
+      }
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchInput, onSearchChange]);
+  }, [searchInput, searchValue, onSearchChange]);
 
   // Sync searchInput with external searchValue
   useEffect(() => {
