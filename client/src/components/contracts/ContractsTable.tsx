@@ -24,7 +24,7 @@ export interface TableColumn<T = any> {
 export interface FilterOption {
   key: string;
   value: string;
-  label: string;
+  label: string | { key: string };
 }
 
 export interface TableFilter {
@@ -327,7 +327,12 @@ export function GenericTable<T = any>({
               {filter.type === 'button' && filter.availableValues?.map((value) => {
                 // Manejar tanto strings como FilterOption objects
                 const isObject = typeof value === 'object' && value !== null;
-                const displayValue = isObject ? (value as FilterOption).label : value as string;
+                const originalLabel = isObject ? (value as FilterOption).label : value as string;
+                const displayValue = typeof originalLabel === 'string' 
+                  ? originalLabel 
+                  : originalLabel.key.startsWith('filters.')
+                    ? t(originalLabel.key)
+                    : originalLabel.key;
                 const filterValue = isObject ? (value as FilterOption).value : value as string;
                 const uniqueKey = isObject ? (value as FilterOption).key : value as string;
                 

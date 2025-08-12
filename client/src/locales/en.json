@@ -288,5 +288,10 @@
   "invalidPostalCodeHonduras": "Honduran postal code must have 5 digits",
   "invalidPostalCodeGeneric": "Postal code must have 3-10 alphanumeric characters",
   "startDateAfterEndDate": "Start date cannot be greater than end date",
-  "endDateBeforeStartDate": "End date cannot be less than start date"
+  "endDateBeforeStartDate": "End date cannot be less than start date",
+  "filters": {
+    "all": "All",
+    "basis": "Basis",
+    "fixed": "Fixed"
+  }
 }

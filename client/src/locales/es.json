@@ -288,5 +288,10 @@
   "invalidPostalCodeHonduras": "Código postal hondureño debe tener 5 dígitos",
   "invalidPostalCodeGeneric": "Código postal debe tener entre 3-10 caracteres alfanuméricos",
   "startDateAfterEndDate": "La fecha de inicio no puede ser mayor que la fecha de fin",
-  "endDateBeforeStartDate": "La fecha de fin no puede ser menor que la fecha de inicio"
+  "endDateBeforeStartDate": "La fecha de fin no puede ser menor que la fecha de inicio",
+  "filters": {
+    "all": "Todos",
+    "basis": "Basis",
+    "fixed": "Fijo"
+  }
 }
