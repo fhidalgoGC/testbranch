@@ -306,7 +306,7 @@ export default function PurchaseContracts() {
       const apiFilter: Record<string, any> = { type: 'purchase' };
       
       if (params.filters?.pricingType?.length && !params.filters.pricingType.includes('all')) {
-        apiFilter.pricing_type = params.filters.pricingType[0];
+        apiFilter['price_schedule.pricing_type'] = params.filters.pricingType[0];
       }
       
       if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
