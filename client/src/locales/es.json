@@ -35,6 +35,8 @@
   "view": "Ver",
   "edit": "Editar",
   "actions": "Acciones",
+  "duplicate": "Duplicar",
+  "delete": "Eliminar",
   "sellers": "Vendedores",
   "purchaseContracts": "Contratos de Compra",
   "saleContracts": "Contratos de Venta",

@@ -35,6 +35,8 @@
   "view": "View",
   "edit": "Edit", 
   "actions": "Actions",
+  "duplicate": "Duplicate",
+  "delete": "Delete",
   "sellers": "Sellers",
   "purchaseContracts": "Purchase Contracts",
   "saleContracts": "Sale Contracts",

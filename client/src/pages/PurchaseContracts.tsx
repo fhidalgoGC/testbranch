@@ -10,6 +10,13 @@ import {
 } from '@/components/general/StandardTable';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from 'lucide-react';
 
 // Interface para la respuesta de contratos basada en la respuesta real de la API
 interface ContractResponse {
@@ -547,23 +554,33 @@ export default function PurchaseContracts() {
       key: 'actions',
       titleKey: 'actions',
       render: (contract) => (
-        <div className="flex space-x-2">
-          <button 
-            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-            onClick={() => console.log('Ver contrato:', contract.id)}
-          >
-            {t('view')}
-          </button>
-          <button 
-            className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 font-medium"
-            onClick={() => console.log('Editar contrato:', contract.id)}
-          >
-            {t('edit')}
-          </button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 font-bold text-lg p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => console.log('Ver contrato:', contract.id)}>
+              {t('view')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => console.log('Editar contrato:', contract.id)}>
+              {t('edit')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => console.log('Duplicar contrato:', contract.id)}>
+              {t('duplicate')}
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => console.log('Eliminar contrato:', contract.id)}
+              className="text-red-600 dark:text-red-400"
+            >
+              {t('delete')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
       sortable: false,
-      width: '120px'
+      width: '80px'
     }
   ];
 
