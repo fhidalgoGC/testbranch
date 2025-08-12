@@ -152,9 +152,11 @@ export function GenericTable<T = any>({
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  // Función para cargar datos
+  // Función para cargar datos con loading mínimo de 300ms
   const loadData = async () => {
     setLoading(true);
+    const startTime = Date.now();
+    
     try {
       const result = await fetchData({
         page: currentPage,
@@ -165,11 +167,28 @@ export function GenericTable<T = any>({
         columns // Pasar las columnas para la búsqueda
       });
       
+      // Calcular tiempo transcurrido
+      const elapsedTime = Date.now() - startTime;
+      const minLoadingTime = 300; // 300ms mínimo
+      
+      // Si han pasado menos de 300ms, esperar hasta completar el tiempo mínimo
+      if (elapsedTime < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
+      }
+      
       setData(result.data);
       setTotalElements(result.total);
       setTotalPages(result.totalPages);
     } catch (error) {
       console.error('Error loading data:', error);
+      // Asegurar tiempo mínimo incluso en error
+      const elapsedTime = Date.now() - startTime;
+      const minLoadingTime = 300;
+      
+      if (elapsedTime < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
+      }
+      
       setData([]);
       setTotalElements(0);
       setTotalPages(0);

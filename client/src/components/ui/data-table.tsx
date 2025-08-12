@@ -152,7 +152,17 @@ export function DataTable<T>({
       </div>
 
       {/* Table */}
-      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50 shadow-sm overflow-hidden">
+      <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg border border-gray-200/50 dark:border-gray-700/50 shadow-sm overflow-hidden">
+        {/* Loading Overlay */}
+        {loading && (
+          <div className="absolute inset-0 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div className="flex items-center gap-3 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-lg border border-gray-200/50 dark:border-gray-700/50">
+              <div className="w-4 h-4 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('loading')}</span>
+            </div>
+          </div>
+        )}
+        
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50/80 dark:bg-gray-800/80 border-b border-gray-200/50 dark:border-gray-700/50">
@@ -191,13 +201,7 @@ export function DataTable<T>({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
-              {loading ? (
-                <tr>
-                  <td colSpan={columns.length} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                    {t('loading')}
-                  </td>
-                </tr>
-              ) : data?.data.length === 0 ? (
+              {data?.data.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                     {t('noResults')}
