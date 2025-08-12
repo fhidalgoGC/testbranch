@@ -287,8 +287,6 @@ export default function PurchaseContracts() {
   // Función de fetch de datos que llama a la API real
   const fetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
     try {
-      console.log('fetchContractsData called with params:', params);
-      
       // Obtener datos de autenticación
       const partitionKey = localStorage.getItem('partition_key') || '';
       const idToken = localStorage.getItem('id_token') || '';
@@ -346,7 +344,6 @@ export default function PurchaseContracts() {
       }
 
       const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${queryParams.toString()}`;
-      console.log('fetchContractsData fetching from:', url);
 
       // Headers de la petición
       const headers = {
@@ -373,7 +370,6 @@ export default function PurchaseContracts() {
       }
 
       const data: ContractResponse = await response.json();
-      console.log('fetchContractsData response:', data);
 
       // Mapear los datos de la API real a nuestro formato
       const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
@@ -405,8 +401,6 @@ export default function PurchaseContracts() {
         inventory: contract.inventory
       }));
 
-      console.log('fetchContractsData mapped contracts:', mappedContracts.length);
-      
       // Retornar la estructura correcta usando _meta
       return {
         data: mappedContracts,
@@ -619,7 +613,10 @@ export default function PurchaseContracts() {
       <GenericTable
         columns={columns}
         fetchData={fetchContractsData}
-
+        defaultFilters={{
+          pricingType: ['all'],
+          commodity: ['all']
+        }}
         filters={[
           {
             key: 'pricingType',

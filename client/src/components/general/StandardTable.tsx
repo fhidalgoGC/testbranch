@@ -74,6 +74,7 @@ export interface GenericTableProps<T = any> {
   // Filtros
   showFilters?: boolean;
   filters?: TableFilter[];
+  defaultFilters?: Record<string, any>;
   
   // Acciones
   showActionColumn?: boolean;
@@ -130,17 +131,15 @@ export function GenericTable<T = any>({
   showCreateButton = true,
   showFilters = true,
   filters = [],
+  defaultFilters = {},
   showActionColumn = true,
   actionMenuItems = [],
   actionColumnTitleKey = 'actions'
 }: GenericTableProps<T>) {
   const { t } = useTranslation();
   
-  // Estados para filtros y paginación
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({
-    pricingType: ['all'], // Establecer "Todos" como seleccionado por defecto
-    commodity: ['all'] // Establecer "Todos" como seleccionado por defecto para commodity también
-  });
+  // Estados para paginación únicamente - los filtros se pasan como props
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(defaultFilters || {});
   const [searchValue, setSearchValue] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
