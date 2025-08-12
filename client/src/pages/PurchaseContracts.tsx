@@ -358,7 +358,7 @@ export default function PurchaseContracts() {
       title: '', // Sin título para esta columna
       render: (contract) => {
         const pricingType = contract.price_schedule?.[0]?.pricing_type;
-        const bgColor = pricingType === 'basis' ? 'bg-purple-500' : 'bg-cyan-500';
+        const bgColor = pricingType === 'basis' ? 'bg-purple-100 dark:bg-purple-900' : 'bg-blue-100 dark:bg-blue-900';
         
         return (
           <div className={`w-6 h-6 rounded-full ${bgColor}`}></div>
