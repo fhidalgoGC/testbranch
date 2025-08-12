@@ -300,11 +300,13 @@ export default function PurchaseContracts() {
         };
       }
 
-      // Construir filtros para la API usando el mismo formato que fetchContracts
-      const apiFilter: Record<string, any> = { type: 'purchase' };
+      // Construir filtros para la API usando $and structure
+      const andConditions: any[] = [
+        { type: 'purchase' }
+      ];
       
       if (params.filters?.pricingType?.length && !params.filters.pricingType.includes('all')) {
-        apiFilter['price_schedule.pricing_type'] = params.filters.pricingType[0];
+        andConditions.push({ 'price_schedule.pricing_type': params.filters.pricingType[0] });
       }
       
       if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
@@ -314,10 +316,8 @@ export default function PurchaseContracts() {
           .filter((commodity): commodity is NonNullable<typeof commodity> => commodity !== undefined)
           .map(commodity => commodity.key);
         
-
-        
         if (selectedCommodityIds.length > 0) {
-          apiFilter['commodity.commodity_id'] = { $in: selectedCommodityIds };
+          andConditions.push({ 'commodity.commodity_id': { $in: selectedCommodityIds } });
         }
       }
 
@@ -325,23 +325,37 @@ export default function PurchaseContracts() {
       if (params.search) {
         const searchTerm = params.search.trim();
         if (searchTerm) {
-          apiFilter['$or'] = [
+          const orConditions: any[] = [
             // Buscar en participantes (seller/buyer names)
             { 'participants.name': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
             // Buscar en commodity name
             { 'commodity.name': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
             // Buscar en folio/reference number
             { 'folio': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
-            // Buscar en precios (como string para números)
-            { 'price_schedule.price': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
-            { 'price_schedule.basis': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
-            { 'price_schedule.future_price': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
-            // Buscar en quantity (como string)
-            { 'quantity': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
             // Buscar en measurement unit
             { 'measurement_unit': { '$regex': `.*${searchTerm}`, '$options': 'i' } }
           ];
+
+          // Intentar convertir a número para campos numéricos
+          const numericValue = parseFloat(searchTerm);
+          if (!isNaN(numericValue)) {
+            orConditions.push(
+              { 'price_schedule.price': numericValue },
+              { 'price_schedule.basis': numericValue },
+              { 'price_schedule.future_price': numericValue },
+              { 'quantity': numericValue }
+            );
+          }
+
+          andConditions.push({ '$or': orConditions });
         }
+      }
+
+      const apiFilter = { '$and': andConditions };
+
+      // Log temporal para verificar la estructura del filtro
+      if (params.search) {
+        console.log('Generated filter structure:', JSON.stringify(apiFilter, null, 2));
       }
 
       // Construir parámetros de consulta usando el mismo formato que fetchContracts
