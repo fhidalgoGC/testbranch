@@ -160,7 +160,11 @@ export default function PurchaseContracts() {
 
       // Agregar filtro de commodity si está seleccionado
       if (activeFilters.commodity && activeFilters.commodity !== 'all') {
-        filter['commodity.commodity_id'] = { $in: [activeFilters.commodity] };
+        // Buscar el ID del commodity usando el valor seleccionado
+        const selectedCommodity = commodities.find(c => c.value === activeFilters.commodity);
+        if (selectedCommodity) {
+          filter['commodity.commodity_id'] = { $in: [selectedCommodity.key] };
+        }
       }
 
       // Agregar filtro de pricing_type si está seleccionado
@@ -295,7 +299,14 @@ export default function PurchaseContracts() {
       }
       
       if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
-        apiFilter['commodity.commodity_id'] = { $in: [params.filters.commodity[0]] };
+        // Buscar el ID del commodity usando el valor seleccionado
+        const selectedCommodity = commodities.find(c => c.value === params.filters.commodity[0]);
+        console.log('Selected commodity filter:', params.filters.commodity[0]);
+        console.log('Found commodity:', selectedCommodity);
+        if (selectedCommodity) {
+          apiFilter['commodity.commodity_id'] = { $in: [selectedCommodity.key] };
+          console.log('Applied filter with ID:', selectedCommodity.key);
+        }
       }
 
       // Agregar búsqueda si existe
