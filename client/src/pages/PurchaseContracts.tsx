@@ -11,26 +11,68 @@ import {
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
 
-// Interface para la respuesta de contratos
+// Interface para la respuesta de contratos basada en la respuesta real de la API
 interface ContractResponse {
   data: Array<{
     _id: string;
-    contract_number: string;
+    folio: string;
+    type: string;
+    sub_type: string;
     commodity: {
       commodity_id: string;
       name: string;
     };
-    customer: {
-      name: string;
+    characteristics: {
+      configuration_id: string;
+      configuration_name: string;
     };
-    pricing_type: string;
-    price?: number;
-    basis?: number;
-    futures?: number;
-    freight_cost?: number;
+    grade: number;
+    participants: Array<{
+      people_id: string;
+      name: string;
+      role: string;
+    }>;
+    price_schedule: Array<{
+      pricing_type: string;
+      price: number;
+      basis: number;
+      basis_operation: string;
+      future_price: number;
+      option_month: string;
+      option_year: number;
+      payment_currency: string;
+      exchange: string;
+    }>;
+    logistic_schedule: Array<{
+      logistic_payment_responsability: string;
+      logistic_coordination_responsability: string;
+      freight_cost: {
+        type: string;
+        min: number;
+        max: number;
+        cost: number;
+      };
+      payment_currency: string;
+    }>;
     quantity: number;
+    measurement_unit_id: string;
     measurement_unit: string;
-    delivery_date: string;
+    shipping_start_date: string;
+    shipping_end_date: string;
+    contract_date: string;
+    delivered: string;
+    transport: string;
+    weights: string;
+    inspections: string;
+    proteins: string;
+    application_priority: number;
+    thresholds: {
+      min_thresholds_percentage: number;
+      min_thresholds_weight: number;
+      max_thresholds_percentage: number;
+      max_thresholds_weight: number;
+    };
+    status: string;
     created_at: string;
   }>;
   total: number;
@@ -88,9 +130,9 @@ export default function PurchaseContracts() {
 
       // Obtener datos de autenticación
       const partitionKey = localStorage.getItem('partition_key') || '';
-      const accessToken = localStorage.getItem('access_token') || '';
+      const idToken = localStorage.getItem('id_token') || '';
 
-      if (!partitionKey || !accessToken) {
+      if (!partitionKey || !idToken) {
         console.error('No hay datos de autenticación disponibles para contratos');
         setContracts([]);
         return;
@@ -135,7 +177,7 @@ export default function PurchaseContracts() {
         '_partitionkey': partitionKey,
         'accept': '*/*',
         'accept-language': 'es-419,es;q=0.9',
-        'authorization': `Bearer ${accessToken}`,
+        'authorization': `Bearer ${idToken}`,
         'bt-organization': partitionKey,
         'bt-uid': partitionKey,
         'organization_id': partitionKey,
@@ -143,76 +185,52 @@ export default function PurchaseContracts() {
         'pk-organization': partitionKey
       };
 
+      console.log('Fetching contracts with headers:', headers);
+      
       const response = await fetch(url, {
         method: 'GET',
         headers: headers
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data: ContractResponse = await response.json();
       console.log('Contracts response:', data);
 
-      // Mapear los datos a nuestro formato
+      // Mapear los datos de la API real a nuestro formato
       const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
         id: contract._id,
-        folio: contract.contract_number,
-        reference_number: contract.contract_number,
+        folio: contract.folio,
+        reference_number: contract.folio,
         commodity: contract.commodity,
-        participants: [
-          {
-            people_id: '1',
-            name: contract.customer.name,
-            role: 'buyer' as const
-          }
-        ],
-        characteristics: {},
-        type: 'purchase',
-        sub_type: 'standard',
+        participants: contract.participants,
+        characteristics: contract.characteristics,
+        type: contract.type as 'purchase',
+        sub_type: contract.sub_type as 'direct' | 'imported' | 'importedFreight',
         quantity: contract.quantity,
-        measurement_unit_id: contract.measurement_unit,
+        measurement_unit_id: contract.measurement_unit_id,
         measurement_unit: contract.measurement_unit,
-        price_schedule: [{
-          pricing_type: contract.pricing_type as 'fixed' | 'basis',
-          price: contract.price || 0,
-          basis: contract.basis || 0,
-          basis_operation: 'add' as const,
-          future_price: contract.futures || 0,
-          option_month: 'Dec',
-          option_year: 2025,
-          payment_currency: 'USD' as const,
-          exchange: 'CBOT'
-        }],
-        logistic_schedule: [{
-          logistic_payment_responsability: 'buyer' as const,
-          logistic_coordination_responsability: 'seller' as const,
-          freight_cost: {
-            type: 'fixed' as const,
-            min: 0,
-            max: 0,
-            cost: contract.freight_cost || 0
-          },
-          payment_currency: 'USD' as const
-        }],
-        shipping_start_date: contract.delivery_date,
-        shipping_end_date: contract.delivery_date,
-        contract_date: contract.created_at,
-        delivered: 'FOB',
-        transport: 'Truck',
-        weights: 'Standard',
-        inspections: 'Required',
-        proteins: 'Standard',
-        application_priority: 1,
-        thresholds: {
-          min_thresholds_percentage: 5,
-          min_thresholds_weight: Math.floor(contract.quantity * 0.05),
-          max_thresholds_percentage: 95,
-          max_thresholds_weight: Math.floor(contract.quantity * 0.95)
-        },
-        status: 'active',
-        grade: 'standard',
+        price_schedule: contract.price_schedule,
+        logistic_schedule: contract.logistic_schedule,
+        shipping_start_date: contract.shipping_start_date,
+        shipping_end_date: contract.shipping_end_date,
+        contract_date: contract.contract_date,
+        delivered: contract.delivered,
+        transport: contract.transport,
+        weights: contract.weights,
+        inspections: contract.inspections,
+        proteins: contract.proteins,
+        application_priority: contract.application_priority,
+        thresholds: contract.thresholds,
+        status: contract.status,
+        grade: contract.grade.toString(),
         inventory: {
           total: contract.quantity,
           open: contract.quantity,
@@ -449,9 +467,6 @@ export default function PurchaseContracts() {
       <GenericTable
         columns={columns}
         fetchData={fetchContractsData}
-        data={contracts}
-        loading={contractsLoading}
-        totalItems={totalContracts}
         searchable={true}
         filters={[
           {
