@@ -166,9 +166,9 @@ export default function PurchaseContracts() {
           : [activeFilters.commodity];
         
         const selectedCommodityIds = commodityValues
-          .map(commodityValue => commodities.find(c => c.value === commodityValue))
-          .filter(commodity => commodity)
-          .map(commodity => commodity!.key);
+          .map((commodityValue: string) => commodities.find(c => c.value === commodityValue))
+          .filter((commodity): commodity is NonNullable<typeof commodity> => commodity !== undefined)
+          .map(commodity => commodity.key);
         
         if (selectedCommodityIds.length > 0) {
           filter['commodity.commodity_id'] = { $in: selectedCommodityIds };
@@ -257,7 +257,7 @@ export default function PurchaseContracts() {
         application_priority: contract.application_priority,
         thresholds: contract.thresholds,
         status: contract.status,
-        grade: contract.grade.toString(),
+        grade: typeof contract.grade === 'string' ? parseInt(contract.grade) || 0 : contract.grade,
         inventory: contract.inventory
       }));
 
@@ -309,9 +309,9 @@ export default function PurchaseContracts() {
       if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
         // Mapear todos los valores seleccionados a sus IDs correspondientes
         const selectedCommodityIds = params.filters.commodity
-          .map(commodityValue => commodities.find(c => c.value === commodityValue))
-          .filter(commodity => commodity) // Filtrar null/undefined
-          .map(commodity => commodity!.key);
+          .map((commodityValue: string) => commodities.find(c => c.value === commodityValue))
+          .filter((commodity): commodity is NonNullable<typeof commodity> => commodity !== undefined)
+          .map(commodity => commodity.key);
         
         console.log('Selected commodity filters:', params.filters.commodity);
         console.log('Mapped to IDs:', selectedCommodityIds);
@@ -398,7 +398,7 @@ export default function PurchaseContracts() {
         application_priority: contract.application_priority,
         thresholds: contract.thresholds,
         status: contract.status,
-        grade: contract.grade.toString(),
+        grade: typeof contract.grade === 'string' ? parseInt(contract.grade) || 0 : contract.grade,
         inventory: contract.inventory
       }));
 
@@ -616,7 +616,7 @@ export default function PurchaseContracts() {
       <GenericTable
         columns={columns}
         fetchData={fetchContractsData}
-        searchable={true}
+
         filters={[
           {
             key: 'pricingType',
@@ -647,10 +647,7 @@ export default function PurchaseContracts() {
             availableValues: commodityFilters
           }
         ]}
-        defaultFilters={{
-          pricingType: ['all'],
-          commodity: ['all']
-        }}
+
         showPagination={true}
         showSearch={true}
         className="w-full"
