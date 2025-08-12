@@ -336,15 +336,15 @@ export function GenericTable<T = any>({
                   if (filter.key === 'pricingType') {
                     if (filterValue === 'all') {
                       return selectedFilters[filter.key]?.includes(filterValue)
-                        ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200'
+                        ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200 hover:from-purple-300 hover:to-blue-300 dark:hover:from-purple-700/80 dark:hover:to-blue-700/80'
                         : 'bg-white dark:bg-gray-800 border-purple-300 dark:border-purple-500 text-purple-700 dark:text-purple-300 hover:bg-gradient-to-r hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30';
                     } else if (filterValue === 'basis') {
                       return selectedFilters[filter.key]?.includes(filterValue)
-                        ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300'
+                        ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/40 hover:text-purple-800 dark:hover:text-purple-200'
                         : 'bg-white dark:bg-gray-800 border-purple-300 dark:border-purple-500 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-300';
                     } else if (filterValue === 'fixed') {
                       return selectedFilters[filter.key]?.includes(filterValue)
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
+                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800/40 hover:text-blue-800 dark:hover:text-blue-200'
                         : 'bg-white dark:bg-gray-800 border-blue-300 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300';
                     }
                   }
