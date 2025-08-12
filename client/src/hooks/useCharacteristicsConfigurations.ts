@@ -38,33 +38,33 @@ export function useCharacteristicsConfigurations({
         return [];
       }
 
-      // Get auth data from localStorage - using the same keys as other hooks
-      const accessToken = localStorage.getItem('access_token');
+      // Get auth data from localStorage - using id_token instead of access_token
+      const idToken = localStorage.getItem('id_token');
       const partitionKey = localStorage.getItem('partition_key');
       
-      if (!accessToken || !partitionKey) {
+      if (!idToken || !partitionKey) {
         console.log('No auth data available for characteristics configurations:', { 
-          hasToken: !!accessToken, 
+          hasIdToken: !!idToken, 
           hasPartition: !!partitionKey 
         });
         return [];
       }
       
       console.log('Auth data for characteristics configurations:', {
-        tokenLength: accessToken.length,
+        idTokenLength: idToken.length,
         partitionKey: partitionKey
       });
 
       const url = `https://ssm-develop.grainchain.io/silosys-service/api/v1/chars-configs/summary?commodity_id=${commodityId}&subcategory_id=${subcategoryId}`;
       
       console.log('Characteristics configurations URL:', url);
-      console.log('Making request with token:', accessToken.substring(0, 50) + '...');
+      console.log('Making request with id_token:', idToken.substring(0, 50) + '...');
       console.log('Making request with partition:', partitionKey);
 
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'authorization': `Bearer ${accessToken}`,
+          'authorization': `Bearer ${idToken}`,
           '_partitionkey': partitionKey,
           'accept': '*/*',
           'accept-language': 'es-419,es;q=0.9',
