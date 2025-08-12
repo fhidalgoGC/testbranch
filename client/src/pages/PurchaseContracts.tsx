@@ -30,10 +30,25 @@ export default function PurchaseContracts() {
 
   // Estados para la paginación y búsqueda
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(3);
   const [searchValue, setSearchValue] = useState('');
   const [sortKey, setSortKey] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  
+  // Estados para los filtros
+  const [selectedTypeFilters, setSelectedTypeFilters] = useState<string[]>(['basis', 'fixed']);
+  const [selectedCommodityFilters, setSelectedCommodityFilters] = useState<string[]>([]);
+  
+  // Lista de commodities disponibles
+  const availableCommodities = [
+    'YC - Yellow C...',
+    'Soya 2025',
+    'Semillas de gi...',
+    'HRW - Wheat...',
+    'Maíz Blanco',
+    'SRW - Wheat ...',
+    'Frijol amarillo 1'
+  ];
 
   // Datos de ejemplo para la tabla
   const mockContracts: PurchaseContract[] = [
@@ -86,6 +101,36 @@ export default function PurchaseContracts() {
       basis: '$ -1.75',
       contractId: 'SPC-41',
       commodityType: 'fixed'
+    },
+    {
+      id: 'SPC-39',
+      customer: 'Agro Corp',
+      date: '6/15/2025',
+      quantity: '2,200,00 bu56.',
+      price: '$ 0',
+      basis: '$ 2.50',
+      contractId: 'SPC-39',
+      commodityType: 'basis'
+    },
+    {
+      id: 'SPC-38',
+      customer: 'Green Valley',
+      date: '6/10/2025',
+      quantity: '800,00 longTon.',
+      price: '$ 950',
+      basis: '$ 0',
+      contractId: 'SPC-38',
+      commodityType: 'fixed'
+    },
+    {
+      id: 'SPC-37',
+      customer: 'Harvest Co.',
+      date: '6/5/2025',
+      quantity: '1,100,00 bu60.',
+      price: '$ 0',
+      basis: '$ -0.75',
+      contractId: 'SPC-37',
+      commodityType: 'basis'
     }
   ];
 
@@ -208,11 +253,40 @@ export default function PurchaseContracts() {
     }
   ];
 
+  // Funciones para manejar filtros
+  const toggleTypeFilter = (type: string) => {
+    setSelectedTypeFilters(prev => 
+      prev.includes(type) 
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const toggleCommodityFilter = (commodity: string) => {
+    setSelectedCommodityFilters(prev => 
+      prev.includes(commodity) 
+        ? prev.filter(c => c !== commodity)
+        : [...prev, commodity]
+    );
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
   // Simular paginación y filtrado
-  const filteredContracts = mockContracts.filter(contract => 
-    contract.customer.toLowerCase().includes(searchValue.toLowerCase()) ||
-    contract.contractId.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const filteredContracts = mockContracts.filter(contract => {
+    // Filtro por búsqueda
+    const matchesSearch = contract.customer.toLowerCase().includes(searchValue.toLowerCase()) ||
+      contract.contractId.toLowerCase().includes(searchValue.toLowerCase());
+    
+    // Filtro por tipo (basis/fixed)
+    const matchesType = selectedTypeFilters.length === 0 || 
+      selectedTypeFilters.includes(contract.commodityType || 'fixed');
+    
+    // Filtro por commodity (por ahora solo simulamos que todos los contratos son compatibles)
+    const matchesCommodity = selectedCommodityFilters.length === 0;
+    
+    return matchesSearch && matchesType && matchesCommodity;
+  });
 
   const totalContracts = filteredContracts.length;
   const totalPages = Math.ceil(totalContracts / pageSize);
@@ -271,40 +345,64 @@ export default function PurchaseContracts() {
         {/* Commodity Type Filters */}
         <div className="flex items-center gap-2 mb-4">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 border border-purple-300 dark:border-purple-600">
-              <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-              <span className="text-sm text-purple-700 dark:text-purple-300">Basis</span>
-            </div>
-            <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-900/30 border border-cyan-300 dark:border-cyan-600">
-              <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
-              <span className="text-sm text-cyan-700 dark:text-cyan-300">Fixed</span>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => toggleTypeFilter('basis')}
+              className={`flex items-center gap-1 px-3 py-1 rounded-full border transition-colors ${
+                selectedTypeFilters.includes('basis')
+                  ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600'
+                  : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 opacity-50'
+              }`}
+            >
+              <div className={`w-2 h-2 rounded-full ${
+                selectedTypeFilters.includes('basis') ? 'bg-purple-500' : 'bg-gray-400'
+              }`}></div>
+              <span className={`text-sm ${
+                selectedTypeFilters.includes('basis') 
+                  ? 'text-purple-700 dark:text-purple-300'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}>Basis</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => toggleTypeFilter('fixed')}
+              className={`flex items-center gap-1 px-3 py-1 rounded-full border transition-colors ${
+                selectedTypeFilters.includes('fixed')
+                  ? 'bg-cyan-100 dark:bg-cyan-900/30 border-cyan-300 dark:border-cyan-600'
+                  : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 opacity-50'
+              }`}
+            >
+              <div className={`w-2 h-2 rounded-full ${
+                selectedTypeFilters.includes('fixed') ? 'bg-cyan-500' : 'bg-gray-400'
+              }`}></div>
+              <span className={`text-sm ${
+                selectedTypeFilters.includes('fixed') 
+                  ? 'text-cyan-700 dark:text-cyan-300'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}>Fixed</span>
+            </Button>
           </div>
         </div>
 
         {/* Commodity Filters */}
         <div className="flex flex-wrap gap-2 mb-6">
-          <Button variant="outline" size="sm" className="rounded-full">
-            YC - Yellow C...
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full">
-            Soya 2025
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full">
-            Semillas de gi...
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full">
-            HRW - Wheat...
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full">
-            Maíz Blanco
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full">
-            SRW - Wheat ...
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full">
-            Frijol amarillo 1
-          </Button>
+          {availableCommodities.map((commodity) => (
+            <Button
+              key={commodity}
+              variant="outline"
+              size="sm"
+              onClick={() => toggleCommodityFilter(commodity)}
+              className={`rounded-full transition-colors ${
+                selectedCommodityFilters.includes(commodity)
+                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-gray-900 dark:border-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+            >
+              {commodity}
+            </Button>
+          ))}
         </div>
 
         {/* Contracts Table */}

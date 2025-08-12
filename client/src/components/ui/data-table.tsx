@@ -222,7 +222,7 @@ export function DataTable<T>({
       </div>
 
       {/* Pagination */}
-      {data && data.meta && data.meta.total_pages > 1 && (
+      {data && data.meta && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600 dark:text-gray-400">
             {t('showing')} {startItem} {t('to')} {endItem} {t('of')} {data.meta?.total_elements || 0} {t('results')}
