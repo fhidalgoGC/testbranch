@@ -38,33 +38,46 @@ export function useCharacteristicsConfigurations({
         return [];
       }
 
-      // Get auth data from localStorage - using id_token instead of access_token
+      // Get auth data from localStorage - check all available tokens
+      const accessToken = localStorage.getItem('access_token');
       const idToken = localStorage.getItem('id_token');
       const partitionKey = localStorage.getItem('partition_key');
       
-      if (!idToken || !partitionKey) {
+      console.log('Available tokens:', {
+        hasAccessToken: !!accessToken,
+        hasIdToken: !!idToken,
+        hasPartition: !!partitionKey,
+        accessTokenStart: accessToken?.substring(0, 20) || 'none',
+        idTokenStart: idToken?.substring(0, 20) || 'none'
+      });
+      
+      // Use id_token if available, fallback to access_token
+      const authToken = idToken || accessToken;
+      
+      if (!authToken || !partitionKey) {
         console.log('No auth data available for characteristics configurations:', { 
-          hasIdToken: !!idToken, 
+          hasAuthToken: !!authToken, 
           hasPartition: !!partitionKey 
         });
         return [];
       }
       
       console.log('Auth data for characteristics configurations:', {
-        idTokenLength: idToken.length,
+        tokenType: idToken ? 'id_token' : 'access_token',
+        tokenLength: authToken.length,
         partitionKey: partitionKey
       });
 
       const url = `https://ssm-develop.grainchain.io/silosys-service/api/v1/chars-configs/summary?commodity_id=${commodityId}&subcategory_id=${subcategoryId}`;
       
       console.log('Characteristics configurations URL:', url);
-      console.log('Making request with id_token:', idToken.substring(0, 50) + '...');
+      console.log('Making request with token:', authToken.substring(0, 50) + '...');
       console.log('Making request with partition:', partitionKey);
 
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'authorization': `Bearer ${idToken}`,
+          'authorization': `Bearer ${authToken}`,
           '_partitionkey': partitionKey,
           'accept': '*/*',
           'accept-language': 'es-419,es;q=0.9',
