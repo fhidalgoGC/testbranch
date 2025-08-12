@@ -51,7 +51,7 @@ export function useCharacteristicsConfigurations({
         idTokenStart: idToken?.substring(0, 20) || 'none'
       });
       
-      // Use id_token if available, fallback to access_token
+      // Use id_token preferentially for this endpoint, with access_token fallback
       const authToken = idToken || accessToken;
       
       if (!authToken || !partitionKey) {

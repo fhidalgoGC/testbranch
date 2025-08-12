@@ -24,6 +24,7 @@ export const useAuth = () => {
       
       // Store tokens in localStorage
       localStorage.setItem('jwt', result.id_token);
+      localStorage.setItem('id_token', result.id_token); // Also store as id_token for characteristics endpoint
       localStorage.setItem('refresh_token', result.refresh_token);
       localStorage.setItem('access_token', result.access_token);
       
@@ -183,6 +184,7 @@ export const useAuth = () => {
   const logout = () => {
     // Clear tokens from localStorage
     localStorage.removeItem('jwt');
+    localStorage.removeItem('id_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('access_token');
     
