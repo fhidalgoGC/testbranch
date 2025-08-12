@@ -5,18 +5,49 @@ import { useCommodities } from '@/hooks/useCommodities';
 import { 
   GenericTable, 
   TableColumn, 
-  ActionMenuItem, 
-  DataFetchFunction, 
-  TableFilter,
-  FilterOption
+  FilterOption, 
+  DataFetchFunction 
 } from '@/components/general/StandardTable';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
+
+// Interface para la respuesta de contratos
+interface ContractResponse {
+  data: Array<{
+    _id: string;
+    contract_number: string;
+    commodity: {
+      commodity_id: string;
+      name: string;
+    };
+    customer: {
+      name: string;
+    };
+    pricing_type: string;
+    price?: number;
+    basis?: number;
+    futures?: number;
+    freight_cost?: number;
+    quantity: number;
+    measurement_unit: string;
+    delivery_date: string;
+    created_at: string;
+  }>;
+  total: number;
+  page: number;
+  limit: number;
+}
 
 export default function PurchaseContracts() {
   const { t } = useTranslation();
   const { commodities, loading: commoditiesLoading, error: commoditiesError } = useCommodities();
   
+  // Estados para la carga de contratos
+  const [contracts, setContracts] = useState<PurchaseContract[]>([]);
+  const [contractsLoading, setContractsLoading] = useState(false);
+  const [contractsError, setContractsError] = useState<string | null>(null);
+  const [totalContracts, setTotalContracts] = useState(0);
+
   // Debug: Log commodity data
   useEffect(() => {
     console.log('Commodities data:', commodities);
@@ -42,342 +73,220 @@ export default function PurchaseContracts() {
   useEffect(() => {
     console.log('Commodity filters:', commodityFilters);
   }, [commodityFilters]);
-  
-  // Función para generar datos fake
-  const generateMockContracts = (params: {
-    page: number;
-    pageSize: number;
-    search?: string;
-    filters?: Record<string, any>;
-    sort?: { key: string; direction: 'asc' | 'desc' };
-  }): PurchaseContract[] => {
-    const commodities = [
-      'YC - Yellow C...', 'Soya 2025', 'Semillas de gi...', 'HRW - Wheat...',
-      'Maíz Blanco', 'SRW - Wheat ...', 'Frijol amarillo 1'
-    ];
-    
-    const buyers = [
-      'Andrés band...', 'Test Seller ...', 'Soja Corp', 'AgriTrade Ltd', 'Seeds Master Co',
-      'Wheat Global Inc', 'Maíz Corporation', 'Harvest Innovations', 'Legume Traders',
-      'Green Valley Farms', 'Prairie Holdings', 'Midwest Grain Co', 'Golden Harvest Inc',
-      'Continental Agri', 'Premium Commodities', 'Global Trade Partners', 'Harvest Moon LLC',
-      'Grain Masters Corp', 'Agricultural Solutions', 'Crop Excellence Inc', 'Farm Direct Trading'
-    ];
 
-    const measurementUnits = ['bu56', 'bu60', 'bu', 'kg', 'lb', 'mt'];
-    const pricingTypes: ('fixed' | 'basis')[] = ['fixed', 'basis'];
-    
-    const allContracts: PurchaseContract[] = [];
-    
-    for (let i = 0; i < 500; i++) {
-      const contractNumber = 5000 - i;
-      const commodityName = commodities[Math.floor(Math.random() * commodities.length)];
-      const buyerName = buyers[Math.floor(Math.random() * buyers.length)];
-      const pricingType = pricingTypes[Math.floor(Math.random() * pricingTypes.length)];
-      const measurementUnit = measurementUnits[Math.floor(Math.random() * measurementUnits.length)];
-      
-      // Generar fechas aleatorias en 2025
-      const startDate = new Date(2025, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
-      const endDate = new Date(startDate);
-      endDate.setMonth(endDate.getMonth() + 1);
-      
-      const quantity = Math.floor(Math.random() * 5000) + 500;
-      const price = pricingType === 'fixed' ? Math.floor(Math.random() * 5000) + 200 : 0;
-      const basis = pricingType === 'basis' ? (Math.random() - 0.5) * 10 : 0;
-      const basisOperation = basis >= 0 ? 'add' : 'subtract';
-      
-      allContracts.push({
-        id: `SPC-${contractNumber}`,
+  // Función para cargar contratos desde la API
+  const fetchContracts = async (
+    page: number = 1,
+    limit: number = 10,
+    activeFilters: Record<string, any> = {},
+    searchTerm: string = '',
+    sortConfig: { field: string; direction: string } | null = null
+  ) => {
+    try {
+      setContractsLoading(true);
+      setContractsError(null);
+
+      // Obtener datos de autenticación
+      const partitionKey = localStorage.getItem('partition_key') || '';
+      const accessToken = localStorage.getItem('access_token') || '';
+
+      if (!partitionKey || !accessToken) {
+        console.error('No hay datos de autenticación disponibles para contratos');
+        setContracts([]);
+        return;
+      }
+
+      // Construir filtro
+      const filter: any = {
+        type: "purchase"
+      };
+
+      // Agregar filtro de commodity si está seleccionado
+      if (activeFilters.commodity && activeFilters.commodity !== 'all') {
+        filter['commodity.commodity_id'] = { $in: [activeFilters.commodity] };
+      }
+
+      // Agregar filtro de pricing_type si está seleccionado
+      if (activeFilters.pricingType && activeFilters.pricingType !== 'all') {
+        filter.pricing_type = activeFilters.pricingType;
+      }
+
+      // Construir parámetros de URL
+      const params = new URLSearchParams({
+        all: 'true',
+        filter: JSON.stringify(filter),
+        page: page.toString(),
+        limit: limit.toString()
+      });
+
+      // Agregar ordenamiento si existe
+      if (sortConfig) {
+        params.append(`sort[${sortConfig.field}]`, sortConfig.direction === 'asc' ? '1' : '-1');
+      } else {
+        // Ordenamiento por defecto por fecha de creación descendente
+        params.append('sort[created_at]', '-1');
+      }
+
+      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${params.toString()}`;
+      console.log('Fetching contracts from:', url);
+
+      // Headers de la petición
+      const headers = {
+        '_partitionkey': partitionKey,
+        'accept': '*/*',
+        'accept-language': 'es-419,es;q=0.9',
+        'authorization': `Bearer ${accessToken}`,
+        'bt-organization': partitionKey,
+        'bt-uid': partitionKey,
+        'organization_id': partitionKey,
+        'origin': 'https://contracts-develop.grainchain.io',
+        'pk-organization': partitionKey
+      };
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ContractResponse = await response.json();
+      console.log('Contracts response:', data);
+
+      // Mapear los datos a nuestro formato
+      const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
+        id: contract._id,
+        folio: contract.contract_number,
+        reference_number: contract.contract_number,
+        commodity: contract.commodity,
+        participants: [
+          {
+            people_id: '1',
+            name: contract.customer.name,
+            role: 'buyer' as const
+          }
+        ],
+        characteristics: {},
         type: 'purchase',
-        sub_type: 'direct',
-        folio: `SPC-${contractNumber}`,
-        reference_number: `REF-${contractNumber}`,
-        commodity: {
-          commodity_id: `commodity-${i}`,
-          name: commodityName
-        },
-        characteristics: {
-          configuration_id: `config-${i}`,
-          configuration_name: `Config ${commodityName}`
-        },
-        grade: Math.floor(Math.random() * 3) + 1,
-        participants: [{
-          people_id: `buyer-${i}`,
-          name: buyerName,
-          role: 'buyer'
-        }],
+        sub_type: 'standard',
+        quantity: contract.quantity,
+        measurement_unit_id: contract.measurement_unit,
+        measurement_unit: contract.measurement_unit,
         price_schedule: [{
-          pricing_type: pricingType,
-          price: price,
-          basis: Math.abs(basis),
-          basis_operation: basisOperation,
-          future_price: Math.floor(Math.random() * 1000),
-          option_month: ['Jan', 'Feb', 'Mar', 'Dec', 'Nov', 'Sep'][Math.floor(Math.random() * 6)],
+          pricing_type: contract.pricing_type as 'fixed' | 'basis',
+          price: contract.price || 0,
+          basis: contract.basis || 0,
+          basis_operation: 'add' as const,
+          future_price: contract.futures || 0,
+          option_month: 'Dec',
           option_year: 2025,
-          payment_currency: 'USD',
-          exchange: ['CBOT', 'KCBT', 'MATIF', 'CME'][Math.floor(Math.random() * 4)]
+          payment_currency: 'USD' as const,
+          exchange: 'CBOT'
         }],
         logistic_schedule: [{
-          logistic_payment_responsability: 'buyer',
-          logistic_coordination_responsability: 'seller',
+          logistic_payment_responsability: 'buyer' as const,
+          logistic_coordination_responsability: 'seller' as const,
           freight_cost: {
-            type: 'fixed',
+            type: 'fixed' as const,
             min: 0,
             max: 0,
-            cost: Math.floor(Math.random() * 200) + 40
+            cost: contract.freight_cost || 0
           },
-          payment_currency: 'USD'
+          payment_currency: 'USD' as const
         }],
-        quantity: quantity,
-        measurement_unit_id: measurementUnit,
-        measurement_unit: measurementUnit,
-        shipping_start_date: startDate.toISOString().split('T')[0],
-        shipping_end_date: endDate.toISOString().split('T')[0],
-        contract_date: startDate.toISOString().split('T')[0],
-        application_priority: Math.floor(Math.random() * 3) + 1,
-        delivered: ['FOB', 'CIF', 'EXW', 'CFR', 'DAP'][Math.floor(Math.random() * 5)],
-        transport: ['Truck', 'Rail', 'Ship'][Math.floor(Math.random() * 3)],
+        shipping_start_date: contract.delivery_date,
+        shipping_end_date: contract.delivery_date,
+        contract_date: contract.created_at,
+        delivered: 'FOB',
+        transport: 'Truck',
         weights: 'Standard',
         inspections: 'Required',
         proteins: 'Standard',
+        application_priority: 1,
         thresholds: {
-          min_thresholds_percentage: Math.floor(Math.random() * 5) + 2,
-          min_thresholds_weight: Math.floor(quantity * 0.05),
-          max_thresholds_percentage: 95 + Math.floor(Math.random() * 3),
-          max_thresholds_weight: Math.floor(quantity * 0.95)
+          min_thresholds_percentage: 5,
+          min_thresholds_weight: Math.floor(contract.quantity * 0.05),
+          max_thresholds_percentage: 95,
+          max_thresholds_weight: Math.floor(contract.quantity * 0.95)
         },
-        status: 'active'
-      });
+        status: 'active',
+        grade: 'standard',
+        inventory: {
+          total: contract.quantity,
+          open: contract.quantity,
+          fixed: 0,
+          unsettled: 0,
+          settled: 0,
+          reserved: 0
+        }
+      }));
+
+      console.log('Mapped contracts:', mappedContracts);
+      setContracts(mappedContracts);
+      setTotalContracts(data.total);
+
+    } catch (error) {
+      console.error('Error al cargar contratos:', error);
+      setContractsError(error instanceof Error ? error.message : 'Error al cargar contratos');
+      setContracts([]);
+    } finally {
+      setContractsLoading(false);
     }
-    
-    // Aplicar solo filtros (la búsqueda se maneja en fetchContractsData)
-    let filteredContracts = allContracts;
-    
-    // Filtros por tipo de pricing
-    if (params.filters && params.filters.pricingType?.length > 0 && !params.filters.pricingType.includes('all')) {
-      filteredContracts = filteredContracts.filter(contract => {
-        const pricingType = contract.price_schedule?.[0]?.pricing_type || 'fixed';
-        // Los filtros ahora usan la estructura con value, así que comparamos directamente
-        return params.filters!.pricingType.includes(pricingType);
-      });
-    }
-    
-    // Filtros por commodity
-    if (params.filters?.commodity?.length > 0 && !params.filters?.commodity.includes('all')) {
-      filteredContracts = filteredContracts.filter(contract => {
-        const commodityName = contract.commodity?.name || '';
-        return params.filters!.commodity.includes(commodityName);
-      });
-    }
-    
-    return filteredContracts;
   };
 
-  // Función de fetch de datos que simula llamada a API
+  // Cargar contratos al montar el componente
+  useEffect(() => {
+    fetchContracts();
+  }, []);
+
+  // Función de fetch de datos que llama a la API real
   const fetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
-    // Simular delay de API
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    // Generar todos los contratos
-    let allContracts = generateMockContracts(params);
-    
-    // Aplicar filtros de búsqueda en todas las columnas si se proporciona búsqueda
-    if (params.search && params.columns) {
-      const searchInAllColumns = (item: PurchaseContract, searchTerm: string) => {
-        const searchLower = searchTerm.toLowerCase();
-        
-        return params.columns!.some(column => {
-          let value: any;
-          
-          // Si la columna tiene dataMapping, usar eso
-          if (column.dataMapping) {
-            const getNestedValue = (obj: any, path: string): any => {
-              return path.split('.').reduce((current, key) => {
-                if (key.includes('[') && key.includes(']')) {
-                  const arrayKey = key.substring(0, key.indexOf('['));
-                  const index = parseInt(key.substring(key.indexOf('[') + 1, key.indexOf(']')));
-                  return current?.[arrayKey]?.[index];
-                }
-                return current?.[key];
-              }, obj);
-            };
-            value = getNestedValue(item, column.dataMapping);
-          } else {
-            value = (item as any)[column.key];
-          }
-          
-          // Búsqueda especial para columnas específicas
-          if (column.key === 'customer') {
-            const buyer = item.participants?.find(p => p.role === 'buyer');
-            const buyerName = buyer?.name || '';
-            return buyerName.toLowerCase().includes(searchLower);
-          }
-          
-          if (column.key === 'date') {
-            const date = new Date(item.contract_date || '');
-            const formattedDate = date.toLocaleDateString('en-US', { 
-              month: 'numeric', 
-              day: 'numeric', 
-              year: 'numeric' 
-            });
-            return formattedDate.toLowerCase().includes(searchLower);
-          }
-          
-          if (column.key === 'quantity') {
-            const formattedQuantity = formatNumber({
-              value: item.quantity || 0,
-              minDecimals: 2,
-              maxDecimals: 2,
-              formatPattern: "0,000.00",
-              roundMode: "truncate"
-            });
-            const quantityText = `${formattedQuantity} ${item.measurement_unit}`;
-            return quantityText.toLowerCase().includes(searchLower);
-          }
-          
-          if (column.key === 'price') {
-            const priceValue = item.price_schedule?.[0]?.price || 0;
-            const formattedPrice = formatNumber({
-              value: priceValue,
-              minDecimals: 2,
-              maxDecimals: 4,
-              formatPattern: "0,000.00",
-              roundMode: "truncate"
-            });
-            return formattedPrice.includes(searchLower) || priceValue.toString().includes(searchLower);
-          }
-          
-          if (column.key === 'basis') {
-            const basisValue = item.price_schedule?.[0]?.basis || 0;
-            const operation = item.price_schedule?.[0]?.basis_operation;
-            const displayValue = operation === 'subtract' && basisValue > 0 ? -basisValue : basisValue;
-            const formattedBasis = formatNumber({
-              value: displayValue,
-              minDecimals: 2,
-              maxDecimals: 4,
-              formatPattern: "0,000.00",
-              roundMode: "truncate"
-            });
-            return formattedBasis.includes(searchLower) || displayValue.toString().includes(searchLower);
-          }
-          
-          if (column.key === 'future') {
-            const futureValue = item.price_schedule?.[0]?.future_price || 0;
-            const formattedFuture = formatNumber({
-              value: futureValue,
-              minDecimals: 2,
-              maxDecimals: 4,
-              formatPattern: "0,000.00",
-              roundMode: "truncate"
-            });
-            return formattedFuture.includes(searchLower) || futureValue.toString().includes(searchLower);
-          }
-          
-          if (column.key === 'reserve') {
-            const reserveValue = item.logistic_schedule?.[0]?.freight_cost?.cost || 0;
-            const formattedReserve = formatNumber({
-              value: reserveValue,
-              minDecimals: 2,
-              maxDecimals: 4,
-              formatPattern: "0,000.00",
-              roundMode: "truncate"
-            });
-            return formattedReserve.includes(searchLower) || reserveValue.toString().includes(searchLower);
-          }
-          
-          if (column.key === 'id') {
-            const contractId = item.folio || item.id || '';
-            return contractId.toLowerCase().includes(searchLower);
-          }
-          
-          // Convertir a string y buscar para otros campos
-          if (value != null) {
-            const stringValue = value.toString().toLowerCase();
-            return stringValue.includes(searchLower);
-          }
-          
-          return false;
-        });
+    try {
+      // Convertir filtros al formato esperado por la API
+      const activeFilters: Record<string, any> = {};
+      
+      if (params.filters?.pricingType?.length && !params.filters.pricingType.includes('all')) {
+        activeFilters.pricingType = params.filters.pricingType[0]; // Solo tomar el primer filtro
+      }
+      
+      if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
+        activeFilters.commodity = params.filters.commodity[0]; // Solo tomar el primer filtro
+      }
+      
+      // Construir sortConfig si hay ordenamiento
+      let sortConfig = null;
+      if (params.sort) {
+        sortConfig = {
+          field: params.sort.key,
+          direction: params.sort.direction
+        };
+      }
+      
+      // Llamar a la función fetchContracts
+      await fetchContracts(
+        params.page || 1,
+        params.pageSize || 10,
+        activeFilters,
+        params.search || '',
+        sortConfig
+      );
+      
+      // Retornar la estructura correcta
+      return {
+        data: contracts,
+        total: totalContracts,
+        totalPages: Math.ceil(totalContracts / (params.pageSize || 10))
       };
-      
-      allContracts = allContracts.filter(contract => searchInAllColumns(contract, params.search!));
+    } catch (error) {
+      console.error('Error in fetchContractsData:', error);
+      return {
+        data: [],
+        total: 0,
+        totalPages: 0
+      };
     }
-    
-    // Aplicar ordenamiento si se especifica
-    if (params.sort) {
-      const { key, direction } = params.sort;
-      
-      allContracts.sort((a, b) => {
-        let aValue: any, bValue: any;
-        
-        // Obtener valores para ordenamiento
-        switch (key) {
-          case 'customer':
-            aValue = a.participants?.find(p => p.role === 'buyer')?.name || '';
-            bValue = b.participants?.find(p => p.role === 'buyer')?.name || '';
-            break;
-          case 'date':
-            aValue = new Date(a.contract_date || '').getTime();
-            bValue = new Date(b.contract_date || '').getTime();
-            break;
-          case 'quantity':
-            aValue = a.quantity || 0;
-            bValue = b.quantity || 0;
-            break;
-          case 'price':
-            aValue = a.price_schedule?.[0]?.price || 0;
-            bValue = b.price_schedule?.[0]?.price || 0;
-            break;
-          case 'basis':
-            const aBasis = a.price_schedule?.[0]?.basis || 0;
-            const aOperation = a.price_schedule?.[0]?.basis_operation;
-            aValue = aOperation === 'subtract' && aBasis > 0 ? -aBasis : aBasis;
-            
-            const bBasis = b.price_schedule?.[0]?.basis || 0;
-            const bOperation = b.price_schedule?.[0]?.basis_operation;
-            bValue = bOperation === 'subtract' && bBasis > 0 ? -bBasis : bBasis;
-            break;
-          case 'future':
-            aValue = a.price_schedule?.[0]?.future_price || 0;
-            bValue = b.price_schedule?.[0]?.future_price || 0;
-            break;
-          case 'reserve':
-            aValue = a.logistic_schedule?.[0]?.freight_cost?.cost || 0;
-            bValue = b.logistic_schedule?.[0]?.freight_cost?.cost || 0;
-            break;
-          case 'id':
-            aValue = a.folio || a.id || '';
-            bValue = b.folio || b.id || '';
-            break;
-          default:
-            aValue = (a as any)[key];
-            bValue = (b as any)[key];
-        }
-        
-        // Comparar valores
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
-          const comparison = aValue.localeCompare(bValue);
-          return direction === 'desc' ? -comparison : comparison;
-        }
-        
-        if (aValue < bValue) return direction === 'desc' ? 1 : -1;
-        if (aValue > bValue) return direction === 'desc' ? -1 : 1;
-        return 0;
-      });
-    }
-    
-    const total = allContracts.length;
-    const totalPages = Math.ceil(total / params.pageSize);
-    
-    // Paginación después del ordenamiento
-    const startIndex = (params.page - 1) * params.pageSize;
-    const paginatedContracts = allContracts.slice(startIndex, startIndex + params.pageSize);
-    
-    return {
-      data: paginatedContracts,
-      total,
-      totalPages
-    };
   };
 
   // Definir las columnas de la tabla
@@ -401,14 +310,13 @@ export default function PurchaseContracts() {
       titleKey: 'customer',
       render: (contract) => {
         const buyer = contract.participants?.find(p => p.role === 'buyer');
-        
         return (
           <span className="font-medium text-gray-900 dark:text-white">
             {buyer?.name || 'Unknown'}
           </span>
         );
       },
-      sortable: false,
+      sortable: true,
       width: '200px'
     },
     {
@@ -421,14 +329,19 @@ export default function PurchaseContracts() {
           day: 'numeric', 
           year: 'numeric' 
         });
-        return (
-          <span className="text-gray-600 dark:text-gray-400">
-            {formattedDate}
-          </span>
-        );
+        return <span className="text-gray-700 dark:text-gray-300">{formattedDate}</span>;
       },
       sortable: true,
       width: '120px'
+    },
+    {
+      key: 'commodity',
+      titleKey: 'commodity',
+      render: (contract) => (
+        <span className="text-gray-900 dark:text-white">{contract.commodity.name}</span>
+      ),
+      sortable: true,
+      width: '180px'
     },
     {
       key: 'quantity',
@@ -442,7 +355,7 @@ export default function PurchaseContracts() {
           roundMode: "truncate"
         });
         return (
-          <span className="text-gray-900 dark:text-white font-medium">
+          <span className="text-gray-900 dark:text-white">
             {formattedQuantity} {contract.measurement_unit}
           </span>
         );
@@ -462,15 +375,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return (
-          <span className={`font-medium ${
-            priceValue > 0 
-              ? 'text-green-600 dark:text-green-400' 
-              : 'text-gray-400 dark:text-gray-500'
-          }`}>
-            $ {formattedPrice}
-          </span>
-        );
+        return <span className="text-gray-900 dark:text-white font-mono">$ {formattedPrice}</span>;
       },
       sortable: true,
       width: '120px'
@@ -480,24 +385,14 @@ export default function PurchaseContracts() {
       titleKey: 'basis',
       render: (contract) => {
         const basisValue = contract.price_schedule?.[0]?.basis || 0;
-        const operation = contract.price_schedule?.[0]?.basis_operation;
-        const displayValue = operation === 'subtract' && basisValue > 0 ? -basisValue : basisValue;
         const formattedBasis = formatNumber({
-          value: displayValue,
+          value: basisValue,
           minDecimals: 2,
           maxDecimals: 4,
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return (
-          <span className={`font-medium ${
-            displayValue !== 0 
-              ? 'text-blue-600 dark:text-blue-400' 
-              : 'text-gray-400 dark:text-gray-500'
-          }`}>
-            $ {formattedBasis}
-          </span>
-        );
+        return <span className="text-gray-900 dark:text-white font-mono">{formattedBasis}</span>;
       },
       sortable: true,
       width: '120px'
@@ -514,15 +409,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return (
-          <span className={`font-medium ${
-            futureValue > 0 
-              ? 'text-orange-600 dark:text-orange-400' 
-              : 'text-gray-400 dark:text-gray-500'
-          }`}>
-            $ {formattedFuture}
-          </span>
-        );
+        return <span className="text-gray-900 dark:text-white font-mono">{formattedFuture}</span>;
       },
       sortable: true,
       width: '120px'
@@ -531,7 +418,6 @@ export default function PurchaseContracts() {
       key: 'reserve',
       titleKey: 'reserve',
       render: (contract) => {
-        // Simular un valor de reserva basado en el freight cost
         const reserveValue = contract.logistic_schedule?.[0]?.freight_cost?.cost || 0;
         const formattedReserve = formatNumber({
           value: reserveValue,
@@ -540,15 +426,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return (
-          <span className={`font-medium ${
-            reserveValue > 0 
-              ? 'text-purple-600 dark:text-purple-400' 
-              : 'text-gray-400 dark:text-gray-500'
-          }`}>
-            $ {formattedReserve}
-          </span>
-        );
+        return <span className="text-gray-900 dark:text-white font-mono">$ {formattedReserve}</span>;
       },
       sortable: true,
       width: '120px'
@@ -556,75 +434,13 @@ export default function PurchaseContracts() {
     {
       key: 'id',
       titleKey: 'id',
-      dataMapping: 'folio',
       render: (contract) => (
-        <span className="text-gray-900 dark:text-white font-medium">
+        <span className="text-gray-600 dark:text-gray-400 font-mono text-sm">
           {contract.folio || contract.id}
         </span>
       ),
       sortable: true,
-      width: '100px'
-    }
-  ];
-
-  // Definir filtros con estructura de select estándar
-  const filters: TableFilter[] = [
-    {
-      key: 'pricingType',
-      titleKey: 'pricingType',
-      type: 'button',
-      availableValues: [
-        {
-          key: 'all',
-          value: 'all',
-          label: { key: 'filters.all' }
-        },
-        {
-          key: 'basis',
-          value: 'basis',
-          label: { key: 'filters.basis' }
-        },
-        {
-          key: 'fixed',
-          value: 'fixed', 
-          label: { key: 'filters.fixed' }
-        }
-      ]
-    },
-    {
-      key: 'commodity',
-      titleKey: 'commodity',
-      type: 'button',
-      availableValues: commodityFilters
-    }
-  ];
-
-  // Definir acciones del menú
-  const actionMenuItems: ActionMenuItem[] = [
-    {
-      key: 'view',
-      labelKey: 'viewDetails',
-      action: (contract: PurchaseContract) => {
-        console.log('View contract:', contract);
-        // Navegar a la vista de detalle
-      }
-    },
-    {
-      key: 'edit',
-      labelKey: 'editContract',
-      action: (contract: PurchaseContract) => {
-        console.log('Edit contract:', contract);
-        // Navegar a la edición
-      }
-    },
-    {
-      key: 'delete',
-      labelKey: 'deleteContract',
-      action: (contract: PurchaseContract) => {
-        console.log('Delete contract:', contract);
-        // Confirmar y eliminar
-      },
-      className: 'text-red-600'
+      width: '150px'
     }
   ];
 
@@ -633,16 +449,47 @@ export default function PurchaseContracts() {
       <GenericTable
         columns={columns}
         fetchData={fetchContractsData}
-        titleKey="purchaseContracts"
-        descriptionKey="purchaseContractsDescription"
-        createButtonLabelKey="createContract"
-        createButtonHref="/purchase-contracts/create"
-        showCreateButton={true}
-        showFilters={true}
-        filters={filters}
-        showActionColumn={true}
-        actionMenuItems={actionMenuItems}
-        actionColumnTitleKey="actions"
+        data={contracts}
+        loading={contractsLoading}
+        totalItems={totalContracts}
+        searchable={true}
+        filters={[
+          {
+            key: 'pricingType',
+            titleKey: 'pricingType',
+            type: 'button',
+            availableValues: [
+              {
+                key: 'all',
+                value: 'all',
+                label: { key: 'filters.all' }
+              },
+              {
+                key: 'fixed',
+                value: 'fixed',
+                label: { key: 'filters.fixed' }
+              },
+              {
+                key: 'basis',
+                value: 'basis',
+                label: { key: 'filters.basis' }
+              }
+            ]
+          },
+          {
+            key: 'commodity',
+            titleKey: 'commodity',
+            type: 'button',
+            availableValues: commodityFilters
+          }
+        ]}
+        defaultFilters={{
+          pricingType: ['all'],
+          commodity: ['all']
+        }}
+        showPagination={true}
+        showSearch={true}
+        className="w-full"
       />
     </DashboardLayout>
   );
