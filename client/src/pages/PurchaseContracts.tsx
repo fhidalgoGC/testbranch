@@ -353,11 +353,6 @@ export default function PurchaseContracts() {
 
       const apiFilter = { '$and': andConditions };
 
-      // Log temporal para verificar la estructura del filtro
-      if (params.search) {
-        console.log('Generated filter structure:', JSON.stringify(apiFilter, null, 2));
-      }
-
       // Construir parámetros de consulta usando el mismo formato que fetchContracts
       const queryParams = new URLSearchParams({
         all: 'true',

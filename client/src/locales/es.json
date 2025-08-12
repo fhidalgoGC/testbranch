@@ -193,6 +193,8 @@
   "minimumLength": "Debe tener al menos {{min}} caracteres",
   "invalidEmail": "Ingresa un email válido",
   "positiveNumber": "Debe ser un número positivo",
+  "customer": "Vendedor",
+  "reserve": "Reservado",
   "validDate": "Ingresa una fecha válida",
   "invalidFormat": "Formato inválido",
   "selectOption": "Selecciona una opción",
