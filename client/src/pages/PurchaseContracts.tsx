@@ -314,17 +314,34 @@ export default function PurchaseContracts() {
           .filter((commodity): commodity is NonNullable<typeof commodity> => commodity !== undefined)
           .map(commodity => commodity.key);
         
-        console.log('Selected commodity filters:', params.filters.commodity);
-        console.log('Mapped to IDs:', selectedCommodityIds);
+
         
         if (selectedCommodityIds.length > 0) {
           apiFilter['commodity.commodity_id'] = { $in: selectedCommodityIds };
         }
       }
 
-      // Agregar búsqueda si existe
+      // Agregar búsqueda si existe - implementar OR sobre todos los campos relevantes
       if (params.search) {
-        apiFilter.search = params.search;
+        const searchTerm = params.search.trim();
+        if (searchTerm) {
+          apiFilter['$or'] = [
+            // Buscar en participantes (seller/buyer names)
+            { 'participants.name': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
+            // Buscar en commodity name
+            { 'commodity.name': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
+            // Buscar en folio/reference number
+            { 'folio': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
+            // Buscar en precios (como string para números)
+            { 'price_schedule.price': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
+            { 'price_schedule.basis': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
+            { 'price_schedule.future_price': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
+            // Buscar en quantity (como string)
+            { 'quantity': { '$regex': `.*${searchTerm}`, '$options': 'i' } },
+            // Buscar en measurement unit
+            { 'measurement_unit': { '$regex': `.*${searchTerm}`, '$options': 'i' } }
+          ];
+        }
       }
 
       // Construir parámetros de consulta usando el mismo formato que fetchContracts
