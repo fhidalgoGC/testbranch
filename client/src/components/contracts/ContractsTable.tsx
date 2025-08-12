@@ -336,16 +336,16 @@ export function GenericTable<T = any>({
                   if (filter.key === 'pricingType') {
                     if (filterValue === 'all') {
                       return selectedFilters[filter.key]?.includes(filterValue)
-                        ? 'bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800/60 dark:to-purple-800/60 border-blue-400 dark:border-blue-500 text-blue-800 dark:text-blue-200'
-                        : 'bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/40 dark:to-purple-900/40 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 hover:from-blue-200 hover:to-purple-200 dark:hover:from-blue-800/60 dark:hover:to-purple-800/60';
+                        ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200'
+                        : 'bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/40 dark:to-blue-900/40 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300 hover:from-purple-200 hover:to-blue-200 dark:hover:from-purple-800/60 dark:hover:to-blue-800/60';
                     } else if (filterValue === 'basis') {
                       return selectedFilters[filter.key]?.includes(filterValue)
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
-                        : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30';
+                        ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300'
+                        : 'bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-800/40 hover:text-purple-800 dark:hover:text-purple-200';
                     } else if (filterValue === 'fixed') {
                       return selectedFilters[filter.key]?.includes(filterValue)
-                        ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300'
-                        : 'bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30';
+                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
+                        : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800/40 hover:text-blue-800 dark:hover:text-blue-200';
                     }
                   }
                   // Estilos por defecto para otros filtros
