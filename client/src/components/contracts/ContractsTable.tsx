@@ -244,6 +244,18 @@ export function GenericTable<T = any>({
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {
     setSelectedFilters(prev => {
+      // Comportamiento especial para pricingType: solo un valor a la vez
+      if (filterKey === 'pricingType') {
+        const currentValues = prev[filterKey] || [];
+        // Si ya está seleccionado, lo deseleccionamos (permitir quitar el filtro)
+        const newValues = currentValues.includes(value) 
+          ? [] 
+          : [value]; // Solo un valor seleccionado a la vez
+        
+        return { ...prev, [filterKey]: newValues };
+      }
+      
+      // Comportamiento por defecto para otros filtros (múltiple selección)
       const currentValues = prev[filterKey] || [];
       const newValues = Array.isArray(currentValues)
         ? (currentValues.includes(value) 
@@ -320,7 +332,11 @@ export function GenericTable<T = any>({
                 // Definir colores específicos para pricing type
                 const getButtonStyles = () => {
                   if (filter.key === 'pricingType') {
-                    if (filterValue === 'basis') {
+                    if (filterValue === 'all') {
+                      return selectedFilters[filter.key]?.includes(filterValue)
+                        ? 'bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-500 text-gray-800 dark:text-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700';
+                    } else if (filterValue === 'basis') {
                       return selectedFilters[filter.key]?.includes(filterValue)
                         ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
                         : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30';

@@ -126,7 +126,7 @@ export default function PurchaseContracts() {
     let filteredContracts = allContracts;
     
     // Filtros por tipo de pricing
-    if (params.filters?.pricingType?.length > 0) {
+    if (params.filters?.pricingType?.length > 0 && !params.filters.pricingType.includes('all')) {
       filteredContracts = filteredContracts.filter(contract => {
         const pricingType = contract.price_schedule?.[0]?.pricing_type || 'fixed';
         // Los filtros ahora usan la estructura con value, así que comparamos directamente
@@ -540,6 +540,11 @@ export default function PurchaseContracts() {
       titleKey: 'pricingType',
       type: 'button',
       availableValues: [
+        {
+          key: 'all',
+          value: 'all',
+          label: 'Todos'
+        },
         {
           key: 'basis',
           value: 'basis',
