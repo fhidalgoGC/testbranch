@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import { useCommodities } from '@/hooks/useCommodities';
 import { 
   GenericTable, 
   TableColumn, 
@@ -12,117 +13,35 @@ import {
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
 
-// Interfaces para las respuestas de la API
-interface CommodityAPI {
-  id: string;
-  name: string;
-  partitionKey: string;
-  characteristics: any[];
-  categoryId: string;
-  subcategoryId: string;
-}
-
-interface CommodityResponse {
-  commodities_enables: CommodityAPI[];
-}
-
 export default function PurchaseContracts() {
   const { t } = useTranslation();
-  const [commodityFilters, setCommodityFilters] = useState<FilterOption[]>([
+  const { commodities, loading: commoditiesLoading, error: commoditiesError } = useCommodities();
+  
+  // Debug: Log commodity data
+  useEffect(() => {
+    console.log('Commodities data:', commodities);
+    console.log('Commodities loading:', commoditiesLoading);
+    console.log('Commodities error:', commoditiesError);
+  }, [commodities, commoditiesLoading, commoditiesError]);
+  
+  // Crear filtros de commodity basados en los datos reales
+  const commodityFilters: FilterOption[] = [
     {
       key: 'all',
       value: 'all',
       label: { key: 'filters.all' }
-    }
-  ]);
+    },
+    ...commodities.map(commodity => ({
+      key: commodity.key,
+      value: commodity.value,
+      label: commodity.label
+    }))
+  ];
 
-  // Función para obtener commodities desde la API
-  const fetchCommodities = async () => {
-    try {
-      // Obtener token de localStorage
-      const authData = localStorage.getItem('auth');
-      const { accessToken, partitionKey } = authData ? JSON.parse(authData) : {};
-      
-      if (!accessToken || !partitionKey) {
-        console.error('No hay datos de autenticación disponibles');
-        return;
-      }
-
-      // Primera llamada para obtener commodities
-      const commoditiesResponse = await fetch(
-        'https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/commodities?type=sale',
-        {
-          method: 'GET',
-          headers: {
-            '_partitionkey': partitionKey,
-            'accept': '*/*',
-            'authorization': `Bearer ${accessToken}`,
-            'bt-organization': partitionKey,
-            'bt-uid': partitionKey,
-            'content-type': 'application/json; charset=utf-8',
-            'organization_id': partitionKey,
-            'pk-organization': partitionKey
-          }
-        }
-      );
-
-      if (!commoditiesResponse.ok) {
-        throw new Error('Error al obtener commodities');
-      }
-
-      const commoditiesData: CommodityResponse = await commoditiesResponse.json();
-      
-      // Segunda llamada con los datos de commodities
-      const contractsResponse = await fetch(
-        'https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/commodities?type=sale',
-        {
-          method: 'POST',
-          headers: {
-            '_partitionkey': partitionKey,
-            'accept': '*/*',
-            'authorization': `Bearer ${accessToken}`,
-            'bt-organization': partitionKey,
-            'bt-uid': partitionKey,
-            'content-type': 'application/json; charset=utf-8',
-            'organization_id': partitionKey,
-            'pk-organization': partitionKey
-          },
-          body: JSON.stringify({
-            commodities_enables: commoditiesData.commodities_enables
-          })
-        }
-      );
-
-      if (!contractsResponse.ok) {
-        throw new Error('Error al obtener contratos de commodities');
-      }
-
-      // Convertir commodities a formato de filtros
-      const commodityOptions: FilterOption[] = [
-        {
-          key: 'all',
-          value: 'all',
-          label: { key: 'filters.all' }
-        },
-        ...commoditiesData.commodities_enables.map(commodity => ({
-          key: commodity.id,
-          value: commodity.name,
-          label: commodity.name
-        }))
-      ];
-
-      setCommodityFilters(commodityOptions);
-
-    } catch (error) {
-      console.error('Error al cargar commodities:', error);
-      // Mantener filtros por defecto en caso de error
-    }
-  };
-
-  // Cargar commodities al montar el componente
+  // Debug: Log commodity filters
   useEffect(() => {
-    fetchCommodities();
-  }, []);
+    console.log('Commodity filters:', commodityFilters);
+  }, [commodityFilters]);
   
   // Función para generar datos fake
   const generateMockContracts = (params: {
