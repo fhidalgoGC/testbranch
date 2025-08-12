@@ -128,7 +128,10 @@ export default function PurchaseContracts() {
     if (params.filters?.pricingType?.length > 0) {
       filteredContracts = filteredContracts.filter(contract => {
         const pricingType = contract.price_schedule?.[0]?.pricing_type || 'fixed';
-        return params.filters!.pricingType.includes(pricingType);
+        // Convertir a capitalizado para comparar con los nuevos valores del filtro
+        const capitalizedType = pricingType === 'basis' ? 'Basis' : 
+                               pricingType === 'fixed' ? 'Fixed' : pricingType;
+        return params.filters!.pricingType.includes(capitalizedType);
       });
     }
     
@@ -537,7 +540,7 @@ export default function PurchaseContracts() {
       key: 'pricingType',
       titleKey: 'pricingType',
       type: 'button',
-      availableValues: ['basis', 'fixed']
+      availableValues: ['Basis', 'Fixed']
     },
     {
       key: 'commodity',
