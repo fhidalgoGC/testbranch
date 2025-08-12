@@ -349,7 +349,7 @@ export default function PurchaseContracts() {
           </span>
         );
       },
-      sortable: false,
+      sortable: true,
       width: '150px'
     },
     {
@@ -464,7 +464,7 @@ export default function PurchaseContracts() {
           {contract.folio || contract.id}
         </span>
       ),
-      sortable: false,
+      sortable: true,
       width: '100px'
     }
   ];
