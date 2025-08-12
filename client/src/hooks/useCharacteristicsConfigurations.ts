@@ -38,18 +38,28 @@ export function useCharacteristicsConfigurations({
         return [];
       }
 
-      // Get auth data from localStorage
+      // Get auth data from localStorage - using the same keys as other hooks
       const accessToken = localStorage.getItem('access_token');
       const partitionKey = localStorage.getItem('partition_key');
       
       if (!accessToken || !partitionKey) {
-        console.log('No auth data available, using empty characteristics configurations list');
+        console.log('No auth data available for characteristics configurations:', { 
+          hasToken: !!accessToken, 
+          hasPartition: !!partitionKey 
+        });
         return [];
       }
+      
+      console.log('Auth data for characteristics configurations:', {
+        tokenLength: accessToken.length,
+        partitionKey: partitionKey
+      });
 
       const url = `https://ssm-develop.grainchain.io/silosys-service/api/v1/chars-configs/summary?commodity_id=${commodityId}&subcategory_id=${subcategoryId}`;
       
       console.log('Characteristics configurations URL:', url);
+      console.log('Making request with token:', accessToken.substring(0, 50) + '...');
+      console.log('Making request with partition:', partitionKey);
 
       const response = await fetch(url, {
         method: 'GET',
@@ -75,7 +85,12 @@ export function useCharacteristicsConfigurations({
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error('Failed to fetch characteristics configurations:', {
+          status: response.status,
+          statusText: response.statusText,
+          url: url
+        });
+        throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
       }
 
       const result: CharacteristicsConfigurationResponse = await response.json();
