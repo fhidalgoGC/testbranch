@@ -12,19 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-
-// Definir el tipo de dato para los contratos
-interface PurchaseContract {
-  id: string;
-  customer: string;
-  date: string;
-  quantity: string;
-  price: string;
-  basis: string;
-  contractId: string;
-  commodityType?: 'basis' | 'fixed';
-  commodity: string;
-}
+import { PurchaseContract } from '@/types/purchaseContract.types';
 
 export default function PurchaseContracts() {
   const { t } = useTranslation();
@@ -51,175 +39,212 @@ export default function PurchaseContracts() {
     'Frijol amarillo 1'
   ];
 
-  // Datos de ejemplo para la tabla
+  // Datos de ejemplo para la tabla usando la interfaz PurchaseContract real
   const mockContracts: PurchaseContract[] = [
     // YC - Yellow C... contracts
     {
       id: 'SPC-48',
-      customer: 'Andrés band...',
-      date: '7/23/2025',
-      quantity: '1,700,00 bu56.',
-      price: '$ 370',
-      basis: '$ 0',
-      contractId: 'SPC-48',
-      commodityType: 'fixed',
-      commodity: 'YC - Yellow C...'
+      type: 'purchase',
+      sub_type: 'direct',
+      folio: 'SPC-48',
+      reference_number: 'REF-48',
+      commodity: {
+        commodity_id: 'yc-001',
+        name: 'YC - Yellow C...'
+      },
+      characteristics: {
+        configuration_id: 'config-001',
+        configuration_name: 'Standard Yellow Corn'
+      },
+      grade: 2,
+      participants: [
+        {
+          people_id: 'buyer-001',
+          name: 'Andrés band...',
+          role: 'buyer'
+        }
+      ],
+      price_schedule: [
+        {
+          pricing_type: 'fixed',
+          price: 370,
+          basis: 0,
+          basis_operation: 'add',
+          future_price: 0,
+          option_month: 'Dec',
+          option_year: 2025,
+          payment_currency: 'USD',
+          exchange: 'CBOT'
+        }
+      ],
+      logistic_schedule: [
+        {
+          logistic_payment_responsability: 'buyer',
+          logistic_coordination_responsability: 'seller',
+          freight_cost: {
+            type: 'fixed',
+            min: 0,
+            max: 0,
+            cost: 50
+          },
+          payment_currency: 'USD'
+        }
+      ],
+      quantity: 1700,
+      measurement_unit_id: 'bu56',
+      measurement_unit: 'bu56',
+      shipping_start_date: '2025-07-23',
+      shipping_end_date: '2025-08-23',
+      contract_date: '2025-07-23',
+      application_priority: 1,
+      delivered: 'FOB',
+      transport: 'Truck',
+      weights: 'Standard',
+      inspections: 'Required',
+      proteins: 'Standard',
+      thresholds: {
+        min_thresholds_percentage: 5,
+        min_thresholds_weight: 85,
+        max_thresholds_percentage: 95,
+        max_thresholds_weight: 1615
+      },
+      status: 'active'
     },
+    // Crear contratos adicionales para cada commodity
     {
       id: 'SPC-47',
-      customer: 'Test Seller ...',
-      date: '7/23/2025',
-      quantity: '1,500,00 bu56.',
-      price: '$ 0',
-      basis: '$ 1.25',
-      contractId: 'SPC-47',
-      commodityType: 'basis',
-      commodity: 'YC - Yellow C...'
+      type: 'purchase',
+      sub_type: 'direct',
+      folio: 'SPC-47',
+      reference_number: 'REF-47',
+      commodity: { commodity_id: 'yc-001', name: 'YC - Yellow C...' },
+      characteristics: { configuration_id: 'config-001', configuration_name: 'Standard Yellow Corn' },
+      grade: 2,
+      participants: [{ people_id: 'buyer-002', name: 'Test Seller ...', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'basis', price: 0, basis: 1.25, basis_operation: 'add', future_price: 0, option_month: 'Dec', option_year: 2025, payment_currency: 'USD', exchange: 'CBOT' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'buyer', logistic_coordination_responsability: 'seller', freight_cost: { type: 'fixed', min: 0, max: 0, cost: 50 }, payment_currency: 'USD' }],
+      quantity: 1500, measurement_unit_id: 'bu56', measurement_unit: 'bu56', shipping_start_date: '2025-07-23', shipping_end_date: '2025-08-23', contract_date: '2025-07-23',
+      application_priority: 1, delivered: 'FOB', transport: 'Truck', weights: 'Standard', inspections: 'Required', proteins: 'Standard',
+      thresholds: { min_thresholds_percentage: 5, min_thresholds_weight: 75, max_thresholds_percentage: 95, max_thresholds_weight: 1425 }, status: 'active'
     },
-    // Soya 2025 contracts
     {
       id: 'SPC-46',
-      customer: 'Test Seller ...',
-      date: '7/31/2025',
-      quantity: '1,400,00 bu60.',
-      price: '$ 1500',
-      basis: '$ 0',
-      contractId: 'SPC-46',
-      commodityType: 'fixed',
-      commodity: 'Soya 2025'
+      type: 'purchase',
+      sub_type: 'direct',
+      folio: 'SPC-46',
+      reference_number: 'REF-46',
+      commodity: { commodity_id: 'soya-001', name: 'Soya 2025' },
+      characteristics: { configuration_id: 'config-002', configuration_name: 'Standard Soybean' },
+      grade: 1,
+      participants: [{ people_id: 'buyer-003', name: 'Soja Corp', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'fixed', price: 1500, basis: 0, basis_operation: 'add', future_price: 0, option_month: 'Nov', option_year: 2025, payment_currency: 'USD', exchange: 'CBOT' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'seller', logistic_coordination_responsability: 'buyer', freight_cost: { type: 'fixed', min: 0, max: 0, cost: 75 }, payment_currency: 'USD' }],
+      quantity: 1400, measurement_unit_id: 'bu60', measurement_unit: 'bu60', shipping_start_date: '2025-07-31', shipping_end_date: '2025-08-31', contract_date: '2025-07-31',
+      application_priority: 1, delivered: 'FOB', transport: 'Truck', weights: 'Standard', inspections: 'Required', proteins: 'Standard',
+      thresholds: { min_thresholds_percentage: 5, min_thresholds_weight: 70, max_thresholds_percentage: 95, max_thresholds_weight: 1330 }, status: 'active'
     },
     {
       id: 'SPC-45',
-      customer: 'Soja Corp',
-      date: '7/28/2025',
-      quantity: '900,00 bu60.',
-      price: '$ 0',
-      basis: '$ -0.50',
-      contractId: 'SPC-45',
-      commodityType: 'basis',
-      commodity: 'Soya 2025'
+      type: 'purchase',
+      sub_type: 'direct',
+      folio: 'SPC-45',
+      reference_number: 'REF-45',
+      commodity: { commodity_id: 'soya-001', name: 'Soya 2025' },
+      characteristics: { configuration_id: 'config-002', configuration_name: 'Standard Soybean' },
+      grade: 1,
+      participants: [{ people_id: 'buyer-004', name: 'AgriTrade Ltd', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'basis', price: 0, basis: 0.50, basis_operation: 'subtract', future_price: 0, option_month: 'Nov', option_year: 2025, payment_currency: 'USD', exchange: 'CBOT' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'buyer', logistic_coordination_responsability: 'seller', freight_cost: { type: 'variable', min: 60, max: 90, cost: 75 }, payment_currency: 'USD' }],
+      quantity: 900, measurement_unit_id: 'bu60', measurement_unit: 'bu60', shipping_start_date: '2025-07-28', shipping_end_date: '2025-08-28', contract_date: '2025-07-28',
+      application_priority: 2, delivered: 'CIF', transport: 'Rail', weights: 'Certified', inspections: 'Optional', proteins: 'High',
+      thresholds: { min_thresholds_percentage: 3, min_thresholds_weight: 45, max_thresholds_percentage: 97, max_thresholds_weight: 873 }, status: 'active'
     },
-    // Semillas de gi... contracts
     {
       id: 'SPC-44',
-      customer: 'Ferti Nova',
-      date: '7/3/2025',
-      quantity: '500,00 kg.',
-      price: '$ 3000',
-      basis: '$ 0',
-      contractId: 'SPC-44',
-      commodityType: 'fixed',
-      commodity: 'Semillas de gi...'
+      type: 'purchase',
+      sub_type: 'direct',
+      folio: 'SPC-44',
+      reference_number: 'REF-44',
+      commodity: { commodity_id: 'seeds-001', name: 'Semillas de gi...' },
+      characteristics: { configuration_id: 'config-003', configuration_name: 'Premium Seeds' },
+      grade: 1,
+      participants: [{ people_id: 'buyer-005', name: 'Seeds Master Co', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'fixed', price: 3000, basis: 0, basis_operation: 'add', future_price: 0, option_month: 'Sep', option_year: 2025, payment_currency: 'USD', exchange: 'MATIF' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'buyer', logistic_coordination_responsability: 'seller', freight_cost: { type: 'fixed', min: 0, max: 0, cost: 120 }, payment_currency: 'USD' }],
+      quantity: 500, measurement_unit_id: 'kg', measurement_unit: 'kg', shipping_start_date: '2025-07-03', shipping_end_date: '2025-08-03', contract_date: '2025-07-03',
+      application_priority: 1, delivered: 'EXW', transport: 'Truck', weights: 'Precision', inspections: 'Mandatory', proteins: 'Standard',
+      thresholds: { min_thresholds_percentage: 2, min_thresholds_weight: 10, max_thresholds_percentage: 98, max_thresholds_weight: 490 }, status: 'active'
     },
     {
       id: 'SPC-43',
-      customer: 'Seeds Ltd',
-      date: '7/1/2025',
-      quantity: '750,00 kg.',
-      price: '$ 0',
-      basis: '$ 5.00',
-      contractId: 'SPC-43',
-      commodityType: 'basis',
-      commodity: 'Semillas de gi...'
+      type: 'purchase',
+      sub_type: 'imported',
+      folio: 'SPC-43',
+      reference_number: 'REF-43',
+      commodity: { commodity_id: 'hwm-001', name: 'HRW - Wheat...' },
+      characteristics: { configuration_id: 'config-004', configuration_name: 'Hard Red Winter Wheat' },
+      grade: 2,
+      participants: [{ people_id: 'buyer-006', name: 'Wheat Global Inc', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'basis', price: 0, basis: 1.75, basis_operation: 'subtract', future_price: 0, option_month: 'Dec', option_year: 2025, payment_currency: 'USD', exchange: 'KCBT' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'seller', logistic_coordination_responsability: 'buyer', freight_cost: { type: 'variable', min: 80, max: 120, cost: 100 }, payment_currency: 'USD' }],
+      quantity: 2000, measurement_unit_id: 'bu', measurement_unit: 'bu', shipping_start_date: '2025-06-25', shipping_end_date: '2025-07-25', contract_date: '2025-06-25',
+      application_priority: 1, delivered: 'CFR', transport: 'Ship', weights: 'Standard', inspections: 'Required', proteins: 'High',
+      thresholds: { min_thresholds_percentage: 4, min_thresholds_weight: 80, max_thresholds_percentage: 96, max_thresholds_weight: 1920 }, status: 'active'
     },
-    // HRW - Wheat... contracts
     {
       id: 'SPC-42',
-      customer: 'Wheat Masters',
-      date: '6/25/2025',
-      quantity: '2,000,00 bu.',
-      price: '$ 4200',
-      basis: '$ 0',
-      contractId: 'SPC-42',
-      commodityType: 'fixed',
-      commodity: 'HRW - Wheat...'
+      type: 'purchase',
+      sub_type: 'direct',
+      folio: 'SPC-42',
+      reference_number: 'REF-42',
+      commodity: { commodity_id: 'maiz-001', name: 'Maíz Blanco' },
+      characteristics: { configuration_id: 'config-005', configuration_name: 'White Corn Premium' },
+      grade: 1,
+      participants: [{ people_id: 'buyer-007', name: 'Maíz Corporation', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'fixed', price: 2800, basis: 0, basis_operation: 'add', future_price: 0, option_month: 'Dec', option_year: 2025, payment_currency: 'USD', exchange: 'CBOT' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'buyer', logistic_coordination_responsability: 'seller', freight_cost: { type: 'fixed', min: 0, max: 0, cost: 65 }, payment_currency: 'USD' }],
+      quantity: 3200, measurement_unit_id: 'bu56', measurement_unit: 'bu56', shipping_start_date: '2025-06-20', shipping_end_date: '2025-07-20', contract_date: '2025-06-20',
+      application_priority: 1, delivered: 'FOB', transport: 'Truck', weights: 'Standard', inspections: 'Required', proteins: 'Standard',
+      thresholds: { min_thresholds_percentage: 5, min_thresholds_weight: 160, max_thresholds_percentage: 95, max_thresholds_weight: 3040 }, status: 'active'
     },
     {
       id: 'SPC-41',
-      customer: 'Ferti Nova',
-      date: '7/3/2025',
-      quantity: '1,800,00 bu.',
-      price: '$ 0',
-      basis: '$ -1.75',
-      contractId: 'SPC-41',
-      commodityType: 'basis',
-      commodity: 'HRW - Wheat...'
+      type: 'purchase',
+      sub_type: 'direct',
+      folio: 'SPC-41',
+      reference_number: 'REF-41',
+      commodity: { commodity_id: 'srw-001', name: 'SRW - Wheat ...' },
+      characteristics: { configuration_id: 'config-006', configuration_name: 'Soft Red Winter' },
+      grade: 2,
+      participants: [{ people_id: 'buyer-008', name: 'Harvest Innovations', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'basis', price: 0, basis: 0.75, basis_operation: 'subtract', future_price: 0, option_month: 'Dec', option_year: 2025, payment_currency: 'USD', exchange: 'CBOT' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'seller', logistic_coordination_responsability: 'buyer', freight_cost: { type: 'variable', min: 70, max: 100, cost: 85 }, payment_currency: 'USD' }],
+      quantity: 1600, measurement_unit_id: 'bu', measurement_unit: 'bu', shipping_start_date: '2025-06-10', shipping_end_date: '2025-07-10', contract_date: '2025-06-10',
+      application_priority: 2, delivered: 'CIF', transport: 'Rail', weights: 'Certified', inspections: 'Required', proteins: 'Medium',
+      thresholds: { min_thresholds_percentage: 3, min_thresholds_weight: 48, max_thresholds_percentage: 97, max_thresholds_weight: 1552 }, status: 'active'
     },
-    // Maíz Blanco contracts
     {
       id: 'SPC-40',
-      customer: 'Maíz Corp',
-      date: '6/20/2025',
-      quantity: '3,200,00 bu56.',
-      price: '$ 2800',
-      basis: '$ 0',
-      contractId: 'SPC-40',
-      commodityType: 'fixed',
-      commodity: 'Maíz Blanco'
-    },
-    {
-      id: 'SPC-39',
-      customer: 'Agro Corp',
-      date: '6/15/2025',
-      quantity: '2,200,00 bu56.',
-      price: '$ 0',
-      basis: '$ 2.50',
-      contractId: 'SPC-39',
-      commodityType: 'basis',
-      commodity: 'Maíz Blanco'
-    },
-    // SRW - Wheat ... contracts
-    {
-      id: 'SPC-38',
-      customer: 'Green Valley',
-      date: '6/10/2025',
-      quantity: '1,600,00 bu.',
-      price: '$ 3400',
-      basis: '$ 0',
-      contractId: 'SPC-38',
-      commodityType: 'fixed',
-      commodity: 'SRW - Wheat ...'
-    },
-    {
-      id: 'SPC-37',
-      customer: 'Harvest Co.',
-      date: '6/5/2025',
-      quantity: '1,100,00 bu.',
-      price: '$ 0',
-      basis: '$ -0.75',
-      contractId: 'SPC-37',
-      commodityType: 'basis',
-      commodity: 'SRW - Wheat ...'
-    },
-    // Frijol amarillo 1 contracts
-    {
-      id: 'SPC-36',
-      customer: 'Bean Masters',
-      date: '5/28/2025',
-      quantity: '800,00 lb.',
-      price: '$ 1200',
-      basis: '$ 0',
-      contractId: 'SPC-36',
-      commodityType: 'fixed',
-      commodity: 'Frijol amarillo 1'
-    },
-    {
-      id: 'SPC-35',
-      customer: 'Legume Co.',
-      date: '5/25/2025',
-      quantity: '950,00 lb.',
-      price: '$ 0',
-      basis: '$ 3.25',
-      contractId: 'SPC-35',
-      commodityType: 'basis',
-      commodity: 'Frijol amarillo 1'
+      type: 'purchase',
+      sub_type: 'imported',
+      folio: 'SPC-40',
+      reference_number: 'REF-40',
+      commodity: { commodity_id: 'frijol-001', name: 'Frijol amarillo 1' },
+      characteristics: { configuration_id: 'config-007', configuration_name: 'Yellow Bean Grade 1' },
+      grade: 1,
+      participants: [{ people_id: 'buyer-009', name: 'Legume Traders', role: 'buyer' }],
+      price_schedule: [{ pricing_type: 'fixed', price: 1200, basis: 0, basis_operation: 'add', future_price: 0, option_month: 'Nov', option_year: 2025, payment_currency: 'USD', exchange: 'CME' }],
+      logistic_schedule: [{ logistic_payment_responsability: 'buyer', logistic_coordination_responsability: 'seller', freight_cost: { type: 'fixed', min: 0, max: 0, cost: 40 }, payment_currency: 'USD' }],
+      quantity: 800, measurement_unit_id: 'lb', measurement_unit: 'lb', shipping_start_date: '2025-05-28', shipping_end_date: '2025-06-28', contract_date: '2025-05-28',
+      application_priority: 1, delivered: 'DAP', transport: 'Truck', weights: 'Standard', inspections: 'Optional', proteins: 'High',
+      thresholds: { min_thresholds_percentage: 2, min_thresholds_weight: 16, max_thresholds_percentage: 98, max_thresholds_weight: 784 }, status: 'active'
     }
   ];
 
   // Función para renderizar el avatar del cliente
-  const CustomerAvatar = ({ customer, commodityType }: { customer: string, commodityType?: string }) => {
-    const bgColor = commodityType === 'basis' ? 'bg-purple-100 dark:bg-purple-900' : 'bg-cyan-100 dark:bg-cyan-900';
-    const textColor = commodityType === 'basis' ? 'text-purple-600 dark:text-purple-400' : 'text-cyan-600 dark:text-cyan-400';
+  const CustomerAvatar = ({ pricingType }: { pricingType?: string }) => {
+    const bgColor = pricingType === 'basis' ? 'bg-purple-100 dark:bg-purple-900' : 'bg-cyan-100 dark:bg-cyan-900';
+    const textColor = pricingType === 'basis' ? 'text-purple-600 dark:text-purple-400' : 'text-cyan-600 dark:text-cyan-400';
     
     return (
       <div className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center`}>
@@ -233,25 +258,37 @@ export default function PurchaseContracts() {
     {
       key: 'customer',
       title: 'Customer',
-      render: (contract) => (
-        <div className="flex items-center gap-3">
-          <CustomerAvatar customer={contract.customer} commodityType={contract.commodityType} />
-          <span className="font-medium text-gray-900 dark:text-white">
-            {contract.customer}
-          </span>
-        </div>
-      ),
+      render: (contract) => {
+        const buyer = contract.participants?.find(p => p.role === 'buyer');
+        const pricingType = contract.price_schedule?.[0]?.pricing_type;
+        return (
+          <div className="flex items-center gap-3">
+            <CustomerAvatar pricingType={pricingType} />
+            <span className="font-medium text-gray-900 dark:text-white">
+              {buyer?.name || 'Unknown'}
+            </span>
+          </div>
+        );
+      },
       sortable: false,
       width: '200px'
     },
     {
       key: 'date',
       title: 'Date',
-      render: (contract) => (
-        <span className="text-gray-600 dark:text-gray-400">
-          {contract.date}
-        </span>
-      ),
+      render: (contract) => {
+        const date = new Date(contract.contract_date || '');
+        const formattedDate = date.toLocaleDateString('en-US', { 
+          month: 'numeric', 
+          day: 'numeric', 
+          year: 'numeric' 
+        });
+        return (
+          <span className="text-gray-600 dark:text-gray-400">
+            {formattedDate}
+          </span>
+        );
+      },
       sortable: true,
       width: '120px'
     },
@@ -260,7 +297,7 @@ export default function PurchaseContracts() {
       title: 'Quantity',
       render: (contract) => (
         <span className="text-gray-900 dark:text-white font-medium">
-          {contract.quantity}
+          {contract.quantity?.toLocaleString()},00 {contract.measurement_unit}
         </span>
       ),
       sortable: false,
@@ -269,30 +306,38 @@ export default function PurchaseContracts() {
     {
       key: 'price',
       title: 'Price',
-      render: (contract) => (
-        <span className={`font-medium ${
-          contract.price !== '$ 0' 
-            ? 'text-green-600 dark:text-green-400' 
-            : 'text-gray-400 dark:text-gray-500'
-        }`}>
-          {contract.price}
-        </span>
-      ),
+      render: (contract) => {
+        const priceValue = contract.price_schedule?.[0]?.price || 0;
+        return (
+          <span className={`font-medium ${
+            priceValue > 0 
+              ? 'text-green-600 dark:text-green-400' 
+              : 'text-gray-400 dark:text-gray-500'
+          }`}>
+            $ {priceValue}
+          </span>
+        );
+      },
       sortable: true,
       width: '100px'
     },
     {
       key: 'basis',
       title: 'Basis',
-      render: (contract) => (
-        <span className={`font-medium ${
-          contract.basis !== '$ 0' 
-            ? 'text-blue-600 dark:text-blue-400' 
-            : 'text-gray-400 dark:text-gray-500'
-        }`}>
-          {contract.basis}
-        </span>
-      ),
+      render: (contract) => {
+        const basisValue = contract.price_schedule?.[0]?.basis || 0;
+        const operation = contract.price_schedule?.[0]?.basis_operation;
+        const displayValue = operation === 'subtract' && basisValue > 0 ? -basisValue : basisValue;
+        return (
+          <span className={`font-medium ${
+            displayValue !== 0 
+              ? 'text-blue-600 dark:text-blue-400' 
+              : 'text-gray-400 dark:text-gray-500'
+          }`}>
+            $ {displayValue}
+          </span>
+        );
+      },
       sortable: true,
       width: '100px'
     },
@@ -301,7 +346,7 @@ export default function PurchaseContracts() {
       title: 'Id',
       render: (contract) => (
         <span className="text-gray-900 dark:text-white font-medium">
-          {contract.contractId}
+          {contract.folio || contract.id}
         </span>
       ),
       sortable: false,
@@ -357,16 +402,20 @@ export default function PurchaseContracts() {
   // Simular paginación y filtrado
   const filteredContracts = mockContracts.filter(contract => {
     // Filtro por búsqueda
-    const matchesSearch = contract.customer.toLowerCase().includes(searchValue.toLowerCase()) ||
-      contract.contractId.toLowerCase().includes(searchValue.toLowerCase());
+    const buyer = contract.participants?.find(p => p.role === 'buyer');
+    const contractId = contract.folio || contract.id || '';
+    const matchesSearch = (buyer?.name || '').toLowerCase().includes(searchValue.toLowerCase()) ||
+      contractId.toLowerCase().includes(searchValue.toLowerCase());
     
     // Filtro por tipo (basis/fixed)
+    const pricingType = contract.price_schedule?.[0]?.pricing_type || 'fixed';
     const matchesType = selectedTypeFilters.length === 0 || 
-      selectedTypeFilters.includes(contract.commodityType || 'fixed');
+      selectedTypeFilters.includes(pricingType);
     
     // Filtro por commodity
+    const commodityName = contract.commodity?.name || '';
     const matchesCommodity = selectedCommodityFilters.length === 0 || 
-      selectedCommodityFilters.includes(contract.commodity);
+      selectedCommodityFilters.includes(commodityName);
     
     return matchesSearch && matchesType && matchesCommodity;
   });
