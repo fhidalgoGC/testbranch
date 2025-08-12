@@ -138,7 +138,8 @@ export function GenericTable<T = any>({
   
   // Estados para filtros y paginación
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({
-    pricingType: ['all'] // Establecer "Todos" como seleccionado por defecto
+    pricingType: ['all'], // Establecer "Todos" como seleccionado por defecto
+    commodity: ['all'] // Establecer "Todos" como seleccionado por defecto para commodity también
   });
   const [searchValue, setSearchValue] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -276,6 +277,38 @@ export function GenericTable<T = any>({
         return { ...prev, [filterKey]: newValues };
       }
       
+      // Comportamiento especial para commodity: "All" es mutuamente exclusivo
+      if (filterKey === 'commodity') {
+        const currentValues = prev[filterKey] || [];
+        
+        // Si se selecciona "all"
+        if (value === 'all') {
+          // Si "all" ya está seleccionado, no hacer nada (mantenerlo seleccionado)
+          if (currentValues.includes('all')) {
+            return prev;
+          }
+          // Si "all" no está seleccionado, seleccionarlo y deseleccionar todo lo demás
+          return { ...prev, [filterKey]: ['all'] };
+        }
+        
+        // Si se selecciona cualquier valor que no es "all"
+        // Primero remover "all" si está presente
+        let newValues = currentValues.filter((v: any) => v !== 'all');
+        
+        // Luego aplicar la lógica normal de toggle
+        if (newValues.includes(value)) {
+          newValues = newValues.filter((v: any) => v !== value);
+          // Si no queda ningún valor seleccionado, volver a "all"
+          if (newValues.length === 0) {
+            newValues = ['all'];
+          }
+        } else {
+          newValues = [...newValues, value];
+        }
+        
+        return { ...prev, [filterKey]: newValues };
+      }
+      
       // Comportamiento por defecto para otros filtros (múltiple selección)
       const currentValues = prev[filterKey] || [];
       const newValues = Array.isArray(currentValues)
@@ -372,7 +405,21 @@ export function GenericTable<T = any>({
                         : 'bg-white dark:bg-gray-800 border-blue-300 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-700 dark:hover:text-blue-300';
                     }
                   }
-                  // Estilos por defecto para otros filtros (commodity)
+                  
+                  // Estilos específicos para commodity con botón "All" especial
+                  if (filter.key === 'commodity') {
+                    if (filterValue === 'all') {
+                      return selectedFilters[filter.key]?.includes(filterValue)
+                        ? 'bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-800/60 dark:to-emerald-800/60 border-green-400 dark:border-green-500 text-green-800 dark:text-green-200 hover:from-green-300 hover:to-emerald-300 dark:hover:from-green-700/80 dark:hover:to-emerald-700/80'
+                        : 'bg-white dark:bg-gray-800 border-green-300 dark:border-green-500 text-green-700 dark:text-green-300 hover:bg-gradient-to-r hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30';
+                    } else {
+                      return selectedFilters[filter.key]?.includes(filterValue)
+                        ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800/40 hover:text-green-800 dark:hover:text-green-200'
+                        : 'bg-white dark:bg-gray-800 border-green-300 dark:border-green-500 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 hover:text-green-700 dark:hover:text-green-300';
+                    }
+                  }
+                  
+                  // Estilos por defecto para otros filtros
                   return selectedFilters[filter.key]?.includes(filterValue)
                     ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800/40 hover:text-green-800 dark:hover:text-green-200'
                     : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300';

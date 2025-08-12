@@ -135,7 +135,7 @@ export default function PurchaseContracts() {
     }
     
     // Filtros por commodity
-    if (params.filters?.commodity?.length > 0) {
+    if (params.filters?.commodity?.length > 0 && !params.filters.commodity.includes('all')) {
       filteredContracts = filteredContracts.filter(contract => {
         const commodityName = contract.commodity?.name || '';
         return params.filters!.commodity.includes(commodityName);
@@ -562,6 +562,11 @@ export default function PurchaseContracts() {
       titleKey: 'commodity',
       type: 'button',
       availableValues: [
+        {
+          key: 'all',
+          value: 'all',
+          label: { key: 'filters.all' }
+        },
         {
           key: 'yc_yellow_corn',
           value: 'YC - Yellow C...',
