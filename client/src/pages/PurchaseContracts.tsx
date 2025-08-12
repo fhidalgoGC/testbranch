@@ -90,9 +90,12 @@ interface ContractResponse {
     };
     created_at: string;
   }>;
-  total: number;
-  page: number;
-  limit: number;
+  _meta: {
+    page_size: number;
+    page_number: number;
+    total_elements: number;
+    total_pages: number;
+  };
 }
 
 export default function PurchaseContracts() {
@@ -265,7 +268,7 @@ export default function PurchaseContracts() {
       console.log('Setting contracts in state. Total contracts:', mappedContracts.length);
       console.log('First contract example:', mappedContracts[0] || 'No contracts found');
       setContracts(mappedContracts);
-      setTotalContracts(data.total);
+      setTotalContracts(data._meta.total_elements);
 
     } catch (error) {
       console.error('Error al cargar contratos:', error);
@@ -404,11 +407,11 @@ export default function PurchaseContracts() {
 
       console.log('fetchContractsData mapped contracts:', mappedContracts.length);
       
-      // Retornar la estructura correcta
+      // Retornar la estructura correcta usando _meta
       return {
         data: mappedContracts,
-        total: data.total,
-        totalPages: Math.ceil(data.total / (params.pageSize || 10))
+        total: data._meta.total_elements,
+        totalPages: data._meta.total_pages
       };
     } catch (error) {
       console.error('Error in fetchContractsData:', error);
