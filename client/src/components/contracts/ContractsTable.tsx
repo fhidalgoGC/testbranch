@@ -21,12 +21,18 @@ export interface TableColumn<T = any> {
   dataMapping?: string; // Ruta para acceder al dato (ej: "participants[0].name")
 }
 
+export interface FilterOption {
+  key: string;
+  value: string;
+  label: string;
+}
+
 export interface TableFilter {
   key: string;
   titleKey: string;
   type: 'button' | 'select';
   options?: string[];
-  availableValues?: string[];
+  availableValues?: string[] | FilterOption[];
 }
 
 export interface ActionMenuItem {
@@ -304,21 +310,29 @@ export function GenericTable<T = any>({
         <div className="flex flex-wrap gap-2 mb-6">
           {filters.map((filter) => (
             <div key={filter.key} className="flex flex-wrap gap-2">
-              {filter.type === 'button' && filter.availableValues?.map((value) => (
-                <Button
-                  key={value}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleFilter(filter.key, value)}
-                  className={`px-4 py-2 rounded-full border transition-colors ${
-                    selectedFilters[filter.key]?.includes(value)
-                      ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
-                      : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400'
-                  }`}
-                >
-                  {value}
-                </Button>
-              ))}
+              {filter.type === 'button' && filter.availableValues?.map((value) => {
+                // Manejar tanto strings como FilterOption objects
+                const isObject = typeof value === 'object' && value !== null;
+                const displayValue = isObject ? (value as FilterOption).label : value as string;
+                const filterValue = isObject ? (value as FilterOption).value : value as string;
+                const uniqueKey = isObject ? (value as FilterOption).key : value as string;
+                
+                return (
+                  <Button
+                    key={uniqueKey}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleFilter(filter.key, filterValue)}
+                    className={`px-4 py-2 rounded-full border transition-colors ${
+                      selectedFilters[filter.key]?.includes(filterValue)
+                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
+                        : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    {displayValue}
+                  </Button>
+                );
+              })}
             </div>
           ))}
         </div>

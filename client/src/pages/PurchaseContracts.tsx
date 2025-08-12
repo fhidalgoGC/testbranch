@@ -6,7 +6,8 @@ import {
   TableColumn, 
   ActionMenuItem, 
   DataFetchFunction, 
-  TableFilter 
+  TableFilter,
+  FilterOption
 } from '@/components/contracts/ContractsTable';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -128,10 +129,8 @@ export default function PurchaseContracts() {
     if (params.filters?.pricingType?.length > 0) {
       filteredContracts = filteredContracts.filter(contract => {
         const pricingType = contract.price_schedule?.[0]?.pricing_type || 'fixed';
-        // Convertir a capitalizado para comparar con los nuevos valores del filtro
-        const capitalizedType = pricingType === 'basis' ? 'Basis' : 
-                               pricingType === 'fixed' ? 'Fixed' : pricingType;
-        return params.filters!.pricingType.includes(capitalizedType);
+        // Los filtros ahora usan la estructura con value, así que comparamos directamente
+        return params.filters!.pricingType.includes(pricingType);
       });
     }
     
@@ -534,26 +533,65 @@ export default function PurchaseContracts() {
     }
   ];
 
-  // Definir filtros
+  // Definir filtros con estructura de select estándar
   const filters: TableFilter[] = [
     {
       key: 'pricingType',
       titleKey: 'pricingType',
       type: 'button',
-      availableValues: ['Basis', 'Fixed']
+      availableValues: [
+        {
+          key: 'basis',
+          value: 'basis',
+          label: 'Basis'
+        },
+        {
+          key: 'fixed',
+          value: 'fixed', 
+          label: 'Fixed'
+        }
+      ]
     },
     {
       key: 'commodity',
       titleKey: 'commodity',
       type: 'button',
       availableValues: [
-        'YC - Yellow C...',
-        'Soya 2025',
-        'Semillas de gi...',
-        'HRW - Wheat...',
-        'Maíz Blanco',
-        'SRW - Wheat ...',
-        'Frijol amarillo 1'
+        {
+          key: 'yc_yellow_corn',
+          value: 'YC - Yellow C...',
+          label: 'YC - Yellow C...'
+        },
+        {
+          key: 'soya_2025',
+          value: 'Soya 2025',
+          label: 'Soya 2025'
+        },
+        {
+          key: 'semillas_girasol',
+          value: 'Semillas de gi...',
+          label: 'Semillas de gi...'
+        },
+        {
+          key: 'hrw_wheat',
+          value: 'HRW - Wheat...',
+          label: 'HRW - Wheat...'
+        },
+        {
+          key: 'maiz_blanco',
+          value: 'Maíz Blanco',
+          label: 'Maíz Blanco'
+        },
+        {
+          key: 'srw_wheat',
+          value: 'SRW - Wheat ...',
+          label: 'SRW - Wheat ...'
+        },
+        {
+          key: 'frijol_amarillo',
+          value: 'Frijol amarillo 1',
+          label: 'Frijol amarillo 1'
+        }
       ]
     }
   ];
