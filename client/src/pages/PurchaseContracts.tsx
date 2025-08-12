@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { User } from 'lucide-react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { 
   GenericTable, 
@@ -135,7 +134,7 @@ export default function PurchaseContracts() {
     }
     
     // Filtros por commodity
-    if (params.filters?.commodity?.length > 0 && !params.filters.commodity.includes('all')) {
+    if (params.filters?.commodity?.length > 0 && !params.filters?.commodity.includes('all')) {
       filteredContracts = filteredContracts.filter(contract => {
         const commodityName = contract.commodity?.name || '';
         return params.filters!.commodity.includes(commodityName);
@@ -355,23 +354,29 @@ export default function PurchaseContracts() {
   // Definir las columnas de la tabla
   const columns: TableColumn<PurchaseContract>[] = [
     {
+      key: 'pricingIndicator',
+      title: '', // Sin título para esta columna
+      render: (contract) => {
+        const pricingType = contract.price_schedule?.[0]?.pricing_type;
+        const bgColor = pricingType === 'basis' ? 'bg-purple-500' : 'bg-cyan-500';
+        
+        return (
+          <div className={`w-6 h-6 rounded-full ${bgColor}`}></div>
+        );
+      },
+      sortable: false,
+      width: '50px'
+    },
+    {
       key: 'customer',
       titleKey: 'customer',
       render: (contract) => {
         const buyer = contract.participants?.find(p => p.role === 'buyer');
-        const pricingType = contract.price_schedule?.[0]?.pricing_type;
-        const bgColor = pricingType === 'basis' ? 'bg-purple-100 dark:bg-purple-900' : 'bg-cyan-100 dark:bg-cyan-900';
-        const textColor = pricingType === 'basis' ? 'text-purple-600 dark:text-purple-400' : 'text-cyan-600 dark:text-cyan-400';
         
         return (
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center`}>
-              <User className={`w-4 h-4 ${textColor}`} />
-            </div>
-            <span className="font-medium text-gray-900 dark:text-white">
-              {buyer?.name || 'Unknown'}
-            </span>
-          </div>
+          <span className="font-medium text-gray-900 dark:text-white">
+            {buyer?.name || 'Unknown'}
+          </span>
         );
       },
       sortable: false,
