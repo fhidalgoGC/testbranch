@@ -23,6 +23,7 @@ interface PurchaseContract {
   basis: string;
   contractId: string;
   commodityType?: 'basis' | 'fixed';
+  commodity: string;
 }
 
 export default function PurchaseContracts() {
@@ -52,6 +53,7 @@ export default function PurchaseContracts() {
 
   // Datos de ejemplo para la tabla
   const mockContracts: PurchaseContract[] = [
+    // YC - Yellow C... contracts
     {
       id: 'SPC-48',
       customer: 'Andrés band...',
@@ -60,47 +62,100 @@ export default function PurchaseContracts() {
       price: '$ 370',
       basis: '$ 0',
       contractId: 'SPC-48',
-      commodityType: 'fixed'
+      commodityType: 'fixed',
+      commodity: 'YC - Yellow C...'
     },
     {
       id: 'SPC-47',
       customer: 'Test Seller ...',
       date: '7/23/2025',
-      quantity: '1,500,00 longTon.',
-      price: '$ 1500',
-      basis: '$ 0',
+      quantity: '1,500,00 bu56.',
+      price: '$ 0',
+      basis: '$ 1.25',
       contractId: 'SPC-47',
-      commodityType: 'fixed'
+      commodityType: 'basis',
+      commodity: 'YC - Yellow C...'
     },
+    // Soya 2025 contracts
     {
       id: 'SPC-46',
       customer: 'Test Seller ...',
       date: '7/31/2025',
       quantity: '1,400,00 bu60.',
-      price: '$ 0',
-      basis: '$ 1500',
+      price: '$ 1500',
+      basis: '$ 0',
       contractId: 'SPC-46',
-      commodityType: 'basis'
+      commodityType: 'fixed',
+      commodity: 'Soya 2025'
     },
+    {
+      id: 'SPC-45',
+      customer: 'Soja Corp',
+      date: '7/28/2025',
+      quantity: '900,00 bu60.',
+      price: '$ 0',
+      basis: '$ -0.50',
+      contractId: 'SPC-45',
+      commodityType: 'basis',
+      commodity: 'Soya 2025'
+    },
+    // Semillas de gi... contracts
     {
       id: 'SPC-44',
       customer: 'Ferti Nova',
       date: '7/3/2025',
-      quantity: '500.000,00 bu56.',
+      quantity: '500,00 kg.',
       price: '$ 3000',
-      basis: '$ -1.75',
+      basis: '$ 0',
       contractId: 'SPC-44',
-      commodityType: 'fixed'
+      commodityType: 'fixed',
+      commodity: 'Semillas de gi...'
+    },
+    {
+      id: 'SPC-43',
+      customer: 'Seeds Ltd',
+      date: '7/1/2025',
+      quantity: '750,00 kg.',
+      price: '$ 0',
+      basis: '$ 5.00',
+      contractId: 'SPC-43',
+      commodityType: 'basis',
+      commodity: 'Semillas de gi...'
+    },
+    // HRW - Wheat... contracts
+    {
+      id: 'SPC-42',
+      customer: 'Wheat Masters',
+      date: '6/25/2025',
+      quantity: '2,000,00 bu.',
+      price: '$ 4200',
+      basis: '$ 0',
+      contractId: 'SPC-42',
+      commodityType: 'fixed',
+      commodity: 'HRW - Wheat...'
     },
     {
       id: 'SPC-41',
       customer: 'Ferti Nova',
       date: '7/3/2025',
-      quantity: '4.000,00 lb.',
-      price: '$ 6000',
+      quantity: '1,800,00 bu.',
+      price: '$ 0',
       basis: '$ -1.75',
       contractId: 'SPC-41',
-      commodityType: 'fixed'
+      commodityType: 'basis',
+      commodity: 'HRW - Wheat...'
+    },
+    // Maíz Blanco contracts
+    {
+      id: 'SPC-40',
+      customer: 'Maíz Corp',
+      date: '6/20/2025',
+      quantity: '3,200,00 bu56.',
+      price: '$ 2800',
+      basis: '$ 0',
+      contractId: 'SPC-40',
+      commodityType: 'fixed',
+      commodity: 'Maíz Blanco'
     },
     {
       id: 'SPC-39',
@@ -110,27 +165,54 @@ export default function PurchaseContracts() {
       price: '$ 0',
       basis: '$ 2.50',
       contractId: 'SPC-39',
-      commodityType: 'basis'
+      commodityType: 'basis',
+      commodity: 'Maíz Blanco'
     },
+    // SRW - Wheat ... contracts
     {
       id: 'SPC-38',
       customer: 'Green Valley',
       date: '6/10/2025',
-      quantity: '800,00 longTon.',
-      price: '$ 950',
+      quantity: '1,600,00 bu.',
+      price: '$ 3400',
       basis: '$ 0',
       contractId: 'SPC-38',
-      commodityType: 'fixed'
+      commodityType: 'fixed',
+      commodity: 'SRW - Wheat ...'
     },
     {
       id: 'SPC-37',
       customer: 'Harvest Co.',
       date: '6/5/2025',
-      quantity: '1,100,00 bu60.',
+      quantity: '1,100,00 bu.',
       price: '$ 0',
       basis: '$ -0.75',
       contractId: 'SPC-37',
-      commodityType: 'basis'
+      commodityType: 'basis',
+      commodity: 'SRW - Wheat ...'
+    },
+    // Frijol amarillo 1 contracts
+    {
+      id: 'SPC-36',
+      customer: 'Bean Masters',
+      date: '5/28/2025',
+      quantity: '800,00 lb.',
+      price: '$ 1200',
+      basis: '$ 0',
+      contractId: 'SPC-36',
+      commodityType: 'fixed',
+      commodity: 'Frijol amarillo 1'
+    },
+    {
+      id: 'SPC-35',
+      customer: 'Legume Co.',
+      date: '5/25/2025',
+      quantity: '950,00 lb.',
+      price: '$ 0',
+      basis: '$ 3.25',
+      contractId: 'SPC-35',
+      commodityType: 'basis',
+      commodity: 'Frijol amarillo 1'
     }
   ];
 
@@ -282,8 +364,9 @@ export default function PurchaseContracts() {
     const matchesType = selectedTypeFilters.length === 0 || 
       selectedTypeFilters.includes(contract.commodityType || 'fixed');
     
-    // Filtro por commodity (por ahora solo simulamos que todos los contratos son compatibles)
-    const matchesCommodity = selectedCommodityFilters.length === 0;
+    // Filtro por commodity
+    const matchesCommodity = selectedCommodityFilters.length === 0 || 
+      selectedCommodityFilters.includes(contract.commodity);
     
     return matchesSearch && matchesType && matchesCommodity;
   });
