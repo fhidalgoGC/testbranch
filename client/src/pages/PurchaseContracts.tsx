@@ -30,7 +30,7 @@ export default function PurchaseContracts() {
 
   // Estados para la paginación y búsqueda
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(5);
   const [searchValue, setSearchValue] = useState('');
   const [sortKey, setSortKey] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');

@@ -42,7 +42,7 @@ export interface DataTableProps<T> {
   addButtonLabel?: string;
 }
 
-const pageSizeOptions = [10, 25, 50, 100];
+const pageSizeOptions = [5, 10, 20, 50];
 
 export function DataTable<T>({
   columns,
