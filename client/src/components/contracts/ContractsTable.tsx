@@ -43,6 +43,7 @@ export interface DataFetchFunction<T = any> {
     search?: string;
     filters?: Record<string, any>;
     sort?: { key: string; direction: 'asc' | 'desc' };
+    columns?: TableColumn<T>[]; // Pasar las columnas para la búsqueda
   }): Promise<{
     data: T[];
     total: number;
@@ -87,6 +88,30 @@ function getNestedValue(obj: any, path: string): any {
   }, obj);
 }
 
+// Función auxiliar para buscar en todas las columnas
+function searchInAllColumns<T>(item: T, searchTerm: string, columns: TableColumn<T>[]): boolean {
+  const searchLower = searchTerm.toLowerCase();
+  
+  return columns.some(column => {
+    let value: any;
+    
+    // Si la columna tiene dataMapping, usar eso
+    if (column.dataMapping) {
+      value = getNestedValue(item, column.dataMapping);
+    } else {
+      value = (item as any)[column.key];
+    }
+    
+    // Convertir a string y buscar
+    if (value != null) {
+      const stringValue = value.toString().toLowerCase();
+      return stringValue.includes(searchLower);
+    }
+    
+    return false;
+  });
+}
+
 export function GenericTable<T = any>({
   columns,
   fetchData,
@@ -128,7 +153,8 @@ export function GenericTable<T = any>({
         pageSize,
         search: searchValue,
         filters: selectedFilters,
-        sort: sortKey ? { key: sortKey, direction: sortDirection } : undefined
+        sort: sortKey ? { key: sortKey, direction: sortDirection } : undefined,
+        columns // Pasar las columnas para la búsqueda
       });
       
       setData(result.data);

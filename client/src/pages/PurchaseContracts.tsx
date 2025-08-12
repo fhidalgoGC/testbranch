@@ -120,19 +120,8 @@ export default function PurchaseContracts() {
       });
     }
     
-    // Aplicar filtros y búsqueda
+    // Aplicar solo filtros (la búsqueda se maneja en fetchContractsData)
     let filteredContracts = allContracts;
-    
-    // Filtro por búsqueda
-    if (params.search) {
-      const searchLower = params.search.toLowerCase();
-      filteredContracts = filteredContracts.filter(contract => {
-        const buyer = contract.participants?.find(p => p.role === 'buyer');
-        const contractId = contract.folio || contract.id || '';
-        return (buyer?.name || '').toLowerCase().includes(searchLower) ||
-               contractId.toLowerCase().includes(searchLower);
-      });
-    }
     
     // Filtros por tipo de pricing
     if (params.filters?.pricingType?.length > 0) {
@@ -158,13 +147,93 @@ export default function PurchaseContracts() {
     // Simular delay de API
     await new Promise(resolve => setTimeout(resolve, 300));
     
-    const filteredContracts = generateMockContracts(params);
-    const total = filteredContracts.length;
+    let allContracts = generateMockContracts(params);
+    
+    // Aplicar filtros de búsqueda en todas las columnas si se proporciona búsqueda
+    if (params.search && params.columns) {
+      // Importar la función de búsqueda desde el componente
+      const searchInAllColumns = (item: PurchaseContract, searchTerm: string) => {
+        const searchLower = searchTerm.toLowerCase();
+        
+        return params.columns!.some(column => {
+          let value: any;
+          
+          // Si la columna tiene dataMapping, usar eso
+          if (column.dataMapping) {
+            // Función auxiliar para obtener valor anidado
+            const getNestedValue = (obj: any, path: string): any => {
+              return path.split('.').reduce((current, key) => {
+                if (key.includes('[') && key.includes(']')) {
+                  const arrayKey = key.substring(0, key.indexOf('['));
+                  const index = parseInt(key.substring(key.indexOf('[') + 1, key.indexOf(']')));
+                  return current?.[arrayKey]?.[index];
+                }
+                return current?.[key];
+              }, obj);
+            };
+            value = getNestedValue(item, column.dataMapping);
+          } else {
+            value = (item as any)[column.key];
+          }
+          
+          // Búsqueda especial para columnas específicas
+          if (column.key === 'customer') {
+            const buyer = item.participants?.find(p => p.role === 'buyer');
+            const buyerName = buyer?.name || '';
+            return buyerName.toLowerCase().includes(searchLower);
+          }
+          
+          if (column.key === 'date') {
+            const date = new Date(item.contract_date || '');
+            const formattedDate = date.toLocaleDateString('en-US', { 
+              month: 'numeric', 
+              day: 'numeric', 
+              year: 'numeric' 
+            });
+            return formattedDate.toLowerCase().includes(searchLower);
+          }
+          
+          if (column.key === 'quantity') {
+            const quantityText = `${item.quantity?.toLocaleString()},00 ${item.measurement_unit}`;
+            return quantityText.toLowerCase().includes(searchLower);
+          }
+          
+          if (column.key === 'price') {
+            const priceValue = item.price_schedule?.[0]?.price || 0;
+            return priceValue.toString().includes(searchLower);
+          }
+          
+          if (column.key === 'basis') {
+            const basisValue = item.price_schedule?.[0]?.basis || 0;
+            const operation = item.price_schedule?.[0]?.basis_operation;
+            const displayValue = operation === 'subtract' && basisValue > 0 ? -basisValue : basisValue;
+            return displayValue.toString().includes(searchLower);
+          }
+          
+          if (column.key === 'id') {
+            const contractId = item.folio || item.id || '';
+            return contractId.toLowerCase().includes(searchLower);
+          }
+          
+          // Convertir a string y buscar para otros campos
+          if (value != null) {
+            const stringValue = value.toString().toLowerCase();
+            return stringValue.includes(searchLower);
+          }
+          
+          return false;
+        });
+      };
+      
+      allContracts = allContracts.filter(contract => searchInAllColumns(contract, params.search!));
+    }
+    
+    const total = allContracts.length;
     const totalPages = Math.ceil(total / params.pageSize);
     
     // Paginación
     const startIndex = (params.page - 1) * params.pageSize;
-    const paginatedContracts = filteredContracts.slice(startIndex, startIndex + params.pageSize);
+    const paginatedContracts = allContracts.slice(startIndex, startIndex + params.pageSize);
     
     return {
       data: paginatedContracts,
