@@ -148,11 +148,11 @@ export default function PurchaseContracts() {
     // Simular delay de API
     await new Promise(resolve => setTimeout(resolve, 300));
     
+    // Generar todos los contratos
     let allContracts = generateMockContracts(params);
     
     // Aplicar filtros de búsqueda en todas las columnas si se proporciona búsqueda
     if (params.search && params.columns) {
-      // Importar la función de búsqueda desde el componente
       const searchInAllColumns = (item: PurchaseContract, searchTerm: string) => {
         const searchLower = searchTerm.toLowerCase();
         
@@ -161,7 +161,6 @@ export default function PurchaseContracts() {
           
           // Si la columna tiene dataMapping, usar eso
           if (column.dataMapping) {
-            // Función auxiliar para obtener valor anidado
             const getNestedValue = (obj: any, path: string): any => {
               return path.split('.').reduce((current, key) => {
                 if (key.includes('[') && key.includes(']')) {
@@ -274,10 +273,73 @@ export default function PurchaseContracts() {
       allContracts = allContracts.filter(contract => searchInAllColumns(contract, params.search!));
     }
     
+    // Aplicar ordenamiento si se especifica
+    if (params.sort) {
+      const { key, direction } = params.sort;
+      
+      allContracts.sort((a, b) => {
+        let aValue: any, bValue: any;
+        
+        // Obtener valores para ordenamiento
+        switch (key) {
+          case 'customer':
+            aValue = a.participants?.find(p => p.role === 'buyer')?.name || '';
+            bValue = b.participants?.find(p => p.role === 'buyer')?.name || '';
+            break;
+          case 'date':
+            aValue = new Date(a.contract_date || '').getTime();
+            bValue = new Date(b.contract_date || '').getTime();
+            break;
+          case 'quantity':
+            aValue = a.quantity || 0;
+            bValue = b.quantity || 0;
+            break;
+          case 'price':
+            aValue = a.price_schedule?.[0]?.price || 0;
+            bValue = b.price_schedule?.[0]?.price || 0;
+            break;
+          case 'basis':
+            const aBasis = a.price_schedule?.[0]?.basis || 0;
+            const aOperation = a.price_schedule?.[0]?.basis_operation;
+            aValue = aOperation === 'subtract' && aBasis > 0 ? -aBasis : aBasis;
+            
+            const bBasis = b.price_schedule?.[0]?.basis || 0;
+            const bOperation = b.price_schedule?.[0]?.basis_operation;
+            bValue = bOperation === 'subtract' && bBasis > 0 ? -bBasis : bBasis;
+            break;
+          case 'future':
+            aValue = a.price_schedule?.[0]?.future_price || 0;
+            bValue = b.price_schedule?.[0]?.future_price || 0;
+            break;
+          case 'reserve':
+            aValue = a.logistic_schedule?.[0]?.freight_cost?.cost || 0;
+            bValue = b.logistic_schedule?.[0]?.freight_cost?.cost || 0;
+            break;
+          case 'id':
+            aValue = a.folio || a.id || '';
+            bValue = b.folio || b.id || '';
+            break;
+          default:
+            aValue = (a as any)[key];
+            bValue = (b as any)[key];
+        }
+        
+        // Comparar valores
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          const comparison = aValue.localeCompare(bValue);
+          return direction === 'desc' ? -comparison : comparison;
+        }
+        
+        if (aValue < bValue) return direction === 'desc' ? 1 : -1;
+        if (aValue > bValue) return direction === 'desc' ? -1 : 1;
+        return 0;
+      });
+    }
+    
     const total = allContracts.length;
     const totalPages = Math.ceil(total / params.pageSize);
     
-    // Paginación
+    // Paginación después del ordenamiento
     const startIndex = (params.page - 1) * params.pageSize;
     const paginatedContracts = allContracts.slice(startIndex, startIndex + params.pageSize);
     
