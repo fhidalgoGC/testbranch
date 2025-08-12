@@ -9,6 +9,7 @@ import {
   TableFilter 
 } from '@/components/contracts/ContractsTable';
 import { PurchaseContract } from '@/types/purchaseContract.types';
+import { formatNumber } from '@/lib/numberFormatter';
 
 export default function PurchaseContracts() {
   const { t } = useTranslation();
@@ -194,20 +195,65 @@ export default function PurchaseContracts() {
           }
           
           if (column.key === 'quantity') {
-            const quantityText = `${item.quantity?.toLocaleString()},00 ${item.measurement_unit}`;
+            const formattedQuantity = formatNumber({
+              value: item.quantity || 0,
+              minDecimals: 2,
+              maxDecimals: 2,
+              formatPattern: "0,000.00",
+              roundMode: "truncate"
+            });
+            const quantityText = `${formattedQuantity} ${item.measurement_unit}`;
             return quantityText.toLowerCase().includes(searchLower);
           }
           
           if (column.key === 'price') {
             const priceValue = item.price_schedule?.[0]?.price || 0;
-            return priceValue.toString().includes(searchLower);
+            const formattedPrice = formatNumber({
+              value: priceValue,
+              minDecimals: 2,
+              maxDecimals: 4,
+              formatPattern: "0,000.00",
+              roundMode: "truncate"
+            });
+            return formattedPrice.includes(searchLower) || priceValue.toString().includes(searchLower);
           }
           
           if (column.key === 'basis') {
             const basisValue = item.price_schedule?.[0]?.basis || 0;
             const operation = item.price_schedule?.[0]?.basis_operation;
             const displayValue = operation === 'subtract' && basisValue > 0 ? -basisValue : basisValue;
-            return displayValue.toString().includes(searchLower);
+            const formattedBasis = formatNumber({
+              value: displayValue,
+              minDecimals: 2,
+              maxDecimals: 4,
+              formatPattern: "0,000.00",
+              roundMode: "truncate"
+            });
+            return formattedBasis.includes(searchLower) || displayValue.toString().includes(searchLower);
+          }
+          
+          if (column.key === 'future') {
+            const futureValue = item.price_schedule?.[0]?.future_price || 0;
+            const formattedFuture = formatNumber({
+              value: futureValue,
+              minDecimals: 2,
+              maxDecimals: 4,
+              formatPattern: "0,000.00",
+              roundMode: "truncate"
+            });
+            return formattedFuture.includes(searchLower) || futureValue.toString().includes(searchLower);
+          }
+          
+          if (column.key === 'reserve') {
+            const reserveValue = item.logistic_schedule?.[0]?.freight_cost?.cost || 0;
+            const formattedReserve = formatNumber({
+              value: reserveValue,
+              minDecimals: 2,
+              maxDecimals: 4,
+              formatPattern: "0,000.00",
+              roundMode: "truncate"
+            });
+            return formattedReserve.includes(searchLower) || reserveValue.toString().includes(searchLower);
           }
           
           if (column.key === 'id') {
@@ -289,11 +335,20 @@ export default function PurchaseContracts() {
     {
       key: 'quantity',
       titleKey: 'quantity',
-      render: (contract) => (
-        <span className="text-gray-900 dark:text-white font-medium">
-          {contract.quantity?.toLocaleString()},00 {contract.measurement_unit}
-        </span>
-      ),
+      render: (contract) => {
+        const formattedQuantity = formatNumber({
+          value: contract.quantity || 0,
+          minDecimals: 2,
+          maxDecimals: 2,
+          formatPattern: "0,000.00",
+          roundMode: "truncate"
+        });
+        return (
+          <span className="text-gray-900 dark:text-white font-medium">
+            {formattedQuantity} {contract.measurement_unit}
+          </span>
+        );
+      },
       sortable: false,
       width: '150px'
     },
@@ -302,18 +357,25 @@ export default function PurchaseContracts() {
       titleKey: 'price',
       render: (contract) => {
         const priceValue = contract.price_schedule?.[0]?.price || 0;
+        const formattedPrice = formatNumber({
+          value: priceValue,
+          minDecimals: 2,
+          maxDecimals: 4,
+          formatPattern: "0,000.00",
+          roundMode: "truncate"
+        });
         return (
           <span className={`font-medium ${
             priceValue > 0 
               ? 'text-green-600 dark:text-green-400' 
               : 'text-gray-400 dark:text-gray-500'
           }`}>
-            $ {priceValue}
+            $ {formattedPrice}
           </span>
         );
       },
       sortable: true,
-      width: '100px'
+      width: '120px'
     },
     {
       key: 'basis',
@@ -322,18 +384,76 @@ export default function PurchaseContracts() {
         const basisValue = contract.price_schedule?.[0]?.basis || 0;
         const operation = contract.price_schedule?.[0]?.basis_operation;
         const displayValue = operation === 'subtract' && basisValue > 0 ? -basisValue : basisValue;
+        const formattedBasis = formatNumber({
+          value: displayValue,
+          minDecimals: 2,
+          maxDecimals: 4,
+          formatPattern: "0,000.00",
+          roundMode: "truncate"
+        });
         return (
           <span className={`font-medium ${
             displayValue !== 0 
               ? 'text-blue-600 dark:text-blue-400' 
               : 'text-gray-400 dark:text-gray-500'
           }`}>
-            $ {displayValue}
+            $ {formattedBasis}
           </span>
         );
       },
       sortable: true,
-      width: '100px'
+      width: '120px'
+    },
+    {
+      key: 'future',
+      titleKey: 'future',
+      render: (contract) => {
+        const futureValue = contract.price_schedule?.[0]?.future_price || 0;
+        const formattedFuture = formatNumber({
+          value: futureValue,
+          minDecimals: 2,
+          maxDecimals: 4,
+          formatPattern: "0,000.00",
+          roundMode: "truncate"
+        });
+        return (
+          <span className={`font-medium ${
+            futureValue > 0 
+              ? 'text-orange-600 dark:text-orange-400' 
+              : 'text-gray-400 dark:text-gray-500'
+          }`}>
+            $ {formattedFuture}
+          </span>
+        );
+      },
+      sortable: true,
+      width: '120px'
+    },
+    {
+      key: 'reserve',
+      titleKey: 'reserve',
+      render: (contract) => {
+        // Simular un valor de reserva basado en el freight cost
+        const reserveValue = contract.logistic_schedule?.[0]?.freight_cost?.cost || 0;
+        const formattedReserve = formatNumber({
+          value: reserveValue,
+          minDecimals: 2,
+          maxDecimals: 4,
+          formatPattern: "0,000.00",
+          roundMode: "truncate"
+        });
+        return (
+          <span className={`font-medium ${
+            reserveValue > 0 
+              ? 'text-purple-600 dark:text-purple-400' 
+              : 'text-gray-400 dark:text-gray-500'
+          }`}>
+            $ {formattedReserve}
+          </span>
+        );
+      },
+      sortable: true,
+      width: '120px'
     },
     {
       key: 'id',
