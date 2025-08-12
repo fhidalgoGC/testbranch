@@ -265,40 +265,113 @@ export default function PurchaseContracts() {
   // Función de fetch de datos que llama a la API real
   const fetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
     try {
-      // Convertir filtros al formato esperado por la API
-      const activeFilters: Record<string, any> = {};
+      console.log('fetchContractsData called with params:', params);
+      
+      // Obtener datos de autenticación
+      const partitionKey = localStorage.getItem('partition_key') || '';
+      const idToken = localStorage.getItem('id_token') || '';
+
+      if (!partitionKey || !idToken) {
+        console.error('No hay datos de autenticación disponibles para contratos en fetchContractsData');
+        return {
+          data: [],
+          total: 0,
+          totalPages: 0
+        };
+      }
+
+      // Construir filtros para la API
+      const apiFilter: Record<string, any> = { type: 'purchase' };
       
       if (params.filters?.pricingType?.length && !params.filters.pricingType.includes('all')) {
-        activeFilters.pricingType = params.filters.pricingType[0]; // Solo tomar el primer filtro
+        apiFilter.pricing_type = params.filters.pricingType[0];
       }
       
       if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
-        activeFilters.commodity = params.filters.commodity[0]; // Solo tomar el primer filtro
+        apiFilter.commodity_id = params.filters.commodity[0];
       }
-      
-      // Construir sortConfig si hay ordenamiento
-      let sortConfig = null;
-      if (params.sort) {
-        sortConfig = {
-          field: params.sort.key,
-          direction: params.sort.direction
-        };
+
+      // Agregar búsqueda si existe
+      if (params.search) {
+        apiFilter.search = params.search;
       }
-      
-      // Llamar a la función fetchContracts
-      await fetchContracts(
-        params.page || 1,
-        params.pageSize || 10,
-        activeFilters,
-        params.search || '',
-        sortConfig
-      );
+
+      // Construir parámetros de consulta
+      const queryParams = new URLSearchParams({
+        all: 'true',
+        filter: JSON.stringify(apiFilter),
+        page: (params.page || 1).toString(),
+        limit: (params.pageSize || 10).toString(),
+        sort: JSON.stringify({ created_at: -1 })
+      });
+
+      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${queryParams.toString()}`;
+      console.log('fetchContractsData fetching from:', url);
+
+      // Headers de la petición
+      const headers = {
+        '_partitionkey': partitionKey,
+        'accept': '*/*',
+        'accept-language': 'es-419,es;q=0.9',
+        'authorization': `Bearer ${idToken}`,
+        'bt-organization': partitionKey,
+        'bt-uid': partitionKey,
+        'organization_id': partitionKey,
+        'origin': 'https://contracts-develop.grainchain.io',
+        'pk-organization': partitionKey
+      };
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: headers
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`HTTP error! status: ${response.status}, response: ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: ContractResponse = await response.json();
+      console.log('fetchContractsData response:', data);
+
+      // Mapear los datos de la API real a nuestro formato
+      const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
+        id: contract._id,
+        folio: contract.folio,
+        reference_number: contract.folio,
+        commodity: contract.commodity,
+        participants: contract.participants,
+        characteristics: contract.characteristics,
+        type: contract.type as 'purchase',
+        sub_type: contract.sub_type as 'direct' | 'imported' | 'importedFreight',
+        quantity: contract.quantity,
+        measurement_unit_id: contract.measurement_unit_id,
+        measurement_unit: contract.measurement_unit,
+        price_schedule: contract.price_schedule,
+        logistic_schedule: contract.logistic_schedule,
+        shipping_start_date: contract.shipping_start_date,
+        shipping_end_date: contract.shipping_end_date,
+        contract_date: contract.contract_date,
+        delivered: contract.delivered,
+        transport: contract.transport,
+        weights: contract.weights,
+        inspections: contract.inspections,
+        proteins: contract.proteins,
+        application_priority: contract.application_priority,
+        thresholds: contract.thresholds,
+        status: contract.status,
+        grade: contract.grade.toString(),
+        inventory: contract.inventory
+      }));
+
+      console.log('fetchContractsData mapped contracts:', mappedContracts.length);
       
       // Retornar la estructura correcta
       return {
-        data: contracts,
-        total: totalContracts,
-        totalPages: Math.ceil(totalContracts / (params.pageSize || 10))
+        data: mappedContracts,
+        total: data.total,
+        totalPages: Math.ceil(data.total / (params.pageSize || 10))
       };
     } catch (error) {
       console.error('Error in fetchContractsData:', error);
