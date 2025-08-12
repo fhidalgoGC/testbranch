@@ -307,7 +307,7 @@ export function GenericTable<T = any>({
 
       {/* Filtros */}
       {showFilters && filters.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-6 mb-6">
           {filters.map((filter) => (
             <div key={filter.key} className="flex flex-wrap gap-2">
               {filter.type === 'button' && filter.availableValues?.map((value) => {
@@ -317,17 +317,32 @@ export function GenericTable<T = any>({
                 const filterValue = isObject ? (value as FilterOption).value : value as string;
                 const uniqueKey = isObject ? (value as FilterOption).key : value as string;
                 
+                // Definir colores específicos para pricing type
+                const getButtonStyles = () => {
+                  if (filter.key === 'pricingType') {
+                    if (filterValue === 'basis') {
+                      return selectedFilters[filter.key]?.includes(filterValue)
+                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
+                        : 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30';
+                    } else if (filterValue === 'fixed') {
+                      return selectedFilters[filter.key]?.includes(filterValue)
+                        ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300'
+                        : 'bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/30';
+                    }
+                  }
+                  // Estilos por defecto para otros filtros
+                  return selectedFilters[filter.key]?.includes(filterValue)
+                    ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300'
+                    : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700';
+                };
+                
                 return (
                   <Button
                     key={uniqueKey}
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleFilter(filter.key, filterValue)}
-                    className={`px-4 py-2 rounded-full border transition-colors ${
-                      selectedFilters[filter.key]?.includes(filterValue)
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
-                        : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400'
-                    }`}
+                    className={`px-4 py-2 rounded-full border transition-colors ${getButtonStyles()}`}
                   >
                     {displayValue}
                   </Button>
