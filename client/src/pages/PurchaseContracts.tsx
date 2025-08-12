@@ -160,10 +160,18 @@ export default function PurchaseContracts() {
 
       // Agregar filtro de commodity si está seleccionado
       if (activeFilters.commodity && activeFilters.commodity !== 'all') {
-        // Buscar el ID del commodity usando el valor seleccionado
-        const selectedCommodity = commodities.find(c => c.value === activeFilters.commodity);
-        if (selectedCommodity) {
-          filter['commodity.commodity_id'] = { $in: [selectedCommodity.key] };
+        // Si activeFilters.commodity es un array, mapearlo; si no, convertirlo en array
+        const commodityValues = Array.isArray(activeFilters.commodity) 
+          ? activeFilters.commodity 
+          : [activeFilters.commodity];
+        
+        const selectedCommodityIds = commodityValues
+          .map(commodityValue => commodities.find(c => c.value === commodityValue))
+          .filter(commodity => commodity)
+          .map(commodity => commodity!.key);
+        
+        if (selectedCommodityIds.length > 0) {
+          filter['commodity.commodity_id'] = { $in: selectedCommodityIds };
         }
       }
 
@@ -299,13 +307,17 @@ export default function PurchaseContracts() {
       }
       
       if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
-        // Buscar el ID del commodity usando el valor seleccionado
-        const selectedCommodity = commodities.find(c => c.value === params.filters.commodity[0]);
-        console.log('Selected commodity filter:', params.filters.commodity[0]);
-        console.log('Found commodity:', selectedCommodity);
-        if (selectedCommodity) {
-          apiFilter['commodity.commodity_id'] = { $in: [selectedCommodity.key] };
-          console.log('Applied filter with ID:', selectedCommodity.key);
+        // Mapear todos los valores seleccionados a sus IDs correspondientes
+        const selectedCommodityIds = params.filters.commodity
+          .map(commodityValue => commodities.find(c => c.value === commodityValue))
+          .filter(commodity => commodity) // Filtrar null/undefined
+          .map(commodity => commodity!.key);
+        
+        console.log('Selected commodity filters:', params.filters.commodity);
+        console.log('Mapped to IDs:', selectedCommodityIds);
+        
+        if (selectedCommodityIds.length > 0) {
+          apiFilter['commodity.commodity_id'] = { $in: selectedCommodityIds };
         }
       }
 
