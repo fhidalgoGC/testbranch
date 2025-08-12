@@ -456,8 +456,8 @@ export default function PurchaseContracts() {
           roundMode: "truncate"
         });
         return (
-          <span className="text-gray-900 dark:text-white">
-            {formattedQuantity} {contract.measurement_unit}
+          <span className="text-gray-900 dark:text-white font-medium">
+            {formattedQuantity} <span className="text-gray-500 dark:text-gray-400 text-sm">{contract.measurement_unit}</span>
           </span>
         );
       },
@@ -476,7 +476,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-gray-900 dark:text-white font-mono">$ {formattedPrice}</span>;
+        return <span className="text-green-600 dark:text-green-400 font-bold font-mono">$ {formattedPrice}</span>;
       },
       sortable: true,
       width: '120px'
@@ -493,7 +493,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-gray-900 dark:text-white font-mono">{formattedBasis}</span>;
+        return <span className="text-blue-600 dark:text-blue-400 font-bold font-mono">{formattedBasis}</span>;
       },
       sortable: true,
       width: '120px'
@@ -510,7 +510,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-gray-900 dark:text-white font-mono">{formattedFuture}</span>;
+        return <span className="text-orange-600 dark:text-orange-400 font-bold font-mono">{formattedFuture}</span>;
       },
       sortable: true,
       width: '120px'
@@ -527,7 +527,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-gray-900 dark:text-white font-mono">{formattedReserve}</span>;
+        return <span className="text-purple-600 dark:text-purple-400 font-bold font-mono">{formattedReserve}</span>;
       },
       sortable: true,
       width: '120px'
@@ -542,6 +542,28 @@ export default function PurchaseContracts() {
       ),
       sortable: true,
       width: '150px'
+    },
+    {
+      key: 'actions',
+      titleKey: 'actions',
+      render: (contract) => (
+        <div className="flex space-x-2">
+          <button 
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+            onClick={() => console.log('Ver contrato:', contract.id)}
+          >
+            {t('view')}
+          </button>
+          <button 
+            className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 font-medium"
+            onClick={() => console.log('Editar contrato:', contract.id)}
+          >
+            {t('edit')}
+          </button>
+        </div>
+      ),
+      sortable: false,
+      width: '120px'
     }
   ];
 
