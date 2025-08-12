@@ -280,7 +280,7 @@ export default function PurchaseContracts() {
         };
       }
 
-      // Construir filtros para la API
+      // Construir filtros para la API usando el mismo formato que fetchContracts
       const apiFilter: Record<string, any> = { type: 'purchase' };
       
       if (params.filters?.pricingType?.length && !params.filters.pricingType.includes('all')) {
@@ -288,7 +288,7 @@ export default function PurchaseContracts() {
       }
       
       if (params.filters?.commodity?.length && !params.filters.commodity.includes('all')) {
-        apiFilter.commodity_id = params.filters.commodity[0];
+        apiFilter['commodity.commodity_id'] = { $in: [params.filters.commodity[0]] };
       }
 
       // Agregar búsqueda si existe
@@ -296,14 +296,21 @@ export default function PurchaseContracts() {
         apiFilter.search = params.search;
       }
 
-      // Construir parámetros de consulta
+      // Construir parámetros de consulta usando el mismo formato que fetchContracts
       const queryParams = new URLSearchParams({
         all: 'true',
         filter: JSON.stringify(apiFilter),
         page: (params.page || 1).toString(),
-        limit: (params.pageSize || 10).toString(),
-        sort: JSON.stringify({ created_at: -1 })
+        limit: (params.pageSize || 10).toString()
       });
+
+      // Agregar ordenamiento en el mismo formato que fetchContracts
+      if (params.sort) {
+        queryParams.append(`sort[${params.sort.key}]`, params.sort.direction === 'asc' ? '1' : '-1');
+      } else {
+        // Ordenamiento por defecto por fecha de creación descendente
+        queryParams.append('sort[created_at]', '-1');
+      }
 
       const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${queryParams.toString()}`;
       console.log('fetchContractsData fetching from:', url);
