@@ -73,6 +73,14 @@ interface ContractResponse {
       max_thresholds_weight: number;
     };
     status: string;
+    inventory: {
+      total: number;
+      open: number;
+      fixed: number;
+      unsettled: number;
+      settled: number;
+      reserved: number;
+    };
     created_at: string;
   }>;
   total: number;
@@ -231,17 +239,12 @@ export default function PurchaseContracts() {
         thresholds: contract.thresholds,
         status: contract.status,
         grade: contract.grade.toString(),
-        inventory: {
-          total: contract.quantity,
-          open: contract.quantity,
-          fixed: 0,
-          unsettled: 0,
-          settled: 0,
-          reserved: 0
-        }
+        inventory: contract.inventory
       }));
 
       console.log('Mapped contracts:', mappedContracts);
+      console.log('Setting contracts in state. Total contracts:', mappedContracts.length);
+      console.log('First contract example:', mappedContracts[0] || 'No contracts found');
       setContracts(mappedContracts);
       setTotalContracts(data.total);
 
@@ -327,10 +330,10 @@ export default function PurchaseContracts() {
       key: 'customer',
       titleKey: 'customer',
       render: (contract) => {
-        const buyer = contract.participants?.find(p => p.role === 'buyer');
+        const seller = contract.participants?.find(p => p.role === 'seller');
         return (
           <span className="font-medium text-gray-900 dark:text-white">
-            {buyer?.name || 'Unknown'}
+            {seller?.name || 'Unknown'}
           </span>
         );
       },
@@ -436,7 +439,7 @@ export default function PurchaseContracts() {
       key: 'reserve',
       titleKey: 'reserve',
       render: (contract) => {
-        const reserveValue = contract.logistic_schedule?.[0]?.freight_cost?.cost || 0;
+        const reserveValue = contract.inventory?.reserved || 0;
         const formattedReserve = formatNumber({
           value: reserveValue,
           minDecimals: 2,
@@ -444,7 +447,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-gray-900 dark:text-white font-mono">$ {formattedReserve}</span>;
+        return <span className="text-gray-900 dark:text-white font-mono">{formattedReserve}</span>;
       },
       sortable: true,
       width: '120px'
