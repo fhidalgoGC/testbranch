@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { 
   GenericTable, 
@@ -11,8 +12,117 @@ import {
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
 
+// Interfaces para las respuestas de la API
+interface CommodityAPI {
+  id: string;
+  name: string;
+  partitionKey: string;
+  characteristics: any[];
+  categoryId: string;
+  subcategoryId: string;
+}
+
+interface CommodityResponse {
+  commodities_enables: CommodityAPI[];
+}
+
 export default function PurchaseContracts() {
   const { t } = useTranslation();
+  const [commodityFilters, setCommodityFilters] = useState<FilterOption[]>([
+    {
+      key: 'all',
+      value: 'all',
+      label: { key: 'filters.all' }
+    }
+  ]);
+
+  // Función para obtener commodities desde la API
+  const fetchCommodities = async () => {
+    try {
+      // Obtener token de localStorage
+      const authData = localStorage.getItem('auth');
+      const { accessToken, partitionKey } = authData ? JSON.parse(authData) : {};
+      
+      if (!accessToken || !partitionKey) {
+        console.error('No hay datos de autenticación disponibles');
+        return;
+      }
+
+      // Primera llamada para obtener commodities
+      const commoditiesResponse = await fetch(
+        'https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/commodities?type=sale',
+        {
+          method: 'GET',
+          headers: {
+            '_partitionkey': partitionKey,
+            'accept': '*/*',
+            'authorization': `Bearer ${accessToken}`,
+            'bt-organization': partitionKey,
+            'bt-uid': partitionKey,
+            'content-type': 'application/json; charset=utf-8',
+            'organization_id': partitionKey,
+            'pk-organization': partitionKey
+          }
+        }
+      );
+
+      if (!commoditiesResponse.ok) {
+        throw new Error('Error al obtener commodities');
+      }
+
+      const commoditiesData: CommodityResponse = await commoditiesResponse.json();
+      
+      // Segunda llamada con los datos de commodities
+      const contractsResponse = await fetch(
+        'https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/commodities?type=sale',
+        {
+          method: 'POST',
+          headers: {
+            '_partitionkey': partitionKey,
+            'accept': '*/*',
+            'authorization': `Bearer ${accessToken}`,
+            'bt-organization': partitionKey,
+            'bt-uid': partitionKey,
+            'content-type': 'application/json; charset=utf-8',
+            'organization_id': partitionKey,
+            'pk-organization': partitionKey
+          },
+          body: JSON.stringify({
+            commodities_enables: commoditiesData.commodities_enables
+          })
+        }
+      );
+
+      if (!contractsResponse.ok) {
+        throw new Error('Error al obtener contratos de commodities');
+      }
+
+      // Convertir commodities a formato de filtros
+      const commodityOptions: FilterOption[] = [
+        {
+          key: 'all',
+          value: 'all',
+          label: { key: 'filters.all' }
+        },
+        ...commoditiesData.commodities_enables.map(commodity => ({
+          key: commodity.id,
+          value: commodity.name,
+          label: commodity.name
+        }))
+      ];
+
+      setCommodityFilters(commodityOptions);
+
+    } catch (error) {
+      console.error('Error al cargar commodities:', error);
+      // Mantener filtros por defecto en caso de error
+    }
+  };
+
+  // Cargar commodities al montar el componente
+  useEffect(() => {
+    fetchCommodities();
+  }, []);
   
   // Función para generar datos fake
   const generateMockContracts = (params: {
@@ -355,7 +465,7 @@ export default function PurchaseContracts() {
   const columns: TableColumn<PurchaseContract>[] = [
     {
       key: 'pricingIndicator',
-      title: '', // Sin título para esta columna
+      titleKey: '', // Sin título para esta columna
       render: (contract) => {
         const pricingType = contract.price_schedule?.[0]?.pricing_type;
         const bgColor = pricingType === 'basis' ? 'bg-purple-100 dark:bg-purple-900' : 'bg-blue-100 dark:bg-blue-900';
@@ -566,48 +676,7 @@ export default function PurchaseContracts() {
       key: 'commodity',
       titleKey: 'commodity',
       type: 'button',
-      availableValues: [
-        {
-          key: 'all',
-          value: 'all',
-          label: { key: 'filters.all' }
-        },
-        {
-          key: 'yc_yellow_corn',
-          value: 'YC - Yellow C...',
-          label: 'YC - Yellow C...'
-        },
-        {
-          key: 'soya_2025',
-          value: 'Soya 2025',
-          label: 'Soya 2025'
-        },
-        {
-          key: 'semillas_girasol',
-          value: 'Semillas de gi...',
-          label: 'Semillas de gi...'
-        },
-        {
-          key: 'hrw_wheat',
-          value: 'HRW - Wheat...',
-          label: 'HRW - Wheat...'
-        },
-        {
-          key: 'maiz_blanco',
-          value: 'Maíz Blanco',
-          label: 'Maíz Blanco'
-        },
-        {
-          key: 'srw_wheat',
-          value: 'SRW - Wheat ...',
-          label: 'SRW - Wheat ...'
-        },
-        {
-          key: 'frijol_amarillo',
-          value: 'Frijol amarillo 1',
-          label: 'Frijol amarillo 1'
-        }
-      ]
+      availableValues: commodityFilters
     }
   ];
 
