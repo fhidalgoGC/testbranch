@@ -28,7 +28,7 @@ Preferred communication style: Simple, everyday language.
 - **API Structure**: RESTful endpoints (`/api` prefix).
 
 ### Project Structure
-- `client/src/`: Contains frontend application code, organized into `app`, `components/ui`, `features` (feature-based modules like `auth`), `common`, `pages`, and `locales`.
+- `client/src/`: Contains frontend application code, organized into `app`, `components/ui`, `components/general` (reusable components like StandardTable), `features` (feature-based modules like `auth`), `common`, `pages`, and `locales`.
 - `server/`: Houses backend logic including `index.ts`, `routes.ts`, `storage.ts`, and `vite.ts`.
 - `shared/`: For shared database schema and types.
 
@@ -45,7 +45,7 @@ Preferred communication style: Simple, everyday language.
     - **Characteristics Configuration**: Dynamic loading of configurations based on commodity selection.
     - **Pricing Logic**: Conditional display and calculation of price, basis, and futures fields based on pricing type (`fixed` vs. `basis`). Supports negative basis.
     - **Flag Validation**: Robust system for validating flag URLs and providing automatic fallbacks for invalid or missing flags.
-- **Reusable Components**: Comprehensive DataTable component with pagination, sorting, and debounced search, styled with Microsoft Fluent UI.
+- **Reusable Components**: Comprehensive StandardTable component (formerly ContractsTable) with pagination, sorting, debounced search, i18n reactive translations, and sophisticated filter buttons with hover behaviors, styled with Microsoft Fluent UI.
 
 ## External Dependencies
 

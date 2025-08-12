@@ -8,7 +8,7 @@ import {
   DataFetchFunction, 
   TableFilter,
   FilterOption
-} from '@/components/contracts/ContractsTable';
+} from '@/components/general/StandardTable';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
 
