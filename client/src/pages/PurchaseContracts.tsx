@@ -500,7 +500,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-blue-600 dark:text-blue-400 font-bold font-mono">{formattedBasis}</span>;
+        return <span className="text-blue-600 dark:text-blue-400 font-bold font-mono">$ {formattedBasis}</span>;
       },
       sortable: true,
       width: '120px'
@@ -517,7 +517,7 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-orange-600 dark:text-orange-400 font-bold font-mono">{formattedFuture}</span>;
+        return <span className="text-orange-600 dark:text-orange-400 font-bold font-mono">$ {formattedFuture}</span>;
       },
       sortable: true,
       width: '120px'
@@ -534,7 +534,11 @@ export default function PurchaseContracts() {
           formatPattern: "0,000.00",
           roundMode: "truncate"
         });
-        return <span className="text-purple-600 dark:text-purple-400 font-bold font-mono">{formattedReserve}</span>;
+        return (
+          <span className="text-purple-600 dark:text-purple-400 font-bold font-mono">
+            {formattedReserve} <span className="text-gray-500 dark:text-gray-400 text-sm">{contract.measurement_unit}</span>
+          </span>
+        );
       },
       sortable: true,
       width: '120px'
