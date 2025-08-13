@@ -28,7 +28,13 @@ Preferred communication style: Simple, everyday language.
 - **API Structure**: RESTful endpoints (`/api` prefix).
 
 ### Project Structure
-- `client/src/`: Contains frontend application code, organized into `app`, `components/ui`, `components/general` (reusable components like StandardTable), `features` (feature-based modules like `auth`), `common`, `pages`, and `locales`.
+- `client/src/`: Contains frontend application code, organized into:
+  - `components/ui`: Shadcn/ui components
+  - `components/general`: Reusable components like StandardTable/GenericTable
+  - `services/`: Business logic services (e.g., `contractsService.ts`)
+  - `features`: Feature-based modules like `auth`
+  - `pages`: Page components handling UI layout and user interactions
+  - `locales`: Internationalization files
 - `server/`: Houses backend logic including `index.ts`, `routes.ts`, `storage.ts`, and `vite.ts`.
 - `shared/`: For shared database schema and types.
 
@@ -45,7 +51,22 @@ Preferred communication style: Simple, everyday language.
     - **Characteristics Configuration**: Dynamic loading of configurations based on commodity selection.
     - **Pricing Logic**: Conditional display and calculation of price, basis, and futures fields based on pricing type (`fixed` vs. `basis`). Supports negative basis.
     - **Flag Validation**: Robust system for validating flag URLs and providing automatic fallbacks for invalid or missing flags.
-- **Reusable Components**: Comprehensive StandardTable component (formerly ContractsTable) with pagination, sorting, debounced search, i18n reactive translations, and sophisticated filter buttons with hover behaviors, styled with Microsoft Fluent UI.
+- **Reusable Components**: 
+  - **StandardTable/GenericTable**: Highly configurable and reusable table component with pagination, sorting, debounced search, i18n reactive translations. Component is completely agnostic and only receives processed data from parent components.
+  - **Separation of Concerns**: Page-level elements (titles, filters, action buttons) are handled by page components, not table components. Business logic moved to external services (e.g., `contractsService.ts`) for better maintainability and testability.
+
+## Recent Architectural Changes (August 2025)
+
+### StandardTable Component Refactoring
+- **Date**: August 13, 2025
+- **Change**: Complete architectural refactoring of StandardTable component
+- **Key Improvements**:
+  - Moved all business logic from StandardTable to external services (`contractsService.ts`)
+  - Page-level elements (title, filters, action buttons) moved from table component to page components
+  - StandardTable is now completely agnostic and data-driven
+  - Better separation of concerns: UI vs business logic
+  - Improved maintainability and testability
+- **Impact**: Cleaner component structure, reusable services, better code organization
 
 ## External Dependencies
 

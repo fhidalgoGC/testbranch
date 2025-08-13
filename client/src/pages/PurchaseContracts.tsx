@@ -17,7 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { MoreHorizontal, Plus } from 'lucide-react';
+import { Link } from 'wouter';
 
 
 
@@ -416,51 +418,83 @@ export default function PurchaseContracts() {
 
   return (
     <DashboardLayout title={t('purchaseContracts')}>
-      <GenericTable
-        columns={columns}
-        fetchData={handleFetchContractsData}
-        titleKey="purchaseContractsList"
-        defaultFilters={{
-          pricingType: ['all'],
-          commodity: ['all']
-        }}
-        filters={[
-          {
-            key: 'pricingType',
-            titleKey: 'pricingType',
-            type: 'button',
-            availableValues: [
-              {
-                key: 'all',
-                value: 'all',
-                label: { key: 'filters.all' }
-              },
-              {
-                key: 'fixed',
-                value: 'fixed',
-                label: { key: 'filters.fixed' }
-              },
-              {
-                key: 'basis',
-                value: 'basis',
-                label: { key: 'filters.basis' }
-              }
-            ]
-          },
-          {
-            key: 'commodity',
-            titleKey: 'commodity',
-            type: 'button',
-            availableValues: commodityFilters
-          }
-        ]}
-        showCreateButton={true}
-        createButtonLabelKey="createContract"
-        createButtonHref="/purchase-contracts/create"
-        showPagination={true}
-        showSearch={true}
-        className="w-full"
-      />
+      <div className="space-y-6">
+        {/* Header with title and create button */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {t('purchaseContractsList')}
+          </h1>
+          <Link href="/purchase-contracts/create" className="inline-block">
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+              size="lg"
+            >
+              <Plus className="w-4 h-4" />
+              {t('createContract')}
+            </Button>
+          </Link>
+        </div>
+
+        {/* Pricing Type Filters */}
+        <div className="flex flex-wrap gap-2">
+          {[
+            { key: 'all', value: 'all', labelKey: 'filters.all' },
+            { key: 'fixed', value: 'fixed', labelKey: 'filters.fixed' },
+            { key: 'basis', value: 'basis', labelKey: 'filters.basis' }
+          ].map((filter) => (
+            <Button
+              key={filter.key}
+              variant="ghost"
+              size="sm"
+              className={`px-4 py-2 rounded-full border transition-colors ${
+                filter.value === 'all'
+                  ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200'
+                  : filter.value === 'basis'
+                  ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300'
+                  : 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
+              }`}
+            >
+              {t(filter.labelKey)}
+            </Button>
+          ))}
+        </div>
+
+        {/* Commodity Filters */}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="px-4 py-2 rounded-full border transition-colors bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-800/60 dark:to-emerald-800/60 border-green-400 dark:border-green-500 text-green-800 dark:text-green-200"
+          >
+            {t('filters.all')}
+          </Button>
+          {commodities.map((commodity) => (
+            <Button
+              key={commodity.key}
+              variant="ghost"
+              size="sm"
+              className="px-4 py-2 rounded-full border transition-colors bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300"
+            >
+              {commodity.label}
+            </Button>
+          ))}
+        </div>
+
+        {/* Table without filters, title, or create button */}
+        <GenericTable
+          columns={columns}
+          fetchData={handleFetchContractsData}
+          defaultFilters={{
+            pricingType: ['all'],
+            commodity: ['all']
+          }}
+          showFilters={false}
+          showCreateButton={false}
+          showPagination={true}
+          showSearch={true}
+          className="w-full"
+        />
+      </div>
     </DashboardLayout>
   );
 }
