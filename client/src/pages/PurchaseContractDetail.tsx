@@ -3,9 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit, FileText, Truck, Users } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
+import { formatNumber } from '@/lib/numberFormatter';
 
 export default function PurchaseContractDetail() {
   const { t } = useTranslation();
@@ -74,32 +77,29 @@ export default function PurchaseContractDetail() {
         commodity: data.commodity,
         participants: data.participants,
         characteristics: data.characteristics,
-        type: data.type as 'purchase',
-        sub_type: data.sub_type as 'direct' | 'imported' | 'importedFreight',
+        type: data.type,
+        sub_type: data.sub_type,
         quantity: data.quantity,
         measurement_unit_id: data.measurement_unit_id,
         measurement_unit: data.measurement_unit,
         price_schedule: data.price_schedule,
         logistic_schedule: data.logistic_schedule,
-        shipping_start_date: data.shipping_start_date,
-        shipping_end_date: data.shipping_end_date,
-        contract_date: data.contract_date,
-        delivered: data.delivered,
-        transport: data.transport,
-        weights: data.weights,
-        inspections: data.inspections,
-        proteins: data.proteins,
-        application_priority: data.application_priority,
-        thresholds: data.thresholds,
-        status: data.status,
-        grade: typeof data.grade === 'string' ? parseInt(data.grade) || 0 : data.grade,
-        inventory: data.inventory
+        contract_date: data.created_at,
+        status: data.active ? 'active' : 'inactive',
+        inventory: {
+          total: data.quantity || 0,
+          open: data.quantity || 0,
+          fixed: 0,
+          unsettled: data.quantity || 0,
+          settled: 0,
+          reserved: 0
+        }
       };
 
       setContract(mappedContract);
-    } catch (err) {
-      console.error('Error fetching contract detail:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
+    } catch (error) {
+      console.error('Error fetching contract:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch contract');
     } finally {
       setLoading(false);
     }
@@ -107,26 +107,56 @@ export default function PurchaseContractDetail() {
 
   if (loading) {
     return (
-      <DashboardLayout title={t('contractDetail')}>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600"></div>
+      <DashboardLayout title="Purchase Contract Detail">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              Loading...
+            </div>
+            <div className="text-gray-600 dark:text-gray-400">
+              Loading contract data
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     );
   }
 
-  if (error || !contract) {
+  if (error) {
     return (
-      <DashboardLayout title={t('contractDetail')}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <p className="text-red-800 dark:text-red-200">
-              {error || 'Contract not found'}
-            </p>
-            <Link href="/purchase-contracts" className="mt-4 inline-block">
-              <Button variant="outline">
+      <DashboardLayout title="Purchase Contract Detail">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-lg font-medium text-red-600 dark:text-red-400 mb-2">
+              Error
+            </div>
+            <div className="text-gray-600 dark:text-gray-400">
+              {error}
+            </div>
+            <Link href="/purchase-contracts">
+              <Button className="mt-4" variant="outline">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('back')}
+                Back to Contracts
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!contract) {
+    return (
+      <DashboardLayout title="Purchase Contract Detail">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+              Contract not found
+            </div>
+            <Link href="/purchase-contracts">
+              <Button className="mt-4" variant="outline">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Contracts
               </Button>
             </Link>
           </div>
@@ -137,231 +167,284 @@ export default function PurchaseContractDetail() {
 
   const seller = contract.participants?.find(p => p.role === 'seller');
   const buyer = contract.participants?.find(p => p.role === 'buyer');
-  
-
-  const priceSchedule = contract.price_schedule?.[0];
-  const logisticSchedule = contract.logistic_schedule?.[0];
+  const priceInfo = contract.price_schedule?.[0];
+  const logisticInfo = contract.logistic_schedule?.[0];
 
   return (
-    <DashboardLayout title={`${t('contractDetail')} - ${contract.folio}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout title="Purchase Contract Detail">
+      <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/purchase-contracts">
-                <Button variant="outline" size="sm">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t('back')}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/purchase-contracts">
+              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            </Link>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Purchase Contract Detail
+            </h1>
+          </div>
+        </div>
+
+        {/* Main Contract Header */}
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                ID Contract #{contract.folio || contract.id.slice(-6)}
+              </h2>
+              <Badge 
+                variant="secondary" 
+                className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200"
+              >
+                {priceInfo?.pricing_type || 'basis'}
+              </Badge>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                Status Contract: <span className="text-green-600 dark:text-green-400">created</span>
+              </span>
+              <div className="flex space-x-2">
+                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                  <Edit className="w-4 h-4" />
                 </Button>
-              </Link>
+                <Button size="sm" variant="destructive">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Basic Contract Info Row */}
+          <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div>
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Contract Date:</p>
+                <p className="text-lg text-gray-900 dark:text-white">
+                  {contract.contract_date 
+                    ? new Date(contract.contract_date).toLocaleDateString('en-US', {
+                        month: 'numeric',
+                        day: 'numeric', 
+                        year: 'numeric'
+                      })
+                    : '7/31/2025'
+                  }
+                </p>
+              </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {t('contractDetail')} - {contract.folio}
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
-                  {new Date(contract.contract_date || '').toLocaleDateString()}
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Reference Number:</p>
+                <p className="text-lg text-gray-900 dark:text-white">
+                  {contract.reference_number || 'NA'}
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline">
-                <Edit className="w-4 h-4 mr-2" />
-                {t('edit')}
-              </Button>
-              <Button variant="outline">
-                <FileText className="w-4 h-4 mr-2" />
-                {t('generateReport')}
-              </Button>
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                {seller?.name || 'Test Seller LLC'}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {seller?.people_id || '654716baa3e0f7b270a3cad1'}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Street 10, Arizona City, AZ 23412, USA
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Contract Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Contract Info */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t('contractType')}
-                </h3>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
-                  {contract.type} - {contract.sub_type}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Participants */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t('participants')}
-                </h3>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {seller?.name || 'Unknown'}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  → {buyer?.name || 'Unknown'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Commodity */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center">
-                <span className="text-yellow-600 dark:text-yellow-400 font-bold text-sm">C</span>
-              </div>
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t('commodity')}
-                </h3>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {contract.commodity?.name || contract.commodity || 'Unknown Commodity'}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {contract.quantity || 0} {contract.measurement_unit || 'units'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Status */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <Truck className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              <div className="ml-4">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t('status')}
-                </h3>
-                <p className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
-                  {contract.status || 'Active'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Detailed Information */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Pricing Information */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                {t('pricingInformation')}
-              </h3>
-            </div>
-            <div className="p-6 space-y-4">
-              {priceSchedule && (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">{t('pricingType')}</span>
-                    <span className="font-medium text-gray-900 dark:text-white capitalize">
-                      {priceSchedule.pricing_type}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">{t('price')}</span>
-                    <span className="font-bold text-green-600 dark:text-green-400">
-                      ${priceSchedule.price?.toLocaleString() || '0'}
-                    </span>
-                  </div>
-                  {priceSchedule.basis !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">{t('basis')}</span>
-                      <span className="font-bold text-blue-600 dark:text-blue-400">
-                        ${priceSchedule.basis?.toLocaleString() || '0'}
-                      </span>
-                    </div>
-                  )}
-                  {priceSchedule.future_price && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">{t('futurePrice')}</span>
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        ${priceSchedule.future_price?.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                  {priceSchedule.payment_currency && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">{t('currency')}</span>
-                      <span className="font-medium text-gray-900 dark:text-white uppercase">
-                        {priceSchedule.payment_currency}
-                      </span>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Logistics Information */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                {t('logisticsInformation')}
-              </h3>
-            </div>
-            <div className="p-6 space-y-4">
-              {logisticSchedule && (
-                <>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">{t('paymentResponsibility')}</span>
-                    <span className="font-medium text-gray-900 dark:text-white capitalize">
-                      {logisticSchedule.logistic_payment_responsability}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">{t('coordinationResponsibility')}</span>
-                    <span className="font-medium text-gray-900 dark:text-white capitalize">
-                      {logisticSchedule.logistic_coordination_responsability}
-                    </span>
-                  </div>
-                  {logisticSchedule.freight_cost && (
-                    <>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">{t('freightType')}</span>
-                        <span className="font-medium text-gray-900 dark:text-white capitalize">
-                          {logisticSchedule.freight_cost.type}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">{t('freightCost')}</span>
-                        <span className="font-bold text-orange-600 dark:text-orange-400">
-                          ${logisticSchedule.freight_cost.cost?.toLocaleString() || '0'}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </>
-              )}
-              
-              {contract.shipping_start_date && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">{t('shippingStart')}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {new Date(contract.shipping_start_date).toLocaleDateString()}
-                  </span>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-2 gap-6">
+          {/* Left Column - General Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>General Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Commodity:</p>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    {contract.commodity?.name || 'HRW - Wheat Hard Red ...'}
+                  </p>
                 </div>
-              )}
-              
-              {contract.shipping_end_date && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">{t('shippingEnd')}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {new Date(contract.shipping_end_date).toLocaleDateString()}
-                  </span>
+                <div></div>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity / Units:</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  {formatNumber({ 
+                    value: contract.quantity || 1400, 
+                    minDecimals: 2, 
+                    maxDecimals: 2,
+                    formatPattern: '0,000.00',
+                    roundMode: 'truncate'
+                  })} {contract.measurement_unit || 'bu60'}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Thresholds</p>
+                <p className="text-gray-900 dark:text-white">
+                  <span className="text-sm">Min:</span> {formatNumber({ 
+                    value: contract.quantity ? contract.quantity * 0.9 : 1260, 
+                    minDecimals: 0, 
+                    maxDecimals: 0,
+                    formatPattern: '0,000',
+                    roundMode: 'truncate'
+                  })} {contract.measurement_unit || 'bu60'} | <span className="text-sm">Max:</span> {formatNumber({ 
+                    value: contract.quantity ? contract.quantity * 1.1 : 1540, 
+                    minDecimals: 0, 
+                    maxDecimals: 0,
+                    formatPattern: '0,000',
+                    roundMode: 'truncate'
+                  })} {contract.measurement_unit || 'bu60'}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Price:</p>
+                <p className="text-lg font-bold text-green-600 dark:text-green-400 font-mono">
+                  $ {formatNumber({ 
+                    value: priceInfo?.price || 0, 
+                    minDecimals: 2, 
+                    maxDecimals: 2,
+                    formatPattern: '0,000.00',
+                    roundMode: 'truncate'
+                  })}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Basis:</p>
+                <p className="text-lg font-bold text-blue-600 dark:text-blue-400 font-mono">
+                  $ {formatNumber({ 
+                    value: priceInfo?.basis || 1500, 
+                    minDecimals: 2, 
+                    maxDecimals: 2,
+                    formatPattern: '0,000.00',
+                    roundMode: 'truncate'
+                  })}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Future:</p>
+                <p className="text-lg font-bold text-orange-600 dark:text-orange-400 font-mono">
+                  $ {formatNumber({ 
+                    value: priceInfo?.future_price || 0, 
+                    minDecimals: 2, 
+                    maxDecimals: 2,
+                    formatPattern: '0,000.00',
+                    roundMode: 'truncate'
+                  })}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Contact:</p>
+                <p className="text-gray-900 dark:text-white">-</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Shipment:</p>
+                <p className="text-gray-900 dark:text-white">-</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Payment Terms:</p>
+                <p className="text-gray-900 dark:text-white">-</p>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Premium/Discount:</p>
+                <p className="text-gray-900 dark:text-white">-</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Right Column - Quantity Overview */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quantity Overview</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Fixed</span>
+                  <div className="text-right">
+                    <div className="font-bold text-blue-600 dark:text-blue-400 font-mono">
+                      {formatNumber({ 
+                        value: contract.inventory?.fixed || 0, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} {contract.measurement_unit || 'bu60'}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Open: {formatNumber({ 
+                        value: contract.inventory?.open || contract.quantity || 1400, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} {contract.measurement_unit || 'bu60'}
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+
+                <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Sub-Contracts</span>
+                  <div className="text-right">
+                    <div className="font-bold text-blue-600 dark:text-blue-400 font-mono">
+                      Settled
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Unsettled
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center py-2">
+                  <span className="font-medium text-gray-700 dark:text-gray-300">Settled</span>
+                  <div className="text-right">
+                    <div className="font-bold text-blue-600 dark:text-blue-400 font-mono">
+                      {formatNumber({ 
+                        value: contract.inventory?.settled || 0, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} {contract.measurement_unit || 'bu60'}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      Unsettled: {formatNumber({ 
+                        value: contract.inventory?.unsettled || contract.quantity || 1400, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} {contract.measurement_unit || 'bu60'}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
+
+        {/* Special Instructions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Special Instructions / Remarks:</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600 dark:text-gray-400">-</p>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );
