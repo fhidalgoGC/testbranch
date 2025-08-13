@@ -18,7 +18,7 @@ import { SubContract, FieldConfig, ProgressBarConfig } from '@/components/contra
 export default function PurchaseContractDetail() {
   const { t } = useTranslation();
   const params = useParams();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   
   const contractId = params.id;
   
@@ -682,7 +682,7 @@ export default function PurchaseContractDetail() {
             subContracts={subContracts}
             fields={fieldConfig}
             progressBar={progressBarConfig}
-            onNewSubContract={() => console.log('New sub-contract')}
+            onNewSubContract={() => setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`)}
             onViewSubContract={(id) => console.log('View sub-contract:', id)}
             onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
             onEditSubContract={(id) => console.log('Edit sub-contract:', id)}
