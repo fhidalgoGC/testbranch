@@ -19,7 +19,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
         <NavBar title={title} />
         
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-6 bg-gray-50/60 dark:bg-gray-900/40">
+        <main className="flex-1 overflow-auto p-6 bg-gray-100/80 dark:bg-gray-900/60">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
