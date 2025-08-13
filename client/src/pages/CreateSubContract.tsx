@@ -237,7 +237,7 @@ export default function CreateSubContract() {
                   </Badge>
                 </div>
 
-                {/* Future and Price Fields */}
+                {/* Future and Basis Fields */}
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {/* Future Field */}
@@ -247,7 +247,7 @@ export default function CreateSubContract() {
                       </label>
                       <Input
                         type="text"
-                        value={contractData.future.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                        value={futurePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         onChange={(e) => {
                           const value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
                           setFuturePrice(value);
@@ -257,18 +257,31 @@ export default function CreateSubContract() {
                       />
                     </div>
 
-                    {/* Price Field (Calculated: Basis + Future) */}
+                    {/* Basis Field (Read-only) */}
                     <div>
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                        Price
+                        Basis
                       </label>
                       <Input
                         type="text"
-                        value={(contractData.basis + futurePrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                        value={contractData.basis.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         readOnly
                         className="text-sm font-mono bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                       />
                     </div>
+                  </div>
+
+                  {/* Price Field (Calculated: Future + Basis) */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                      Price
+                    </label>
+                    <Input
+                      type="text"
+                      value={(futurePrice + contractData.basis).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      readOnly
+                      className="text-sm font-mono bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                    />
                   </div>
 
                   {/* Total Section */}
