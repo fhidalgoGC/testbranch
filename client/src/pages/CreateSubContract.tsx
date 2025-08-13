@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calendar, Package, DollarSign, Scale, Truck, FileText, Plus, X } from 'lucide-react';
+import { ArrowLeft, Calendar, Package, DollarSign, FileText } from 'lucide-react';
 import { Link } from 'wouter';
 
 interface ContractData {
@@ -25,12 +25,7 @@ interface ContractData {
   shipmentPeriod: string;
 }
 
-interface ThresholdRow {
-  id: string;
-  quantity: string;
-  unit: string;
-  date: string;
-}
+
 
 export default function CreateSubContract() {
   const { t } = useTranslation();
@@ -67,26 +62,6 @@ export default function CreateSubContract() {
   const [actualQuantity, setActualQuantity] = useState('700.00');
   const [contractOpen, setContractOpen] = useState('700.00');
   const [totalValue, setTotalValue] = useState('2,733.00');
-  const [thresholds, setThresholds] = useState<ThresholdRow[]>([
-    { id: '1', quantity: '700.00', unit: 'Bushel 60', date: '08/13/2025' },
-    { id: '2', quantity: '10', unit: 'Bushel 60', date: '630.00' },
-    { id: '3', quantity: '10', unit: 'Bushel 60', date: '770.00' }
-  ]);
-
-  const addThresholdRow = () => {
-    const newId = (thresholds.length + 1).toString();
-    setThresholds([...thresholds, { id: newId, quantity: '', unit: 'Bushel 60', date: '' }]);
-  };
-
-  const removeThresholdRow = (id: string) => {
-    setThresholds(thresholds.filter(row => row.id !== id));
-  };
-
-  const updateThresholdRow = (id: string, field: keyof ThresholdRow, value: string) => {
-    setThresholds(thresholds.map(row => 
-      row.id === id ? { ...row, [field]: value } : row
-    ));
-  };
 
   const handleCancel = () => {
     setLocation(`/purchase-contracts/${contractId}`);
@@ -98,8 +73,7 @@ export default function CreateSubContract() {
       contractData,
       actualQuantity,
       contractOpen,
-      totalValue,
-      thresholds
+      totalValue
     });
     setLocation(`/purchase-contracts/${contractId}`);
   };
@@ -213,74 +187,7 @@ export default function CreateSubContract() {
               </CardContent>
             </Card>
 
-            {/* Thresholds Section */}
-            <Card className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-xl border-0 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
-              <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/50 dark:to-amber-950/50 rounded-t-lg">
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Scale className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    <span>Thresholds</span>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={addThresholdRow}
-                    className="bg-orange-600 hover:bg-orange-700 text-white"
-                  >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {thresholds.map((threshold) => (
-                    <div key={threshold.id} className="grid grid-cols-12 gap-3 items-center">
-                      <div className="col-span-4">
-                        <Input
-                          value={threshold.quantity}
-                          onChange={(e) => updateThresholdRow(threshold.id, 'quantity', e.target.value)}
-                          placeholder="Quantity"
-                          className="text-sm"
-                        />
-                      </div>
-                      <div className="col-span-3">
-                        <Select
-                          value={threshold.unit}
-                          onValueChange={(value) => updateThresholdRow(threshold.id, 'unit', value)}
-                        >
-                          <SelectTrigger className="text-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Bushel 60">Bushel 60</SelectItem>
-                            <SelectItem value="Bushel 56">Bushel 56</SelectItem>
-                            <SelectItem value="Metric Ton">Metric Ton</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="col-span-4">
-                        <Input
-                          type="date"
-                          value={threshold.date}
-                          onChange={(e) => updateThresholdRow(threshold.id, 'date', e.target.value)}
-                          className="text-sm"
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => removeThresholdRow(threshold.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+
           </div>
 
           {/* Right Column - Quantity Overview */}
