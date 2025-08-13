@@ -435,9 +435,10 @@ export default function PurchaseContractDetail() {
           <Card className="flex flex-col h-full">
             <CardHeader className="pb-2">
               <Tabs defaultValue="general" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="general">{t('contractDetail.generalInformation')}</TabsTrigger>
                   <TabsTrigger value="contact">{t('contractDetail.remarks')}</TabsTrigger>
+                  <TabsTrigger value="instructions">Instructions</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="general" className="mt-4">
@@ -549,6 +550,15 @@ export default function PurchaseContractDetail() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.premiumDiscount')}:</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="instructions" className="mt-6">
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Special Instructions:</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">-</p>
                     </div>
                   </div>
                 </TabsContent>
@@ -664,15 +674,7 @@ export default function PurchaseContractDetail() {
           </Card>
         </div>
 
-        {/* Special Instructions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('contractDetail.specialInstructions')}:</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 dark:text-gray-400">-</p>
-          </CardContent>
-        </Card>
+
 
         {/* Sub-contracts Section */}
         <div className="mt-8">
