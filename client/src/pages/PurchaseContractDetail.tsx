@@ -203,7 +203,7 @@ export default function PurchaseContractDetail() {
                 {priceInfo?.pricing_type || 'basis'}
               </Badge>
             </div>
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 items-end">
               <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
                 Status Contract: <span className="text-green-600 dark:text-green-400">created</span>
               </span>
