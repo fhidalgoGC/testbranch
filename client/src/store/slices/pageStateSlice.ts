@@ -36,6 +36,7 @@ interface ContractsPageState {
   sortOrder: string;
   currentPage: number;
   pageSize: number;
+  contractsData: any[]; // Almacenar datos de contratos
 }
 
 interface ContractDetailState {
@@ -73,6 +74,7 @@ const initialContractsState: ContractsPageState = {
   sortOrder: '',
   currentPage: 1,
   pageSize: 10,
+  contractsData: [],
 };
 
 const initialContractDetailState: ContractDetailState = {

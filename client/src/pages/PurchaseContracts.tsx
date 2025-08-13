@@ -230,6 +230,11 @@ export default function PurchaseContracts() {
       console.log('First contract example:', mappedContracts[0] || 'No contracts found');
       setContracts(mappedContracts);
       setTotalContracts(data._meta.total_elements);
+      
+      // Guardar contratos en Redux state para uso en otras páginas
+      updateState({
+        contractsData: mappedContracts
+      });
 
     } catch (error) {
       console.error('Error al cargar contratos:', error);

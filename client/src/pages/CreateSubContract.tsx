@@ -5,6 +5,7 @@ import { useCreateSubContractState, usePageTracking, useNavigationHandler } from
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -67,6 +68,11 @@ export default function CreateSubContract() {
   // Hook para persistir estado de crear sub-contrato
   const { formState, updateState } = useCreateSubContractState(contractId!);
   const { handleNavigateToPage } = useNavigationHandler();
+  
+  // Obtener contratos del state de Redux para buscar el contrato actual
+  const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
+  const contractsData = contractsState.contractsData || [];
+  
   usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/create`);
   
   // Notificar navegación al cargar la página
