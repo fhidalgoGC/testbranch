@@ -168,7 +168,7 @@ export default function CreateSubContract() {
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Price</span>
                     <span className="text-sm font-bold font-mono text-blue-600 dark:text-blue-400">
-                      $ {contractData.price.toFixed(3)}
+                      $ {contractData.price.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                     </span>
                   </div>
                   <div className="flex justify-between">
