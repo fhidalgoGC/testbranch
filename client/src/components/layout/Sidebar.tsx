@@ -43,7 +43,7 @@ export default function Sidebar() {
   const [location] = useLocation();
 
   return (
-    <div className="w-64 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-r border-gray-200/60 dark:border-gray-700/60 h-screen">
+    <div className="w-64 bg-gray-100/90 dark:bg-gray-800/90 backdrop-blur-md border-r border-gray-200/60 dark:border-gray-700/60 h-screen">
       <div className="px-4 py-6">
         <div className="mb-8 flex justify-center">
           <img 

@@ -9,7 +9,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children, title }: DashboardLayoutProps) {
   return (
-    <div className="h-screen flex bg-gradient-to-br from-gray-50 via-gray-50 to-gray-100/50 dark:from-gray-950 dark:via-gray-950 dark:to-gray-900/50">
+    <div className="h-screen flex bg-gradient-to-br from-gray-200 via-gray-200 to-gray-300/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800/50">
       {/* Sidebar */}
       <Sidebar />
       
@@ -19,7 +19,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
         <NavBar title={title} />
         
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6 bg-gray-50/60 dark:bg-gray-900/40">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
