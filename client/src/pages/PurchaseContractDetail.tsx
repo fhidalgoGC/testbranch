@@ -325,6 +325,13 @@ export default function PurchaseContractDetail() {
                     </div>
 
                     <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.contractType')}:</span>
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">
+                        {contract.type === 'purchase' ? t('contractDetail.purchase') : t('contractDetail.sale')}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.basis')}:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                         $ {formatNumber({ 

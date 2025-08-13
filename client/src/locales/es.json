@@ -346,6 +346,9 @@
     "available": "Disponible",
     "contractDate": "Fecha del Contrato",
     "specialInstructions": "Instrucciones Especiales / Observaciones",
+    "contractType": "Tipo de Contrato",
+    "purchase": "Compra",
+    "sale": "Venta",
     "loadingContract": "Cargando contrato...",
     "contractNotFound": "Contrato no encontrado",
     "errorLoadingContract": "Error al cargar el contrato"

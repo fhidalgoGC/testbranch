@@ -346,6 +346,9 @@
     "available": "Available",
     "contractDate": "Contract Date",
     "specialInstructions": "Special Instructions / Remarks",
+    "contractType": "Contract Type",
+    "purchase": "Purchase",
+    "sale": "Sale",
     "loadingContract": "Loading contract...",
     "contractNotFound": "Contract not found",
     "errorLoadingContract": "Error loading contract"
