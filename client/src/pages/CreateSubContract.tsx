@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { useCreateSubContractState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +16,26 @@ import { Link } from 'wouter';
 import { FormattedNumberInput } from '@/components/PurchaseContractForm/components/FormattedNumberInput';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { DatePicker } from '@/components/ui/datepicker';
+
+// Sub-contract form schema
+const subContractSchema = z.object({
+  contractNumber: z.string().min(1, 'Contract number is required'),
+  contractDate: z.string().min(1, 'Contract date is required'),
+  customerNumber: z.string().min(1, 'Customer number is required'),
+  idContract: z.string().min(1, 'ID Contract is required'),
+  referenceNumber: z.string().min(1, 'Reference number is required'),
+  commodity: z.string().min(1, 'Commodity is required'),
+  future: z.number().min(0, 'Future price must be positive'),
+  basis: z.number(),
+  totalPrice: z.number().min(0, 'Total price must be positive'),
+  totalDate: z.string().min(1, 'Total date is required'),
+  quantity: z.number().min(0.01, 'Quantity must be greater than 0'),
+  measurementUnitId: z.string().min(1, 'Measurement unit is required'),
+  contact: z.string(),
+  shipmentPeriod: z.string(),
+});
+
+type SubContractFormData = z.infer<typeof subContractSchema>;
 
 interface ContractData {
   contractNumber: string;
@@ -64,26 +87,58 @@ export default function CreateSubContract() {
     shipmentPeriod: '-'
   });
 
-  const [futurePrice, setFuturePrice] = useState(contractData.future);
-  const [quantity, setQuantity] = useState(700.00);
-  const [selectedDate, setSelectedDate] = useState('2025-08-13');
-  const [selectedMeasurementUnit, setSelectedMeasurementUnit] = useState('bushel60');
-  
   // API hooks
   const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
+  
+  // Form setup with react-hook-form
+  const form = useForm<SubContractFormData>({
+    resolver: zodResolver(subContractSchema),
+    defaultValues: {
+      contractNumber: contractData.contractNumber,
+      contractDate: contractData.contractDate,
+      customerNumber: contractData.customerNumber,
+      idContract: contractData.idContract,
+      referenceNumber: contractData.referenceNumber,
+      commodity: contractData.commodity,
+      future: contractData.future,
+      basis: contractData.basis,
+      totalPrice: contractData.future + contractData.basis,
+      totalDate: '2025-08-13',
+      quantity: 700.00,
+      measurementUnitId: 'bushel60',
+      contact: contractData.contact,
+      shipmentPeriod: contractData.shipmentPeriod,
+    }
+  });
+
+  const { control, handleSubmit, watch, setValue, formState: { errors } } = form;
+  
+  // Watch values for calculations
+  const futureValue = watch('future');
+  const basisValue = watch('basis');
 
   const handleCancel = () => {
     setLocation(`/purchase-contracts/${contractId}`);
   };
 
-  const handleCreateSubContract = () => {
-    // TODO: Implement sub-contract creation logic
-    console.log('Creating sub-contract with data:', {
-      contractData,
-      futurePrice
-    });
+  const handleCreateSubContract = handleSubmit((data: SubContractFormData) => {
+    // Update total price with current calculation
+    const finalData = {
+      ...data,
+      totalPrice: data.future + data.basis
+    };
+    
+    console.log('Creating sub-contract with form data:', finalData);
+    // TODO: Send finalData to API endpoint
     setLocation(`/purchase-contracts/${contractId}`);
-  };
+  });
+  
+  // Update total price when future changes
+  useEffect(() => {
+    if (futureValue !== undefined) {
+      setValue('totalPrice', futureValue + basisValue);
+    }
+  }, [futureValue, basisValue, setValue]);
 
   return (
     <DashboardLayout title="New Sub-Contract">
@@ -254,12 +309,22 @@ export default function CreateSubContract() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                         Future <span className="text-red-500">*</span>
                       </label>
-                      <FormattedNumberInput
-                        value={futurePrice}
-                        onChange={setFuturePrice}
-                        placeholder="0.00"
-                        className="text-sm"
+                      <Controller
+                        name="future"
+                        control={control}
+                        render={({ field }) => (
+                          <FormattedNumberInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="0.00"
+                            className="text-sm"
+                            error={!!errors.future}
+                          />
+                        )}
                       />
+                      {errors.future && (
+                        <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.future.message}</p>
+                      )}
                     </div>
 
                     {/* Basis Field (Read-only) */}
@@ -267,12 +332,18 @@ export default function CreateSubContract() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                         Basis
                       </label>
-                      <Input
-                        type="text"
-                        value={contractData.basis.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        readOnly
-                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
-                        tabIndex={-1}
+                      <Controller
+                        name="basis"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            type="text"
+                            value={field.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            readOnly
+                            className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                            tabIndex={-1}
+                          />
+                        )}
                       />
                     </div>
                   </div>
@@ -285,24 +356,40 @@ export default function CreateSubContract() {
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Price
                         </label>
-                        <Input
-                          type="text"
-                          value={(futurePrice + contractData.basis).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          readOnly
-                          className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
-                          tabIndex={-1}
+                        <Controller
+                          name="totalPrice"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              type="text"
+                              value={field.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              readOnly
+                              className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                              tabIndex={-1}
+                            />
+                          )}
                         />
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Date
                         </label>
-                        <DatePicker
-                          value={selectedDate}
-                          onChange={setSelectedDate}
-                          placeholder="Select date"
-                          className="text-sm"
+                        <Controller
+                          name="totalDate"
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select date"
+                              className="text-sm"
+                              error={!!errors.totalDate}
+                            />
+                          )}
                         />
+                        {errors.totalDate && (
+                          <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.totalDate.message}</p>
+                        )}
                       </div>
                     </div>
 
@@ -311,40 +398,59 @@ export default function CreateSubContract() {
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Quantity
                         </label>
-                        <FormattedNumberInput
-                          value={quantity}
-                          onChange={setQuantity}
-                          placeholder="0.00"
-                          className="text-sm"
+                        <Controller
+                          name="quantity"
+                          control={control}
+                          render={({ field }) => (
+                            <FormattedNumberInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="0.00"
+                              className="text-sm"
+                              error={!!errors.quantity}
+                            />
+                          )}
                         />
+                        {errors.quantity && (
+                          <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.quantity.message}</p>
+                        )}
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Measurement Unit
                         </label>
-                        <Select 
-                          value={selectedMeasurementUnit} 
-                          onValueChange={setSelectedMeasurementUnit}
-                        >
-                          <SelectTrigger className="text-sm">
-                            <SelectValue placeholder="Select measurement unit" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {loadingUnits ? (
-                              <SelectItem value="loading" disabled>Loading units...</SelectItem>
-                            ) : unitsError ? (
-                              <SelectItem value="error" disabled>Error loading units</SelectItem>
-                            ) : measurementUnits.length === 0 ? (
-                              <SelectItem value="empty" disabled>No units available</SelectItem>
-                            ) : (
-                              measurementUnits.map((unit) => (
-                                <SelectItem key={unit.key} value={unit.key}>
-                                  {unit.label}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectContent>
-                        </Select>
+                        <Controller
+                          name="measurementUnitId"
+                          control={control}
+                          render={({ field }) => (
+                            <Select 
+                              value={field.value} 
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger className={`text-sm ${errors.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                                <SelectValue placeholder="Select measurement unit" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {loadingUnits ? (
+                                  <SelectItem value="loading" disabled>Loading units...</SelectItem>
+                                ) : unitsError ? (
+                                  <SelectItem value="error" disabled>Error loading units</SelectItem>
+                                ) : measurementUnits.length === 0 ? (
+                                  <SelectItem value="empty" disabled>No units available</SelectItem>
+                                ) : (
+                                  measurementUnits.map((unit) => (
+                                    <SelectItem key={unit.key} value={unit.key}>
+                                      {unit.label}
+                                    </SelectItem>
+                                  ))
+                                )}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                        {errors.measurementUnitId && (
+                          <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.measurementUnitId.message}</p>
+                        )}
                       </div>
                     </div>
                   </div>
