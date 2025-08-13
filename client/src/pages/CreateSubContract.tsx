@@ -94,12 +94,6 @@ export default function CreateSubContract() {
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 New Sub-Contract
               </h1>
-              <div className="flex items-center space-x-3 mt-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Contract Number</span>
-                <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono">
-                  #{contractData.contractNumber}
-                </Badge>
-              </div>
             </div>
           </div>
         </div>
@@ -120,6 +114,12 @@ export default function CreateSubContract() {
               <CardContent className="p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Contract Number</span>
+                      <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono">
+                        #{contractData.contractNumber}
+                      </Badge>
+                    </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600 dark:text-gray-400">Contract Date</span>
                       <span className="text-sm font-medium">{contractData.contractDate}</span>
