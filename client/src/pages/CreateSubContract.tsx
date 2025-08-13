@@ -21,6 +21,7 @@ interface ContractData {
   quantityUnits: number;
   price: number;
   basis: number;
+  future: number;
   contact: string;
   shipmentPeriod: string;
 }
@@ -54,7 +55,8 @@ export default function CreateSubContract() {
     commodity: 'HRW - Wheat Hard Red Winter',
     quantityUnits: 1400,
     price: 9.000,
-    basis: 1000,
+    basis: 1000.00,
+    future: 850.25,
     contact: '-',
     shipmentPeriod: '-'
   });
@@ -161,27 +163,25 @@ export default function CreateSubContract() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Quantity / Units</span>
-                    <span className="text-sm font-bold">{contractData.quantityUnits.toLocaleString()} bushel</span>
+                    <span className="text-sm font-bold font-mono">{contractData.quantityUnits.toLocaleString()} bushel</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Price</span>
-                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                      ${contractData.price.toFixed(3)}
+                    <span className="text-sm font-bold font-mono text-blue-600 dark:text-blue-400">
+                      $ {contractData.price.toFixed(3)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Basis</span>
-                    <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
-                      ${contractData.basis.toFixed(2)} september2025
+                    <span className="text-sm font-bold font-mono text-purple-600 dark:text-purple-400">
+                      $ {contractData.basis.toFixed(2)} september2025
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Contact</span>
-                    <span className="text-sm font-medium">{contractData.contact}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Shipment Period</span>
-                    <span className="text-sm font-medium">{contractData.shipmentPeriod}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Future</span>
+                    <span className="text-sm font-bold font-mono text-orange-600 dark:text-orange-400">
+                      $ {contractData.future.toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </CardContent>
