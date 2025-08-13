@@ -37,11 +37,27 @@ export default function PurchaseContractDetail() {
     { key: 'balance', label: 'Your Balance', color: 'black', unit: 'bu60' }
   ];
 
-  // Configuración del progress bar
+  // Configuración del progress bar - completamente agnóstica
   const progressBarConfig: ProgressBarConfig = {
-    settledField: 'delivered',
-    reservedCalculation: (data) => data.quantity * 0.8,
-    totalField: 'quantity'
+    settledPercentage: (data) => {
+      // Lógica de negocio: calcular % de entregado vs total
+      const settledAmount = data.delivered;
+      const totalQuantity = data.quantity;
+      const reservedAmount = data.quantity * 0.8;
+      const settledPercentage = (settledAmount / totalQuantity) * 100;
+      const reservedPercentage = (reservedAmount / totalQuantity) * 100;
+      return Math.min(settledPercentage, reservedPercentage);
+    },
+    reservedPercentage: (data) => {
+      // Lógica de negocio: calcular % reservado pendiente
+      const settledAmount = data.delivered;
+      const totalQuantity = data.quantity;
+      const reservedAmount = data.quantity * 0.8;
+      const settledPercentage = (settledAmount / totalQuantity) * 100;
+      const reservedPercentage = (reservedAmount / totalQuantity) * 100;
+      return Math.max(0, reservedPercentage - settledPercentage);
+    },
+    label: 'Progress'
   };
 
   // Generar 10 sub-contratos con datos random para testing

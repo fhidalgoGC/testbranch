@@ -18,9 +18,9 @@ export interface FieldConfig {
 }
 
 export interface ProgressBarConfig {
-  settledField: string; // Campo que representa lo entregado/pagado
-  reservedCalculation: (data: any) => number; // Función para calcular lo reservado
-  totalField: string; // Campo que representa el total para calcular porcentajes
+  settledPercentage: (data: any) => number; // Función que retorna el porcentaje verde (settled)
+  reservedPercentage: (data: any) => number; // Función que retorna el porcentaje azul (reserved)
+  label?: string; // Label del progress bar (por defecto "Progress")
 }
 
 export interface SubContract {
@@ -124,41 +124,33 @@ export default function SubContractCard({
         {progressBar && (
           <div className="mb-3">
             {(() => {
-              const totalQuantity = subContract[progressBar.totalField];
-              const settledAmount = subContract[progressBar.settledField];
-              const reservedAmount = progressBar.reservedCalculation(subContract);
+              // Componente completamente agnóstico - recibe porcentajes ya calculados
+              const settledPercentage = progressBar.settledPercentage(subContract);
+              const reservedPercentage = progressBar.reservedPercentage(subContract);
               
-              // Calculate percentages
-              const settledPercentage = (settledAmount / totalQuantity) * 100;
-              const reservedPercentage = (reservedAmount / totalQuantity) * 100;
-              
-              // The blue portion should be: reserved - settled (if settled < reserved)
-              // If settled > reserved, no blue should show
-              const bluePercentage = Math.max(0, reservedPercentage - settledPercentage);
-              const actualSettledPercentage = Math.min(settledPercentage, reservedPercentage);
-              
-              const totalProgress = actualSettledPercentage + bluePercentage;
+              // El componente no sabe qué significan estos porcentajes, solo los muestra
+              const totalProgress = settledPercentage + reservedPercentage;
               
               return (
                 <>
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Progress</span>
+                    <span>{progressBar.label || 'Progress'}</span>
                     <span>{Math.round(totalProgress)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
-                    {/* Settled portion (green) - starts from 0 */}
+                    {/* Green portion - first percentage */}
                     <div 
                       className="absolute left-0 bg-green-500 h-full transition-all duration-300"
                       style={{
-                        width: `${actualSettledPercentage}%`
+                        width: `${settledPercentage}%`
                       }}
                     ></div>
-                    {/* Reserved portion (blue) - starts after settled, shows remaining reserved */}
+                    {/* Blue portion - second percentage, starts after green */}
                     <div 
                       className="absolute bg-blue-500 h-full transition-all duration-300"
                       style={{
-                        left: `${actualSettledPercentage}%`,
-                        width: `${bluePercentage}%`
+                        left: `${settledPercentage}%`,
+                        width: `${reservedPercentage}%`
                       }}
                     ></div>
                   </div>
