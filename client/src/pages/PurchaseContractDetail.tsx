@@ -193,7 +193,7 @@ export default function PurchaseContractDetail() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                ID Contract #{contract.folio || contract.id.slice(-6)}
+                ID Contract #{contract.folio || (contract.id ? contract.id.slice(-6) : 'N/A')}
               </h2>
               <Badge 
                 variant="secondary" 
