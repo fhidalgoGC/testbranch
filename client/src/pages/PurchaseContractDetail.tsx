@@ -192,23 +192,21 @@ export default function PurchaseContractDetail() {
         {/* Main Contract Header */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
           <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-3">
+            <div className="space-y-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 ID Contract #{contract.folio || (contract.id ? contract.id.slice(-6) : 'N/A')}
               </h2>
+              <Badge 
+                variant="secondary" 
+                className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-base px-3 py-1"
+              >
+                {priceInfo?.pricing_type || 'basis'}
+              </Badge>
             </div>
             <div className="flex flex-col space-y-2 items-end">
-              <div className="flex items-center space-x-4">
-                <Badge 
-                  variant="secondary" 
-                  className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200"
-                >
-                  {priceInfo?.pricing_type || 'basis'}
-                </Badge>
-                <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                  Status Contract: <span className="text-green-600 dark:text-green-400">created</span>
-                </span>
-              </div>
+              <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
+                Status Contract: <span className="text-green-600 dark:text-green-400">created</span>
+              </span>
               <div className="flex space-x-2">
                 <Button size="sm" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
                   <Eye className="w-4 h-4" />
