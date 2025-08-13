@@ -38,7 +38,7 @@ export default function NavBar({ title }: NavBarProps) {
     if (pathSegments.length > 0) {
       breadcrumbs.push({
         label: t('breadcrumbs.dashboard'),
-        path: '/',
+        path: '/home',
         isActive: false
       });
     }
@@ -200,7 +200,7 @@ export default function NavBar({ title }: NavBarProps) {
                           handleNavigateToPage('buyers');
                         } else if (breadcrumb.path === '/sellers') {
                           handleNavigateToPage('sellers');
-                        } else if (breadcrumb.path === '/') {
+                        } else if (breadcrumb.path === '/home') {
                           handleNavigateToPage('dashboard');
                         }
                       }}

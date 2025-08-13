@@ -15,7 +15,7 @@ const menuItems = [
   {
     key: 'dashboard',
     icon: Home,
-    path: '/'
+    path: '/home'
   },
   {
     key: 'buyers',
