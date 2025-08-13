@@ -48,45 +48,51 @@ export default function SubContractCard({
   return (
     <Card className={`border-l-4 ${subContract.borderColor}`}>
       <CardContent className="p-4">
-        <div className="flex items-center mb-2">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
             <div className={`w-3 h-3 rounded ${subContract.dotColor}`}></div>
             <span className={`font-medium ${subContract.textColor}`}>
               ID Contract#{subContract.contractNumber}
             </span>
           </div>
+          <div className="text-sm">
+            <span className="font-bold text-gray-700 dark:text-gray-300">Quantity:</span>{' '}
+            <span className="font-medium text-green-600">
+              {formatNumber(subContract.quantity)} {subContract.unit}
+            </span>
+          </div>
         </div>
         
         <div className="grid grid-cols-6 gap-2 text-xs mb-3">
           <div>
-            <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
+            <p className="font-bold text-gray-700 dark:text-gray-300">Reserved:</p>
             <p className="font-medium text-green-600">
-              {formatNumber(subContract.quantity)} {subContract.unit}
+              {formatNumber(subContract.quantity * 0.8)} {subContract.unit}
             </p>
           </div>
           <div>
-            <p className="text-gray-500">{t('contractDetail.thresholds')} ({subContract.unit}):</p>
-            <p className="font-medium">
-              Min: {formatNumber(subContract.thresholds.min)} | Max: {formatNumber(subContract.thresholds.max)}
+            <p className="font-bold text-gray-700 dark:text-gray-300">Future:</p>
+            <p className="font-medium text-green-600">
+              {formatNumber(subContract.quantity * 0.2)} {subContract.unit}
             </p>
           </div>
           <div>
-            <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-            <p className="font-medium text-blue-600">$ {formatNumber(subContract.basis)}</p>
+            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.basis')}:</p>
+            <p className="font-medium text-green-600">$ {formatNumber(subContract.basis)}</p>
           </div>
           <div>
-            <p className="text-gray-500">{t('contractDetail.price')}:</p>
+            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.price')}:</p>
             <p className="font-medium text-green-600">$ {formatNumber(subContract.price)}</p>
           </div>
           <div>
-            <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-            <p className="font-medium text-blue-600">
+            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.delivered')}:</p>
+            <p className="font-medium text-green-600">
               {formatNumber(subContract.delivered)} {subContract.unit}
             </p>
           </div>
           <div>
-            <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-            <p className="font-medium">
+            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.yourBalance')}:</p>
+            <p className="font-medium text-green-600">
               {formatNumber(subContract.balance)} {subContract.unit}
             </p>
           </div>
