@@ -108,8 +108,9 @@ const pageStateSlice = createSlice({
       const { pageKey, contractId } = action.payload;
       const currentPath = [...state.currentPagePath];
       const newLevel = getPageLevel(pageKey);
+      const currentLastPage = currentPath[currentPath.length - 1];
       
-      console.log(`Navegando a página: ${pageKey}, nivel: ${newLevel}, path actual:`, currentPath);
+      console.log(`Navegando a página: ${pageKey}, nivel: ${newLevel}, path actual:`, currentPath, `última página: ${currentLastPage}`);
       
       // Si navegamos a un nivel más profundo (hacia adentro), mantener el estado
       if (newLevel > currentPath.length) {
@@ -118,12 +119,38 @@ const pageStateSlice = createSlice({
         state.currentPagePath = newPath;
         console.log('Navegación hacia adentro - manteniendo estado. Nuevo path:', newPath);
       } 
-      // Si navegamos al mismo nivel o hacia afuera, limpiar estados del nivel abandonado
+      // Si navegamos al mismo nivel o hacia afuera, limpiar estados según la lógica
       else {
         const hierarchyForPage = NAVIGATION_HIERARCHY[pageKey] || [];
         const newPath = [...hierarchyForPage, pageKey];
         
-        // Identificar qué páginas se están abandonando
+        // Caso especial: navegación entre páginas hermanas del mismo nivel (purchaseContracts ↔ buyers ↔ sellers)
+        if (newLevel === 0 && currentPath.length > 0) {
+          const isNavigatingBetweenTopLevelPages = ['purchaseContracts', 'buyers', 'sellers', 'dashboard'].includes(pageKey) && 
+            ['purchaseContracts', 'buyers', 'sellers', 'dashboard'].includes(currentLastPage);
+          
+          if (isNavigatingBetweenTopLevelPages && pageKey !== currentLastPage) {
+            console.log(`Navegación entre páginas principales: ${currentLastPage} → ${pageKey}`);
+            
+            // Limpiar el estado de la página anterior
+            if (currentLastPage === 'purchaseContracts') {
+              console.log('Limpiando estado de purchaseContracts');
+              state.purchaseContracts = { ...initialContractsState };
+            } else if (currentLastPage === 'buyers') {
+              console.log('Limpiando estado de buyers');
+              state.buyers = { ...initialContractsState };
+            } else if (currentLastPage === 'sellers') {
+              console.log('Limpiando estado de sellers');
+              state.sellers = { ...initialContractsState };
+            }
+            
+            // También limpiar estados de páginas más profundas
+            state.contractDetail = {};
+            state.createSubContract = {};
+          }
+        }
+        
+        // Identificar qué páginas se están abandonando (navegación hacia afuera)
         const abandonedPages = currentPath.slice(newLevel + 1);
         console.log('Páginas abandonadas:', abandonedPages);
         
@@ -131,13 +158,7 @@ const pageStateSlice = createSlice({
         abandonedPages.forEach(abandonedPage => {
           console.log(`Limpiando estado de página abandonada: ${abandonedPage}`);
           
-          if (abandonedPage === 'purchaseContracts') {
-            state.purchaseContracts = { ...initialContractsState };
-          } else if (abandonedPage === 'buyers') {
-            state.buyers = { ...initialContractsState };
-          } else if (abandonedPage === 'sellers') {
-            state.sellers = { ...initialContractsState };
-          } else if (abandonedPage === 'contractDetail' && contractId) {
+          if (abandonedPage === 'contractDetail' && contractId) {
             delete state.contractDetail[contractId];
           } else if (abandonedPage === 'createSubContract' && contractId) {
             delete state.createSubContract[contractId];
@@ -145,7 +166,7 @@ const pageStateSlice = createSlice({
         });
         
         state.currentPagePath = newPath;
-        console.log('Navegación hacia afuera/mismo nivel - estado limpiado. Nuevo path:', newPath);
+        console.log('Navegación completada. Nuevo path:', newPath);
       }
       
       // Actualizar última página visitada
