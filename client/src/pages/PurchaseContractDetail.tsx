@@ -40,10 +40,10 @@ export default function PurchaseContractDetail() {
   // Configuración del progress bar - solo configuración y campos
   const progressBarConfig: ProgressBarConfig = {
     settledField: 'delivered', // Campo que contiene el valor entregado
-    reservedField: 'reserved', // Campo que contiene el valor reservado
+    reservedField: 'reserved', // Campo que contiene el valor reservado  
     totalField: 'quantity', // Campo que contiene el total para porcentajes
     label: 'Progress',
-    colorPriority: 'settled' // Verde tiene prioridad en caso de empate
+    colorPriority: 'reserved' // Azul tiene prioridad en caso de empate
   };
 
   // Generar 10 sub-contratos con datos random para testing

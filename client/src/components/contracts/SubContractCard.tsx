@@ -131,6 +131,17 @@ export default function SubContractCard({
               const reservedValue = subContract[progressBar.reservedField] || 0;
               const totalValue = subContract[progressBar.totalField] || 1;
               
+              // DEBUG: Log values para verificar datos
+              console.log('Progress Bar Debug:', {
+                contractId: subContract.contractNumber,
+                settledField: progressBar.settledField,
+                reservedField: progressBar.reservedField,
+                totalField: progressBar.totalField,
+                settledValue,
+                reservedValue,
+                totalValue
+              });
+              
               // Calcular porcentajes
               const settledPercentage = (settledValue / totalValue) * 100;
               const reservedPercentage = (reservedValue / totalValue) * 100;
