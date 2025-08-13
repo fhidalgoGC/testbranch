@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
+import { useNavigationHandler } from '@/hooks/usePageState';
 import { 
   ShoppingCart, 
   Users, 
@@ -41,6 +42,7 @@ const menuItems = [
 export default function Sidebar() {
   const { t } = useTranslation();
   const [location] = useLocation();
+  const { handleNavigateToPage } = useNavigationHandler();
 
   return (
     <div className="w-64 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-r border-gray-200/60 dark:border-gray-700/60 h-screen">
@@ -67,13 +69,18 @@ export default function Sidebar() {
             
             return (
               <Link key={item.key} href={item.path}>
-                <div className={cn(
-                  "group relative flex items-center min-h-[36px] px-3 py-1.5 text-sm font-normal rounded-sm transition-all duration-100 ease-out cursor-pointer",
-                  isActive 
-                    ? "bg-blue-50/80 dark:bg-blue-950/50 text-blue-700 dark:text-blue-200 shadow-sm" 
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 hover:text-gray-900 dark:hover:text-gray-100"
-                )}>
-                  
+                <div 
+                  className={cn(
+                    "group relative flex items-center min-h-[36px] px-3 py-1.5 text-sm font-normal rounded-sm transition-all duration-100 ease-out cursor-pointer",
+                    isActive 
+                      ? "bg-blue-50/80 dark:bg-blue-950/50 text-blue-700 dark:text-blue-200 shadow-sm" 
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 hover:text-gray-900 dark:hover:text-gray-100"
+                  )}
+                  onClick={() => {
+                    console.log(`Sidebar navigation: ${item.key}`);
+                    handleNavigateToPage(item.key);
+                  }}
+                >
                   {/* Microsoft-style active indicator */}
                   {isActive && (
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-blue-600 dark:bg-blue-400 rounded-r-sm"></div>
