@@ -68,6 +68,12 @@ Preferred communication style: Simple, everyday language.
   - Improved maintainability and testability
 - **Impact**: Cleaner component structure, reusable services, better code organization
 
+### Action Menu Items Architecture
+- **Date**: August 13, 2025
+- **Principle**: Table components must be completely agnostic about navigation and business logic
+- **Implementation**: Page components pass pre-configured action items with handlers to the table
+- **Rule**: Tables should never contain hardcoded navigation URLs or business logic - all actions are externally defined and passed as props
+
 ## External Dependencies
 
 ### Core
