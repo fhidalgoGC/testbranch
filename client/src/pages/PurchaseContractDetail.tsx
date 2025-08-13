@@ -40,21 +40,21 @@ export default function PurchaseContractDetail() {
   // Configuración del progress bar - completamente agnóstica
   const progressBarConfig: ProgressBarConfig = {
     settledPercentage: (data) => {
-      // Lógica de negocio: calcular % de entregado vs total
-      const settledAmount = data.delivered;
-      const totalQuantity = data.quantity;
-      const reservedAmount = data.quantity * 0.8;
-      const settledPercentage = (settledAmount / totalQuantity) * 100;
-      const reservedPercentage = (reservedAmount / totalQuantity) * 100;
-      return Math.min(settledPercentage, reservedPercentage);
+      // Lógica de negocio: % real de entregado vs total
+      const settledAmount = data.delivered || 0;
+      const totalQuantity = data.quantity || 1;
+      return (settledAmount / totalQuantity) * 100;
     },
     reservedPercentage: (data) => {
-      // Lógica de negocio: calcular % reservado pendiente
-      const settledAmount = data.delivered;
-      const totalQuantity = data.quantity;
-      const reservedAmount = data.quantity * 0.8;
+      // Lógica de negocio: % reservado pero no entregado aún
+      const settledAmount = data.delivered || 0;
+      const reservedAmount = data.reserved || 0;
+      const totalQuantity = data.quantity || 1;
+      
       const settledPercentage = (settledAmount / totalQuantity) * 100;
       const reservedPercentage = (reservedAmount / totalQuantity) * 100;
+      
+      // Solo mostrar la parte reservada que no está entregada
       return Math.max(0, reservedPercentage - settledPercentage);
     },
     label: 'Progress'
@@ -77,7 +77,13 @@ export default function PurchaseContractDetail() {
 
     return Array.from({ length: 10 }, (_, i) => {
       const quantity = Math.floor(Math.random() * 500) + 100; // 100-600
-      const delivered = Math.floor(Math.random() * quantity * 0.9); // 0-90% of quantity
+      
+      // Datos más variados para progress bars realistas
+      const reservedPercent = 0.2 + Math.random() * 0.7; // 20%-90% reserved
+      const deliveredPercent = Math.random() * reservedPercent; // 0% a reservedPercent delivered
+      
+      const reserved = Math.floor(quantity * reservedPercent);
+      const delivered = Math.floor(quantity * deliveredPercent);
       const balance = quantity - delivered;
       const color = colors[i];
       
@@ -85,6 +91,9 @@ export default function PurchaseContractDetail() {
         id: `${i + 1}`,
         contractNumber: `SPC-46-SUBC-${i + 1}`,
         quantity,
+        reserved, // Agregamos campo reserved
+        delivered,
+        balance,
         unit: 'bu60',
         thresholds: { 
           min: quantity * 0.9, 
@@ -92,8 +101,6 @@ export default function PurchaseContractDetail() {
         },
         basis: Math.floor(Math.random() * 1000) + 1000, // 1000-2000
         price: Math.floor(Math.random() * 1000) + 1500, // 1500-2500
-        delivered,
-        balance,
         totalPayment: quantity * (Math.floor(Math.random() * 1000) + 1500),
         borderColor: color.border,
         dotColor: color.dot,
