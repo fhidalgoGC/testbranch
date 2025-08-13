@@ -92,15 +92,14 @@ export default function SubContractCard({
           </div>
         </div>
         
-        <div className="mb-3 pt-2 border-t">
+        {/* Total Payment and Action buttons on same row */}
+        <div className="pt-2 border-t flex justify-between items-center">
           <p className="text-sm">
             <span className="text-gray-500">{t('contractDetail.totalPayment')}:</span>{' '}
             <span className="font-bold text-green-600">$ {formatNumber(subContract.totalPayment)}</span>
           </p>
-        </div>
-        
-        {/* Action buttons */}
-        <div className="flex justify-end space-x-1">
+          
+          <div className="flex space-x-1">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -185,6 +184,7 @@ export default function SubContractCard({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          </div>
         </div>
       </CardContent>
     </Card>
