@@ -29,12 +29,12 @@ export default function PurchaseContractDetail() {
 
   // Configuración de campos para el componente agnóstico
   const fieldConfig: FieldConfig[] = [
-    { key: 'price', label: 'Price', color: 'black', format: 'currency' },
-    { key: 'basis', label: 'Basis', color: 'black', format: 'currency' },
-    { key: 'future', label: 'Future', color: 'black', format: 'currency' },
-    { key: 'reserved', label: 'Reserved', color: 'blue', unit: 'bu60' },
-    { key: 'delivered', label: 'Settled', color: 'green', unit: 'bu60' },
-    { key: 'balance', label: 'Your Balance', color: 'black', unit: 'bu60' }
+    { key: 'price', label: t('contractDetail.price'), color: 'black', format: 'currency' },
+    { key: 'basis', label: t('contractDetail.basis'), color: 'black', format: 'currency' },
+    { key: 'future', label: t('contractDetail.future'), color: 'black', format: 'currency' },
+    { key: 'reserved', label: t('contractDetail.reserved'), color: 'blue', unit: 'bu60' },
+    { key: 'delivered', label: t('contractDetail.settled'), color: 'green', unit: 'bu60' },
+    { key: 'balance', label: t('contractDetail.yourBalance'), color: 'black', unit: 'bu60' }
   ];
 
   // Configuración del progress bar - solo configuración y campos
@@ -42,7 +42,7 @@ export default function PurchaseContractDetail() {
     settledField: 'delivered', // Campo que contiene el valor entregado
     reservedField: 'reserved', // Campo que contiene el valor reservado  
     totalField: 'quantity', // Campo que contiene el total para porcentajes
-    label: 'Progress',
+    label: t('contractDetail.progress'),
     colorPriority: 'settled' // Verde tiene prioridad en caso de empate
   };
 

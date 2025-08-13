@@ -95,7 +95,7 @@ export default function SubContractCard({
             </span>
           </div>
           <div className="text-base">
-            <span className="font-bold text-gray-700 dark:text-gray-300">Quantity:</span>{' '}
+            <span className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.quantity')}:</span>{' '}
             <span className="font-medium text-green-600">
               {formatNumber(subContract.quantity)} {subContract.unit}
             </span>
@@ -150,7 +150,7 @@ export default function SubContractCard({
               return (
                 <>
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-gray-500">{progressBar.label || 'Progress'}</span>
+                    <span className="text-gray-500">{progressBar.label || t('contractDetail.progress')}</span>
                     <span className={`font-medium ${percentageColor}`}>{displayPercentage}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
