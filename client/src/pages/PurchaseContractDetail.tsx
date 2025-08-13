@@ -43,7 +43,7 @@ export default function PurchaseContractDetail() {
     reservedField: 'reserved', // Campo que contiene el valor reservado  
     totalField: 'quantity', // Campo que contiene el total para porcentajes
     label: 'Progress',
-    colorPriority: 'reserved' // Azul tiene prioridad en caso de empate
+    colorPriority: 'settled' // Verde tiene prioridad en caso de empate
   };
 
   // Generar 10 sub-contratos con datos random para testing

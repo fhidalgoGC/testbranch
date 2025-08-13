@@ -165,13 +165,24 @@ export default function SubContractCard({
                     <span className={`font-medium ${percentageColor}`}>{displayPercentage}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
-                    {/* Progress bar que muestra el mayor entre settled y reserved */}
-                    <div 
-                      className={`absolute left-0 h-full transition-all duration-300 ${isSettledDominant ? 'bg-green-500' : 'bg-blue-500'}`}
-                      style={{
-                        width: `${displayPercentage}%`
-                      }}
-                    ></div>
+                    {/* Progress bar con dos colores: verde (settled) y azul (reserved) */}
+                    {settledPercentage > 0 && (
+                      <div 
+                        className="absolute left-0 bg-green-500 h-full transition-all duration-300"
+                        style={{
+                          width: `${Math.min(settledPercentage, 100)}%`
+                        }}
+                      ></div>
+                    )}
+                    {reservedPercentage > settledPercentage && (
+                      <div 
+                        className="absolute bg-blue-500 h-full transition-all duration-300"
+                        style={{
+                          left: `${Math.min(settledPercentage, 100)}%`,
+                          width: `${Math.min(reservedPercentage - settledPercentage, 100 - settledPercentage)}%`
+                        }}
+                      ></div>
+                    )}
                   </div>
                 </>
               );
