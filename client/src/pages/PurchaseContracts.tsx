@@ -361,12 +361,27 @@ export default function PurchaseContracts() {
         limit: (params.pageSize || 10).toString()
       });
 
+      // Mapear campos de la UI a campos de la API para ordenamiento
+      const sortFieldMapping: Record<string, string> = {
+        'customer': 'participants.name',
+        'date': 'contract_date',
+        'commodity': 'commodity.name',
+        'quantity': 'quantity',
+        'price': 'price_schedule.price',
+        'basis': 'price_schedule.basis',
+        'future': 'price_schedule.future_price',
+        'reserve': 'reserved',
+        'id': '_id'
+      };
+
       // Agregar ordenamiento en el mismo formato que fetchContracts
       if (params.sort) {
-        queryParams.append(`sort[${params.sort.key}]`, params.sort.direction === 'asc' ? '1' : '-1');
+        const apiFieldName = sortFieldMapping[params.sort.key] || params.sort.key;
+        console.log('Sort mapping:', params.sort.key, '->', apiFieldName, params.sort.direction);
+        queryParams.append(`sort[${apiFieldName}]`, params.sort.direction === 'asc' ? '1' : '-1');
       } else {
-        // Ordenamiento por defecto por fecha de creación descendente
-        queryParams.append('sort[created_at]', '-1');
+        // Ordenamiento por defecto por fecha de contrato descendente
+        queryParams.append('sort[contract_date]', '-1');
       }
 
       const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${queryParams.toString()}`;
