@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Eye } from 'lucide-react';
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -208,6 +208,9 @@ export default function PurchaseContractDetail() {
                 Status Contract: <span className="text-green-600 dark:text-green-400">created</span>
               </span>
               <div className="flex space-x-2">
+                <Button size="sm" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                  <Eye className="w-4 h-4" />
+                </Button>
                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                   <Edit className="w-4 h-4" />
                 </Button>
@@ -246,9 +249,6 @@ export default function PurchaseContractDetail() {
                 {seller?.name || 'Test Seller LLC'}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {seller?.people_id || '654716baa3e0f7b270a3cad1'}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Street 10, Arizona City, AZ 23412, USA
               </p>
             </div>
@@ -265,14 +265,14 @@ export default function PurchaseContractDetail() {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Commodity:</span>
-                <span className="font-medium text-gray-900 dark:text-white">
-                  {contract.commodity?.name || 'HRW - Wheat Hard Red ...'}
+                <span className="font-medium text-gray-900 dark:text-white text-right max-w-xs">
+                  {contract.commodity?.name || 'HRW - Wheat Hard Red'}
                 </span>
               </div>
 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity / Units:</span>
-                <span className="font-medium text-gray-900 dark:text-white">
+                <span className="font-medium text-gray-900 dark:text-white font-mono">
                   {formatNumber({ 
                     value: contract.quantity || 1400, 
                     minDecimals: 2, 
@@ -285,14 +285,14 @@ export default function PurchaseContractDetail() {
 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Thresholds</span>
-                <span className="text-gray-900 dark:text-white">
-                  <span className="text-sm">Min:</span> {formatNumber({ 
+                <span className="text-gray-900 dark:text-white font-mono text-sm">
+                  Min: {formatNumber({ 
                     value: contract.quantity ? contract.quantity * 0.9 : 1260, 
                     minDecimals: 0, 
                     maxDecimals: 0,
                     formatPattern: '0,000',
                     roundMode: 'truncate'
-                  })} {contract.measurement_unit || 'bu60'} | <span className="text-sm">Max:</span> {formatNumber({ 
+                  })} {contract.measurement_unit || 'bu60'} | Max: {formatNumber({ 
                     value: contract.quantity ? contract.quantity * 1.1 : 1540, 
                     minDecimals: 0, 
                     maxDecimals: 0,
@@ -363,10 +363,22 @@ export default function PurchaseContractDetail() {
                   />
                   <div className="flex justify-between items-center">
                     <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
-                      0.00 bu60
+                      {formatNumber({ 
+                        value: 0, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} bu60
                     </div>
                     <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
-                      1,400.00 bu60
+                      {formatNumber({ 
+                        value: contract.quantity || 1400, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} bu60
                     </div>
                   </div>
                 </div>
@@ -384,10 +396,22 @@ export default function PurchaseContractDetail() {
                   />
                   <div className="flex justify-between items-center">
                     <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
-                      0.00 bu60
+                      {formatNumber({ 
+                        value: 0, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} bu60
                     </div>
                     <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
-                      1,400.00 bu60
+                      {formatNumber({ 
+                        value: contract.quantity || 1400, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} bu60
                     </div>
                   </div>
                 </div>
@@ -405,10 +429,22 @@ export default function PurchaseContractDetail() {
                   />
                   <div className="flex justify-between items-center">
                     <div className="text-xl font-bold text-green-600 dark:text-green-400 font-mono">
-                      1,400.00 bu60
+                      {formatNumber({ 
+                        value: contract.quantity || 1400, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} bu60
                     </div>
                     <div className="text-xl font-bold text-green-600 dark:text-green-400 font-mono">
-                      0.00 bu60
+                      {formatNumber({ 
+                        value: 0, 
+                        minDecimals: 2, 
+                        maxDecimals: 2,
+                        formatPattern: '0,000.00',
+                        roundMode: 'truncate'
+                      })} bu60
                     </div>
                   </div>
                 </div>
