@@ -515,9 +515,9 @@ export default function PurchaseContractDetail() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 h-[400px]">
+          <div className="flex gap-6 h-[400px]">
             {/* Left Column - Pie Chart */}
-            <Card className="h-full w-[300px]">
+            <Card className="h-full w-[300px] flex-shrink-0">
               <CardHeader>
                 <CardTitle>{t('contractDetail.position')}</CardTitle>
               </CardHeader>
@@ -559,7 +559,7 @@ export default function PurchaseContractDetail() {
             </Card>
 
             {/* Right Column - Sub-contracts Cards with Border and Scroll */}
-            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 h-full">
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 h-full flex-1">
               <div className="h-full overflow-y-auto space-y-3 pr-2" style={{maxHeight: '340px'}}>
                 {/* Sub-contract 1 */}
                 <Card className="border-l-4 border-l-blue-500">
