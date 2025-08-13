@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calendar, Package, DollarSign, FileText } from 'lucide-react';
+import { ArrowLeft, Calendar, Package, DollarSign, FileText, X } from 'lucide-react';
 import { Link } from 'wouter';
 
 interface ContractData {
@@ -268,6 +268,78 @@ export default function CreateSubContract() {
                         readOnly
                         className="text-sm font-mono bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                       />
+                    </div>
+                  </div>
+
+                  {/* Total Section */}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Total</h3>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                          Price
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type="text"
+                            value="2,733.00"
+                            className="text-sm font-mono pr-8"
+                          />
+                          <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                          Date
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type="date"
+                            value="2025-08-13"
+                            className="text-sm pr-8"
+                          />
+                          <button className="absolute right-8 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-700">
+                            <Calendar className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                          Quantity
+                        </label>
+                        <div className="relative">
+                          <Input
+                            type="text"
+                            value="700.00"
+                            className="text-sm font-mono pr-8"
+                          />
+                          <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                          Measurement Unit
+                        </label>
+                        <Select defaultValue="bushel60">
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="bushel60">Bushel 60</SelectItem>
+                            <SelectItem value="bushel56">Bushel 56</SelectItem>
+                            <SelectItem value="metricton">Metric Ton</SelectItem>
+                            <SelectItem value="kg">Kilogram</SelectItem>
+                            <SelectItem value="lb">Pound</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                 </div>
