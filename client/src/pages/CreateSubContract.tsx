@@ -17,22 +17,25 @@ import { FormattedNumberInput } from '@/components/PurchaseContractForm/componen
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { DatePicker } from '@/components/ui/datepicker';
 
-// Sub-contract form schema
+// Sub-contract form schema matching API structure
 const subContractSchema = z.object({
+  // Form display fields
   contractNumber: z.string().min(1, 'Contract number is required'),
   contractDate: z.string().min(1, 'Contract date is required'),
   customerNumber: z.string().min(1, 'Customer number is required'),
   idContract: z.string().min(1, 'ID Contract is required'),
   referenceNumber: z.string().min(1, 'Reference number is required'),
   commodity: z.string().min(1, 'Commodity is required'),
+  contact: z.string(),
+  shipmentPeriod: z.string(),
+  
+  // API fields
   future: z.number().min(0, 'Future price must be positive'),
   basis: z.number(),
   totalPrice: z.number().min(0, 'Total price must be positive'),
   totalDate: z.string().min(1, 'Total date is required'),
   quantity: z.number().min(0.01, 'Quantity must be greater than 0'),
   measurementUnitId: z.string().min(1, 'Measurement unit is required'),
-  contact: z.string(),
-  shipmentPeriod: z.string(),
 });
 
 type SubContractFormData = z.infer<typeof subContractSchema>;
@@ -122,14 +125,45 @@ export default function CreateSubContract() {
   };
 
   const handleCreateSubContract = handleSubmit((data: SubContractFormData) => {
-    // Update total price with current calculation
-    const finalData = {
-      ...data,
-      totalPrice: data.future + data.basis
+    // Get auth data from localStorage  
+    const createdById = localStorage.getItem('user_id') || '';
+    const createdByName = localStorage.getItem('user_name') || '';
+    
+    // Find selected measurement unit details
+    const selectedUnit = measurementUnits.find(unit => unit.key === data.measurementUnitId);
+    
+    // Construct API payload matching the required structure
+    const apiPayload = {
+      contract_id: contractId,
+      contract_folio: data.contractNumber,
+      measurement_unit: selectedUnit?.value || 'bu60', // Short code from API
+      total_price: data.totalPrice,
+      created_by_id: createdById,
+      created_by_name: createdByName,
+      price_schedule: [{
+        pricing_type: 'basis',
+        price: data.totalPrice,
+        basis: data.basis,
+        future_price: data.future,
+        basis_operation: 'add',
+        option_month: 'september',
+        option_year: 2025,
+        exchange: 'Chicago Board of Trade',
+        payment_currency: 'usd'
+      }],
+      quantity: data.quantity,
+      sub_contract_date: data.totalDate,
+      measurement_unit_id: data.measurementUnitId,
+      thresholds: {
+        max_thresholds_percentage: 0,
+        max_thresholds_weight: data.quantity,
+        min_thresholds_percentage: 0,
+        min_thresholds_weight: data.quantity
+      }
     };
     
-    console.log('Creating sub-contract with form data:', finalData);
-    // TODO: Send finalData to API endpoint
+    console.log('Creating sub-contract with API payload:', apiPayload);
+    // TODO: Send apiPayload to API endpoint
     setLocation(`/purchase-contracts/${contractId}`);
   });
   
