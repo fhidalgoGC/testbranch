@@ -18,8 +18,9 @@ export interface FieldConfig {
 }
 
 export interface ProgressBarConfig {
-  settledPercentage: (data: any) => number; // Función que retorna el porcentaje verde (settled)
-  reservedPercentage: (data: any) => number; // Función que retorna el porcentaje azul (reserved)
+  settledField: string; // Campo que contiene el valor settled
+  reservedField: string; // Campo que contiene el valor reserved
+  totalField: string; // Campo que contiene el total para calcular porcentajes
   label?: string; // Label del progress bar (por defecto "Progress")
   colorPriority?: 'settled' | 'reserved'; // Color prioritario en caso de empate (por defecto 'settled' = verde)
 }
@@ -125,13 +126,14 @@ export default function SubContractCard({
         {progressBar && (
           <div className="mb-3">
             {(() => {
-              // Componente completamente agnóstico - recibe porcentajes ya calculados
-              const settledPercentage = progressBar.settledPercentage(subContract);
-              const reservedPercentage = progressBar.reservedPercentage(subContract);
+              // Cálculos internos del componente usando configuración
+              const settledValue = subContract[progressBar.settledField] || 0;
+              const reservedValue = subContract[progressBar.reservedField] || 0;
+              const totalValue = subContract[progressBar.totalField] || 1;
               
-              // Comparar valores absolutos para determinar el dominante
-              const settledValue = subContract.delivered || 0;
-              const reservedValue = subContract.reserved || 0;
+              // Calcular porcentajes
+              const settledPercentage = (settledValue / totalValue) * 100;
+              const reservedPercentage = (reservedValue / totalValue) * 100;
               
               // Determinar color dominante considerando prioridad en caso de empate
               const isSettledDominant = settledValue > reservedValue || 

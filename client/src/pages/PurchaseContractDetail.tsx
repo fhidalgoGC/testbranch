@@ -37,20 +37,11 @@ export default function PurchaseContractDetail() {
     { key: 'balance', label: 'Your Balance', color: 'black', unit: 'bu60' }
   ];
 
-  // Configuración del progress bar - completamente agnóstica
+  // Configuración del progress bar - solo configuración y campos
   const progressBarConfig: ProgressBarConfig = {
-    settledPercentage: (data) => {
-      // Verde: % de lo entregado vs total
-      const settledAmount = data.delivered || 0;
-      const totalQuantity = data.quantity || 1;
-      return (settledAmount / totalQuantity) * 100;
-    },
-    reservedPercentage: (data) => {
-      // Azul: % reservado total vs total (no pendiente, sino el total reservado)
-      const reservedAmount = data.reserved || 0;
-      const totalQuantity = data.quantity || 1;
-      return (reservedAmount / totalQuantity) * 100;
-    },
+    settledField: 'delivered', // Campo que contiene el valor entregado
+    reservedField: 'reserved', // Campo que contiene el valor reservado
+    totalField: 'quantity', // Campo que contiene el total para porcentajes
     label: 'Progress',
     colorPriority: 'settled' // Verde tiene prioridad en caso de empate
   };
@@ -106,14 +97,14 @@ export default function PurchaseContractDetail() {
 
     // 5 cards adicionales con empates para probar prioridad de colores
     const tieCards = [
-      // Card 11: Empate perfecto 200-200
+      // Card 11: Empate 240-240 (60% cada uno)
       {
         id: '11',
         contractNumber: 'SPC-46-SUBC-11',
         quantity: 400,
-        reserved: 200, // 50%
-        delivered: 200, // 50% - EMPATE
-        balance: 200,
+        reserved: 240, // 60%
+        delivered: 240, // 60% - EMPATE
+        balance: 160,
         unit: 'bu60',
         thresholds: { min: 360, max: 440 },
         basis: 1500,
@@ -123,14 +114,14 @@ export default function PurchaseContractDetail() {
         dotColor: 'bg-yellow-500',
         textColor: 'text-yellow-600'
       },
-      // Card 12: Empate en números redondos 300-300
+      // Card 12: Empate 360-360 (60% cada uno)
       {
         id: '12',
         contractNumber: 'SPC-46-SUBC-12',
         quantity: 600,
-        reserved: 300, // 50%
-        delivered: 300, // 50% - EMPATE
-        balance: 300,
+        reserved: 360, // 60%
+        delivered: 360, // 60% - EMPATE
+        balance: 240,
         unit: 'bu60',
         thresholds: { min: 540, max: 660 },
         basis: 1200,
@@ -140,14 +131,14 @@ export default function PurchaseContractDetail() {
         dotColor: 'bg-purple-500',
         textColor: 'text-purple-600'
       },
-      // Card 13: Empate pequeño 100-100
+      // Card 13: Empate 120-120 (60% cada uno)
       {
         id: '13',
         contractNumber: 'SPC-46-SUBC-13',
         quantity: 200,
-        reserved: 100, // 50%
-        delivered: 100, // 50% - EMPATE
-        balance: 100,
+        reserved: 120, // 60%
+        delivered: 120, // 60% - EMPATE
+        balance: 80,
         unit: 'bu60',
         thresholds: { min: 180, max: 220 },
         basis: 1800,
@@ -157,14 +148,14 @@ export default function PurchaseContractDetail() {
         dotColor: 'bg-pink-500',
         textColor: 'text-pink-600'
       },
-      // Card 14: Empate con decimales exactos 250-250
+      // Card 14: Empate 300-300 (60% cada uno)
       {
         id: '14',
         contractNumber: 'SPC-46-SUBC-14',
         quantity: 500,
-        reserved: 250, // 50%
-        delivered: 250, // 50% - EMPATE
-        balance: 250,
+        reserved: 300, // 60%
+        delivered: 300, // 60% - EMPATE
+        balance: 200,
         unit: 'bu60',
         thresholds: { min: 450, max: 550 },
         basis: 1600,
@@ -174,14 +165,14 @@ export default function PurchaseContractDetail() {
         dotColor: 'bg-indigo-500',
         textColor: 'text-indigo-600'
       },
-      // Card 15: Empate grande 400-400
+      // Card 15: Empate 480-480 (60% cada uno)
       {
         id: '15',
         contractNumber: 'SPC-46-SUBC-15',
         quantity: 800,
-        reserved: 400, // 50%
-        delivered: 400, // 50% - EMPATE
-        balance: 400,
+        reserved: 480, // 60%
+        delivered: 480, // 60% - EMPATE
+        balance: 320,
         unit: 'bu60',
         thresholds: { min: 720, max: 880 },
         basis: 1300,
