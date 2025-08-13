@@ -377,7 +377,6 @@ export default function PurchaseContracts() {
       // Agregar ordenamiento en el mismo formato que fetchContracts
       if (params.sort) {
         const apiFieldName = sortFieldMapping[params.sort.key] || params.sort.key;
-        console.log('Sort mapping:', params.sort.key, '->', apiFieldName, params.sort.direction);
         queryParams.append(`sort[${apiFieldName}]`, params.sort.direction === 'asc' ? '1' : '-1');
       } else {
         // Ordenamiento por defecto por fecha de contrato descendente
@@ -654,6 +653,7 @@ export default function PurchaseContracts() {
       <GenericTable
         columns={columns}
         fetchData={fetchContractsData}
+        titleKey="purchaseContractsList"
         defaultFilters={{
           pricingType: ['all'],
           commodity: ['all']

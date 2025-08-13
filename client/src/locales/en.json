@@ -195,6 +195,7 @@
   "positiveNumber": "Must be a positive number",
   "customer": "Seller",
   "reserve": "Reserve",
+  "purchaseContractsList": "Purchase Contracts List",
   "validDate": "Please enter a valid date",
   "invalidFormat": "Invalid format",
   "selectOption": "Please select an option",
