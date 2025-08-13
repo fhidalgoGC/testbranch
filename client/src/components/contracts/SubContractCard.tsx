@@ -55,7 +55,7 @@ export default function SubContractCard({
               ID Contract#{subContract.contractNumber}
             </span>
           </div>
-          <div className="text-sm">
+          <div className="text-base">
             <span className="font-bold text-gray-700 dark:text-gray-300">Quantity:</span>{' '}
             <span className="font-medium text-green-600">
               {formatNumber(subContract.quantity)} {subContract.unit}
