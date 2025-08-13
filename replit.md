@@ -81,6 +81,17 @@ Preferred communication style: Simple, everyday language.
 - **Result**: Instant, fluid navigation between pages without page reloads
 - **Impact**: Significantly improved user experience and application performance
 
+### Hierarchical Navigation State Management Fix
+- **Date**: August 13, 2025
+- **Issue**: State persistence was inconsistent across pages - only PurchaseContracts had proper hierarchical navigation, other pages maintained state when they shouldn't
+- **Root Cause**: Not all pages were implementing the same navigation hierarchy behavior
+- **Solution**: 
+  - Implemented `useNavigationHandler` and `handleNavigateToPage()` in all main pages (Home, Buyers, Sellers, SaleContracts)
+  - Added `saleContracts` to Redux state and navigation hierarchy
+  - All top-level pages now clear their state when navigating between sibling pages
+- **Result**: Consistent state management across all pages - state persists when navigating deeper in hierarchy but clears when moving between same-level pages
+- **Impact**: Unified user experience and predictable state behavior throughout the application
+
 ## External Dependencies
 
 ### Core
