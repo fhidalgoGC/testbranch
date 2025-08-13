@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
+import { useContractsPageState, usePageTracking } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useCommodities } from '@/hooks/useCommodities';
 import { 
@@ -28,18 +29,30 @@ export default function PurchaseContracts() {
   const [location, setLocation] = useLocation();
   const { commodities, loading: commoditiesLoading, error: commoditiesError } = useCommodities();
   
+  // Hook para persistir estado de la página
+  const { pageState, updateState } = useContractsPageState('purchaseContracts');
+  usePageTracking('/purchase-contracts');
+  
   // Estados para la carga de contratos
   const [contracts, setContracts] = useState<PurchaseContract[]>([]);
   const [contractsLoading, setContractsLoading] = useState(false);
   const [contractsError, setContractsError] = useState<string | null>(null);
   const [totalContracts, setTotalContracts] = useState(0);
 
-  // Estados para filtros
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({
-    pricingType: ['all'],
-    commodity: ['all']
-  });
-  const [currentPage, setCurrentPage] = useState(1);
+  // Estados para filtros - usando estado persistido
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(
+    pageState.filters || { pricingType: ['all'], commodity: ['all'] }
+  );
+  const [currentPage, setCurrentPage] = useState(pageState.currentPage || 1);
+
+  // Efecto para persistir cambios de filtros y página
+  useEffect(() => {
+    updateState({
+      filters: selectedFilters,
+      currentPage,
+      searchTerm: '', // Agregar cuando implementemos búsqueda
+    });
+  }, [selectedFilters, currentPage, updateState]);
 
   // Debug: Log commodity data
   useEffect(() => {

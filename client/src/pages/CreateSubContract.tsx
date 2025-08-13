@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
+import { useCreateSubContractState, usePageTracking } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,24 +17,41 @@ export default function CreateSubContract() {
   const params = useParams();
   const [location, setLocation] = useLocation();
   
-  const contractId = params.contractId;
+  const contractId = params.contractId!;
   
-  // Estados del formulario
-  const [formData, setFormData] = useState({
-    contractNumber: '',
-    quantity: '',
-    unit: 'bu60',
-    price: '',
-    basis: '',
-    future: '',
-    minThreshold: '',
-    maxThreshold: '',
-    paymentTerms: '',
-    deliveryLocation: '',
-    notes: ''
-  });
+  // Hook para persistir estado del formulario
+  const { formState, updateState } = useCreateSubContractState(contractId);
+  usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/create`);
+  
+  // Estados del formulario - usando estado persistido
+  const [formData, setFormData] = useState(
+    formState.formData && Object.keys(formState.formData).length > 0 
+      ? formState.formData 
+      : {
+          contractNumber: '',
+          quantity: '',
+          unit: 'bu60',
+          price: '',
+          basis: '',
+          future: '',
+          minThreshold: '',
+          maxThreshold: '',
+          paymentTerms: '',
+          deliveryLocation: '',
+          notes: ''
+        }
+  );
+  const [pricingType, setPricingType] = useState<'fixed' | 'basis'>(formState.pricingType || 'fixed');
 
   const [loading, setLoading] = useState(false);
+
+  // Efecto para persistir cambios de formulario
+  useEffect(() => {
+    updateState({
+      formData,
+      pricingType
+    });
+  }, [formData, pricingType, updateState]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({

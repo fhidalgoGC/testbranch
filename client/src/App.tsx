@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect } from "react";
 import "./common/utils/i18n";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { useStateRestoration } from "@/hooks/usePageState";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
 import Buyers from "@/pages/Buyers";
@@ -38,6 +39,11 @@ function Router() {
   );
 }
 
+function StateRestorer() {
+  useStateRestoration();
+  return null;
+}
+
 function App() {
   useEffect(() => {
     // Set document language based on detected language
@@ -50,6 +56,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <TooltipProvider>
+            <StateRestorer />
             <Toaster />
             <Router />
           </TooltipProvider>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
+import { useContractDetailState, usePageTracking } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,10 +23,20 @@ export default function PurchaseContractDetail() {
   
   const contractId = params.id;
   
+  // Hook para persistir estado del detalle de contrato
+  const { contractState, updateState } = useContractDetailState(contractId!);
+  usePageTracking(`/purchase-contracts/${contractId}`);
+  
   // Estados
   const [contract, setContract] = useState<PurchaseContract | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState(contractState.activeTab || 'general');
+
+  // Efecto para persistir cambios de tab activo
+  useEffect(() => {
+    updateState({ activeTab });
+  }, [activeTab, updateState]);
 
   // Configuración de campos para el componente agnóstico
   const fieldConfig: FieldConfig[] = [
@@ -434,7 +445,7 @@ export default function PurchaseContractDetail() {
           {/* Left Column - Tabs within Card */}
           <Card className="flex flex-col h-full">
             <CardHeader className="pb-2">
-              <Tabs defaultValue="general" className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="general">{t('contractDetail.generalInformation')}</TabsTrigger>
                   <TabsTrigger value="contact">{t('contractDetail.remarks')}</TabsTrigger>
