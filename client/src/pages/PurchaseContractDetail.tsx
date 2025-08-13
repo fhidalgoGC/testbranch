@@ -372,15 +372,12 @@ export default function PurchaseContractDetail() {
                 <span className="text-lg text-gray-900 dark:text-white">
                   {contract.contract_type || 'Venta'}
                 </span>
-                <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                  Basis: $ {formatNumber({ 
-                    value: priceInfo?.basis || 1500, 
-                    minDecimals: 2, 
-                    maxDecimals: 2,
-                    formatPattern: '0,000.00',
-                    roundMode: 'truncate'
-                  })}
-                </span>
+                <Badge 
+                  variant="secondary" 
+                  className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-base px-3 py-1"
+                >
+                  {priceInfo?.pricing_type || 'basis'}
+                </Badge>
               </div>
             </div>
             <div className="flex flex-col space-y-2 items-end">
@@ -495,6 +492,19 @@ export default function PurchaseContractDetail() {
                       <span className="text-lg font-bold text-green-600 dark:text-green-400">
                         $ {formatNumber({ 
                           value: priceInfo?.price || 0, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.basis')}:</span>
+                      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                        $ {formatNumber({ 
+                          value: priceInfo?.basis || 1500, 
                           minDecimals: 2, 
                           maxDecimals: 2,
                           formatPattern: '0,000.00',
