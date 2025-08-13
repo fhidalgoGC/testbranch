@@ -9,7 +9,6 @@ import {
   updateCreateSubContractState,
   setLastVisited,
   restoreState,
-  setContractsData,
   type ContractsPageState,
   type ContractDetailState, 
   type CreateSubContractState 
@@ -42,8 +41,6 @@ export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'se
           sortOrder: '',
           currentPage: 1,
           pageSize: 10,
-          contractsData: {},
-          lastFetch: null,
         }
       }));
     }
@@ -53,29 +50,7 @@ export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'se
     dispatch(updateContractsState({ page, updates }));
   };
 
-  const saveContractsData = (contractsData: Record<string, any>) => {
-    // Solo para páginas que admiten cache de contratos
-    if (page === 'purchaseContracts' || page === 'saleContracts') {
-      dispatch(setContractsData({ page, contractsData }));
-    }
-  };
-
-  return { pageState, updateState, saveContractsData };
-};
-
-// Hook para acceder a datos de contratos por ID desde el cache
-export const useContractFromCache = (page: 'purchaseContracts' | 'saleContracts', contractId: string) => {
-  const contractsData = useSelector((state: RootState) => state.pageState[page].contractsData);
-  const lastFetch = useSelector((state: RootState) => state.pageState[page].lastFetch);
-  
-  const contractData = contractsData[contractId] || null;
-  const isDataFresh = lastFetch && (Date.now() - lastFetch) < 5 * 60 * 1000; // 5 minutos
-  
-  return {
-    contractData,
-    isDataFresh,
-    hasData: !!contractData
-  };
+  return { pageState, updateState };
 };
 
 // Hook para estado de detalle de contrato

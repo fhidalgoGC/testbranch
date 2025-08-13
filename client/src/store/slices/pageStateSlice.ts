@@ -36,9 +36,6 @@ interface ContractsPageState {
   sortOrder: string;
   currentPage: number;
   pageSize: number;
-  // Cache de datos del endpoint
-  contractsData: Record<string, any>; // contractId -> contract data
-  lastFetch: number | null; // timestamp de última consulta
 }
 
 interface ContractDetailState {
@@ -76,8 +73,6 @@ const initialContractsState: ContractsPageState = {
   sortOrder: '',
   currentPage: 1,
   pageSize: 10,
-  contractsData: {},
-  lastFetch: null,
 };
 
 const initialContractDetailState: ContractDetailState = {
@@ -272,29 +267,6 @@ const pageStateSlice = createSlice({
     restoreState: (state, action: PayloadAction<Partial<PageState>>) => {
       return { ...state, ...action.payload };
     },
-    // Acción para guardar los datos de contratos desde el endpoint
-    setContractsData: (
-      state,
-      action: PayloadAction<{
-        page: 'purchaseContracts' | 'saleContracts';
-        contractsData: Record<string, any>;
-      }>
-    ) => {
-      const { page, contractsData } = action.payload;
-      state[page].contractsData = contractsData;
-      state[page].lastFetch = Date.now();
-    },
-    // Acción para obtener un contrato específico por ID desde el cache
-    getContractById: (
-      state,
-      action: PayloadAction<{
-        page: 'purchaseContracts' | 'saleContracts';
-        contractId: string;
-      }>
-    ) => {
-      // This is a getter-like action, doesn't modify state
-      // Actual logic will be in a selector
-    },
   },
 });
 
@@ -307,8 +279,6 @@ export const {
   clearContractDetailState,
   clearCreateSubContractState,
   restoreState,
-  setContractsData,
-  getContractById,
 } = pageStateSlice.actions;
 
 export default pageStateSlice.reducer;
