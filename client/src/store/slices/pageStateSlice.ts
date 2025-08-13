@@ -110,7 +110,7 @@ const pageStateSlice = createSlice({
       const newLevel = getPageLevel(pageKey);
       const currentLastPage = currentPath[currentPath.length - 1];
       
-      console.log(`Navegando a página: ${pageKey}, nivel: ${newLevel}, path actual:`, currentPath, `última página: ${currentLastPage}`);
+      console.log(`🚀 NAVEGACIÓN JERÁRQUICA: ${pageKey}, nivel: ${newLevel}, path actual:`, currentPath, `última página: ${currentLastPage}`);
       
       // Si navegamos a un nivel más profundo (hacia adentro), mantener el estado
       if (newLevel > currentPath.length) {
@@ -130,29 +130,29 @@ const pageStateSlice = createSlice({
             ['purchaseContracts', 'buyers', 'sellers', 'dashboard'].includes(currentLastPage);
           
           if (isNavigatingBetweenTopLevelPages && pageKey !== currentLastPage) {
-            console.log(`Navegación entre páginas principales: ${currentLastPage} → ${pageKey}`);
+            console.log(`🔄 NAVEGACIÓN ENTRE PÁGINAS PRINCIPALES: ${currentLastPage} → ${pageKey}`);
             
             // Limpiar el estado de la página anterior Y de la página de destino
             if (currentLastPage === 'purchaseContracts') {
-              console.log('Limpiando estado de purchaseContracts (página anterior)');
+              console.log('🧹 Limpiando estado de purchaseContracts (página anterior)');
               state.purchaseContracts = { ...initialContractsState };
             } else if (currentLastPage === 'buyers') {
-              console.log('Limpiando estado de buyers (página anterior)');
+              console.log('🧹 Limpiando estado de buyers (página anterior)');
               state.buyers = { ...initialContractsState };
             } else if (currentLastPage === 'sellers') {
-              console.log('Limpiando estado de sellers (página anterior)');
+              console.log('🧹 Limpiando estado de sellers (página anterior)');
               state.sellers = { ...initialContractsState };
             }
             
             // IMPORTANTE: También limpiar el estado de la página de destino para comenzar limpio
             if (pageKey === 'purchaseContracts') {
-              console.log('Limpiando estado de purchaseContracts (página destino)');
+              console.log('🧹 Limpiando estado de purchaseContracts (página destino)');
               state.purchaseContracts = { ...initialContractsState };
             } else if (pageKey === 'buyers') {
-              console.log('Limpiando estado de buyers (página destino)');
+              console.log('🧹 Limpiando estado de buyers (página destino)');
               state.buyers = { ...initialContractsState };
             } else if (pageKey === 'sellers') {
-              console.log('Limpiando estado de sellers (página destino)');
+              console.log('🧹 Limpiando estado de sellers (página destino)');
               state.sellers = { ...initialContractsState };
             }
             
