@@ -5,6 +5,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Edit, Trash2, Eye } from 'lucide-react';
 import { Link } from 'wouter';
@@ -257,91 +258,131 @@ export default function PurchaseContractDetail() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-2 gap-6">
-          {/* Left Column - General Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>General Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Commodity:</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
-                  {contract.commodity?.name || 'HRW - Wheat Hard Red'}
-                </span>
-              </div>
+          {/* Left Column - Tabs */}
+          <div className="space-y-6">
+            <Tabs defaultValue="general" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="general">General Information</TabsTrigger>
+                <TabsTrigger value="contact">Contact & Details</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="general" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>General Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Commodity:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
+                        {contract.commodity?.name || 'HRW - Wheat Hard Red'}
+                      </span>
+                    </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity / Units:</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  {formatNumber({ 
-                    value: contract.quantity || 1400, 
-                    minDecimals: 2, 
-                    maxDecimals: 2,
-                    formatPattern: '0,000.00',
-                    roundMode: 'truncate'
-                  })} {contract.measurement_unit || 'bu60'}
-                </span>
-              </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity / Units:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {formatNumber({ 
+                          value: contract.quantity || 1400, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })} {contract.measurement_unit || 'bu60'}
+                      </span>
+                    </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Thresholds</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                  Min: {formatNumber({ 
-                    value: contract.quantity ? contract.quantity * 0.9 : 1260, 
-                    minDecimals: 0, 
-                    maxDecimals: 0,
-                    formatPattern: '0,000',
-                    roundMode: 'truncate'
-                  })} {contract.measurement_unit || 'bu60'} | Max: {formatNumber({ 
-                    value: contract.quantity ? contract.quantity * 1.1 : 1540, 
-                    minDecimals: 0, 
-                    maxDecimals: 0,
-                    formatPattern: '0,000',
-                    roundMode: 'truncate'
-                  })} {contract.measurement_unit || 'bu60'}
-                </span>
-              </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Thresholds</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        Min: {formatNumber({ 
+                          value: contract.quantity ? contract.quantity * 0.9 : 1260, 
+                          minDecimals: 0, 
+                          maxDecimals: 0,
+                          formatPattern: '0,000',
+                          roundMode: 'truncate'
+                        })} {contract.measurement_unit || 'bu60'} | Max: {formatNumber({ 
+                          value: contract.quantity ? contract.quantity * 1.1 : 1540, 
+                          minDecimals: 0, 
+                          maxDecimals: 0,
+                          formatPattern: '0,000',
+                          roundMode: 'truncate'
+                        })} {contract.measurement_unit || 'bu60'}
+                      </span>
+                    </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Price:</span>
-                <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                  $ {formatNumber({ 
-                    value: priceInfo?.price || 0, 
-                    minDecimals: 2, 
-                    maxDecimals: 2,
-                    formatPattern: '0,000.00',
-                    roundMode: 'truncate'
-                  })}
-                </span>
-              </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Price:</span>
+                      <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                        $ {formatNumber({ 
+                          value: priceInfo?.price || 0, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })}
+                      </span>
+                    </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Basis:</span>
-                <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                  $ {formatNumber({ 
-                    value: priceInfo?.basis || 1500, 
-                    minDecimals: 2, 
-                    maxDecimals: 2,
-                    formatPattern: '0,000.00',
-                    roundMode: 'truncate'
-                  })}
-                </span>
-              </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Basis:</span>
+                      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                        $ {formatNumber({ 
+                          value: priceInfo?.basis || 1500, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })}
+                      </span>
+                    </div>
 
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Future:</span>
-                <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
-                  $ {formatNumber({ 
-                    value: priceInfo?.future_price || 0, 
-                    minDecimals: 2, 
-                    maxDecimals: 2,
-                    formatPattern: '0,000.00',
-                    roundMode: 'truncate'
-                  })}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Future:</span>
+                      <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                        $ {formatNumber({ 
+                          value: priceInfo?.future_price || 0, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="contact" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Contact & Details</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Contact:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Shipment:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Payment Terms:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Premium/Discount:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
 
           {/* Right Column - Quantity Overview */}
           <div className="space-y-6">
