@@ -2,18 +2,27 @@ import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../features/auth/hooks/useAuth';
+import { usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
+  const { handleNavigateToPage } = useNavigationHandler();
+  usePageTracking('/home');
 
   useEffect(() => {
     if (!isAuthenticated) {
       setLocation('/');
     }
   }, [isAuthenticated, setLocation]);
+  
+  // Notificar navegación jerárquica al cargar la página
+  useEffect(() => {
+    console.log('🔄 HOME PAGE: Cargando dashboard y ejecutando navegación jerárquica');
+    handleNavigateToPage('dashboard');
+  }, []);
 
   if (!isAuthenticated) {
     return null;

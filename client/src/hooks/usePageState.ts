@@ -15,7 +15,7 @@ import {
 } from '../store/slices/pageStateSlice';
 
 // Hook para estado de páginas de contratos (lista)
-export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'sellers') => {
+export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'sellers' | 'saleContracts') => {
   const dispatch = useDispatch();
   const pageState = useSelector((state: RootState) => state.pageState[page]);
   const currentPagePath = useSelector((state: RootState) => state.pageState.currentPagePath);
@@ -27,7 +27,7 @@ export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'se
     
     // Si la última página no es la página actual, significa que venimos de otra página
     // y necesitamos limpiar el estado solo si es una navegación entre páginas del mismo nivel
-    const topLevelPages = ['purchaseContracts', 'buyers', 'sellers', 'dashboard'];
+    const topLevelPages = ['purchaseContracts', 'buyers', 'sellers', 'saleContracts', 'dashboard'];
     const isTopLevelNavigation = topLevelPages.includes(lastPage) && topLevelPages.includes(page);
     
     if (lastPage && lastPage !== page && isTopLevelNavigation) {

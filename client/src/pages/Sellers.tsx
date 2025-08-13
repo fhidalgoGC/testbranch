@@ -1,8 +1,19 @@
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { useContractsPageState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 export default function Sellers() {
   const { t } = useTranslation();
+  const { handleNavigateToPage } = useNavigationHandler();
+  const { pageState, updateState } = useContractsPageState('sellers');
+  usePageTracking('/sellers');
+  
+  // Notificar navegación jerárquica al cargar la página
+  useEffect(() => {
+    console.log('🔄 SELLERS PAGE: Cargando página y ejecutando navegación jerárquica');
+    handleNavigateToPage('sellers');
+  }, []);
 
   return (
     <DashboardLayout title={t('sellers')}>

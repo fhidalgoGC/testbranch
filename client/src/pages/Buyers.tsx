@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'wouter';
+import { useEffect } from 'react';
+import { useContractsPageState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { useBuyers } from '@/features/buyers/hooks/useBuyers';
@@ -10,6 +12,15 @@ import { formatBuyerId } from '@/lib/formatters';
 export default function Buyers() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
+  const { handleNavigateToPage } = useNavigationHandler();
+  const { pageState, updateState } = useContractsPageState('buyers');
+  usePageTracking('/buyers');
+  
+  // Notificar navegación jerárquica al cargar la página
+  useEffect(() => {
+    console.log('🔄 BUYERS PAGE: Cargando página y ejecutando navegación jerárquica');
+    handleNavigateToPage('buyers');
+  }, []);
   const {
     data,
     isLoading,

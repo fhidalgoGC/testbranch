@@ -7,6 +7,7 @@ export const NAVIGATION_HIERARCHY: Record<string, string[]> = {
   'purchaseContracts': [],
   'buyers': [],
   'sellers': [],
+  'saleContracts': [],
   
   // Detalles de contratos (nivel 1 - hijos de purchaseContracts)
   'contractDetail': ['purchaseContracts'],
@@ -56,6 +57,7 @@ interface PageState {
   createSubContract: Record<string, CreateSubContractState>; // Por ID de contrato
   buyers: ContractsPageState;
   sellers: ContractsPageState;
+  saleContracts: ContractsPageState;
   lastVisited: {
     path: string;
     timestamp: number;
@@ -92,6 +94,7 @@ const initialState: PageState = {
   createSubContract: {},
   buyers: initialContractsState,
   sellers: initialContractsState,
+  saleContracts: initialContractsState,
   lastVisited: {
     path: '/',
     timestamp: Date.now(),
@@ -124,10 +127,10 @@ const pageStateSlice = createSlice({
         const hierarchyForPage = NAVIGATION_HIERARCHY[pageKey] || [];
         const newPath = [...hierarchyForPage, pageKey];
         
-        // Caso especial: navegación entre páginas hermanas del mismo nivel (purchaseContracts ↔ buyers ↔ sellers)
+        // Caso especial: navegación entre páginas hermanas del mismo nivel
         if (newLevel === 0 && currentPath.length > 0) {
-          const isNavigatingBetweenTopLevelPages = ['purchaseContracts', 'buyers', 'sellers', 'dashboard'].includes(pageKey) && 
-            ['purchaseContracts', 'buyers', 'sellers', 'dashboard'].includes(currentLastPage);
+          const isNavigatingBetweenTopLevelPages = ['purchaseContracts', 'buyers', 'sellers', 'saleContracts', 'dashboard'].includes(pageKey) && 
+            ['purchaseContracts', 'buyers', 'sellers', 'saleContracts', 'dashboard'].includes(currentLastPage);
           
           if (isNavigatingBetweenTopLevelPages && pageKey !== currentLastPage) {
             console.log(`🔄 NAVEGACIÓN ENTRE PÁGINAS PRINCIPALES: ${currentLastPage} → ${pageKey}`);
@@ -142,6 +145,9 @@ const pageStateSlice = createSlice({
             } else if (currentLastPage === 'sellers') {
               console.log('🧹 Limpiando estado de sellers (página anterior)');
               state.sellers = { ...initialContractsState };
+            } else if (currentLastPage === 'saleContracts') {
+              console.log('🧹 Limpiando estado de saleContracts (página anterior)');
+              state.saleContracts = { ...initialContractsState };
             }
             
             // IMPORTANTE: También limpiar el estado de la página de destino para comenzar limpio
@@ -154,6 +160,9 @@ const pageStateSlice = createSlice({
             } else if (pageKey === 'sellers') {
               console.log('🧹 Limpiando estado de sellers (página destino)');
               state.sellers = { ...initialContractsState };
+            } else if (pageKey === 'saleContracts') {
+              console.log('🧹 Limpiando estado de saleContracts (página destino)');
+              state.saleContracts = { ...initialContractsState };
             }
             
             // También limpiar estados de páginas más profundas
@@ -191,7 +200,7 @@ const pageStateSlice = createSlice({
     updateContractsState: (
       state,
       action: PayloadAction<{ 
-        page: 'purchaseContracts' | 'buyers' | 'sellers';
+        page: 'purchaseContracts' | 'buyers' | 'sellers' | 'saleContracts';
         updates: Partial<ContractsPageState> 
       }>
     ) => {
