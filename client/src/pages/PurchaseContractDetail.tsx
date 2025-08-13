@@ -31,8 +31,8 @@ export default function PurchaseContractDetail() {
   const fieldConfig: FieldConfig[] = [
     { key: 'price', label: 'Price', color: 'black', format: 'currency' },
     { key: 'basis', label: 'Basis', color: 'black', format: 'currency' },
-    { key: 'future', label: 'Future', color: 'black', isCalculated: true, calculation: (data) => data.quantity * 0.2, unit: 'bu60' },
-    { key: 'reserved', label: 'Reserved', color: 'blue', isCalculated: true, calculation: (data) => data.quantity * 0.8, unit: 'bu60' },
+    { key: 'future', label: 'Future', color: 'black', unit: 'bu60' },
+    { key: 'reserved', label: 'Reserved', color: 'blue', unit: 'bu60' },
     { key: 'delivered', label: 'Settled', color: 'green', unit: 'bu60' },
     { key: 'balance', label: 'Your Balance', color: 'black', unit: 'bu60' }
   ];
@@ -46,14 +46,10 @@ export default function PurchaseContractDetail() {
       return (settledAmount / totalQuantity) * 100;
     },
     reservedPercentage: (data) => {
-      // Azul: % de lo reservado pendiente (reserved - delivered) vs total
-      const settledAmount = data.delivered || 0;
+      // Azul: % reservado total vs total (no pendiente, sino el total reservado)
       const reservedAmount = data.reserved || 0;
       const totalQuantity = data.quantity || 1;
-      
-      // Parte reservada que aún no está entregada
-      const pendingReserved = Math.max(0, reservedAmount - settledAmount);
-      return (pendingReserved / totalQuantity) * 100;
+      return (reservedAmount / totalQuantity) * 100;
     },
     label: 'Progress',
     colorPriority: 'settled' // Verde tiene prioridad en caso de empate

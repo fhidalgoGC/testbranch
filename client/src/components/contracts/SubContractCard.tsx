@@ -139,7 +139,7 @@ export default function SubContractCard({
               
               // El porcentaje mostrado será del valor absoluto mayor o prioritario
               const displayPercentage = isSettledDominant ? 
-                Math.round(settledPercentage) : Math.round(settledPercentage + reservedPercentage);
+                Math.round(settledPercentage) : Math.round(reservedPercentage);
               
               // Color del texto según el valor absoluto dominante o prioritario
               const percentageColor = isSettledDominant ? 
@@ -152,19 +152,11 @@ export default function SubContractCard({
                     <span className={`font-medium ${percentageColor}`}>{displayPercentage}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
-                    {/* Green portion - first percentage */}
+                    {/* Progress bar que muestra el mayor entre settled y reserved */}
                     <div 
-                      className="absolute left-0 bg-green-500 h-full transition-all duration-300"
+                      className={`absolute left-0 h-full transition-all duration-300 ${isSettledDominant ? 'bg-green-500' : 'bg-blue-500'}`}
                       style={{
-                        width: `${settledPercentage}%`
-                      }}
-                    ></div>
-                    {/* Blue portion - second percentage, starts after green */}
-                    <div 
-                      className="absolute bg-blue-500 h-full transition-all duration-300"
-                      style={{
-                        left: `${settledPercentage}%`,
-                        width: `${reservedPercentage}%`
+                        width: `${displayPercentage}%`
                       }}
                     ></div>
                   </div>
