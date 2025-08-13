@@ -368,12 +368,20 @@ export default function PurchaseContractDetail() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 ID Contract #{contract.folio || (contract.id ? contract.id.slice(-6) : 'N/A')}
               </h2>
-              <Badge 
-                variant="secondary" 
-                className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-base px-3 py-1"
-              >
-                {priceInfo?.pricing_type || 'basis'}
-              </Badge>
+              <div className="flex gap-3 mt-1">
+                <span className="text-lg text-gray-900 dark:text-white">
+                  {contract.contract_type || 'Venta'}
+                </span>
+                <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  Basis: $ {formatNumber({ 
+                    value: priceInfo?.basis || 1500, 
+                    minDecimals: 2, 
+                    maxDecimals: 2,
+                    formatPattern: '0,000.00',
+                    roundMode: 'truncate'
+                  })}
+                </span>
+              </div>
             </div>
             <div className="flex flex-col space-y-2 items-end">
               <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
@@ -441,8 +449,8 @@ export default function PurchaseContractDetail() {
                   <TabsTrigger value="contact">{t('contractDetail.remarks')}</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="general" className="mt-6">
-                  <div className="space-y-4">
+                <TabsContent value="general" className="mt-4">
+                  <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.commodity')}:</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
@@ -487,26 +495,6 @@ export default function PurchaseContractDetail() {
                       <span className="text-lg font-bold text-green-600 dark:text-green-400">
                         $ {formatNumber({ 
                           value: priceInfo?.price || 0, 
-                          minDecimals: 2, 
-                          maxDecimals: 2,
-                          formatPattern: '0,000.00',
-                          roundMode: 'truncate'
-                        })}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.contractType')}:</span>
-                      <span className="text-lg font-bold text-gray-900 dark:text-white">
-                        {contract.type === 'purchase' ? t('contractDetail.purchase') : t('contractDetail.sale')}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.basis')}:</span>
-                      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                        $ {formatNumber({ 
-                          value: priceInfo?.basis || 1500, 
                           minDecimals: 2, 
                           maxDecimals: 2,
                           formatPattern: '0,000.00',
