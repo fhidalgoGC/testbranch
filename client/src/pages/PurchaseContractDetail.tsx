@@ -257,231 +257,231 @@ export default function PurchaseContractDetail() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-6 h-[500px]">
           {/* Left Column - Tabs within Card */}
-          <Card className="h-fit">
-            <Tabs defaultValue="general" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mx-6 mt-6">
-                <TabsTrigger value="general">{t('contractDetail.generalInformation')}</TabsTrigger>
-                <TabsTrigger value="contact">{t('contractDetail.remarks')}</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="general" className="px-6 pb-6 pt-4">
-                <div className="space-y-4 min-h-[400px]">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.commodity')}:</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
-                      {contract.commodity?.name || 'HRW - Wheat Hard Red'}
-                    </span>
-                  </div>
+          <Card className="flex flex-col h-full">
+            <CardHeader className="pb-2">
+              <Tabs defaultValue="general" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="general">{t('contractDetail.generalInformation')}</TabsTrigger>
+                  <TabsTrigger value="contact">{t('contractDetail.remarks')}</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="general" className="mt-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.commodity')}:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
+                        {contract.commodity?.name || 'HRW - Wheat Hard Red'}
+                      </span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.quantityUnits')}:</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {formatNumber({ 
-                        value: contract.quantity || 1400, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} {contract.measurement_unit || 'bu60'}
-                    </span>
-                  </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.quantityUnits')}:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {formatNumber({ 
+                          value: contract.quantity || 1400, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })} {contract.measurement_unit || 'bu60'}
+                      </span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.thresholds')}</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {t('min')}: {formatNumber({ 
-                        value: contract.quantity ? contract.quantity * 0.9 : 1260, 
-                        minDecimals: 0, 
-                        maxDecimals: 0,
-                        formatPattern: '0,000',
-                        roundMode: 'truncate'
-                      })} {contract.measurement_unit || 'bu60'} | {t('max')}: {formatNumber({ 
-                        value: contract.quantity ? contract.quantity * 1.1 : 1540, 
-                        minDecimals: 0, 
-                        maxDecimals: 0,
-                        formatPattern: '0,000',
-                        roundMode: 'truncate'
-                      })} {contract.measurement_unit || 'bu60'}
-                    </span>
-                  </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.thresholds')}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {t('min')}: {formatNumber({ 
+                          value: contract.quantity ? contract.quantity * 0.9 : 1260, 
+                          minDecimals: 0, 
+                          maxDecimals: 0,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })} {contract.measurement_unit || 'bu60'} | {t('max')}: {formatNumber({ 
+                          value: contract.quantity ? contract.quantity * 1.1 : 1540, 
+                          minDecimals: 0, 
+                          maxDecimals: 0,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })} {contract.measurement_unit || 'bu60'}
+                      </span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.price')}:</span>
-                    <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                      $ {formatNumber({ 
-                        value: priceInfo?.price || 0, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })}
-                    </span>
-                  </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.price')}:</span>
+                      <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                        $ {formatNumber({ 
+                          value: priceInfo?.price || 0, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })}
+                      </span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.basis')}:</span>
-                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                      $ {formatNumber({ 
-                        value: priceInfo?.basis || 1500, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })}
-                    </span>
-                  </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.basis')}:</span>
+                      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                        $ {formatNumber({ 
+                          value: priceInfo?.basis || 1500, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })}
+                      </span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.future')}:</span>
-                    <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
-                      $ {formatNumber({ 
-                        value: priceInfo?.future_price || 0, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })}
-                    </span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.future')}:</span>
+                      <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                        $ {formatNumber({ 
+                          value: priceInfo?.future_price || 0, 
+                          minDecimals: 2, 
+                          maxDecimals: 2,
+                          formatPattern: '0,000.00',
+                          roundMode: 'truncate'
+                        })}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </TabsContent>
+                </TabsContent>
 
-              <TabsContent value="contact" className="px-6 pb-6 pt-4">
-                <div className="space-y-4 min-h-[400px]">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.contact')}:</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
-                  </div>
+                <TabsContent value="contact" className="mt-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.contact')}:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.shipment')}:</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
-                  </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.shipment')}:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.paymentTerms')}:</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
-                  </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.paymentTerms')}:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.premiumDiscount')}:</span>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.premiumDiscount')}:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
+                    </div>
                   </div>
-                </div>
-              </TabsContent>
-            </Tabs>
+                </TabsContent>
+              </Tabs>
+            </CardHeader>
           </Card>
 
           {/* Right Column - Quantity Overview */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold">{t('contractDetail.quantityOverview')}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Fixed Section */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                    <span>{t('contractDetail.fixed')}</span>
-                    <span>{t('contractDetail.open')}</span>
+          <Card className="h-full">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">{t('contractDetail.quantityOverview')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Fixed Section */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <span>{t('contractDetail.fixed')}</span>
+                  <span>{t('contractDetail.open')}</span>
+                </div>
+                <Progress 
+                  value={0} 
+                  className="w-full h-4"
+                  indicatorClassName="bg-blue-500 dark:bg-blue-400"
+                />
+                <div className="flex justify-between items-center">
+                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    {formatNumber({ 
+                      value: 0, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
                   </div>
-                  <Progress 
-                    value={0} 
-                    className="w-full h-4"
-                    indicatorClassName="bg-blue-500 dark:bg-blue-400"
-                  />
-                  <div className="flex justify-between items-center">
-                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                      {formatNumber({ 
-                        value: 0, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} bu60
-                    </div>
-                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                      {formatNumber({ 
-                        value: contract.quantity || 1400, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} bu60
-                    </div>
+                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    {formatNumber({ 
+                      value: contract.quantity || 1400, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
                   </div>
                 </div>
+              </div>
 
-                {/* Settled Section */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                    <span>{t('contractDetail.settled')}</span>
-                    <span>{t('contractDetail.unsettled')}</span>
+              {/* Settled Section */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <span>{t('contractDetail.settled')}</span>
+                  <span>{t('contractDetail.unsettled')}</span>
+                </div>
+                <Progress 
+                  value={0} 
+                  className="w-full h-4"
+                  indicatorClassName="bg-blue-500 dark:bg-blue-400"
+                />
+                <div className="flex justify-between items-center">
+                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    {formatNumber({ 
+                      value: 0, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
                   </div>
-                  <Progress 
-                    value={0} 
-                    className="w-full h-4"
-                    indicatorClassName="bg-blue-500 dark:bg-blue-400"
-                  />
-                  <div className="flex justify-between items-center">
-                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                      {formatNumber({ 
-                        value: 0, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} bu60
-                    </div>
-                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                      {formatNumber({ 
-                        value: contract.quantity || 1400, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} bu60
-                    </div>
+                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                    {formatNumber({ 
+                      value: contract.quantity || 1400, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
                   </div>
                 </div>
+              </div>
 
-                {/* Reserved Section */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                    <span>{t('contractDetail.reserved')}</span>
-                    <span>{t('contractDetail.available')}</span>
+              {/* Reserved Section */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <span>{t('contractDetail.reserved')}</span>
+                  <span>{t('contractDetail.available')}</span>
+                </div>
+                <Progress 
+                  value={100} 
+                  className="w-full h-4"
+                  indicatorClassName="bg-green-500 dark:bg-green-400"
+                />
+                <div className="flex justify-between items-center">
+                  <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                    {formatNumber({ 
+                      value: contract.quantity || 1400, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
                   </div>
-                  <Progress 
-                    value={100} 
-                    className="w-full h-4"
-                    indicatorClassName="bg-green-500 dark:bg-green-400"
-                  />
-                  <div className="flex justify-between items-center">
-                    <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                      {formatNumber({ 
-                        value: contract.quantity || 1400, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} bu60
-                    </div>
-                    <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                      {formatNumber({ 
-                        value: 0, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} bu60
-                    </div>
+                  <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                    {formatNumber({ 
+                      value: 0, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Special Instructions */}
