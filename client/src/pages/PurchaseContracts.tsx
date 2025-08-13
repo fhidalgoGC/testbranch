@@ -33,6 +33,10 @@ export default function PurchaseContracts() {
   const [contractsError, setContractsError] = useState<string | null>(null);
   const [totalContracts, setTotalContracts] = useState(0);
 
+  // Estados para filtros
+  const [activePricingFilter, setActivePricingFilter] = useState<string>('all');
+  const [activeCommodityFilters, setActiveCommodityFilters] = useState<string[]>(['all']);
+
   // Debug: Log commodity data
   useEffect(() => {
     console.log('Commodities data:', commodities);
@@ -215,14 +219,48 @@ export default function PurchaseContracts() {
     const partitionKey = localStorage.getItem('partitionKey') || localStorage.getItem('partition_key');
     const idToken = localStorage.getItem('id_token');
 
+    // Aplicar filtros activos
+    const filters = {
+      pricingType: activePricingFilter !== 'all' ? [activePricingFilter] : ['all'],
+      commodity: activeCommodityFilters.includes('all') ? ['all'] : activeCommodityFilters
+    };
+
     return await fetchContractsData({
       ...params,
+      filters,
       commodities,
       authData: {
         partitionKey: partitionKey || '',
         idToken: idToken || ''
       }
     });
+  };
+
+  // Funciones para manejar los filtros
+  const handlePricingFilterClick = (filterValue: string) => {
+    setActivePricingFilter(filterValue);
+  };
+
+  const handleCommodityFilterClick = (filterValue: string) => {
+    if (filterValue === 'all') {
+      setActiveCommodityFilters(['all']);
+    } else {
+      setActiveCommodityFilters(prev => {
+        // Si ya está seleccionado "all", cambiar a solo este filtro
+        if (prev.includes('all')) {
+          return [filterValue];
+        }
+        
+        // Si el filtro ya está activo, quitarlo
+        if (prev.includes(filterValue)) {
+          const newFilters = prev.filter(f => f !== filterValue);
+          return newFilters.length === 0 ? ['all'] : newFilters;
+        }
+        
+        // Agregar el nuevo filtro
+        return [...prev, filterValue];
+      });
+    }
   };
 
   // Definir las columnas de la tabla
@@ -446,12 +484,15 @@ export default function PurchaseContracts() {
               key={filter.key}
               variant="ghost"
               size="sm"
-              className={`px-4 py-2 rounded-full border transition-colors ${
-                filter.value === 'all'
-                  ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200'
-                  : filter.value === 'basis'
-                  ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300'
-                  : 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300'
+              onClick={() => handlePricingFilterClick(filter.value)}
+              className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
+                activePricingFilter === filter.value
+                  ? filter.value === 'all'
+                    ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200 shadow-md'
+                    : filter.value === 'basis'
+                    ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 shadow-md'
+                    : 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               {t(filter.labelKey)}
@@ -464,7 +505,12 @@ export default function PurchaseContracts() {
           <Button
             variant="ghost"
             size="sm"
-            className="px-4 py-2 rounded-full border transition-colors bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-800/60 dark:to-emerald-800/60 border-green-400 dark:border-green-500 text-green-800 dark:text-green-200"
+            onClick={() => handleCommodityFilterClick('all')}
+            className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
+              activeCommodityFilters.includes('all')
+                ? 'bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-800/60 dark:to-emerald-800/60 border-green-400 dark:border-green-500 text-green-800 dark:text-green-200 shadow-md'
+                : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
           >
             {t('filters.all')}
           </Button>
@@ -473,7 +519,12 @@ export default function PurchaseContracts() {
               key={commodity.key}
               variant="ghost"
               size="sm"
-              className="px-4 py-2 rounded-full border transition-colors bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300"
+              onClick={() => handleCommodityFilterClick(commodity.value)}
+              className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
+                activeCommodityFilters.includes(commodity.value) && !activeCommodityFilters.includes('all')
+                  ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
             >
               {commodity.label}
             </Button>
@@ -482,11 +533,12 @@ export default function PurchaseContracts() {
 
         {/* Table without filters, title, or create button */}
         <GenericTable
+          key={`${activePricingFilter}-${activeCommodityFilters.join(',')}`}
           columns={columns}
           fetchData={handleFetchContractsData}
           defaultFilters={{
-            pricingType: ['all'],
-            commodity: ['all']
+            pricingType: activePricingFilter !== 'all' ? [activePricingFilter] : ['all'],
+            commodity: activeCommodityFilters.includes('all') ? ['all'] : activeCommodityFilters
           }}
           showFilters={false}
           showCreateButton={false}
