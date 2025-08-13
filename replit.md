@@ -92,6 +92,14 @@ Preferred communication style: Simple, everyday language.
 - **Result**: Consistent state management across all pages - state persists when navigating deeper in hierarchy but clears when moving between same-level pages
 - **Impact**: Unified user experience and predictable state behavior throughout the application
 
+### Color Standards for Pricing Types
+- **Date**: August 13, 2025
+- **Standard**: Fixed pricing type must always use blue colors throughout the project
+- **Implementation**: 
+  - Fixed: Blue color palette (`bg-blue-100`, `text-blue-700`, etc.)
+  - Basis: Purple color palette (`bg-purple-100`, `text-purple-700`, etc.)
+- **Consistency**: Applied across filters, badges, indicators, and all UI elements displaying pricing type
+
 ## External Dependencies
 
 ### Core
