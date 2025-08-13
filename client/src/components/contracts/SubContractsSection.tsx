@@ -62,12 +62,12 @@ export default function SubContractsSection({
                 </div>
               </div>
               
-              {/* Legend - Bottom */}
-              <div className="flex flex-col space-y-2 items-center flex-shrink-0">
+              {/* Legend - Bottom with scroll if needed */}
+              <div className="flex flex-col space-y-2 items-center max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
                 {subContracts.map((contract) => (
-                  <div key={contract.id} className="flex items-center text-xs">
-                    <div className={`w-3 h-3 rounded mr-2 ${contract.dotColor}`}></div>
-                    <span>{contract.contractNumber}</span>
+                  <div key={contract.id} className="flex items-center text-xs whitespace-nowrap">
+                    <div className={`w-3 h-3 rounded mr-2 flex-shrink-0 ${contract.dotColor}`}></div>
+                    <span className="text-gray-700 dark:text-gray-300">{contract.contractNumber}</span>
                   </div>
                 ))}
               </div>
