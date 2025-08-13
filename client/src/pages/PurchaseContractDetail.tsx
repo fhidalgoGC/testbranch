@@ -436,7 +436,7 @@ export default function PurchaseContractDetail() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-2 gap-6 h-[400px]">
+        <div className="grid grid-cols-2 gap-6 h-[320px]">
           {/* Left Column - Tabs within Card */}
           <Card className="flex flex-col h-full">
             <CardHeader className="pb-2">
@@ -560,31 +560,31 @@ export default function PurchaseContractDetail() {
             <CardHeader>
               <CardTitle className="text-xl font-semibold">{t('contractDetail.quantityOverview')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Fixed Section */}
-              <div className="space-y-2">
+            <CardContent className="space-y-3">
+              {/* Fixed Section - Amarillo con datos aleatorios */}
+              <div className="space-y-1">
                 <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
                   <span>{t('contractDetail.fixed')}</span>
-                  <span>{t('contractDetail.open')}</span>
+                  <span>Abierto</span>
                 </div>
                 <Progress 
-                  value={0} 
-                  className="w-full h-4"
-                  indicatorClassName="bg-blue-500 dark:bg-blue-400"
+                  value={65} 
+                  className="w-full h-3"
+                  indicatorClassName="bg-yellow-500 dark:bg-yellow-400"
                 />
                 <div className="flex justify-between items-center">
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <div className="text-base font-bold text-yellow-600 dark:text-yellow-400">
                     {formatNumber({ 
-                      value: 0, 
+                      value: 910, 
                       minDecimals: 2, 
                       maxDecimals: 2,
                       formatPattern: '0,000.00',
                       roundMode: 'truncate'
                     })} bu60
                   </div>
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <div className="text-base font-bold text-yellow-600 dark:text-yellow-400">
                     {formatNumber({ 
-                      value: contract.quantity || 1400, 
+                      value: 490, 
                       minDecimals: 2, 
                       maxDecimals: 2,
                       formatPattern: '0,000.00',
@@ -594,52 +594,28 @@ export default function PurchaseContractDetail() {
                 </div>
               </div>
 
-              {/* Settled Section */}
-              <div className="space-y-2">
+              {/* Liquidado Section - Verde */}
+              <div className="space-y-1">
                 <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                  <span>{t('contractDetail.settled')}</span>
-                  <span>{t('contractDetail.unsettled')}</span>
+                  <span>Liquidado</span>
+                  <span>Sin liquidar</span>
                 </div>
                 <Progress 
                   value={0} 
-                  className="w-full h-4"
-                  indicatorClassName="bg-blue-500 dark:bg-blue-400"
-                />
-                <div className="flex justify-between items-center">
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                    {formatNumber({ 
-                      value: 0, 
-                      minDecimals: 2, 
-                      maxDecimals: 2,
-                      formatPattern: '0,000.00',
-                      roundMode: 'truncate'
-                    })} bu60
-                  </div>
-                  <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                    {formatNumber({ 
-                      value: contract.quantity || 1400, 
-                      minDecimals: 2, 
-                      maxDecimals: 2,
-                      formatPattern: '0,000.00',
-                      roundMode: 'truncate'
-                    })} bu60
-                  </div>
-                </div>
-              </div>
-
-              {/* Reserved Section */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                  <span>{t('contractDetail.reserved')}</span>
-                  <span>{t('contractDetail.available')}</span>
-                </div>
-                <Progress 
-                  value={100} 
-                  className="w-full h-4"
+                  className="w-full h-3"
                   indicatorClassName="bg-green-500 dark:bg-green-400"
                 />
                 <div className="flex justify-between items-center">
-                  <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                  <div className="text-base font-bold text-green-600 dark:text-green-400">
+                    {formatNumber({ 
+                      value: 0, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
+                  </div>
+                  <div className="text-base font-bold text-green-600 dark:text-green-400">
                     {formatNumber({ 
                       value: contract.quantity || 1400, 
                       minDecimals: 2, 
@@ -648,7 +624,31 @@ export default function PurchaseContractDetail() {
                       roundMode: 'truncate'
                     })} bu60
                   </div>
-                  <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                </div>
+              </div>
+
+              {/* Reserved Section - Azul */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <span>Reservado</span>
+                  <span>Disponible</span>
+                </div>
+                <Progress 
+                  value={100} 
+                  className="w-full h-3"
+                  indicatorClassName="bg-blue-500 dark:bg-blue-400"
+                />
+                <div className="flex justify-between items-center">
+                  <div className="text-base font-bold text-blue-600 dark:text-blue-400">
+                    {formatNumber({ 
+                      value: contract.quantity || 1400, 
+                      minDecimals: 2, 
+                      maxDecimals: 2,
+                      formatPattern: '0,000.00',
+                      roundMode: 'truncate'
+                    })} bu60
+                  </div>
+                  <div className="text-base font-bold text-blue-600 dark:text-blue-400">
                     {formatNumber({ 
                       value: 0, 
                       minDecimals: 2, 
