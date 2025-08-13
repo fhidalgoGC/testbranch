@@ -54,7 +54,10 @@ export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'se
   };
 
   const saveContractsData = (contractsData: Record<string, any>) => {
-    dispatch(setContractsData({ page, contractsData }));
+    // Solo para páginas que admiten cache de contratos
+    if (page === 'purchaseContracts' || page === 'saleContracts') {
+      dispatch(setContractsData({ page, contractsData }));
+    }
   };
 
   return { pageState, updateState, saveContractsData };
