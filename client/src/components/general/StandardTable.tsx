@@ -370,8 +370,8 @@ export function GenericTable<T = any>({
         </div>
       )}
 
-      {/* Filtros */}
-      {showFilters && filters.length > 0 && (
+      {/* Filtros - DESHABILITADOS porque ahora están en el componente padre */}
+      {false && showFilters && filters.length > 0 && (
         <div className="flex flex-wrap gap-6 mb-6">
           {filters.map((filter) => (
             <div key={filter.key} className="flex flex-wrap gap-2">

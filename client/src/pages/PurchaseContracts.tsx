@@ -507,14 +507,14 @@ export default function PurchaseContracts() {
               variant="ghost"
               size="sm"
               onClick={() => toggleFilter('pricingType', filter.value)}
-              className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
+              className={`px-4 py-2 rounded-full border transition-colors ${
                 selectedFilters.pricingType?.includes(filter.value)
                   ? filter.value === 'all'
-                    ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200 shadow-md'
+                    ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200 shadow-md hover:from-purple-300 hover:to-blue-300 dark:hover:from-purple-900/70 dark:hover:to-blue-900/70'
                     : filter.value === 'basis'
-                    ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 shadow-md'
-                    : 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 shadow-md hover:bg-purple-200 hover:border-purple-400 dark:hover:bg-purple-900/50'
+                    : 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-md hover:bg-blue-200 hover:border-blue-400 dark:hover:bg-blue-900/50'
+                  : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-100 hover:border-purple-400 hover:text-purple-800 dark:hover:bg-purple-900/40 dark:hover:border-purple-400 dark:hover:text-purple-200'
               }`}
             >
               {t(filter.labelKey)}
@@ -528,10 +528,10 @@ export default function PurchaseContracts() {
             variant="ghost"
             size="sm"
             onClick={() => toggleFilter('commodity', 'all')}
-            className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
+            className={`px-4 py-2 rounded-full border transition-colors ${
               selectedFilters.commodity?.includes('all')
-                ? 'bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-800/60 dark:to-emerald-800/60 border-green-400 dark:border-green-500 text-green-800 dark:text-green-200 shadow-md'
-                : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-800/60 dark:to-emerald-800/60 border-green-400 dark:border-green-500 text-green-800 dark:text-green-200 shadow-md hover:from-green-300 hover:to-emerald-300 dark:hover:from-green-900/70 dark:hover:to-emerald-900/70'
+                : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-green-100 hover:border-green-400 hover:text-green-800 dark:hover:bg-green-900/40 dark:hover:border-green-400 dark:hover:text-green-200'
             }`}
           >
             {t('filters.all')}
@@ -542,10 +542,10 @@ export default function PurchaseContracts() {
               variant="ghost"
               size="sm"
               onClick={() => toggleFilter('commodity', commodity.value)}
-              className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
+              className={`px-4 py-2 rounded-full border transition-colors ${
                 selectedFilters.commodity?.includes(commodity.value) && !selectedFilters.commodity?.includes('all')
-                  ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 shadow-md hover:bg-green-200 hover:border-green-400 dark:hover:bg-green-900/50'
+                  : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-green-100 hover:border-green-400 hover:text-green-800 dark:hover:bg-green-900/40 dark:hover:border-green-400 dark:hover:text-green-200'
               }`}
             >
               {commodity.label}
