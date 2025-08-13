@@ -77,22 +77,22 @@ export default function SubContractCard({
             </p>
           </div>
           <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.basis')}:</p>
-            <p className="font-medium text-green-600">$ {formatNumber(subContract.basis)}</p>
+            <p className="text-gray-500">{t('contractDetail.basis')}:</p>
+            <p className="font-medium text-blue-600">$ {formatNumber(subContract.basis)}</p>
           </div>
           <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.price')}:</p>
+            <p className="text-gray-500">{t('contractDetail.price')}:</p>
             <p className="font-medium text-green-600">$ {formatNumber(subContract.price)}</p>
           </div>
           <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.delivered')}:</p>
-            <p className="font-medium text-green-600">
+            <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
+            <p className="font-medium text-blue-600">
               {formatNumber(subContract.delivered)} {subContract.unit}
             </p>
           </div>
           <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.yourBalance')}:</p>
-            <p className="font-medium text-green-600">
+            <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
+            <p className="font-medium">
               {formatNumber(subContract.balance)} {subContract.unit}
             </p>
           </div>
