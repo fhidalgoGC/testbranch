@@ -447,38 +447,6 @@ export default function PurchaseContracts() {
       ),
       sortable: true,
       width: '150px'
-    },
-    {
-      key: 'actions',
-      titleKey: 'actions',
-      render: (contract) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 font-bold text-lg p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => console.log('Ver contrato:', contract.id)}>
-              {t('view')}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log('Editar contrato:', contract.id)}>
-              {t('edit')}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log('Duplicar contrato:', contract.id)}>
-              {t('duplicate')}
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => console.log('Eliminar contrato:', contract.id)}
-              className="text-red-600 dark:text-red-400"
-            >
-              {t('delete')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-      sortable: false,
-      width: '80px'
     }
   ];
 
