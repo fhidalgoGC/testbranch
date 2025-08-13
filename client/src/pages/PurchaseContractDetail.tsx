@@ -515,7 +515,7 @@ export default function PurchaseContractDetail() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 h-[500px]">
+          <div className="grid grid-cols-2 gap-6 h-[400px]">
             {/* Left Column - Pie Chart */}
             <Card className="h-full">
               <CardHeader>
@@ -524,30 +524,30 @@ export default function PurchaseContractDetail() {
               <CardContent className="flex items-center justify-center h-full">
                 <div className="relative">
                   {/* Pie Chart Placeholder */}
-                  <div className="w-48 h-48 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
-                    <div className="absolute inset-4 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
+                  <div className="w-40 h-40 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
+                    <div className="absolute inset-3 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
                       <div className="text-center">
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
-                        <div className="text-lg font-bold">100%</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
+                        <div className="text-sm font-bold">100%</div>
                       </div>
                     </div>
                   </div>
                   {/* Legend */}
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-center text-sm">
-                      <div className="w-3 h-3 bg-blue-400 rounded mr-2"></div>
+                  <div className="mt-3 space-y-1">
+                    <div className="flex items-center text-xs">
+                      <div className="w-2 h-2 bg-blue-400 rounded mr-2"></div>
                       <span>SPC-46</span>
                     </div>
-                    <div className="flex items-center text-sm">
-                      <div className="w-3 h-3 bg-purple-500 rounded mr-2"></div>
+                    <div className="flex items-center text-xs">
+                      <div className="w-2 h-2 bg-purple-500 rounded mr-2"></div>
                       <span>SPC-46-SUBC-3</span>
                     </div>
-                    <div className="flex items-center text-sm">
-                      <div className="w-3 h-3 bg-pink-500 rounded mr-2"></div>
+                    <div className="flex items-center text-xs">
+                      <div className="w-2 h-2 bg-pink-500 rounded mr-2"></div>
                       <span>SPC-46-SUBC-2</span>
                     </div>
-                    <div className="flex items-center text-sm">
-                      <div className="w-3 h-3 bg-gray-400 rounded mr-2"></div>
+                    <div className="flex items-center text-xs">
+                      <div className="w-2 h-2 bg-gray-400 rounded mr-2"></div>
                       <span>SPC-46-SUBC-1</span>
                     </div>
                   </div>
@@ -557,7 +557,7 @@ export default function PurchaseContractDetail() {
 
             {/* Right Column - Sub-contracts Cards with Border and Scroll */}
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 h-full">
-              <div className="h-full overflow-y-auto space-y-4 pr-2">
+              <div className="h-full overflow-y-auto space-y-3 pr-2" style={{maxHeight: '340px'}}>
                 {/* Sub-contract 1 */}
                 <Card className="border-l-4 border-l-blue-500">
                   <CardContent className="p-4">
