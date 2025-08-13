@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import ThemeToggle from '@/components/theme/ThemeToggle';
+import { useNavigationHandler } from '@/hooks/usePageState';
 import { Link } from 'wouter';
 
 interface NavBarProps {
@@ -23,6 +24,7 @@ export default function NavBar({ title }: NavBarProps) {
   const { t, i18n } = useTranslation();
   const { logout } = useAuth();
   const [location] = useLocation();
+  const { handleNavigateToPage } = useNavigationHandler();
   const [currentLanguage, setCurrentLanguage] = useState(
     localStorage.getItem('language') || 'es'
   );
@@ -188,7 +190,21 @@ export default function NavBar({ title }: NavBarProps) {
                   </span>
                 ) : (
                   <Link href={breadcrumb.path}>
-                    <span className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200">
+                    <span 
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200"
+                      onClick={() => {
+                        // Notificar navegación jerárquica según la ruta
+                        if (breadcrumb.path === '/purchase-contracts') {
+                          handleNavigateToPage('purchaseContracts');
+                        } else if (breadcrumb.path === '/buyers') {
+                          handleNavigateToPage('buyers');
+                        } else if (breadcrumb.path === '/sellers') {
+                          handleNavigateToPage('sellers');
+                        } else if (breadcrumb.path === '/') {
+                          handleNavigateToPage('dashboard');
+                        }
+                      }}
+                    >
                       {breadcrumb.label}
                     </span>
                   </Link>

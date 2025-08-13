@@ -1,5 +1,32 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+// Jerarquía de navegación - define qué páginas son "padre" de otras
+export const NAVIGATION_HIERARCHY: Record<string, string[]> = {
+  // Páginas principales (nivel 0)
+  'dashboard': [],
+  'purchaseContracts': [],
+  'buyers': [],
+  'sellers': [],
+  
+  // Detalles de contratos (nivel 1 - hijos de purchaseContracts)
+  'contractDetail': ['purchaseContracts'],
+  
+  // Crear sub-contrato (nivel 2 - hijo de contractDetail)
+  'createSubContract': ['purchaseContracts', 'contractDetail'],
+};
+
+// Función para obtener el nivel jerárquico de una página
+export const getPageLevel = (pageKey: string): number => {
+  const hierarchy = NAVIGATION_HIERARCHY[pageKey] || [];
+  return hierarchy.length;
+};
+
+// Función para verificar si una página es ancestro de otra
+export const isAncestorPage = (ancestorPage: string, childPage: string): boolean => {
+  const hierarchy = NAVIGATION_HIERARCHY[childPage] || [];
+  return hierarchy.includes(ancestorPage);
+};
+
 // Definir tipos para el estado de cada página
 interface ContractsPageState {
   searchTerm: string;
@@ -33,6 +60,8 @@ interface PageState {
     path: string;
     timestamp: number;
   };
+  // Navegación jerárquica
+  currentPagePath: string[]; // Ruta actual de páginas [nivel0, nivel1, nivel2]
 }
 
 const initialContractsState: ContractsPageState = {
@@ -67,12 +96,64 @@ const initialState: PageState = {
     path: '/',
     timestamp: Date.now(),
   },
+  currentPagePath: [],
 };
 
 const pageStateSlice = createSlice({
   name: 'pageState',
   initialState,
   reducers: {
+    // Acción para manejar navegación jerárquica
+    navigateToPage: (state, action: PayloadAction<{ pageKey: string; contractId?: string }>) => {
+      const { pageKey, contractId } = action.payload;
+      const currentPath = [...state.currentPagePath];
+      const newLevel = getPageLevel(pageKey);
+      
+      console.log(`Navegando a página: ${pageKey}, nivel: ${newLevel}, path actual:`, currentPath);
+      
+      // Si navegamos a un nivel más profundo (hacia adentro), mantener el estado
+      if (newLevel > currentPath.length) {
+        // Navegación hacia adentro: mantener estado anterior
+        const newPath = [...NAVIGATION_HIERARCHY[pageKey], pageKey];
+        state.currentPagePath = newPath;
+        console.log('Navegación hacia adentro - manteniendo estado. Nuevo path:', newPath);
+      } 
+      // Si navegamos al mismo nivel o hacia afuera, limpiar estados del nivel abandonado
+      else {
+        const hierarchyForPage = NAVIGATION_HIERARCHY[pageKey] || [];
+        const newPath = [...hierarchyForPage, pageKey];
+        
+        // Identificar qué páginas se están abandonando
+        const abandonedPages = currentPath.slice(newLevel + 1);
+        console.log('Páginas abandonadas:', abandonedPages);
+        
+        // Limpiar estados de las páginas abandonadas
+        abandonedPages.forEach(abandonedPage => {
+          console.log(`Limpiando estado de página abandonada: ${abandonedPage}`);
+          
+          if (abandonedPage === 'purchaseContracts') {
+            state.purchaseContracts = { ...initialContractsState };
+          } else if (abandonedPage === 'buyers') {
+            state.buyers = { ...initialContractsState };
+          } else if (abandonedPage === 'sellers') {
+            state.sellers = { ...initialContractsState };
+          } else if (abandonedPage === 'contractDetail' && contractId) {
+            delete state.contractDetail[contractId];
+          } else if (abandonedPage === 'createSubContract' && contractId) {
+            delete state.createSubContract[contractId];
+          }
+        });
+        
+        state.currentPagePath = newPath;
+        console.log('Navegación hacia afuera/mismo nivel - estado limpiado. Nuevo path:', newPath);
+      }
+      
+      // Actualizar última página visitada
+      state.lastVisited = {
+        path: pageKey + (contractId ? `/${contractId}` : ''),
+        timestamp: Date.now()
+      };
+    },
     // Acciones para página de contratos
     updateContractsState: (
       state,
@@ -148,6 +229,7 @@ const pageStateSlice = createSlice({
 });
 
 export const {
+  navigateToPage,
   updateContractsState,
   updateContractDetailState,
   updateCreateSubContractState,

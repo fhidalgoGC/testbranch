@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
-import { useContractDetailState, usePageTracking } from '@/hooks/usePageState';
+import { useContractDetailState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,13 @@ export default function PurchaseContractDetail() {
   
   // Hook para persistir estado del detalle de contrato
   const { contractState, updateState } = useContractDetailState(contractId!);
+  const { handleNavigateToPage } = useNavigationHandler();
   usePageTracking(`/purchase-contracts/${contractId}`);
+  
+  // Notificar navegación al cargar la página
+  useEffect(() => {
+    handleNavigateToPage('contractDetail', contractId);
+  }, [contractId]);
   
   // Estados
   const [contract, setContract] = useState<PurchaseContract | null>(null);

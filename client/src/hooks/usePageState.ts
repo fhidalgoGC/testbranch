@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { RootState } from '../app/store';
 import { 
+  navigateToPage,
   updateContractsState, 
   updateContractDetailState, 
   updateCreateSubContractState,
@@ -88,4 +89,16 @@ export const usePageTracking = (currentPath: string) => {
   useEffect(() => {
     dispatch(setLastVisited(currentPath));
   }, [currentPath, dispatch]);
+};
+
+// Hook para manejar navegación jerárquica
+export const useNavigationHandler = () => {
+  const dispatch = useDispatch();
+  
+  const handleNavigateToPage = (pageKey: string, contractId?: string) => {
+    console.log(`Hook de navegación: ${pageKey}${contractId ? ` con contractId: ${contractId}` : ''}`);
+    dispatch(navigateToPage({ pageKey, contractId }));
+  };
+  
+  return { handleNavigateToPage };
 };

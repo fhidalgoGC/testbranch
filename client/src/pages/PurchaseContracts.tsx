@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
-import { useContractsPageState, usePageTracking } from '@/hooks/usePageState';
+import { useContractsPageState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useCommodities } from '@/hooks/useCommodities';
 import { 
@@ -31,7 +31,13 @@ export default function PurchaseContracts() {
   
   // Hook para persistir estado de la página
   const { pageState, updateState } = useContractsPageState('purchaseContracts');
+  const { handleNavigateToPage } = useNavigationHandler();
   usePageTracking('/purchase-contracts');
+  
+  // Notificar navegación al cargar la página
+  useEffect(() => {
+    handleNavigateToPage('purchaseContracts');
+  }, []);
   
   // Estados para la carga de contratos
   const [contracts, setContracts] = useState<PurchaseContract[]>([]);
@@ -565,6 +571,7 @@ export default function PurchaseContracts() {
               labelKey: 'view',
               action: (contract: PurchaseContract) => {
                 console.log('Ver contrato:', contract.id);
+                handleNavigateToPage('contractDetail', contract.id);
                 setLocation(`/purchase-contracts/${contract.id}`);
               }
             },

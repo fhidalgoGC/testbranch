@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
-import { useCreateSubContractState, usePageTracking } from '@/hooks/usePageState';
+import { useCreateSubContractState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -21,7 +21,13 @@ export default function CreateSubContract() {
   
   // Hook para persistir estado del formulario
   const { formState, updateState } = useCreateSubContractState(contractId);
+  const { handleNavigateToPage } = useNavigationHandler();
   usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/create`);
+  
+  // Notificar navegación al cargar la página
+  useEffect(() => {
+    handleNavigateToPage('createSubContract', contractId);
+  }, [contractId]);
   
   // Estados del formulario - usando estado persistido
   const [formData, setFormData] = useState(
