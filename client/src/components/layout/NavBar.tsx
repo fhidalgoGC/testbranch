@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LogOut, Languages, ChevronDown } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { LogOut, Languages, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -12,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import ThemeToggle from '@/components/theme/ThemeToggle';
+import { Link } from 'wouter';
 
 interface NavBarProps {
   title: string;
@@ -20,9 +22,90 @@ interface NavBarProps {
 export default function NavBar({ title }: NavBarProps) {
   const { t, i18n } = useTranslation();
   const { logout } = useAuth();
+  const [location] = useLocation();
   const [currentLanguage, setCurrentLanguage] = useState(
     localStorage.getItem('language') || 'es'
   );
+
+  // Función para generar breadcrumbs basados en la URL actual
+  const generateBreadcrumbs = () => {
+    const pathSegments = location.split('/').filter(segment => segment !== '');
+    const breadcrumbs = [];
+
+    // Siempre incluir "Dashboard" como primera migaja
+    if (pathSegments.length > 0) {
+      breadcrumbs.push({
+        label: t('breadcrumbs.dashboard'),
+        path: '/',
+        isActive: false
+      });
+    }
+
+    // Mapear segmentos de URL a breadcrumbs
+    let currentPath = '';
+    pathSegments.forEach((segment, index) => {
+      currentPath += `/${segment}`;
+      
+      let label = segment;
+      let path = currentPath;
+      let isActive = index === pathSegments.length - 1;
+
+      // Mapear rutas específicas a labels traducidos
+      switch (segment) {
+        case 'buyers':
+          label = t('buyers');
+          break;
+        case 'sellers':
+          label = t('sellers');
+          break;
+        case 'purchase-contracts':
+          label = t('purchaseContracts');
+          break;
+        case 'sale-contracts':
+          label = t('saleContracts');
+          break;
+        case 'create':
+          if (pathSegments[index - 1] === 'purchase-contracts') {
+            label = t('breadcrumbs.newContract');
+          } else if (pathSegments[index - 1] === 'sub-contracts') {
+            label = t('breadcrumbs.newSubContract');
+          } else {
+            label = 'Crear';
+          }
+          break;
+        case 'sub-contracts':
+          label = t('breadcrumbs.subContracts');
+          break;
+        default:
+          // Si es un ID (contiene guiones o números), usar el título de la página
+          if (/^[a-f0-9-]+$/i.test(segment) || /^\d+$/.test(segment)) {
+            if (pathSegments.includes('purchase-contracts')) {
+              label = t('breadcrumbs.contractDetail');
+            } else {
+              label = 'Detalle';
+            }
+          }
+          break;
+      }
+
+      // Para sub-contratos, ajustar el path de retorno
+      if (segment === 'create' && pathSegments[index - 1] === 'sub-contracts') {
+        // El path debería ir al detalle del contrato padre
+        const contractId = pathSegments[pathSegments.length - 3];
+        path = `/purchase-contracts/${contractId}`;
+      }
+
+      breadcrumbs.push({
+        label,
+        path,
+        isActive
+      });
+    });
+
+    return breadcrumbs;
+  };
+
+  const breadcrumbs = generateBreadcrumbs();
 
   // Get user name from localStorage
   const getUserName = () => {
@@ -84,11 +167,34 @@ export default function NavBar({ title }: NavBarProps) {
 
   return (
     <nav className="h-12 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/30 px-6 flex items-center justify-between">
-      {/* Left side - Page title */}
+      {/* Left side - Breadcrumbs */}
       <div className="flex items-center">
-        <h1 className="text-base font-semibold text-gray-900 dark:text-white">
-          {title}
-        </h1>
+        {breadcrumbs.length > 0 ? (
+          <div className="flex items-center space-x-2">
+            {breadcrumbs.map((breadcrumb, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                {breadcrumb.isActive ? (
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {breadcrumb.label}
+                  </span>
+                ) : (
+                  <Link href={breadcrumb.path}>
+                    <span className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer transition-colors duration-200">
+                      {breadcrumb.label}
+                    </span>
+                  </Link>
+                )}
+                {index < breadcrumbs.length - 1 && (
+                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <h1 className="text-base font-semibold text-gray-900 dark:text-white">
+            {title}
+          </h1>
+        )}
       </div>
 
       {/* Right side - Theme toggle, Language selector and User menu */}

@@ -52,6 +52,13 @@
   "purchaseContractsDescription": "Crea y gestiona contratos de compra",
   "saleContractsDescription": "Crea y gestiona contratos de venta",
   "navigation": "MENÚ",
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "contractDetail": "Detalle del Contrato",
+    "newContract": "Nuevo Contrato",
+    "subContracts": "Sub-contratos",
+    "newSubContract": "Nuevo Sub-contrato"
+  },
   "buyerId": "Id Comprador",
   "fullName": "Nombre Completo",
   "email": "Correo Electrónico",

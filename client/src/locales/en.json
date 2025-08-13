@@ -52,6 +52,13 @@
   "purchaseContractsDescription": "Create and manage purchase contracts",
   "saleContractsDescription": "Create and manage sale contracts",
   "navigation": "MENU",
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "contractDetail": "Contract Detail",
+    "newContract": "New Contract",
+    "subContracts": "Sub-contracts",
+    "newSubContract": "New Sub-contract"
+  },
   "buyerId": "Buyer ID",
   "fullName": "Full Name",
   "email": "Email",
