@@ -517,38 +517,41 @@ export default function PurchaseContractDetail() {
 
           <div className="grid grid-cols-2 gap-6 h-[400px]">
             {/* Left Column - Pie Chart */}
-            <Card className="h-full">
+            <Card className="h-full w-[300px]">
               <CardHeader>
                 <CardTitle>{t('contractDetail.position')}</CardTitle>
               </CardHeader>
-              <CardContent className="flex items-center justify-center h-full">
-                <div className="relative">
-                  {/* Pie Chart Placeholder */}
-                  <div className="w-40 h-40 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
-                    <div className="absolute inset-3 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
-                        <div className="text-sm font-bold">100%</div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Legend */}
-                  <div className="mt-3 space-y-1">
+              <CardContent className="flex items-center justify-center h-full p-4">
+                <div className="flex items-center space-x-4 w-full">
+                  {/* Legend - Left Side */}
+                  <div className="flex flex-col space-y-2">
                     <div className="flex items-center text-xs">
-                      <div className="w-2 h-2 bg-blue-400 rounded mr-2"></div>
+                      <div className="w-3 h-3 bg-blue-400 rounded mr-2"></div>
                       <span>SPC-46</span>
                     </div>
                     <div className="flex items-center text-xs">
-                      <div className="w-2 h-2 bg-purple-500 rounded mr-2"></div>
+                      <div className="w-3 h-3 bg-purple-500 rounded mr-2"></div>
                       <span>SPC-46-SUBC-3</span>
                     </div>
                     <div className="flex items-center text-xs">
-                      <div className="w-2 h-2 bg-pink-500 rounded mr-2"></div>
+                      <div className="w-3 h-3 bg-pink-500 rounded mr-2"></div>
                       <span>SPC-46-SUBC-2</span>
                     </div>
                     <div className="flex items-center text-xs">
-                      <div className="w-2 h-2 bg-gray-400 rounded mr-2"></div>
+                      <div className="w-3 h-3 bg-gray-400 rounded mr-2"></div>
                       <span>SPC-46-SUBC-1</span>
+                    </div>
+                  </div>
+                  
+                  {/* Pie Chart - Right Side */}
+                  <div className="flex-shrink-0">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
+                      <div className="absolute inset-3 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
+                          <div className="text-sm font-bold">100%</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
