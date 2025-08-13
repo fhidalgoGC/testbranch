@@ -137,6 +137,8 @@ export default function PurchaseContractDetail() {
 
   const seller = contract.participants?.find(p => p.role === 'seller');
   const buyer = contract.participants?.find(p => p.role === 'buyer');
+  
+
   const priceSchedule = contract.price_schedule?.[0];
   const logisticSchedule = contract.logistic_schedule?.[0];
 
@@ -221,10 +223,10 @@ export default function PurchaseContractDetail() {
                   {t('commodity')}
                 </h3>
                 <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {contract.commodity.name}
+                  {contract.commodity?.name || contract.commodity || 'Unknown Commodity'}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  {contract.quantity} {contract.measurement_unit}
+                  {contract.quantity || 0} {contract.measurement_unit || 'units'}
                 </p>
               </div>
             </div>
