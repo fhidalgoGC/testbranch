@@ -100,27 +100,48 @@ export default function SubContractCard({
         
         {/* Progress bar showing settled and reserved */}
         <div className="mb-3">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
-            <span>Progress</span>
-            <span>{Math.round(((subContract.delivered + (subContract.quantity * 0.8)) / subContract.quantity) * 100)}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
-            {/* Settled portion (green) - starts from 0 */}
-            <div 
-              className="absolute left-0 bg-green-500 h-full transition-all duration-300"
-              style={{
-                width: `${(subContract.delivered / subContract.quantity) * 100}%`
-              }}
-            ></div>
-            {/* Reserved portion (blue) - starts after settled */}
-            <div 
-              className="absolute bg-blue-500 h-full transition-all duration-300"
-              style={{
-                left: `${(subContract.delivered / subContract.quantity) * 100}%`,
-                width: `${((subContract.quantity * 0.8) / subContract.quantity) * 100}%`
-              }}
-            ></div>
-          </div>
+          {(() => {
+            const totalQuantity = subContract.quantity;
+            const settledAmount = subContract.delivered;
+            const reservedAmount = subContract.quantity * 0.8; // 80% reserved
+            
+            // Calculate percentages
+            const settledPercentage = (settledAmount / totalQuantity) * 100;
+            const reservedPercentage = (reservedAmount / totalQuantity) * 100;
+            
+            // The blue portion should be: reserved - settled (if settled < reserved)
+            // If settled > reserved, no blue should show
+            const bluePercentage = Math.max(0, reservedPercentage - settledPercentage);
+            const actualSettledPercentage = Math.min(settledPercentage, reservedPercentage);
+            
+            const totalProgress = actualSettledPercentage + bluePercentage;
+            
+            return (
+              <>
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>Progress</span>
+                  <span>{Math.round(totalProgress)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                  {/* Settled portion (green) - starts from 0 */}
+                  <div 
+                    className="absolute left-0 bg-green-500 h-full transition-all duration-300"
+                    style={{
+                      width: `${actualSettledPercentage}%`
+                    }}
+                  ></div>
+                  {/* Reserved portion (blue) - starts after settled, shows remaining reserved */}
+                  <div 
+                    className="absolute bg-blue-500 h-full transition-all duration-300"
+                    style={{
+                      left: `${actualSettledPercentage}%`,
+                      width: `${bluePercentage}%`
+                    }}
+                  ></div>
+                </div>
+              </>
+            );
+          })()}
         </div>
         
         {/* Total Payment and Action buttons on same row */}
