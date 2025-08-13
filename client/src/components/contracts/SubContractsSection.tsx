@@ -2,10 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import SubContractCard, { SubContract } from './SubContractCard';
+import SubContractCard, { SubContract, FieldConfig, ProgressBarConfig } from './SubContractCard';
 
 interface SubContractsSectionProps {
   subContracts: SubContract[];
+  fields: FieldConfig[];
+  progressBar?: ProgressBarConfig;
   onNewSubContract?: () => void;
   onViewSubContract?: (id: string) => void;
   onPrintSubContract?: (id: string) => void;
@@ -16,6 +18,8 @@ interface SubContractsSectionProps {
 
 export default function SubContractsSection({ 
   subContracts,
+  fields,
+  progressBar,
   onNewSubContract,
   onViewSubContract,
   onPrintSubContract,
@@ -78,6 +82,8 @@ export default function SubContractsSection({
               <SubContractCard
                 key={subContract.id}
                 subContract={subContract}
+                fields={fields}
+                progressBar={progressBar}
                 onView={onViewSubContract}
                 onPrint={onPrintSubContract}
                 onEdit={onEditSubContract}

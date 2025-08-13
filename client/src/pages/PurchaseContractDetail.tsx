@@ -13,7 +13,7 @@ import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
 import SubContractsSection from '@/components/contracts/SubContractsSection';
-import { SubContract } from '@/components/contracts/SubContractCard';
+import { SubContract, FieldConfig, ProgressBarConfig } from '@/components/contracts/SubContractCard';
 
 export default function PurchaseContractDetail() {
   const { t } = useTranslation();
@@ -27,69 +27,66 @@ export default function PurchaseContractDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Mock data para sub-contratos - esto se reemplazará con datos reales del API
-  const [subContracts] = useState<SubContract[]>([
-    {
-      id: '1',
-      contractNumber: 'SPC-46-SUBC-3',
-      quantity: 300.00,
-      unit: 'bu60',
-      thresholds: { min: 270.00, max: 330.00 },
-      basis: 1500.00,
-      price: 1800.00,
-      delivered: 150.00,
-      balance: 150.00,
-      totalPayment: 540000.00,
-      borderColor: 'border-l-blue-500',
-      dotColor: 'bg-blue-500',
-      textColor: 'text-blue-600'
-    },
-    {
-      id: '2',
-      contractNumber: 'SPC-46-SUBC-2',
-      quantity: 200.00,
-      unit: 'bu60',
-      thresholds: { min: 180.00, max: 220.00 },
-      basis: 1500.00,
-      price: 1500.00,
-      delivered: 0.00,
-      balance: 0.00,
-      totalPayment: 300000.00,
-      borderColor: 'border-l-pink-500',
-      dotColor: 'bg-pink-500',
-      textColor: 'text-pink-600'
-    },
-    {
-      id: '3',
-      contractNumber: 'SPC-46-SUBC-1',
-      quantity: 150.00,
-      unit: 'bu60',
-      thresholds: { min: 135.00, max: 165.00 },
-      basis: 1500.00,
-      price: 1700.00,
-      delivered: 0.00,
-      balance: 0.00,
-      totalPayment: 255000.00,
-      borderColor: 'border-l-purple-500',
-      dotColor: 'bg-purple-500',
-      textColor: 'text-purple-600'
-    },
-    {
-      id: '4',
-      contractNumber: 'SPC-46-SUBC-4',
-      quantity: 250.00,
-      unit: 'bu60',
-      thresholds: { min: 225.00, max: 275.00 },
-      basis: 1500.00,
-      price: 1600.00,
-      delivered: 0.00,
-      balance: 0.00,
-      totalPayment: 400000.00,
-      borderColor: 'border-l-orange-500',
-      dotColor: 'bg-orange-500',
-      textColor: 'text-orange-600'
-    }
-  ]);
+  // Configuración de campos para el componente agnóstico
+  const fieldConfig: FieldConfig[] = [
+    { key: 'price', label: 'Price', color: 'black', format: 'currency' },
+    { key: 'basis', label: 'Basis', color: 'black', format: 'currency' },
+    { key: 'future', label: 'Future', color: 'black', isCalculated: true, calculation: (data) => data.quantity * 0.2, unit: 'bu60' },
+    { key: 'reserved', label: 'Reserved', color: 'blue', isCalculated: true, calculation: (data) => data.quantity * 0.8, unit: 'bu60' },
+    { key: 'delivered', label: 'Settled', color: 'green', unit: 'bu60' },
+    { key: 'balance', label: 'Your Balance', color: 'black', unit: 'bu60' }
+  ];
+
+  // Configuración del progress bar
+  const progressBarConfig: ProgressBarConfig = {
+    settledField: 'delivered',
+    reservedCalculation: (data) => data.quantity * 0.8,
+    totalField: 'quantity'
+  };
+
+  // Generar 10 sub-contratos con datos random para testing
+  const generateRandomSubContracts = (): SubContract[] => {
+    const colors = [
+      { border: 'border-l-blue-500', dot: 'bg-blue-500', text: 'text-blue-600' },
+      { border: 'border-l-green-500', dot: 'bg-green-500', text: 'text-green-600' },
+      { border: 'border-l-purple-500', dot: 'bg-purple-500', text: 'text-purple-600' },
+      { border: 'border-l-orange-500', dot: 'bg-orange-500', text: 'text-orange-600' },
+      { border: 'border-l-red-500', dot: 'bg-red-500', text: 'text-red-600' },
+      { border: 'border-l-pink-500', dot: 'bg-pink-500', text: 'text-pink-600' },
+      { border: 'border-l-yellow-500', dot: 'bg-yellow-500', text: 'text-yellow-600' },
+      { border: 'border-l-indigo-500', dot: 'bg-indigo-500', text: 'text-indigo-600' },
+      { border: 'border-l-cyan-500', dot: 'bg-cyan-500', text: 'text-cyan-600' },
+      { border: 'border-l-emerald-500', dot: 'bg-emerald-500', text: 'text-emerald-600' }
+    ];
+
+    return Array.from({ length: 10 }, (_, i) => {
+      const quantity = Math.floor(Math.random() * 500) + 100; // 100-600
+      const delivered = Math.floor(Math.random() * quantity * 0.9); // 0-90% of quantity
+      const balance = quantity - delivered;
+      const color = colors[i];
+      
+      return {
+        id: `${i + 1}`,
+        contractNumber: `SPC-46-SUBC-${i + 1}`,
+        quantity,
+        unit: 'bu60',
+        thresholds: { 
+          min: quantity * 0.9, 
+          max: quantity * 1.1 
+        },
+        basis: Math.floor(Math.random() * 1000) + 1000, // 1000-2000
+        price: Math.floor(Math.random() * 1000) + 1500, // 1500-2500
+        delivered,
+        balance,
+        totalPayment: quantity * (Math.floor(Math.random() * 1000) + 1500),
+        borderColor: color.border,
+        dotColor: color.dot,
+        textColor: color.text
+      };
+    });
+  };
+
+  const [subContracts] = useState<SubContract[]>(generateRandomSubContracts());
 
   // Cargar datos del contrato
   useEffect(() => {
@@ -575,6 +572,8 @@ export default function PurchaseContractDetail() {
         <div className="mt-8">
           <SubContractsSection
             subContracts={subContracts}
+            fields={fieldConfig}
+            progressBar={progressBarConfig}
             onNewSubContract={() => console.log('New sub-contract')}
             onViewSubContract={(id) => console.log('View sub-contract:', id)}
             onPrintSubContract={(id) => console.log('Print sub-contract:', id)}

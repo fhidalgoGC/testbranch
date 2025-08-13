@@ -7,6 +7,22 @@ import { Eye, Printer, Edit, Trash2, Check } from 'lucide-react';
 // Placeholder for number formatting - will use real formatNumber when available
 const formatNumber = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+export interface FieldConfig {
+  key: string;
+  label: string;
+  color: 'black' | 'blue' | 'green' | 'gray';
+  isCalculated?: boolean;
+  calculation?: (data: any) => number;
+  unit?: string;
+  format?: 'currency' | 'number';
+}
+
+export interface ProgressBarConfig {
+  settledField: string; // Campo que representa lo entregado/pagado
+  reservedCalculation: (data: any) => number; // Función para calcular lo reservado
+  totalField: string; // Campo que representa el total para calcular porcentajes
+}
+
 export interface SubContract {
   id: string;
   contractNumber: string;
@@ -24,10 +40,13 @@ export interface SubContract {
   borderColor: string;
   dotColor: string;
   textColor: string;
+  [key: string]: any; // Para campos dinámicos
 }
 
 interface SubContractCardProps {
   subContract: SubContract;
+  fields: FieldConfig[]; // Configuración de campos a mostrar
+  progressBar?: ProgressBarConfig; // Configuración del progress bar
   onView?: (id: string) => void;
   onPrint?: (id: string) => void;
   onEdit?: (id: string) => void;
@@ -37,6 +56,8 @@ interface SubContractCardProps {
 
 export default function SubContractCard({ 
   subContract, 
+  fields,
+  progressBar,
   onView, 
   onPrint, 
   onEdit, 
@@ -44,6 +65,22 @@ export default function SubContractCard({
   onSettle 
 }: SubContractCardProps) {
   const { t } = useTranslation();
+
+  const getColorClass = (color: string) => {
+    switch (color) {
+      case 'blue': return 'text-blue-600';
+      case 'green': return 'text-green-600';
+      case 'gray': return 'text-gray-600';
+      default: return 'text-black dark:text-white';
+    }
+  };
+
+  const formatValue = (value: any, format?: string, unit?: string) => {
+    const formattedValue = typeof value === 'number' ? formatNumber(value) : value;
+    const prefix = format === 'currency' ? '$ ' : '';
+    const suffix = unit ? ` ${unit}` : '';
+    return `${prefix}${formattedValue}${suffix}`;
+  };
 
   return (
     <Card className={`border-l-4 ${subContract.borderColor}`}>
@@ -64,85 +101,72 @@ export default function SubContractCard({
         </div>
         
         <div className="grid grid-cols-6 gap-2 text-xs mb-3">
-          <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.price')}:</p>
-            <p className="text-black dark:text-white">$ {formatNumber(subContract.price)}</p>
-          </div>
-          <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.basis')}:</p>
-            <p className="text-black dark:text-white">$ {formatNumber(subContract.basis)}</p>
-          </div>
-          <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">Future:</p>
-            <p className="text-black dark:text-white">
-              {formatNumber(subContract.quantity * 0.2)} {subContract.unit}
-            </p>
-          </div>
-          <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">Reserved:</p>
-            <p className="text-blue-600">
-              {formatNumber(subContract.quantity * 0.8)} {subContract.unit}
-            </p>
-          </div>
-          <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">Settled:</p>
-            <p className="text-green-600">
-              {formatNumber(subContract.delivered)} {subContract.unit}
-            </p>
-          </div>
-          <div>
-            <p className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.yourBalance')}:</p>
-            <p className="text-black dark:text-white">
-              {formatNumber(subContract.balance)} {subContract.unit}
-            </p>
-          </div>
-        </div>
-        
-        {/* Progress bar showing settled and reserved */}
-        <div className="mb-3">
-          {(() => {
-            const totalQuantity = subContract.quantity;
-            const settledAmount = subContract.delivered;
-            const reservedAmount = subContract.quantity * 0.8; // 80% reserved
-            
-            // Calculate percentages
-            const settledPercentage = (settledAmount / totalQuantity) * 100;
-            const reservedPercentage = (reservedAmount / totalQuantity) * 100;
-            
-            // The blue portion should be: reserved - settled (if settled < reserved)
-            // If settled > reserved, no blue should show
-            const bluePercentage = Math.max(0, reservedPercentage - settledPercentage);
-            const actualSettledPercentage = Math.min(settledPercentage, reservedPercentage);
-            
-            const totalProgress = actualSettledPercentage + bluePercentage;
+          {fields.map((field, index) => {
+            let value;
+            if (field.isCalculated && field.calculation) {
+              value = field.calculation(subContract);
+            } else {
+              value = subContract[field.key];
+            }
             
             return (
-              <>
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
-                  <span>Progress</span>
-                  <span>{Math.round(totalProgress)}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
-                  {/* Settled portion (green) - starts from 0 */}
-                  <div 
-                    className="absolute left-0 bg-green-500 h-full transition-all duration-300"
-                    style={{
-                      width: `${actualSettledPercentage}%`
-                    }}
-                  ></div>
-                  {/* Reserved portion (blue) - starts after settled, shows remaining reserved */}
-                  <div 
-                    className="absolute bg-blue-500 h-full transition-all duration-300"
-                    style={{
-                      left: `${actualSettledPercentage}%`,
-                      width: `${bluePercentage}%`
-                    }}
-                  ></div>
-                </div>
-              </>
+              <div key={index}>
+                <p className="font-bold text-gray-700 dark:text-gray-300">{field.label}:</p>
+                <p className={getColorClass(field.color)}>
+                  {formatValue(value, field.format, field.unit)}
+                </p>
+              </div>
             );
-          })()}
+          })}
         </div>
+        
+        {/* Dynamic Progress bar */}
+        {progressBar && (
+          <div className="mb-3">
+            {(() => {
+              const totalQuantity = subContract[progressBar.totalField];
+              const settledAmount = subContract[progressBar.settledField];
+              const reservedAmount = progressBar.reservedCalculation(subContract);
+              
+              // Calculate percentages
+              const settledPercentage = (settledAmount / totalQuantity) * 100;
+              const reservedPercentage = (reservedAmount / totalQuantity) * 100;
+              
+              // The blue portion should be: reserved - settled (if settled < reserved)
+              // If settled > reserved, no blue should show
+              const bluePercentage = Math.max(0, reservedPercentage - settledPercentage);
+              const actualSettledPercentage = Math.min(settledPercentage, reservedPercentage);
+              
+              const totalProgress = actualSettledPercentage + bluePercentage;
+              
+              return (
+                <>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Progress</span>
+                    <span>{Math.round(totalProgress)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+                    {/* Settled portion (green) - starts from 0 */}
+                    <div 
+                      className="absolute left-0 bg-green-500 h-full transition-all duration-300"
+                      style={{
+                        width: `${actualSettledPercentage}%`
+                      }}
+                    ></div>
+                    {/* Reserved portion (blue) - starts after settled, shows remaining reserved */}
+                    <div 
+                      className="absolute bg-blue-500 h-full transition-all duration-300"
+                      style={{
+                        left: `${actualSettledPercentage}%`,
+                        width: `${bluePercentage}%`
+                      }}
+                    ></div>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
         
         {/* Total Payment and Action buttons on same row */}
         <div className="pt-2 border-t flex justify-between items-center">
