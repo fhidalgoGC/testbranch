@@ -104,24 +104,22 @@ export default function SubContractCard({
             <span>Progress</span>
             <span>{Math.round(((subContract.delivered + (subContract.quantity * 0.8)) / subContract.quantity) * 100)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-            <div className="h-full flex">
-              {/* Settled portion (green) */}
-              <div 
-                className="bg-green-500 h-full transition-all duration-300"
-                style={{
-                  width: `${(subContract.delivered / subContract.quantity) * 100}%`
-                }}
-              ></div>
-              {/* Reserved portion (blue) */}
-              <div 
-                className="bg-blue-500 h-full transition-all duration-300"
-                style={{
-                  width: `${((subContract.quantity * 0.8) / subContract.quantity) * 100}%`
-                }}
-              ></div>
-              {/* Remaining portion stays empty (gray background shows through) */}
-            </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
+            {/* Settled portion (green) - starts from 0 */}
+            <div 
+              className="absolute left-0 bg-green-500 h-full transition-all duration-300"
+              style={{
+                width: `${(subContract.delivered / subContract.quantity) * 100}%`
+              }}
+            ></div>
+            {/* Reserved portion (blue) - starts after settled */}
+            <div 
+              className="absolute bg-blue-500 h-full transition-all duration-300"
+              style={{
+                left: `${(subContract.delivered / subContract.quantity) * 100}%`,
+                width: `${((subContract.quantity * 0.8) / subContract.quantity) * 100}%`
+              }}
+            ></div>
           </div>
         </div>
         
