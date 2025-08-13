@@ -320,5 +320,32 @@
     "all": "Todos",
     "basis": "Basis",
     "fixed": "Fijo"
+  },
+  "contractDetail": {
+    "title": "Detalle del Contrato",
+    "statusContract": "Estado del Contrato",
+    "created": "creado",
+    "generalInformation": "Información General",
+    "remarks": "Observaciones",
+    "commodity": "Materia prima",
+    "quantityUnits": "Cantidad / Unidades",
+    "thresholds": "Umbrales",
+    "price": "Precio",
+    "basis": "Basis",
+    "future": "Futuro",
+    "contact": "Contacto",
+    "shipment": "Envío",
+    "paymentTerms": "Términos de Pago",
+    "premiumDiscount": "Prima/Descuento",
+    "quantityOverview": "Resumen de Cantidad",
+    "fixed": "Fijado",
+    "open": "Abierto",
+    "settled": "Liquidado",
+    "unsettled": "Sin liquidar",
+    "reserved": "Reservado",
+    "available": "Disponible",
+    "loadingContract": "Cargando contrato...",
+    "contractNotFound": "Contrato no encontrado",
+    "errorLoadingContract": "Error al cargar el contrato"
   }
 }

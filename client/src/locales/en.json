@@ -320,5 +320,32 @@
     "all": "All",
     "basis": "Basis",
     "fixed": "Fixed"
+  },
+  "contractDetail": {
+    "title": "Contract Detail",
+    "statusContract": "Status Contract",
+    "created": "created",
+    "generalInformation": "General Information",
+    "remarks": "Remarks",
+    "commodity": "Commodity",
+    "quantityUnits": "Quantity / Units",
+    "thresholds": "Thresholds",
+    "price": "Price",
+    "basis": "Basis",
+    "future": "Future",
+    "contact": "Contact",
+    "shipment": "Shipment",
+    "paymentTerms": "Payment Terms",
+    "premiumDiscount": "Premium/Discount",
+    "quantityOverview": "Quantity Overview",
+    "fixed": "Fixed",
+    "open": "Open",
+    "settled": "Settled",
+    "unsettled": "Unsettled",
+    "reserved": "Reserved",
+    "available": "Available",
+    "loadingContract": "Loading contract...",
+    "contractNotFound": "Contract not found",
+    "errorLoadingContract": "Error loading contract"
   }
 }
