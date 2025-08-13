@@ -5,6 +5,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
@@ -369,65 +370,68 @@ export default function PurchaseContractDetail() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Quantity Overview</CardTitle>
+                <CardTitle className="text-xl font-semibold">Quantity Overview</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Fixed</span>
-                  <div className="text-right">
-                    <div className="font-bold text-blue-600 dark:text-blue-400 font-mono">
-                      {formatNumber({ 
-                        value: contract.inventory?.fixed || 0, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} {contract.measurement_unit || 'bu60'}
+              <CardContent className="space-y-6">
+                {/* Fixed Section */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <span>Fixed</span>
+                    <span>Open</span>
+                  </div>
+                  <Progress 
+                    value={0} 
+                    className="w-full h-4"
+                    indicatorClassName="bg-blue-500 dark:bg-blue-400"
+                  />
+                  <div className="flex justify-between items-center">
+                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                      0.00 bu60
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Open: {formatNumber({ 
-                        value: contract.inventory?.open || contract.quantity || 1400, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} {contract.measurement_unit || 'bu60'}
+                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                      1,400.00 bu60
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Sub-Contracts</span>
-                  <div className="text-right">
-                    <div className="font-bold text-blue-600 dark:text-blue-400 font-mono">
-                      Settled
+                {/* Settled Section */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <span>Settled</span>
+                    <span>Unsettled</span>
+                  </div>
+                  <Progress 
+                    value={0} 
+                    className="w-full h-4"
+                    indicatorClassName="bg-blue-500 dark:bg-blue-400"
+                  />
+                  <div className="flex justify-between items-center">
+                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                      0.00 bu60
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Unsettled
+                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                      1,400.00 bu60
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center py-2">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Settled</span>
-                  <div className="text-right">
-                    <div className="font-bold text-blue-600 dark:text-blue-400 font-mono">
-                      {formatNumber({ 
-                        value: contract.inventory?.settled || 0, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} {contract.measurement_unit || 'bu60'}
+                {/* Reserved Section */}
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <span>Reserved</span>
+                    <span>Available</span>
+                  </div>
+                  <Progress 
+                    value={100} 
+                    className="w-full h-4"
+                    indicatorClassName="bg-green-500 dark:bg-green-400"
+                  />
+                  <div className="flex justify-between items-center">
+                    <div className="text-xl font-bold text-green-600 dark:text-green-400 font-mono">
+                      1,400.00 bu60
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Unsettled: {formatNumber({ 
-                        value: contract.inventory?.unsettled || contract.quantity || 1400, 
-                        minDecimals: 2, 
-                        maxDecimals: 2,
-                        formatPattern: '0,000.00',
-                        roundMode: 'truncate'
-                      })} {contract.measurement_unit || 'bu60'}
+                    <div className="text-xl font-bold text-green-600 dark:text-green-400 font-mono">
+                      0.00 bu60
                     </div>
                   </div>
                 </div>
