@@ -519,6 +519,13 @@ export default function PurchaseContractDetail() {
                         })}
                       </span>
                     </div>
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Reference Number:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {contract.reference_number || 'NA'}
+                      </span>
+                    </div>
                   </div>
                 </TabsContent>
 
@@ -542,13 +549,6 @@ export default function PurchaseContractDetail() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.premiumDiscount')}:</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">-</span>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Reference Number:</span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {contract.reference_number || 'NA'}
-                      </span>
                     </div>
                   </div>
                 </TabsContent>
