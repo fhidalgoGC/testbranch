@@ -688,7 +688,9 @@ export default function PurchaseContracts() {
             availableValues: commodityFilters
           }
         ]}
-
+        showCreateButton={true}
+        createButtonLabelKey="createContract"
+        createButtonHref="/purchase-contracts/create"
         showPagination={true}
         showSearch={true}
         className="w-full"
