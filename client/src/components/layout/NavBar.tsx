@@ -95,6 +95,15 @@ export default function NavBar({ title }: NavBarProps) {
         path = `/purchase-contracts/${contractId}`;
       }
 
+      // No agregar "sub-contracts" si el siguiente es "create" 
+      // porque representan el mismo nivel conceptual
+      if (segment === 'sub-contracts' && 
+          index < pathSegments.length - 1 && 
+          pathSegments[index + 1] === 'create') {
+        // Skip este breadcrumb
+        return;
+      }
+
       breadcrumbs.push({
         label,
         path,
