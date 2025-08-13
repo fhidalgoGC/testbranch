@@ -263,19 +263,16 @@ export default function PurchaseContractDetail() {
               <CardTitle>General Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Commodity:</p>
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    {contract.commodity?.name || 'HRW - Wheat Hard Red ...'}
-                  </p>
-                </div>
-                <div></div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Commodity:</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {contract.commodity?.name || 'HRW - Wheat Hard Red ...'}
+                </span>
               </div>
 
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity / Units:</p>
-                <p className="font-medium text-gray-900 dark:text-white">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity / Units:</span>
+                <span className="font-medium text-gray-900 dark:text-white">
                   {formatNumber({ 
                     value: contract.quantity || 1400, 
                     minDecimals: 2, 
@@ -283,12 +280,12 @@ export default function PurchaseContractDetail() {
                     formatPattern: '0,000.00',
                     roundMode: 'truncate'
                   })} {contract.measurement_unit || 'bu60'}
-                </p>
+                </span>
               </div>
 
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Thresholds</p>
-                <p className="text-gray-900 dark:text-white">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Thresholds</span>
+                <span className="text-gray-900 dark:text-white">
                   <span className="text-sm">Min:</span> {formatNumber({ 
                     value: contract.quantity ? contract.quantity * 0.9 : 1260, 
                     minDecimals: 0, 
@@ -302,12 +299,12 @@ export default function PurchaseContractDetail() {
                     formatPattern: '0,000',
                     roundMode: 'truncate'
                   })} {contract.measurement_unit || 'bu60'}
-                </p>
+                </span>
               </div>
 
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Price:</p>
-                <p className="text-lg font-bold text-green-600 dark:text-green-400 font-mono">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Price:</span>
+                <span className="text-lg font-bold text-green-600 dark:text-green-400 font-mono">
                   $ {formatNumber({ 
                     value: priceInfo?.price || 0, 
                     minDecimals: 2, 
@@ -315,12 +312,12 @@ export default function PurchaseContractDetail() {
                     formatPattern: '0,000.00',
                     roundMode: 'truncate'
                   })}
-                </p>
+                </span>
               </div>
 
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Basis:</p>
-                <p className="text-lg font-bold text-blue-600 dark:text-blue-400 font-mono">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Basis:</span>
+                <span className="text-lg font-bold text-blue-600 dark:text-blue-400 font-mono">
                   $ {formatNumber({ 
                     value: priceInfo?.basis || 1500, 
                     minDecimals: 2, 
@@ -328,12 +325,12 @@ export default function PurchaseContractDetail() {
                     formatPattern: '0,000.00',
                     roundMode: 'truncate'
                   })}
-                </p>
+                </span>
               </div>
 
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Future:</p>
-                <p className="text-lg font-bold text-orange-600 dark:text-orange-400 font-mono">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Future:</span>
+                <span className="text-lg font-bold text-orange-600 dark:text-orange-400 font-mono">
                   $ {formatNumber({ 
                     value: priceInfo?.future_price || 0, 
                     minDecimals: 2, 
@@ -341,27 +338,7 @@ export default function PurchaseContractDetail() {
                     formatPattern: '0,000.00',
                     roundMode: 'truncate'
                   })}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Contact:</p>
-                <p className="text-gray-900 dark:text-white">-</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Shipment:</p>
-                <p className="text-gray-900 dark:text-white">-</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Payment Terms:</p>
-                <p className="text-gray-900 dark:text-white">-</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Premium/Discount:</p>
-                <p className="text-gray-900 dark:text-white">-</p>
+                </span>
               </div>
             </CardContent>
           </Card>
