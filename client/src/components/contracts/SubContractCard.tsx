@@ -128,14 +128,15 @@ export default function SubContractCard({
               const settledPercentage = progressBar.settledPercentage(subContract);
               const reservedPercentage = progressBar.reservedPercentage(subContract);
               
-              // El componente no sabe qué significan estos porcentajes, solo los muestra
-              const totalProgress = settledPercentage + reservedPercentage;
+              // El porcentaje mostrado será del color con mayor presencia
+              const displayPercentage = settledPercentage >= reservedPercentage ? 
+                Math.round(settledPercentage) : Math.round(reservedPercentage);
               
               return (
                 <>
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
                     <span>{progressBar.label || 'Progress'}</span>
-                    <span>{Math.round(totalProgress)}%</span>
+                    <span>{displayPercentage}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                     {/* Green portion - first percentage */}
