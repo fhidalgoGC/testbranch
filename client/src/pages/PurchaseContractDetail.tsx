@@ -229,7 +229,7 @@ export default function PurchaseContractDetail() {
           <div className="grid grid-cols-2 gap-8 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div>
               <div className="mb-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Contract Date:</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.contractDate')}:</p>
                 <p className="text-lg text-gray-900 dark:text-white">
                   {contract.contract_date 
                     ? new Date(contract.contract_date).toLocaleDateString('en-US', {
@@ -490,7 +490,7 @@ export default function PurchaseContractDetail() {
         {/* Special Instructions */}
         <Card>
           <CardHeader>
-            <CardTitle>Special Instructions / Remarks:</CardTitle>
+            <CardTitle>{t('contractDetail.specialInstructions')}:</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 dark:text-gray-400">-</p>

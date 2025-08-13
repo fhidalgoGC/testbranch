@@ -344,6 +344,8 @@
     "unsettled": "Unsettled",
     "reserved": "Reserved",
     "available": "Available",
+    "contractDate": "Contract Date",
+    "specialInstructions": "Special Instructions / Remarks",
     "loadingContract": "Loading contract...",
     "contractNotFound": "Contract not found",
     "errorLoadingContract": "Error loading contract"

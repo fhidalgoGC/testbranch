@@ -344,6 +344,8 @@
     "unsettled": "Sin liquidar",
     "reserved": "Reservado",
     "available": "Disponible",
+    "contractDate": "Fecha del Contrato",
+    "specialInstructions": "Instrucciones Especiales / Observaciones",
     "loadingContract": "Cargando contrato...",
     "contractNotFound": "Contrato no encontrado",
     "errorLoadingContract": "Error al cargar el contrato"
