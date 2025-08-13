@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Edit, Trash2, Eye, Printer } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check } from 'lucide-react';
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -564,16 +565,13 @@ export default function PurchaseContractDetail() {
                 {/* Sub-contract 1 */}
                 <Card className="border-l-4 border-l-blue-500">
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center mb-2">
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-blue-500 rounded"></div>
                         <span className="font-medium text-blue-600">ID Contract#SPC-46-SUBC-3</span>
                       </div>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
-                        {t('contractDetail.printSubContract')}
-                      </Button>
                     </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs">
+                    <div className="grid grid-cols-6 gap-2 text-xs mb-3">
                       <div>
                         <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
                         <p className="font-medium text-green-600">300.00 bu60</p>
@@ -599,8 +597,76 @@ export default function PurchaseContractDetail() {
                         <p className="font-medium">0.00 bu60</p>
                       </div>
                     </div>
-                    <div className="mt-2 pt-2 border-t">
+                    <div className="mb-3 pt-2 border-t">
                       <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 540,000.00</span></p>
+                    </div>
+                    
+                    {/* Action buttons */}
+                    <div className="flex justify-end space-x-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('view')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('print')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('edit')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('delete')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-green-600 hover:text-green-700">
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('settle')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </CardContent>
                 </Card>
@@ -608,16 +674,13 @@ export default function PurchaseContractDetail() {
                 {/* Sub-contract 2 */}
                 <Card className="border-l-4 border-l-pink-500">
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center mb-2">
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-pink-500 rounded"></div>
                         <span className="font-medium text-pink-600">ID Contract#SPC-46-SUBC-2</span>
                       </div>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
-                        {t('contractDetail.printSubContract')}
-                      </Button>
                     </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs">
+                    <div className="grid grid-cols-6 gap-2 text-xs mb-3">
                       <div>
                         <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
                         <p className="font-medium text-green-600">200.00 bu60</p>
@@ -643,8 +706,76 @@ export default function PurchaseContractDetail() {
                         <p className="font-medium">0.00 bu60</p>
                       </div>
                     </div>
-                    <div className="mt-2 pt-2 border-t">
+                    <div className="mb-3 pt-2 border-t">
                       <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 300,000.00</span></p>
+                    </div>
+                    
+                    {/* Action buttons */}
+                    <div className="flex justify-end space-x-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('view')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('print')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('edit')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('delete')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-green-600 hover:text-green-700">
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('settle')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </CardContent>
                 </Card>
@@ -652,16 +783,13 @@ export default function PurchaseContractDetail() {
                 {/* Sub-contract 3 */}
                 <Card className="border-l-4 border-l-purple-500">
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center mb-2">
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-purple-500 rounded"></div>
                         <span className="font-medium text-purple-600">ID Contract#SPC-46-SUBC-1</span>
                       </div>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
-                        {t('contractDetail.printSubContract')}
-                      </Button>
                     </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs">
+                    <div className="grid grid-cols-6 gap-2 text-xs mb-3">
                       <div>
                         <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
                         <p className="font-medium text-green-600">150.00 bu60</p>
@@ -687,8 +815,76 @@ export default function PurchaseContractDetail() {
                         <p className="font-medium">0.00 bu60</p>
                       </div>
                     </div>
-                    <div className="mt-2 pt-2 border-t">
+                    <div className="mb-3 pt-2 border-t">
                       <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 255,000.00</span></p>
+                    </div>
+                    
+                    {/* Action buttons */}
+                    <div className="flex justify-end space-x-1">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('view')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('print')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('edit')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('delete')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-green-600 hover:text-green-700">
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{t('settle')}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </CardContent>
                 </Card>
