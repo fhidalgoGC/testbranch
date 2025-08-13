@@ -45,14 +45,14 @@ export default function PurchaseContracts() {
   );
   const [currentPage, setCurrentPage] = useState(pageState.currentPage || 1);
 
-  // Efecto para persistir cambios de filtros y página
+  // Efecto para persistir cambios de filtros y página - usando JSON.stringify para comparación profunda
   useEffect(() => {
     updateState({
       filters: selectedFilters,
       currentPage,
       searchTerm: '', // Agregar cuando implementemos búsqueda
     });
-  }, [selectedFilters, currentPage, updateState]);
+  }, [JSON.stringify(selectedFilters), currentPage]); // Eliminar updateState de deps
 
   // Debug: Log commodity data
   useEffect(() => {

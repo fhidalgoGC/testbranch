@@ -45,13 +45,13 @@ export default function CreateSubContract() {
 
   const [loading, setLoading] = useState(false);
 
-  // Efecto para persistir cambios de formulario
+  // Efecto para persistir cambios de formulario - usando JSON.stringify para comparación profunda
   useEffect(() => {
     updateState({
       formData,
       pricingType
     });
-  }, [formData, pricingType, updateState]);
+  }, [JSON.stringify(formData), pricingType]); // Eliminar updateState de deps
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -86,7 +86,7 @@ export default function CreateSubContract() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout title={t('contractDetail.newSubContract')}>
       <div className="container mx-auto p-6 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

@@ -36,7 +36,7 @@ export default function PurchaseContractDetail() {
   // Efecto para persistir cambios de tab activo
   useEffect(() => {
     updateState({ activeTab });
-  }, [activeTab, updateState]);
+  }, [activeTab]); // Eliminar updateState de deps
 
   // Configuración de campos para el componente agnóstico
   const fieldConfig: FieldConfig[] = [
