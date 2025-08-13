@@ -265,14 +265,14 @@ export default function PurchaseContractDetail() {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Commodity:</span>
-                <span className="font-medium text-gray-900 dark:text-white text-right max-w-xs">
+                <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
                   {contract.commodity?.name || 'HRW - Wheat Hard Red'}
                 </span>
               </div>
 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity / Units:</span>
-                <span className="font-medium text-gray-900 dark:text-white font-mono">
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
                   {formatNumber({ 
                     value: contract.quantity || 1400, 
                     minDecimals: 2, 
@@ -285,7 +285,7 @@ export default function PurchaseContractDetail() {
 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Thresholds</span>
-                <span className="text-gray-900 dark:text-white font-mono text-sm">
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
                   Min: {formatNumber({ 
                     value: contract.quantity ? contract.quantity * 0.9 : 1260, 
                     minDecimals: 0, 
@@ -304,7 +304,7 @@ export default function PurchaseContractDetail() {
 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Price:</span>
-                <span className="text-lg font-bold text-green-600 dark:text-green-400 font-mono">
+                <span className="text-lg font-bold text-green-600 dark:text-green-400">
                   $ {formatNumber({ 
                     value: priceInfo?.price || 0, 
                     minDecimals: 2, 
@@ -317,7 +317,7 @@ export default function PurchaseContractDetail() {
 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Basis:</span>
-                <span className="text-lg font-bold text-blue-600 dark:text-blue-400 font-mono">
+                <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                   $ {formatNumber({ 
                     value: priceInfo?.basis || 1500, 
                     minDecimals: 2, 
@@ -330,7 +330,7 @@ export default function PurchaseContractDetail() {
 
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Future:</span>
-                <span className="text-lg font-bold text-orange-600 dark:text-orange-400 font-mono">
+                <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
                   $ {formatNumber({ 
                     value: priceInfo?.future_price || 0, 
                     minDecimals: 2, 
@@ -362,7 +362,7 @@ export default function PurchaseContractDetail() {
                     indicatorClassName="bg-blue-500 dark:bg-blue-400"
                   />
                   <div className="flex justify-between items-center">
-                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {formatNumber({ 
                         value: 0, 
                         minDecimals: 2, 
@@ -371,7 +371,7 @@ export default function PurchaseContractDetail() {
                         roundMode: 'truncate'
                       })} bu60
                     </div>
-                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {formatNumber({ 
                         value: contract.quantity || 1400, 
                         minDecimals: 2, 
@@ -395,7 +395,7 @@ export default function PurchaseContractDetail() {
                     indicatorClassName="bg-blue-500 dark:bg-blue-400"
                   />
                   <div className="flex justify-between items-center">
-                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {formatNumber({ 
                         value: 0, 
                         minDecimals: 2, 
@@ -404,7 +404,7 @@ export default function PurchaseContractDetail() {
                         roundMode: 'truncate'
                       })} bu60
                     </div>
-                    <div className="text-xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {formatNumber({ 
                         value: contract.quantity || 1400, 
                         minDecimals: 2, 
@@ -428,7 +428,7 @@ export default function PurchaseContractDetail() {
                     indicatorClassName="bg-green-500 dark:bg-green-400"
                   />
                   <div className="flex justify-between items-center">
-                    <div className="text-xl font-bold text-green-600 dark:text-green-400 font-mono">
+                    <div className="text-lg font-bold text-green-600 dark:text-green-400">
                       {formatNumber({ 
                         value: contract.quantity || 1400, 
                         minDecimals: 2, 
@@ -437,7 +437,7 @@ export default function PurchaseContractDetail() {
                         roundMode: 'truncate'
                       })} bu60
                     </div>
-                    <div className="text-xl font-bold text-green-600 dark:text-green-400 font-mono">
+                    <div className="text-lg font-bold text-green-600 dark:text-green-400">
                       {formatNumber({ 
                         value: 0, 
                         minDecimals: 2, 
