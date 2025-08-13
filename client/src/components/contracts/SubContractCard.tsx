@@ -98,6 +98,33 @@ export default function SubContractCard({
           </div>
         </div>
         
+        {/* Progress bar showing settled and reserved */}
+        <div className="mb-3">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Progress</span>
+            <span>{Math.round(((subContract.delivered + (subContract.quantity * 0.8)) / subContract.quantity) * 100)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div className="h-full flex">
+              {/* Settled portion (green) */}
+              <div 
+                className="bg-green-500 h-full transition-all duration-300"
+                style={{
+                  width: `${(subContract.delivered / subContract.quantity) * 100}%`
+                }}
+              ></div>
+              {/* Reserved portion (blue) */}
+              <div 
+                className="bg-blue-500 h-full transition-all duration-300"
+                style={{
+                  width: `${((subContract.quantity * 0.8) / subContract.quantity) * 100}%`
+                }}
+              ></div>
+              {/* Remaining portion stays empty (gray background shows through) */}
+            </div>
+          </div>
+        </div>
+        
         {/* Total Payment and Action buttons on same row */}
         <div className="pt-2 border-t flex justify-between items-center">
           <p className="text-sm">
