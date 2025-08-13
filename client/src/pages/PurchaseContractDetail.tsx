@@ -40,22 +40,20 @@ export default function PurchaseContractDetail() {
   // Configuración del progress bar - completamente agnóstica
   const progressBarConfig: ProgressBarConfig = {
     settledPercentage: (data) => {
-      // Lógica de negocio: % real de entregado vs total
+      // Verde: % de lo entregado vs total
       const settledAmount = data.delivered || 0;
       const totalQuantity = data.quantity || 1;
       return (settledAmount / totalQuantity) * 100;
     },
     reservedPercentage: (data) => {
-      // Lógica de negocio: % reservado pero no entregado aún
+      // Azul: % de lo reservado pendiente (reserved - delivered) vs total
       const settledAmount = data.delivered || 0;
       const reservedAmount = data.reserved || 0;
       const totalQuantity = data.quantity || 1;
       
-      const settledPercentage = (settledAmount / totalQuantity) * 100;
-      const reservedPercentage = (reservedAmount / totalQuantity) * 100;
-      
-      // Solo mostrar la parte reservada que no está entregada
-      return Math.max(0, reservedPercentage - settledPercentage);
+      // Parte reservada que aún no está entregada
+      const pendingReserved = Math.max(0, reservedAmount - settledAmount);
+      return (pendingReserved / totalQuantity) * 100;
     },
     label: 'Progress'
   };

@@ -128,12 +128,17 @@ export default function SubContractCard({
               const settledPercentage = progressBar.settledPercentage(subContract);
               const reservedPercentage = progressBar.reservedPercentage(subContract);
               
-              // El porcentaje mostrado será del color con mayor presencia
-              const displayPercentage = settledPercentage >= reservedPercentage ? 
-                Math.round(settledPercentage) : Math.round(reservedPercentage);
+              // Comparar valores absolutos para determinar el dominante
+              const settledValue = subContract.delivered || 0;
+              const reservedValue = subContract.reserved || 0;
               
-              // Color del texto según el porcentaje dominante
-              const percentageColor = settledPercentage >= reservedPercentage ? 
+              // El porcentaje mostrado será del valor absoluto mayor
+              const isSettledDominant = settledValue >= reservedValue;
+              const displayPercentage = isSettledDominant ? 
+                Math.round(settledPercentage) : Math.round(settledPercentage + reservedPercentage);
+              
+              // Color del texto según el valor absoluto dominante
+              const percentageColor = isSettledDominant ? 
                 'text-green-600' : 'text-blue-600';
               
               return (
