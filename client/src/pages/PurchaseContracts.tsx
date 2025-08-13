@@ -36,6 +36,7 @@ export default function PurchaseContracts() {
   
   // Notificar navegación al cargar la página
   useEffect(() => {
+    console.log('🔄 PURCHASE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica');
     handleNavigateToPage('purchaseContracts');
   }, []);
   
