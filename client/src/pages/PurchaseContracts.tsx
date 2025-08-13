@@ -19,12 +19,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, Plus } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 
 
 
 export default function PurchaseContracts() {
   const { t } = useTranslation();
+  const [location, setLocation] = useLocation();
   const { commodities, loading: commoditiesLoading, error: commoditiesError } = useCommodities();
   
   // Estados para la carga de contratos
@@ -539,7 +540,7 @@ export default function PurchaseContracts() {
               labelKey: 'view',
               action: (contract: PurchaseContract) => {
                 console.log('Ver contrato:', contract.id);
-                window.location.href = `/purchase-contracts/${contract.id}`;
+                setLocation(`/purchase-contracts/${contract.id}`);
               }
             },
             {
