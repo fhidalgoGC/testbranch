@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Calendar, Package, DollarSign, FileText, X } from 'lucide-react';
 import { Link } from 'wouter';
+import { FormattedNumberInput } from '@/components/PurchaseContractForm/components/FormattedNumberInput';
+import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 
 interface ContractData {
   contractNumber: string;
@@ -62,6 +64,12 @@ export default function CreateSubContract() {
   });
 
   const [futurePrice, setFuturePrice] = useState(contractData.future);
+  const [quantity, setQuantity] = useState(700.00);
+  const [totalPrice, setTotalPrice] = useState(2733.00);
+  const [selectedMeasurementUnit, setSelectedMeasurementUnit] = useState('bushel60');
+  
+  // API hooks
+  const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
 
   const handleCancel = () => {
     setLocation(`/purchase-contracts/${contractId}`);
@@ -245,15 +253,11 @@ export default function CreateSubContract() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                         Future <span className="text-red-500">*</span>
                       </label>
-                      <Input
-                        type="text"
-                        value={futurePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        onChange={(e) => {
-                          const value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
-                          setFuturePrice(value);
-                        }}
+                      <FormattedNumberInput
+                        value={futurePrice}
+                        onChange={setFuturePrice}
                         placeholder="0.00"
-                        className="text-sm font-mono"
+                        className="text-sm"
                       />
                     </div>
 
@@ -262,11 +266,11 @@ export default function CreateSubContract() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                         Basis
                       </label>
-                      <Input
-                        type="text"
-                        value={contractData.basis.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        readOnly
-                        className="text-sm font-mono bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                      <FormattedNumberInput
+                        value={contractData.basis}
+                        onChange={() => {}} // Read-only
+                        placeholder="0.00"
+                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -280,11 +284,11 @@ export default function CreateSubContract() {
                           Price
                         </label>
                         <div className="relative">
-                          <Input
-                            type="text"
-                            value={(futurePrice + contractData.basis).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            readOnly
-                            className="text-sm font-mono pr-8 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                          <FormattedNumberInput
+                            value={futurePrice + contractData.basis}
+                            onChange={() => {}} // Read-only
+                            placeholder="0.00"
+                            className="text-sm pr-8 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                           />
                           <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                             <X className="w-4 h-4" />
@@ -314,10 +318,11 @@ export default function CreateSubContract() {
                           Quantity
                         </label>
                         <div className="relative">
-                          <Input
-                            type="text"
-                            value="700.00"
-                            className="text-sm font-mono pr-8"
+                          <FormattedNumberInput
+                            value={quantity}
+                            onChange={setQuantity}
+                            placeholder="0.00"
+                            className="text-sm pr-8"
                           />
                           <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                             <X className="w-4 h-4" />
@@ -328,16 +333,27 @@ export default function CreateSubContract() {
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Measurement Unit
                         </label>
-                        <Select defaultValue="bushel60">
+                        <Select 
+                          value={selectedMeasurementUnit} 
+                          onValueChange={setSelectedMeasurementUnit}
+                        >
                           <SelectTrigger className="text-sm">
-                            <SelectValue />
+                            <SelectValue placeholder="Select measurement unit" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="bushel60">Bushel 60</SelectItem>
-                            <SelectItem value="bushel56">Bushel 56</SelectItem>
-                            <SelectItem value="metricton">Metric Ton</SelectItem>
-                            <SelectItem value="kg">Kilogram</SelectItem>
-                            <SelectItem value="lb">Pound</SelectItem>
+                            {loadingUnits ? (
+                              <SelectItem value="loading" disabled>Loading units...</SelectItem>
+                            ) : unitsError ? (
+                              <SelectItem value="error" disabled>Error loading units</SelectItem>
+                            ) : measurementUnits.length === 0 ? (
+                              <SelectItem value="empty" disabled>No units available</SelectItem>
+                            ) : (
+                              measurementUnits.map((unit) => (
+                                <SelectItem key={unit.key} value={unit.key}>
+                                  {unit.label}
+                                </SelectItem>
+                              ))
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
