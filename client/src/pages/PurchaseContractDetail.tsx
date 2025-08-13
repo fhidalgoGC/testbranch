@@ -257,7 +257,7 @@ export default function PurchaseContractDetail() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-2 gap-6 h-[500px]">
+        <div className="grid grid-cols-2 gap-6 h-[400px]">
           {/* Left Column - Tabs within Card */}
           <Card className="flex flex-col h-full">
             <CardHeader className="pb-2">
