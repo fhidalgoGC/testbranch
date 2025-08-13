@@ -34,8 +34,11 @@ export default function PurchaseContracts() {
   const [totalContracts, setTotalContracts] = useState(0);
 
   // Estados para filtros
-  const [activePricingFilter, setActivePricingFilter] = useState<string>('all');
-  const [activeCommodityFilters, setActiveCommodityFilters] = useState<string[]>(['all']);
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>({
+    pricingType: ['all'],
+    commodity: ['all']
+  });
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Debug: Log commodity data
   useEffect(() => {
@@ -91,13 +94,9 @@ export default function PurchaseContracts() {
       };
 
       // Agregar filtro de commodity si está seleccionado
-      if (activeFilters.commodity && activeFilters.commodity !== 'all') {
-        // Si activeFilters.commodity es un array, mapearlo; si no, convertirlo en array
-        const commodityValues = Array.isArray(activeFilters.commodity) 
-          ? activeFilters.commodity 
-          : [activeFilters.commodity];
-        
-        const selectedCommodityIds = commodityValues
+      if (activeFilters.commodity && !activeFilters.commodity.includes('all')) {
+        // Mapear todos los valores seleccionados a sus IDs correspondientes
+        const selectedCommodityIds = activeFilters.commodity
           .map((commodityValue: string) => commodities.find(c => c.value === commodityValue))
           .filter((commodity): commodity is NonNullable<typeof commodity> => commodity !== undefined)
           .map(commodity => commodity.key);
@@ -108,8 +107,8 @@ export default function PurchaseContracts() {
       }
 
       // Agregar filtro de pricing_type si está seleccionado
-      if (activeFilters.pricingType && activeFilters.pricingType !== 'all') {
-        filter.pricing_type = activeFilters.pricingType;
+      if (activeFilters.pricingType && !activeFilters.pricingType.includes('all')) {
+        filter['price_schedule.pricing_type'] = activeFilters.pricingType[0];
       }
 
       // Construir parámetros de URL
@@ -160,11 +159,11 @@ export default function PurchaseContracts() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data: ContractResponse = await response.json();
+      const data: any = await response.json();
       console.log('Contracts response:', data);
 
       // Mapear los datos de la API real a nuestro formato
-      const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
+      const mappedContracts: PurchaseContract[] = data.data.map((contract: any) => ({
         id: contract._id,
         folio: contract.folio,
         reference_number: contract.folio,
@@ -219,11 +218,8 @@ export default function PurchaseContracts() {
     const partitionKey = localStorage.getItem('partitionKey') || localStorage.getItem('partition_key');
     const idToken = localStorage.getItem('id_token');
 
-    // Aplicar filtros activos
-    const filters = {
-      pricingType: activePricingFilter !== 'all' ? [activePricingFilter] : ['all'],
-      commodity: activeCommodityFilters.includes('all') ? ['all'] : activeCommodityFilters
-    };
+    // Aplicar filtros seleccionados
+    const filters = selectedFilters;
 
     return await fetchContractsData({
       ...params,
@@ -236,31 +232,63 @@ export default function PurchaseContracts() {
     });
   };
 
-  // Funciones para manejar los filtros
-  const handlePricingFilterClick = (filterValue: string) => {
-    setActivePricingFilter(filterValue);
-  };
-
-  const handleCommodityFilterClick = (filterValue: string) => {
-    if (filterValue === 'all') {
-      setActiveCommodityFilters(['all']);
-    } else {
-      setActiveCommodityFilters(prev => {
-        // Si ya está seleccionado "all", cambiar a solo este filtro
-        if (prev.includes('all')) {
-          return [filterValue];
+  // Función para toggle de filtros
+  const toggleFilter = (filterKey: string, value: any) => {
+    setSelectedFilters(prev => {
+      // Comportamiento especial para pricingType: solo un valor a la vez
+      if (filterKey === 'pricingType') {
+        const currentValues = prev[filterKey] || [];
+        // Si ya está seleccionado, lo deseleccionamos (permitir quitar el filtro)
+        const newValues = currentValues.includes(value) 
+          ? [] 
+          : [value]; // Solo un valor seleccionado a la vez
+        
+        return { ...prev, [filterKey]: newValues };
+      }
+      
+      // Comportamiento especial para commodity: "All" es mutuamente exclusivo
+      if (filterKey === 'commodity') {
+        const currentValues = prev[filterKey] || [];
+        
+        // Si se selecciona "all"
+        if (value === 'all') {
+          // Si "all" ya está seleccionado, no hacer nada (mantenerlo seleccionado)
+          if (currentValues.includes('all')) {
+            return prev;
+          }
+          // Si "all" no está seleccionado, seleccionarlo y deseleccionar todo lo demás
+          return { ...prev, [filterKey]: ['all'] };
         }
         
-        // Si el filtro ya está activo, quitarlo
-        if (prev.includes(filterValue)) {
-          const newFilters = prev.filter(f => f !== filterValue);
-          return newFilters.length === 0 ? ['all'] : newFilters;
+        // Si se selecciona cualquier valor que no es "all"
+        // Primero remover "all" si está presente
+        let newValues = currentValues.filter((v: any) => v !== 'all');
+        
+        // Luego aplicar la lógica normal de toggle
+        if (newValues.includes(value)) {
+          newValues = newValues.filter((v: any) => v !== value);
+          // Si no queda ningún valor seleccionado, volver a "all"
+          if (newValues.length === 0) {
+            newValues = ['all'];
+          }
+        } else {
+          newValues = [...newValues, value];
         }
         
-        // Agregar el nuevo filtro
-        return [...prev, filterValue];
-      });
-    }
+        return { ...prev, [filterKey]: newValues };
+      }
+      
+      // Comportamiento por defecto para otros filtros (múltiple selección)
+      const currentValues = prev[filterKey] || [];
+      const newValues = Array.isArray(currentValues)
+        ? (currentValues.includes(value) 
+            ? currentValues.filter(v => v !== value)
+            : [...currentValues, value])
+        : [value];
+      
+      return { ...prev, [filterKey]: newValues };
+    });
+    setCurrentPage(1);
   };
 
   // Definir las columnas de la tabla
@@ -484,9 +512,9 @@ export default function PurchaseContracts() {
               key={filter.key}
               variant="ghost"
               size="sm"
-              onClick={() => handlePricingFilterClick(filter.value)}
+              onClick={() => toggleFilter('pricingType', filter.value)}
               className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
-                activePricingFilter === filter.value
+                selectedFilters.pricingType?.includes(filter.value)
                   ? filter.value === 'all'
                     ? 'bg-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800/60 dark:to-blue-800/60 border-purple-400 dark:border-purple-500 text-purple-800 dark:text-purple-200 shadow-md'
                     : filter.value === 'basis'
@@ -505,9 +533,9 @@ export default function PurchaseContracts() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => handleCommodityFilterClick('all')}
+            onClick={() => toggleFilter('commodity', 'all')}
             className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
-              activeCommodityFilters.includes('all')
+              selectedFilters.commodity?.includes('all')
                 ? 'bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-800/60 dark:to-emerald-800/60 border-green-400 dark:border-green-500 text-green-800 dark:text-green-200 shadow-md'
                 : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
@@ -519,9 +547,9 @@ export default function PurchaseContracts() {
               key={commodity.key}
               variant="ghost"
               size="sm"
-              onClick={() => handleCommodityFilterClick(commodity.value)}
+              onClick={() => toggleFilter('commodity', commodity.value)}
               className={`px-4 py-2 rounded-full border transition-colors hover:scale-105 ${
-                activeCommodityFilters.includes(commodity.value) && !activeCommodityFilters.includes('all')
+                selectedFilters.commodity?.includes(commodity.value) && !selectedFilters.commodity?.includes('all')
                   ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 shadow-md'
                   : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
@@ -533,18 +561,10 @@ export default function PurchaseContracts() {
 
         {/* Table without filters, title, or create button */}
         <GenericTable
-          key={`${activePricingFilter}-${activeCommodityFilters.join(',')}`}
+          key={`${JSON.stringify(selectedFilters)}`}
           columns={columns}
           fetchData={handleFetchContractsData}
-          defaultFilters={{
-            pricingType: activePricingFilter !== 'all' ? [activePricingFilter] : ['all'],
-            commodity: activeCommodityFilters.includes('all') ? ['all'] : activeCommodityFilters
-          }}
-          showFilters={false}
-          showCreateButton={false}
-          showPagination={true}
-          showSearch={true}
-          className="w-full"
+          defaultFilters={selectedFilters}
         />
       </div>
     </DashboardLayout>
