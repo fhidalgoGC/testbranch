@@ -369,8 +369,8 @@ export default function PurchaseContractDetail() {
                 ID Contract #{contract.folio || (contract.id ? contract.id.slice(-6) : 'N/A')}
               </h2>
               <div className="flex gap-3 items-center mt-1">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Contract:</span>
-                <span className="text-base font-bold text-gray-900 dark:text-white">
+                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Contract:</span>
+                <span className="text-base text-gray-900 dark:text-white">
                   {contract.contract_type || (contract.type === 'purchase' ? 'Purchase' : 'Sale')}
                 </span>
                 <Badge 
