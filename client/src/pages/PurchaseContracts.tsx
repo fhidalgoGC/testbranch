@@ -39,10 +39,21 @@ export default function PurchaseContracts() {
   const [contractsError, setContractsError] = useState<string | null>(null);
   const [totalContracts, setTotalContracts] = useState(0);
 
-  // Estados para filtros - usando estado persistido, asegurar que inicie con 'all'
+  // Estados para filtros - siempre inicializar en 'all' por defecto
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(() => {
+    // Forzar que siempre inicie en 'all' - ignorar estado persistido inicialmente
+    const defaultFilters = { pricingType: ['all'], commodity: ['all'] };
+    
+    // Solo usar estado persistido si ya hay filtros aplicados diferentes a 'all'
     const saved = pageState.filters;
-    return saved || { pricingType: ['all'], commodity: ['all'] };
+    if (saved && (
+      (saved.pricingType && !saved.pricingType.includes('all')) || 
+      (saved.commodity && !saved.commodity.includes('all'))
+    )) {
+      return saved;
+    }
+    
+    return defaultFilters;
   });
   const [currentPage, setCurrentPage] = useState(pageState.currentPage || 1);
 
