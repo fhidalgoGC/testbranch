@@ -97,9 +97,9 @@ export default function PurchaseContracts() {
       if (activeFilters.commodity && !activeFilters.commodity.includes('all')) {
         // Mapear todos los valores seleccionados a sus IDs correspondientes
         const selectedCommodityIds = activeFilters.commodity
-          .map((commodityValue: string) => commodities.find(c => c.value === commodityValue))
-          .filter((commodity): commodity is NonNullable<typeof commodity> => commodity !== undefined)
-          .map(commodity => commodity.key);
+          .map((commodityValue: string) => commodities.find((c: any) => c.value === commodityValue))
+          .filter((commodity: any): commodity is NonNullable<typeof commodity> => commodity !== undefined)
+          .map((commodity: any) => commodity.key);
         
         if (selectedCommodityIds.length > 0) {
           filter['commodity.commodity_id'] = { $in: selectedCommodityIds };
@@ -565,6 +565,16 @@ export default function PurchaseContracts() {
           columns={columns}
           fetchData={handleFetchContractsData}
           defaultFilters={selectedFilters}
+          actionMenuItems={[
+            {
+              key: 'view',
+              labelKey: 'view',
+              action: (contract: PurchaseContract) => {
+                // Navigate to contract detail page
+                window.location.href = `/purchase-contracts/${contract.id}`;
+              }
+            }
+          ]}
         />
       </div>
     </DashboardLayout>

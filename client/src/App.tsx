@@ -14,6 +14,7 @@ import Buyers from "@/pages/Buyers";
 import CreateBuyer from "@/pages/CreateBuyer";
 import Sellers from "@/pages/Sellers";
 import PurchaseContracts from "@/pages/PurchaseContracts";
+import PurchaseContractDetail from "@/pages/PurchaseContractDetail";
 import CreatePurchaseContract from "@/pages/CreatePurchaseContract";
 import SaleContracts from "@/pages/SaleContracts";
 import NotFound from "@/pages/not-found";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/buyers/create" component={CreateBuyer} />
       <Route path="/sellers" component={Sellers} />
       <Route path="/purchase-contracts" component={PurchaseContracts} />
+      <Route path="/purchase-contracts/:id" component={PurchaseContractDetail} />
       <Route path="/purchase-contracts/create" component={CreatePurchaseContract} />
       <Route path="/sale-contracts" component={SaleContracts} />
       <Route component={NotFound} />
