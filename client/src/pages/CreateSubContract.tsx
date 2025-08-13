@@ -283,17 +283,12 @@ export default function CreateSubContract() {
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Price
                         </label>
-                        <div className="relative">
-                          <FormattedNumberInput
-                            value={futurePrice + contractData.basis}
-                            onChange={() => {}} // Read-only
-                            placeholder="0.00"
-                            className="text-sm pr-8 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
-                          />
-                          <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <FormattedNumberInput
+                          value={futurePrice + contractData.basis}
+                          onChange={() => {}} // Read-only
+                          placeholder="0.00"
+                          className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                        />
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
@@ -317,17 +312,12 @@ export default function CreateSubContract() {
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Quantity
                         </label>
-                        <div className="relative">
-                          <FormattedNumberInput
-                            value={quantity}
-                            onChange={setQuantity}
-                            placeholder="0.00"
-                            className="text-sm pr-8"
-                          />
-                          <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <FormattedNumberInput
+                          value={quantity}
+                          onChange={setQuantity}
+                          placeholder="0.00"
+                          className="text-sm"
+                        />
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
