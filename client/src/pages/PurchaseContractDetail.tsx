@@ -31,7 +31,7 @@ export default function PurchaseContractDetail() {
   const fieldConfig: FieldConfig[] = [
     { key: 'price', label: 'Price', color: 'black', format: 'currency' },
     { key: 'basis', label: 'Basis', color: 'black', format: 'currency' },
-    { key: 'future', label: 'Future', color: 'black', unit: 'bu60' },
+    { key: 'future', label: 'Future', color: 'black', format: 'currency' },
     { key: 'reserved', label: 'Reserved', color: 'blue', unit: 'bu60' },
     { key: 'delivered', label: 'Settled', color: 'green', unit: 'bu60' },
     { key: 'balance', label: 'Your Balance', color: 'black', unit: 'bu60' }
@@ -88,6 +88,7 @@ export default function PurchaseContractDetail() {
         },
         basis: Math.floor(Math.random() * 1000) + 1000, // 1000-2000
         price: Math.floor(Math.random() * 1000) + 1500, // 1500-2500
+        future: (99 + Math.random() * 4).toFixed(2), // 99.00-103.00 como precio futures
         totalPayment: quantity * (Math.floor(Math.random() * 1000) + 1500),
         borderColor: color.border,
         dotColor: color.dot,
@@ -109,6 +110,7 @@ export default function PurchaseContractDetail() {
         thresholds: { min: 360, max: 440 },
         basis: 1500,
         price: 2000,
+        future: 101.25,
         totalPayment: 400 * 2000,
         borderColor: 'border-l-yellow-500',
         dotColor: 'bg-yellow-500',
@@ -126,6 +128,7 @@ export default function PurchaseContractDetail() {
         thresholds: { min: 540, max: 660 },
         basis: 1200,
         price: 1800,
+        future: 99.75,
         totalPayment: 600 * 1800,
         borderColor: 'border-l-purple-500',
         dotColor: 'bg-purple-500',
@@ -143,6 +146,7 @@ export default function PurchaseContractDetail() {
         thresholds: { min: 180, max: 220 },
         basis: 1800,
         price: 2200,
+        future: 102.50,
         totalPayment: 200 * 2200,
         borderColor: 'border-l-pink-500',
         dotColor: 'bg-pink-500',
@@ -160,6 +164,7 @@ export default function PurchaseContractDetail() {
         thresholds: { min: 450, max: 550 },
         basis: 1600,
         price: 1900,
+        future: 100.80,
         totalPayment: 500 * 1900,
         borderColor: 'border-l-indigo-500',
         dotColor: 'bg-indigo-500',
@@ -177,6 +182,7 @@ export default function PurchaseContractDetail() {
         thresholds: { min: 720, max: 880 },
         basis: 1300,
         price: 2100,
+        future: 98.95,
         totalPayment: 800 * 2100,
         borderColor: 'border-l-teal-500',
         dotColor: 'bg-teal-500',
