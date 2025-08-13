@@ -74,7 +74,8 @@ export default function PurchaseContractDetail() {
       { border: 'border-l-emerald-500', dot: 'bg-emerald-500', text: 'text-emerald-600' }
     ];
 
-    return Array.from({ length: 10 }, (_, i) => {
+    // Primeros 10 cards con datos variados
+    const regularCards = Array.from({ length: 10 }, (_, i) => {
       const quantity = Math.floor(Math.random() * 500) + 100; // 100-600
       
       // Datos más variados para progress bars realistas
@@ -106,6 +107,97 @@ export default function PurchaseContractDetail() {
         textColor: color.text
       };
     });
+
+    // 5 cards adicionales con empates para probar prioridad de colores
+    const tieCards = [
+      // Card 11: Empate perfecto 200-200
+      {
+        id: '11',
+        contractNumber: 'SPC-46-SUBC-11',
+        quantity: 400,
+        reserved: 200, // 50%
+        delivered: 200, // 50% - EMPATE
+        balance: 200,
+        unit: 'bu60',
+        thresholds: { min: 360, max: 440 },
+        basis: 1500,
+        price: 2000,
+        totalPayment: 400 * 2000,
+        borderColor: 'border-l-yellow-500',
+        dotColor: 'bg-yellow-500',
+        textColor: 'text-yellow-600'
+      },
+      // Card 12: Empate en números redondos 300-300
+      {
+        id: '12',
+        contractNumber: 'SPC-46-SUBC-12',
+        quantity: 600,
+        reserved: 300, // 50%
+        delivered: 300, // 50% - EMPATE
+        balance: 300,
+        unit: 'bu60',
+        thresholds: { min: 540, max: 660 },
+        basis: 1200,
+        price: 1800,
+        totalPayment: 600 * 1800,
+        borderColor: 'border-l-purple-500',
+        dotColor: 'bg-purple-500',
+        textColor: 'text-purple-600'
+      },
+      // Card 13: Empate pequeño 100-100
+      {
+        id: '13',
+        contractNumber: 'SPC-46-SUBC-13',
+        quantity: 200,
+        reserved: 100, // 50%
+        delivered: 100, // 50% - EMPATE
+        balance: 100,
+        unit: 'bu60',
+        thresholds: { min: 180, max: 220 },
+        basis: 1800,
+        price: 2200,
+        totalPayment: 200 * 2200,
+        borderColor: 'border-l-pink-500',
+        dotColor: 'bg-pink-500',
+        textColor: 'text-pink-600'
+      },
+      // Card 14: Empate con decimales exactos 250-250
+      {
+        id: '14',
+        contractNumber: 'SPC-46-SUBC-14',
+        quantity: 500,
+        reserved: 250, // 50%
+        delivered: 250, // 50% - EMPATE
+        balance: 250,
+        unit: 'bu60',
+        thresholds: { min: 450, max: 550 },
+        basis: 1600,
+        price: 1900,
+        totalPayment: 500 * 1900,
+        borderColor: 'border-l-indigo-500',
+        dotColor: 'bg-indigo-500',
+        textColor: 'text-indigo-600'
+      },
+      // Card 15: Empate grande 400-400
+      {
+        id: '15',
+        contractNumber: 'SPC-46-SUBC-15',
+        quantity: 800,
+        reserved: 400, // 50%
+        delivered: 400, // 50% - EMPATE
+        balance: 400,
+        unit: 'bu60',
+        thresholds: { min: 720, max: 880 },
+        basis: 1300,
+        price: 2100,
+        totalPayment: 800 * 2100,
+        borderColor: 'border-l-teal-500',
+        dotColor: 'bg-teal-500',
+        textColor: 'text-teal-600'
+      }
+    ];
+
+    return [...regularCards, ...tieCards];
   };
 
   const [subContracts] = useState<SubContract[]>(generateRandomSubContracts());
