@@ -74,6 +74,13 @@ Preferred communication style: Simple, everyday language.
 - **Implementation**: Page components pass pre-configured action items with handlers to the table
 - **Rule**: Tables should never contain hardcoded navigation URLs or business logic - all actions are externally defined and passed as props
 
+### Navigation Performance Optimization
+- **Date**: August 13, 2025
+- **Issue**: Slow page navigation due to full page reloads with `window.location.href`
+- **Solution**: Implemented Wouter router's `setLocation()` for SPA navigation
+- **Result**: Instant, fluid navigation between pages without page reloads
+- **Impact**: Significantly improved user experience and application performance
+
 ## External Dependencies
 
 ### Core
