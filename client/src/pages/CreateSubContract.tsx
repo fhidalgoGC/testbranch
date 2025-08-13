@@ -271,19 +271,6 @@ export default function CreateSubContract() {
                     </div>
                   </div>
 
-                  {/* Price Field (Calculated: Future + Basis) */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                      Price
-                    </label>
-                    <Input
-                      type="text"
-                      value={(futurePrice + contractData.basis).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      readOnly
-                      className="text-sm font-mono bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
-                    />
-                  </div>
-
                   {/* Total Section */}
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Total</h3>
@@ -295,8 +282,9 @@ export default function CreateSubContract() {
                         <div className="relative">
                           <Input
                             type="text"
-                            value="2,733.00"
-                            className="text-sm font-mono pr-8"
+                            value={(futurePrice + contractData.basis).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            readOnly
+                            className="text-sm font-mono pr-8 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                           />
                           <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
                             <X className="w-4 h-4" />
