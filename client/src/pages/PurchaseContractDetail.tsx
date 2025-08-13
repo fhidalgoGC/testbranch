@@ -517,11 +517,11 @@ export default function PurchaseContractDetail() {
 
           <div className="flex gap-6 h-[480px]">
             {/* Left Column - Pie Chart */}
-            <Card className="h-full w-[300px] flex-shrink-0">
-              <CardHeader>
+            <Card className="h-full w-[300px] flex-shrink-0 flex flex-col">
+              <CardHeader className="flex-shrink-0">
                 <CardTitle>{t('contractDetail.position')}</CardTitle>
               </CardHeader>
-              <CardContent className="flex items-center justify-center min-h-0 flex-1 p-4">
+              <CardContent className="flex items-center justify-center flex-1 p-4">
                 <div className="flex flex-col items-center justify-center space-y-4">
                   {/* Pie Chart - Top */}
                   <div className="flex items-center justify-center flex-shrink-0">
