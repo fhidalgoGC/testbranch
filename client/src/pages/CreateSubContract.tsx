@@ -237,28 +237,58 @@ export default function CreateSubContract() {
                   </Badge>
                 </div>
 
-                {/* Future Price Field */}
+                {/* Future and Price Fields */}
                 <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                      Future <span className="text-red-500">*</span>
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Input
-                        type="text"
-                        value={contractData.future.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        placeholder="0.00"
-                        className="text-sm font-mono"
-                      />
-                      <Select defaultValue="usd">
-                        <SelectTrigger className="text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="usd">USD</SelectItem>
-                          <SelectItem value="eur">EUR</SelectItem>
-                        </SelectContent>
-                      </Select>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Future Field */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        Future <span className="text-red-500">*</span>
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          type="text"
+                          value={contractData.future.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                          onChange={(e) => {
+                            const value = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                            setFuturePrice(value);
+                          }}
+                          placeholder="0.00"
+                          className="text-sm font-mono"
+                        />
+                        <Select defaultValue="usd">
+                          <SelectTrigger className="text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="usd">USD</SelectItem>
+                            <SelectItem value="eur">EUR</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Price Field (Calculated: Basis + Future) */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        Price
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          type="text"
+                          value={(contractData.basis + futurePrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                          readOnly
+                          className="text-sm font-mono bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                        />
+                        <Select defaultValue="usd" disabled>
+                          <SelectTrigger className="text-sm bg-gray-50 dark:bg-gray-800">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="usd">USD</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                 </div>
