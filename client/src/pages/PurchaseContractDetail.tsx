@@ -12,6 +12,8 @@ import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check } from 'lucide-react
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
+import SubContractsSection from '@/components/contracts/SubContractsSection';
+import { SubContract } from '@/components/contracts/SubContractCard';
 
 export default function PurchaseContractDetail() {
   const { t } = useTranslation();
@@ -24,6 +26,70 @@ export default function PurchaseContractDetail() {
   const [contract, setContract] = useState<PurchaseContract | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Mock data para sub-contratos - esto se reemplazará con datos reales del API
+  const [subContracts] = useState<SubContract[]>([
+    {
+      id: '1',
+      contractNumber: 'SPC-46-SUBC-3',
+      quantity: 300.00,
+      unit: 'bu60',
+      thresholds: { min: 270.00, max: 330.00 },
+      basis: 1500.00,
+      price: 1800.00,
+      delivered: 0.00,
+      balance: 0.00,
+      totalPayment: 540000.00,
+      borderColor: 'border-l-blue-500',
+      dotColor: 'bg-blue-500',
+      textColor: 'text-blue-600'
+    },
+    {
+      id: '2',
+      contractNumber: 'SPC-46-SUBC-2',
+      quantity: 200.00,
+      unit: 'bu60',
+      thresholds: { min: 180.00, max: 220.00 },
+      basis: 1500.00,
+      price: 1500.00,
+      delivered: 0.00,
+      balance: 0.00,
+      totalPayment: 300000.00,
+      borderColor: 'border-l-pink-500',
+      dotColor: 'bg-pink-500',
+      textColor: 'text-pink-600'
+    },
+    {
+      id: '3',
+      contractNumber: 'SPC-46-SUBC-1',
+      quantity: 150.00,
+      unit: 'bu60',
+      thresholds: { min: 135.00, max: 165.00 },
+      basis: 1500.00,
+      price: 1700.00,
+      delivered: 0.00,
+      balance: 0.00,
+      totalPayment: 255000.00,
+      borderColor: 'border-l-purple-500',
+      dotColor: 'bg-purple-500',
+      textColor: 'text-purple-600'
+    },
+    {
+      id: '4',
+      contractNumber: 'SPC-46-SUBC-4',
+      quantity: 250.00,
+      unit: 'bu60',
+      thresholds: { min: 225.00, max: 275.00 },
+      basis: 1500.00,
+      price: 1600.00,
+      delivered: 0.00,
+      balance: 0.00,
+      totalPayment: 400000.00,
+      borderColor: 'border-l-orange-500',
+      dotColor: 'bg-orange-500',
+      textColor: 'text-orange-600'
+    }
+  ]);
 
   // Cargar datos del contrato
   useEffect(() => {
@@ -507,478 +573,15 @@ export default function PurchaseContractDetail() {
 
         {/* Sub-contracts Section */}
         <div className="mt-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {t('contractDetail.subContracts')} (3)
-            </h2>
-            <Button className="bg-green-600 hover:bg-green-700 text-white">
-              + {t('contractDetail.newSubContract')}
-            </Button>
-          </div>
-
-          <div className="flex gap-6 h-[480px]">
-            {/* Left Column - Pie Chart */}
-            <Card className="h-full w-[300px] flex-shrink-0 flex flex-col">
-              <CardHeader className="flex-shrink-0">
-                <CardTitle>{t('contractDetail.position')}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-center flex-1 p-4">
-                <div className="flex flex-col items-center justify-center space-y-4">
-                  {/* Pie Chart - Top */}
-                  <div className="flex items-center justify-center flex-shrink-0">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
-                      <div className="absolute inset-3 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
-                          <div className="text-sm font-bold">100%</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Legend - Bottom */}
-                  <div className="flex flex-col space-y-2 items-center flex-shrink-0">
-                    <div className="flex items-center text-xs">
-                      <div className="w-3 h-3 bg-blue-400 rounded mr-2"></div>
-                      <span>SPC-46</span>
-                    </div>
-                    <div className="flex items-center text-xs">
-                      <div className="w-3 h-3 bg-purple-500 rounded mr-2"></div>
-                      <span>SPC-46-SUBC-3</span>
-                    </div>
-                    <div className="flex items-center text-xs">
-                      <div className="w-3 h-3 bg-pink-500 rounded mr-2"></div>
-                      <span>SPC-46-SUBC-2</span>
-                    </div>
-                    <div className="flex items-center text-xs">
-                      <div className="w-3 h-3 bg-gray-400 rounded mr-2"></div>
-                      <span>SPC-46-SUBC-1</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Right Column - Sub-contracts Cards with Border and Scroll */}
-            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 h-full flex-1">
-              <div className="h-full overflow-y-auto space-y-3 pr-2" style={{maxHeight: '420px'}}>
-                {/* Sub-contract 1 */}
-                <Card className="border-l-4 border-l-blue-500">
-                  <CardContent className="p-4">
-                    <div className="flex items-center mb-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                        <span className="font-medium text-blue-600">ID Contract#SPC-46-SUBC-3</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs mb-3">
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
-                        <p className="font-medium text-green-600">300.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
-                        <p className="font-medium">Min: 270.00 | Max: 330.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-                        <p className="font-medium text-blue-600">$ 1,500.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
-                        <p className="font-medium text-green-600">$ 1,800.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-                        <p className="font-medium text-blue-600">0.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-                        <p className="font-medium">0.00 bu60</p>
-                      </div>
-                    </div>
-                    <div className="mb-3 pt-2 border-t">
-                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 540,000.00</span></p>
-                    </div>
-                    
-                    {/* Action buttons */}
-                    <div className="flex justify-end space-x-1">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('view')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Printer className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('print')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('edit')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('delete')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-green-600 hover:text-green-700">
-                              <Check className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('settle')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Sub-contract 2 */}
-                <Card className="border-l-4 border-l-pink-500">
-                  <CardContent className="p-4">
-                    <div className="flex items-center mb-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-pink-500 rounded"></div>
-                        <span className="font-medium text-pink-600">ID Contract#SPC-46-SUBC-2</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs mb-3">
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
-                        <p className="font-medium text-green-600">200.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
-                        <p className="font-medium">Min: 180.00 | Max: 220.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-                        <p className="font-medium text-blue-600">$ 1,500.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
-                        <p className="font-medium text-green-600">$ 1,500.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-                        <p className="font-medium text-blue-600">0.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-                        <p className="font-medium">0.00 bu60</p>
-                      </div>
-                    </div>
-                    <div className="mb-3 pt-2 border-t">
-                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 300,000.00</span></p>
-                    </div>
-                    
-                    {/* Action buttons */}
-                    <div className="flex justify-end space-x-1">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('view')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Printer className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('print')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('edit')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('delete')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-green-600 hover:text-green-700">
-                              <Check className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('settle')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Sub-contract 3 */}
-                <Card className="border-l-4 border-l-purple-500">
-                  <CardContent className="p-4">
-                    <div className="flex items-center mb-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-purple-500 rounded"></div>
-                        <span className="font-medium text-purple-600">ID Contract#SPC-46-SUBC-1</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs mb-3">
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
-                        <p className="font-medium text-green-600">150.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
-                        <p className="font-medium">Min: 135.00 | Max: 165.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-                        <p className="font-medium text-blue-600">$ 1,500.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
-                        <p className="font-medium text-green-600">$ 1,700.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-                        <p className="font-medium text-blue-600">0.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-                        <p className="font-medium">0.00 bu60</p>
-                      </div>
-                    </div>
-                    <div className="mb-3 pt-2 border-t">
-                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 255,000.00</span></p>
-                    </div>
-                    
-                    {/* Action buttons */}
-                    <div className="flex justify-end space-x-1">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('view')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Printer className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('print')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('edit')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-red-600 hover:text-red-700">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('delete')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-green-600 hover:text-green-700">
-                              <Check className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t('settle')}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Sub-contract 4 */}
-                <Card className="border-l-4 border-l-orange-500">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-orange-500 rounded"></div>
-                        <span className="font-medium text-orange-600">ID Contract#SPC-46-SUBC-4</span>
-                      </div>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
-                        {t('contractDetail.printSubContract')}
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs">
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
-                        <p className="font-medium text-green-600">250.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
-                        <p className="font-medium">Min: 225.00 | Max: 275.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-                        <p className="font-medium text-blue-600">$ 1,500.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
-                        <p className="font-medium text-green-600">$ 1,600.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-                        <p className="font-medium text-blue-600">0.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-                        <p className="font-medium">0.00 bu60</p>
-                      </div>
-                    </div>
-                    <div className="mt-2 pt-2 border-t">
-                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 400,000.00</span></p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Sub-contract 5 */}
-                <Card className="border-l-4 border-l-green-500">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-green-500 rounded"></div>
-                        <span className="font-medium text-green-600">ID Contract#SPC-46-SUBC-5</span>
-                      </div>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
-                        {t('contractDetail.printSubContract')}
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-6 gap-2 text-xs">
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
-                        <p className="font-medium text-green-600">180.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
-                        <p className="font-medium">Min: 162.00 | Max: 198.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-                        <p className="font-medium text-blue-600">$ 1,500.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
-                        <p className="font-medium text-green-600">$ 1,750.00</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-                        <p className="font-medium text-blue-600">0.00 bu60</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-                        <p className="font-medium">0.00 bu60</p>
-                      </div>
-                    </div>
-                    <div className="mt-2 pt-2 border-t">
-                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 315,000.00</span></p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
+          <SubContractsSection
+            subContracts={subContracts}
+            onNewSubContract={() => console.log('New sub-contract')}
+            onViewSubContract={(id) => console.log('View sub-contract:', id)}
+            onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
+            onEditSubContract={(id) => console.log('Edit sub-contract:', id)}
+            onDeleteSubContract={(id) => console.log('Delete sub-contract:', id)}
+            onSettleSubContract={(id) => console.log('Settle sub-contract:', id)}
+          />
         </div>
       </div>
     </DashboardLayout>
