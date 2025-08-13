@@ -515,13 +515,13 @@ export default function PurchaseContractDetail() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 h-[500px]">
             {/* Left Column - Pie Chart */}
-            <Card>
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle>{t('contractDetail.position')}</CardTitle>
               </CardHeader>
-              <CardContent className="flex items-center justify-center h-80">
+              <CardContent className="flex items-center justify-center h-full">
                 <div className="relative">
                   {/* Pie Chart Placeholder */}
                   <div className="w-48 h-48 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
@@ -555,95 +555,229 @@ export default function PurchaseContractDetail() {
               </CardContent>
             </Card>
 
-            {/* Right Column - Sub-contracts Cards */}
-            <div className="space-y-4">
-              {/* Sub-contract 1 */}
-              <Card className="border-l-4 border-l-blue-500">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                      <span className="font-medium text-blue-600">ID Contract#SPC-46-SUBC-3</span>
+            {/* Right Column - Sub-contracts Cards with Border and Scroll */}
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 h-full">
+              <div className="h-full overflow-y-auto space-y-4 pr-2">
+                {/* Sub-contract 1 */}
+                <Card className="border-l-4 border-l-blue-500">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                        <span className="font-medium text-blue-600">ID Contract#SPC-46-SUBC-3</span>
+                      </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
+                        {t('contractDetail.printSubContract')}
+                      </Button>
                     </div>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
-                      {t('contractDetail.printSubContract')}
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-6 gap-2 text-xs">
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
-                      <p className="font-medium text-green-600">300.00 bu60</p>
+                    <div className="grid grid-cols-6 gap-2 text-xs">
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
+                        <p className="font-medium text-green-600">300.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
+                        <p className="font-medium">Min: 270.00 | Max: 330.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
+                        <p className="font-medium text-blue-600">$ 1,500.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
+                        <p className="font-medium text-green-600">$ 1,800.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
+                        <p className="font-medium text-blue-600">0.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
+                        <p className="font-medium">0.00 bu60</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
-                      <p className="font-medium">Min: 270.00 | Max: 330.00</p>
+                    <div className="mt-2 pt-2 border-t">
+                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 540,000.00</span></p>
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-                      <p className="font-medium text-blue-600">$ 1,500.00</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.price')}:</p>
-                      <p className="font-medium text-green-600">$ 1,800.00</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-                      <p className="font-medium text-blue-600">0.00 bu60</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-                      <p className="font-medium">0.00 bu60</p>
-                    </div>
-                  </div>
-                  <div className="mt-2 pt-2 border-t">
-                    <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 540,000.00</span></p>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
-              {/* Sub-contract 2 */}
-              <Card className="border-l-4 border-l-pink-500">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-pink-500 rounded"></div>
-                      <span className="font-medium text-pink-600">ID Contract#SPC-46-SUBC-2</span>
+                {/* Sub-contract 2 */}
+                <Card className="border-l-4 border-l-pink-500">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-pink-500 rounded"></div>
+                        <span className="font-medium text-pink-600">ID Contract#SPC-46-SUBC-2</span>
+                      </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
+                        {t('contractDetail.printSubContract')}
+                      </Button>
                     </div>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
-                      {t('contractDetail.printSubContract')}
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-6 gap-2 text-xs">
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
-                      <p className="font-medium text-green-600">200.00 bu60</p>
+                    <div className="grid grid-cols-6 gap-2 text-xs">
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
+                        <p className="font-medium text-green-600">200.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
+                        <p className="font-medium">Min: 180.00 | Max: 220.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
+                        <p className="font-medium text-blue-600">$ 1,500.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
+                        <p className="font-medium text-green-600">$ 1,500.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
+                        <p className="font-medium text-blue-600">0.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
+                        <p className="font-medium">0.00 bu60</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
-                      <p className="font-medium">Min: 180.00 | Max: 220.00</p>
+                    <div className="mt-2 pt-2 border-t">
+                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 300,000.00</span></p>
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.basis')}:</p>
-                      <p className="font-medium text-blue-600">$ 1,500.00</p>
+                  </CardContent>
+                </Card>
+
+                {/* Sub-contract 3 */}
+                <Card className="border-l-4 border-l-purple-500">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-purple-500 rounded"></div>
+                        <span className="font-medium text-purple-600">ID Contract#SPC-46-SUBC-1</span>
+                      </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
+                        {t('contractDetail.printSubContract')}
+                      </Button>
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.price')}:</p>
-                      <p className="font-medium text-green-600">$ 1,500.00</p>
+                    <div className="grid grid-cols-6 gap-2 text-xs">
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
+                        <p className="font-medium text-green-600">150.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
+                        <p className="font-medium">Min: 135.00 | Max: 165.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
+                        <p className="font-medium text-blue-600">$ 1,500.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
+                        <p className="font-medium text-green-600">$ 1,700.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
+                        <p className="font-medium text-blue-600">0.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
+                        <p className="font-medium">0.00 bu60</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
-                      <p className="font-medium text-blue-600">0.00 bu60</p>
+                    <div className="mt-2 pt-2 border-t">
+                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 255,000.00</span></p>
                     </div>
-                    <div>
-                      <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
-                      <p className="font-medium">0.00 bu60</p>
+                  </CardContent>
+                </Card>
+
+                {/* Sub-contract 4 */}
+                <Card className="border-l-4 border-l-orange-500">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-orange-500 rounded"></div>
+                        <span className="font-medium text-orange-600">ID Contract#SPC-46-SUBC-4</span>
+                      </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
+                        {t('contractDetail.printSubContract')}
+                      </Button>
                     </div>
-                  </div>
-                  <div className="mt-2 pt-2 border-t">
-                    <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 300,000.00</span></p>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="grid grid-cols-6 gap-2 text-xs">
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
+                        <p className="font-medium text-green-600">250.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
+                        <p className="font-medium">Min: 225.00 | Max: 275.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
+                        <p className="font-medium text-blue-600">$ 1,500.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
+                        <p className="font-medium text-green-600">$ 1,600.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
+                        <p className="font-medium text-blue-600">0.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
+                        <p className="font-medium">0.00 bu60</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 pt-2 border-t">
+                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 400,000.00</span></p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Sub-contract 5 */}
+                <Card className="border-l-4 border-l-green-500">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-green-500 rounded"></div>
+                        <span className="font-medium text-green-600">ID Contract#SPC-46-SUBC-5</span>
+                      </div>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs">
+                        {t('contractDetail.printSubContract')}
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-6 gap-2 text-xs">
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.quantityUnits')}:</p>
+                        <p className="font-medium text-green-600">180.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.thresholds')} (bu60):</p>
+                        <p className="font-medium">Min: 162.00 | Max: 198.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.basis')}:</p>
+                        <p className="font-medium text-blue-600">$ 1,500.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.price')}:</p>
+                        <p className="font-medium text-green-600">$ 1,750.00</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.delivered')}:</p>
+                        <p className="font-medium text-blue-600">0.00 bu60</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">{t('contractDetail.yourBalance')}:</p>
+                        <p className="font-medium">0.00 bu60</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 pt-2 border-t">
+                      <p className="text-sm"><span className="text-gray-500">{t('contractDetail.totalPayment')}:</span> <span className="font-bold text-green-600">$ 315,000.00</span></p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
