@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { useContractDetailState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
+import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,11 @@ export default function PurchaseContractDetail() {
   // Hook para persistir estado del detalle de contrato
   const { contractState, updateState } = useContractDetailState(contractId!);
   const { handleNavigateToPage } = useNavigationHandler();
+  
+  // Obtener contratos del state de Redux
+  const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
+  const contractsData = contractsState.contractsData || [];
+  
   usePageTracking(`/purchase-contracts/${contractId}`);
   
   // Notificar navegación al cargar la página
@@ -407,6 +413,20 @@ export default function PurchaseContractDetail() {
                 </Button>
                 <Button size="sm" variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
                   <Printer className="w-4 h-4" />
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-purple-600 border-purple-600 hover:bg-purple-50"
+                  onClick={() => {
+                    console.log('=== DEBUG: Contratos JSON ===');
+                    console.log('Total contratos en Redux:', contractsData.length);
+                    console.log('Contratos completos:', JSON.stringify(contractsData, null, 2));
+                    console.log('Contract ID actual:', contractId);
+                    console.log('=== FIN DEBUG ===');
+                  }}
+                >
+                  Debug
                 </Button>
                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                   <Edit className="w-4 h-4" />
