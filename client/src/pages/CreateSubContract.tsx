@@ -12,6 +12,7 @@ import { ArrowLeft, Calendar, Package, DollarSign, FileText, X } from 'lucide-re
 import { Link } from 'wouter';
 import { FormattedNumberInput } from '@/components/PurchaseContractForm/components/FormattedNumberInput';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
+import { DatePicker } from '@/components/ui/datepicker';
 
 interface ContractData {
   contractNumber: string;
@@ -65,7 +66,7 @@ export default function CreateSubContract() {
 
   const [futurePrice, setFuturePrice] = useState(contractData.future);
   const [quantity, setQuantity] = useState(700.00);
-  const [totalPrice, setTotalPrice] = useState(2733.00);
+  const [selectedDate, setSelectedDate] = useState('2025-08-13');
   const [selectedMeasurementUnit, setSelectedMeasurementUnit] = useState('bushel60');
   
   // API hooks
@@ -266,11 +267,12 @@ export default function CreateSubContract() {
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                         Basis
                       </label>
-                      <FormattedNumberInput
-                        value={contractData.basis}
-                        onChange={() => {}} // Read-only
-                        placeholder="0.00"
-                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                      <Input
+                        type="text"
+                        value={contractData.basis.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        readOnly
+                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                        tabIndex={-1}
                       />
                     </div>
                   </div>
@@ -283,27 +285,24 @@ export default function CreateSubContract() {
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Price
                         </label>
-                        <FormattedNumberInput
-                          value={futurePrice + contractData.basis}
-                          onChange={() => {}} // Read-only
-                          placeholder="0.00"
-                          className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                        <Input
+                          type="text"
+                          value={(futurePrice + contractData.basis).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          readOnly
+                          className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                          tabIndex={-1}
                         />
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                           Date
                         </label>
-                        <div className="relative">
-                          <Input
-                            type="date"
-                            value="2025-08-13"
-                            className="text-sm pr-8"
-                          />
-                          <button className="absolute right-8 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-700">
-                            <Calendar className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <DatePicker
+                          value={selectedDate}
+                          onChange={setSelectedDate}
+                          placeholder="Select date"
+                          className="text-sm"
+                        />
                       </div>
                     </div>
 
