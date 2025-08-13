@@ -55,7 +55,8 @@ export default function PurchaseContractDetail() {
       const pendingReserved = Math.max(0, reservedAmount - settledAmount);
       return (pendingReserved / totalQuantity) * 100;
     },
-    label: 'Progress'
+    label: 'Progress',
+    colorPriority: 'settled' // Verde tiene prioridad en caso de empate
   };
 
   // Generar 10 sub-contratos con datos random para testing
