@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Edit, Trash2, Eye } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Eye, Printer } from 'lucide-react';
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -211,6 +211,9 @@ export default function PurchaseContractDetail() {
               <div className="flex space-x-2">
                 <Button size="sm" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
                   <Eye className="w-4 h-4" />
+                </Button>
+                <Button size="sm" variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
+                  <Printer className="w-4 h-4" />
                 </Button>
                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                   <Edit className="w-4 h-4" />
