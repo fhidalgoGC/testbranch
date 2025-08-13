@@ -61,9 +61,7 @@ export default function CreateSubContract() {
     shipmentPeriod: '-'
   });
 
-  const [actualQuantity, setActualQuantity] = useState('700.00');
-  const [contractOpen, setContractOpen] = useState('700.00');
-  const [totalValue, setTotalValue] = useState('2,733.00');
+  const [futurePrice, setFuturePrice] = useState(contractData.future);
 
   const handleCancel = () => {
     setLocation(`/purchase-contracts/${contractId}`);
@@ -73,9 +71,7 @@ export default function CreateSubContract() {
     // TODO: Implement sub-contract creation logic
     console.log('Creating sub-contract with data:', {
       contractData,
-      actualQuantity,
-      contractOpen,
-      totalValue
+      futurePrice
     });
     setLocation(`/purchase-contracts/${contractId}`);
   };
@@ -241,80 +237,26 @@ export default function CreateSubContract() {
                   </Badge>
                 </div>
 
-                {/* Input Fields */}
+                {/* Future Price Field */}
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      value={actualQuantity}
-                      onChange={(e) => setActualQuantity(e.target.value)}
-                      placeholder="1,233.00"
-                      className="text-sm"
-                    />
-                    <Select defaultValue="esd">
-                      <SelectTrigger className="text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="esd">esd</SelectItem>
-                        <SelectItem value="other">other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      value="1,500.00"
-                      readOnly
-                      className="text-sm bg-gray-50 dark:bg-gray-800"
-                    />
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                      <Calendar className="w-4 h-4" />
-                    </Button>
-                  </div>
-
                   <div>
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                      Total
+                      Future <span className="text-red-500">*</span>
                     </label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-3">
                       <Input
-                        value={totalValue}
-                        onChange={(e) => setTotalValue(e.target.value)}
-                        className="text-sm"
+                        type="text"
+                        value={contractData.future.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        placeholder="0.00"
+                        className="text-sm font-mono"
                       />
-                      <Select defaultValue="x">
+                      <Select defaultValue="usd">
                         <SelectTrigger className="text-sm">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="x">X</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input
-                        value="08/13/2025"
-                        type="date"
-                        className="text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                      Contract
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        value={contractOpen}
-                        onChange={(e) => setContractOpen(e.target.value)}
-                        className="text-sm"
-                      />
-                      <Select defaultValue="bushel60">
-                        <SelectTrigger className="text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="bushel60">Bushel 60</SelectItem>
-                          <SelectItem value="bushel56">Bushel 56</SelectItem>
+                          <SelectItem value="usd">USD</SelectItem>
+                          <SelectItem value="eur">EUR</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
