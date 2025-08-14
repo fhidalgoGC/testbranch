@@ -795,6 +795,7 @@ export default function PurchaseContracts() {
             handleFetchContractsData(newParams);
           }}
           onSortChange={(sort) => {
+            console.log('🔧 SORT CHANGE - Sort recibido:', sort);
             const newParams = { page: 1, pageSize: tableParams.limit, search: tableParams.search, sort };
             setTableParams({ ...tableParams, page: 1, sort });
             handleFetchContractsData(newParams);

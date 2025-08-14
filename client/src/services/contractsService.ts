@@ -180,11 +180,14 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     });
     
     // Agregar ordenamiento en el mismo formato que fetchContracts
-    if (sort) {
+    console.log('🔧 SERVICIO - Sort recibido:', sort, 'Type:', typeof sort, 'Sort.key:', sort?.key);
+    if (sort && sort.key && sort.key !== 'undefined' && sort.key !== null) {
       const apiFieldName = sortFieldMapping[sort.key] || sort.key;
+      console.log('🔧 SERVICIO - Usando sort:', sort.key, '→', apiFieldName, 'Direction:', sort.direction);
       queryParams.append(`sort[${apiFieldName}]`, sort.direction === 'asc' ? '1' : '-1');
     } else {
       // Ordenamiento por defecto por fecha de contrato descendente
+      console.log('🔧 SERVICIO - Usando sort por defecto: contract_date');
       queryParams.append('sort[contract_date]', '-1');
     }
     
