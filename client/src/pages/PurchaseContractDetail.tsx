@@ -50,6 +50,8 @@ export default function PurchaseContractDetail() {
   
   // Estado para la dirección del participante
   const [participantAddress, setParticipantAddress] = useState<string>('Loading address...');
+  const [subContractsData, setSubContractsData] = useState<any[]>([]);
+  const [loadingSubContracts, setLoadingSubContracts] = useState<boolean>(false);
   
   // Función para cargar la dirección del participante
   const loadParticipantAddress = async (participantId: string) => {
@@ -115,6 +117,72 @@ export default function PurchaseContractDetail() {
       setParticipantAddress('Error loading address');
     }
   };
+
+  // Función para cargar sub-contratos
+  const loadSubContracts = async (contractId: string) => {
+    try {
+      setLoadingSubContracts(true);
+      
+      const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      const partition_key = localStorage.getItem('partition_key') || '';
+      
+      console.log('🔐 Debug auth para sub-contratos:', { hasIdToken: !!auth.id_token, hasPartitionKey: !!partition_key });
+      
+      if (!auth.id_token || !partition_key) {
+        console.error('❌ No hay token JWT o partition_key para cargar sub-contratos');
+        console.log('Auth object:', auth);
+        console.log('Partition key:', partition_key);
+        return;
+      }
+
+      const filter = JSON.stringify({ "contract_id": contractId });
+      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(filter)}`;
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          '_partitionkey': partition_key,
+          'accept': '*/*',
+          'accept-language': 'es-419,es;q=0.9',
+          'authorization': `Bearer ${auth.id_token}`,
+          'bt-organization': partition_key,
+          'bt-uid': partition_key,
+          'organization_id': partition_key,
+          'origin': 'https://contracts-develop.grainchain.io',
+          'pk-organization': partition_key,
+          'priority': 'u=1, i',
+          'referer': 'https://contracts-develop.grainchain.io/',
+          'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"macOS"',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-site',
+          'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📋 Sub-contratos cargados:', data);
+        
+        if (data.data && Array.isArray(data.data)) {
+          setSubContractsData(data.data);
+        } else {
+          setSubContractsData([]);
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Error al cargar sub-contratos:', response.status, errorText);
+        setSubContractsData([]);
+      }
+    } catch (error) {
+      console.error('❌ Error al cargar sub-contratos:', error);
+      setSubContractsData([]);
+    } finally {
+      setLoadingSubContracts(false);
+    }
+  };
   
   // Buscar y establecer el contrato específico al cargar la página
   useEffect(() => {
@@ -140,6 +208,11 @@ export default function PurchaseContractDetail() {
           const seller = foundContract.participants?.find((p: any) => p.role === 'seller');
           if (seller && seller.people_id) {
             loadParticipantAddress(seller.people_id);
+          }
+
+          // Cargar sub-contratos si es un contrato basis
+          if (foundContract.price_schedule?.[0]?.pricing_type === 'basis') {
+            loadSubContracts(contractId);
           }
           
           // Contrato encontrado - Redux state ya tiene los datos necesarios
@@ -805,7 +878,7 @@ export default function PurchaseContractDetail() {
         {currentContractData?.price_schedule?.[0]?.pricing_type === 'basis' && (
           <div className="mt-8">
             <SubContractsSection
-              subContracts={subContracts}
+              subContracts={subContractsData}
               fields={fieldConfig}
               progressBar={progressBarConfig}
               onNewSubContract={() => setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`)}
