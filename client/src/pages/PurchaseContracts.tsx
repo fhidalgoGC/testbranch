@@ -63,6 +63,19 @@ export default function PurchaseContracts() {
     return defaultFilters;
   });
   const [currentPage, setCurrentPage] = useState(pageState.currentPage || 1);
+  
+  // Estado para guardar los datos de la tabla que vienen del API
+  const [tableData, setTableData] = useState<{
+    contracts: PurchaseContract[];
+    totalElements: number;
+    currentPage: number;
+    filters: any;
+  }>({
+    contracts: [],
+    totalElements: 0,
+    currentPage: 1,
+    filters: {}
+  });
 
   // Efecto para persistir cambios de filtros y página - usando JSON.stringify para comparación profunda
   useEffect(() => {
@@ -263,7 +276,7 @@ export default function PurchaseContracts() {
     // Aplicar filtros seleccionados
     const filters = selectedFilters;
 
-    return await fetchContractsData({
+    const result = await fetchContractsData({
       ...params,
       filters,
       commodities,
@@ -272,6 +285,21 @@ export default function PurchaseContracts() {
         idToken: idToken || ''
       }
     });
+
+    // Guardar los datos en el estado local
+    setTableData({
+      contracts: result.data,
+      totalElements: result.total,
+      currentPage: params.page,
+      filters: filters
+    });
+
+    // Guardar contratos en Redux state para uso en otras páginas
+    updateState({
+      contractsData: result.data
+    });
+
+    return result;
   };
 
   // Función para toggle de filtros
@@ -500,15 +528,32 @@ export default function PurchaseContracts() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {t('purchaseContractsList')}
           </h1>
-          <Link href="/purchase-contracts/create" className="inline-block">
+          <div className="flex gap-2">
             <Button 
-              className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
-              size="lg"
+              size="sm" 
+              variant="outline"
+              onClick={() => {
+                console.log('=== ESTADO DE LA PÁGINA (TABLE DATA) ===');
+                console.log('Contracts:', tableData.contracts);
+                console.log('Total Elements:', tableData.totalElements);
+                console.log('Current Page:', tableData.currentPage);
+                console.log('Filters:', tableData.filters);
+                console.log('Total contracts in state:', tableData.contracts.length);
+                console.log('==========================================');
+              }}
             >
-              <Plus className="w-4 h-4" />
-              {t('createContract')}
+              Debug State
             </Button>
-          </Link>
+            <Link href="/purchase-contracts/create" className="inline-block">
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                size="lg"
+              >
+                <Plus className="w-4 h-4" />
+                {t('createContract')}
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Pricing Type Filters */}
