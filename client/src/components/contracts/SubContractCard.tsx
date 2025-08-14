@@ -260,22 +260,25 @@ export default function SubContractCard({
             </>
           )}
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  size="sm" 
-                  className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white"
-                  onClick={() => onSettle?.(subContract.id)}
-                >
-                  <Check className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t('settle')}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {/* Botón de settle - solo visible cuando el status del sub-contrato es 'in-progress' */}
+          {subContract.status === 'in-progress' && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    size="sm" 
+                    className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white"
+                    onClick={() => onSettle?.(subContract.id)}
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t('settle')}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
           </div>
         </div>
       </CardContent>
