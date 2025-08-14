@@ -16,6 +16,7 @@ import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
 import SubContractsSection from '@/components/contracts/SubContractsSection';
 import { SubContract, FieldConfig, ProgressBarConfig } from '@/components/contracts/SubContractCard';
+import { authenticatedFetch, hasAuthTokens } from '@/utils/apiInterceptors';
 
 export default function PurchaseContractDetail() {
   const { t } = useTranslation();
@@ -53,40 +54,21 @@ export default function PurchaseContractDetail() {
   const [subContractsData, setSubContractsData] = useState<any[]>([]);
   const [loadingSubContracts, setLoadingSubContracts] = useState<boolean>(false);
   
-  // Función para cargar la dirección del participante
+  // Función para cargar la dirección del participante usando el interceptor addJwtPk
   const loadParticipantAddress = async (participantId: string) => {
     try {
-      // Obtener tokens del localStorage siguiendo el patrón de la app
-      const accessToken = localStorage.getItem('access_token');
-      const idToken = localStorage.getItem('id_token');
-      const jwt = localStorage.getItem('jwt');
-      const partitionKey = localStorage.getItem('partition_key');
-      
-      // Para este endpoint específico necesitamos usar el id_token (JWT)
-      const authToken = idToken || jwt;
-      
-      if (!authToken || !partitionKey) {
+      const authCheck = hasAuthTokens();
+      if (!authCheck.isAuthenticated) {
         console.error('❌ No se encontraron tokens de autenticación o partition key');
         setParticipantAddress('Address requires authentication');
         return;
       }
       
-      const response = await fetch(`https://crm-develop.grainchain.io/api/v1/crm-locations/address/contracts-owner/${participantId}`, {
+      // Usar el interceptor authenticatedFetch que maneja automáticamente JWT + partition_key
+      const response = await authenticatedFetch(`https://crm-develop.grainchain.io/api/v1/crm-locations/address/contracts-owner/${participantId}`, {
         method: 'GET',
-        headers: {
-          '_partitionkey': partitionKey,
-          'accept': '*/*',
-          'accept-language': 'es-419,es;q=0.9',
-          'authorization': `Bearer ${authToken}`,
-          'bt-organization': partitionKey,
-          'bt-uid': partitionKey,
-          'organization_id': partitionKey,
-          'pk-organization': partitionKey,
-          'origin': 'https://contracts-develop.grainchain.io',
-          'referer': 'https://contracts-develop.grainchain.io/',
-          'sec-fetch-dest': 'empty',
-          'sec-fetch-mode': 'cors',
-          'sec-fetch-site': 'same-site'
+        customHeaders: {
+          'pk-organization': localStorage.getItem('partition_key') || ''
         }
       });
       
@@ -118,22 +100,15 @@ export default function PurchaseContractDetail() {
     }
   };
 
-  // Función para cargar sub-contratos
+  // Función para cargar sub-contratos usando el interceptor addJwtPk
   const loadSubContracts = async (contractId: string) => {
     try {
       setLoadingSubContracts(true);
       
-      // Usar el mismo patrón que otros endpoints del proyecto
-      const jwt = localStorage.getItem('jwt') || localStorage.getItem('id_token');
-      const partition_key = localStorage.getItem('partition_key') || '';
+      const authCheck = hasAuthTokens();
+      console.log('🔐 Auth check para sub-contratos:', authCheck);
       
-      console.log('🔐 Auth check para sub-contratos:', { 
-        hasJwt: !!jwt, 
-        hasPartition: !!partition_key,
-        jwtLength: jwt?.length || 0
-      });
-      
-      if (!jwt || !partition_key) {
+      if (!authCheck.isAuthenticated) {
         console.log('🔐 Sin autenticación válida - no se cargarán sub-contratos');
         setSubContractsData([]);
         return;
@@ -142,27 +117,15 @@ export default function PurchaseContractDetail() {
       const filter = JSON.stringify({ "contract_id": contractId });
       const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(filter)}`;
 
-      const response = await fetch(url, {
+      // Usar el interceptor authenticatedFetch que maneja automáticamente JWT + partition_key
+      const response = await authenticatedFetch(url, {
         method: 'GET',
-        headers: {
-          '_partitionkey': partition_key,
-          'accept': '*/*',
-          'accept-language': 'es-419,es;q=0.9',
-          'authorization': `Bearer ${jwt}`,
-          'bt-organization': partition_key,
-          'bt-uid': partition_key,
-          'organization_id': partition_key,
-          'origin': 'https://contracts-develop.grainchain.io',
-          'pk-organization': partition_key,
+        customHeaders: {
+          'pk-organization': localStorage.getItem('partition_key') || '',
           'priority': 'u=1, i',
-          'referer': 'https://contracts-develop.grainchain.io/',
           'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
           'sec-ch-ua-mobile': '?0',
-          'sec-ch-ua-platform': '"macOS"',
-          'sec-fetch-dest': 'empty',
-          'sec-fetch-mode': 'cors',
-          'sec-fetch-site': 'same-site',
-          'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+          'sec-ch-ua-platform': '"macOS"'
         }
       });
 

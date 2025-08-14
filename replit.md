@@ -57,6 +57,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Architectural Changes (August 2025)
 
+### API Authentication Interceptor Implementation
+- **Date**: August 14, 2025
+- **Change**: Created centralized `addJwtPk` interceptor for API authentication
+- **Location**: `client/src/utils/apiInterceptors.ts`
+- **Key Features**:
+  - Automatic JWT token and partition_key header injection
+  - Smart endpoint exclusion for public APIs (token, customer, partition_keys, organization)
+  - Reusable `authenticatedFetch` and `publicFetch` utilities
+  - Customizable headers support
+  - Authentication status checking with `hasAuthTokens()`
+- **Benefits**: 
+  - DRY principle - no repeated header configuration
+  - Consistent authentication across all API calls
+  - Easy maintenance and updates to auth headers
+  - Clear separation between authenticated and public endpoints
+- **Usage**: Replace manual fetch with `authenticatedFetch(url, options)` for all CRM endpoints
+
 ### StandardTable Component Refactoring
 - **Date**: August 13, 2025
 - **Change**: Complete architectural refactoring of StandardTable component
