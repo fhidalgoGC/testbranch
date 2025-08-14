@@ -49,7 +49,6 @@ interface SubContractCardProps {
   subContract: SubContract;
   fields: FieldConfig[]; // Configuración de campos a mostrar
   progressBar?: ProgressBarConfig; // Configuración del progress bar
-  contractStatus?: string; // Estado del contrato principal para controlar visibilidad de botones
   onView?: (id: string) => void;
   onPrint?: (id: string) => void;
   onEdit?: (id: string) => void;
@@ -61,7 +60,6 @@ export default function SubContractCard({
   subContract, 
   fields,
   progressBar,
-  contractStatus,
   onView, 
   onPrint, 
   onEdit, 
@@ -223,8 +221,8 @@ export default function SubContractCard({
             </Tooltip>
           </TooltipProvider>
 
-          {/* Botones de editar y eliminar - solo visibles cuando contractStatus es 'created' */}
-          {contractStatus === 'created' && (
+          {/* Botones de editar y eliminar - solo visibles cuando el status del sub-contrato es 'created' */}
+          {subContract.status === 'created' && (
             <>
               <TooltipProvider>
                 <Tooltip>
