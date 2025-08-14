@@ -45,19 +45,26 @@ export default function PurchaseContractDetail() {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(contractState.activeTab || 'general');
   
-  // Buscar contrato en Redux state y guardarlo en el estado del componente
+  // Estado para el contrato específico encontrado
   const [currentContractData, setCurrentContractData] = useState<any>(null);
   
+  // Buscar y establecer el contrato específico al cargar la página
   useEffect(() => {
     if (contractId && contractsData.length > 0) {
+      console.log('Buscando contrato con ID:', contractId);
       const foundContract = contractsData.find((contract: any) => contract.id === contractId);
+      
       if (foundContract) {
+        console.log('Contrato encontrado, estableciendo en estado del componente');
         setCurrentContractData(foundContract);
-        // Actualizar el estado Redux con el contrato actual
+        // Actualizar el estado Redux del componente con el contrato específico
         updateState({ currentContract: foundContract });
+      } else {
+        console.log('Contrato NO encontrado en Redux data');
+        setCurrentContractData(null);
       }
     }
-  }, [contractId, contractsData]);
+  }, [contractId, contractsData]); // Removemos updateState de las dependencias
 
   // Efecto para persistir cambios de tab activo
   useEffect(() => {
@@ -433,16 +440,17 @@ export default function PurchaseContractDetail() {
                   variant="outline" 
                   className="text-purple-600 border-purple-600 hover:bg-purple-50"
                   onClick={() => {
-                    console.log('=== DEBUG: Contrato Específico ===');
-                    console.log('Contract ID buscado:', contractId);
+                    console.log('=== DEBUG: Estado del Componente ===');
+                    console.log('Contract ID actual:', contractId);
+                    console.log('Estado del componente currentContractData:');
                     
-                    // Mostrar el contrato del estado del componente
                     if (currentContractData) {
-                      console.log('Contrato del estado actual:', JSON.stringify(currentContractData, null, 2));
+                      console.log(JSON.stringify(currentContractData, null, 2));
                     } else {
-                      console.log('Contrato NO encontrado en estado del componente');
-                      console.log('IDs disponibles en Redux:', contractsData.map((c: any) => c.id));
+                      console.log('NULL - No hay contrato en el estado del componente');
                     }
+                    
+                    console.log('Estado Redux del componente:', contractState);
                     console.log('=== FIN DEBUG ===');
                   }}
                 >
