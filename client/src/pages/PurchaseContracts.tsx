@@ -555,25 +555,20 @@ export default function PurchaseContracts() {
               size="sm" 
               variant="outline"
               onClick={() => {
-                console.log('=== ESTADO COMPLETO DE LA PÁGINA ===');
+                console.log('=== ESTADO DE PURCHASECONTRACTS PAGE ===');
                 console.log('selectedFilters:', selectedFilters);
                 console.log('currentPage:', currentPage);
-                console.log('pageSize:', pageSize);
-                console.log('sortKey:', sortKey);
-                console.log('sortDirection:', sortDirection);
-                console.log('searchTerm:', searchTerm);
-                console.log('contracts:', contracts);
+                console.log('contracts length:', contracts?.length || 0);
                 console.log('totalContracts:', totalContracts);
                 console.log('contractsLoading:', contractsLoading);
                 console.log('contractsError:', contractsError);
-                console.log('commodities:', commodities);
-                console.log('pageState from Redux:', pageState);
-                console.log('tableData:', tableData);
+                console.log('commodities loaded:', commodities?.length || 0);
+                console.log('pageState para purchaseContracts:', pageState);
                 console.log('==========================================');
               }}
               className="bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
             >
-              Debug Full State
+              Debug Page State
             </Button>
             <Link href="/purchase-contracts/create" className="inline-block">
               <Button 
