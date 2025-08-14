@@ -197,7 +197,7 @@ export default function PurchaseContracts() {
 
       // Mapear los datos de la API real a nuestro formato
       const mappedContracts: PurchaseContract[] = data.data.map((contract: any) => ({
-        id: contract._id,
+        id: contract._id || contract.id,
         folio: contract.folio,
         reference_number: contract.folio,
         commodity: contract.commodity,
@@ -228,6 +228,10 @@ export default function PurchaseContracts() {
       console.log('Mapped contracts:', mappedContracts);
       console.log('Setting contracts in state. Total contracts:', mappedContracts.length);
       console.log('First contract example:', mappedContracts[0] || 'No contracts found');
+      console.log('=== TODOS LOS IDs MAPEADOS ===');
+      console.log('IDs de contratos cargados:', mappedContracts.map(c => ({ id: c.id, folio: c.folio })));
+      console.log('===========================');
+      
       setContracts(mappedContracts);
       setTotalContracts(data._meta.total_elements);
       
