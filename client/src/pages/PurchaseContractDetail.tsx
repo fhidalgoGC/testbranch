@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check, EyeOff } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check } from 'lucide-react';
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -54,8 +54,7 @@ export default function PurchaseContractDetail() {
   const [subContractsData, setSubContractsData] = useState<any[]>([]);
   const [loadingSubContracts, setLoadingSubContracts] = useState<boolean>(false);
   
-  // Estado para controlar visibilidad de botones edit/delete (para debugging)
-  const [showActionButtons, setShowActionButtons] = useState<boolean>(false);
+
   
   // Función para cargar la dirección del participante usando el interceptor addJwtPk
   const loadParticipantAddress = async (participantId: string) => {
@@ -583,41 +582,17 @@ export default function PurchaseContractDetail() {
                   Debug
                 </Button>
                 
-                {/* Botón de toggle para mostrar/ocultar botones de acción (para debugging) */}
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-orange-600 border-orange-600 hover:bg-orange-50"
-                  onClick={() => {
-                    console.log('🔄 TOGGLE DEBUG BUTTONS');
-                    console.log('Estado actual showActionButtons:', showActionButtons);
-                    console.log('Estado del contrato:', currentContractData?.status);
-                    console.log('Nuevo estado showActionButtons:', !showActionButtons);
-                    setShowActionButtons(!showActionButtons);
-                  }}
-                >
-                  {showActionButtons ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </Button>
-                
-                {/* Botones de editar y eliminar - LÓGICA CORREGIDA: Solo cuando el toggle está activado */}
-                {(() => {
-                  const isCreated = currentContractData?.status === 'created';
-                  // NUEVA LÓGICA: Solo mostrar cuando showActionButtons es true (para debugging)
-                  // En producción, la lógica normal sería solo cuando isCreated = true
-                  const shouldShow = showActionButtons;
-                  console.log('🔍 RENDER BUTTONS - isCreated:', isCreated, 'showActionButtons:', showActionButtons, 'shouldShow:', shouldShow);
-                  
-                  return shouldShow && (
-                    <>
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button size="sm" variant="destructive">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </>
-                  );
-                })()}
+                {/* Botones de editar y eliminar - solo visibles cuando status es 'created' */}
+                {currentContractData?.status === 'created' && (
+                  <>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="destructive">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
