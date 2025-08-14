@@ -94,11 +94,27 @@ export default function SubContractCard({
               ID Contract#{subContract.contractNumber}
             </span>
           </div>
-          <div className="text-base">
-            <span className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.quantity')}:</span>{' '}
-            <span className="font-medium text-green-600">
-              {formatNumber(subContract.quantity)} {subContract.unit}
-            </span>
+          <div className="text-right">
+            {/* Status del sub-contrato */}
+            <div className="text-sm mb-1">
+              <span className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.status')}:</span>{' '}
+              <span className={`font-medium px-2 py-1 rounded text-xs ${
+                subContract.status === 'created' 
+                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                  : subContract.status === 'in-progress'
+                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                  : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+              }`}>
+                {subContract.status || 'created'}
+              </span>
+            </div>
+            {/* Quantity */}
+            <div className="text-base">
+              <span className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.quantity')}:</span>{' '}
+              <span className="font-medium text-green-600">
+                {formatNumber(subContract.quantity)} {subContract.unit}
+              </span>
+            </div>
           </div>
         </div>
         
