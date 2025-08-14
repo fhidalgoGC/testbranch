@@ -219,6 +219,8 @@ export default function PurchaseContractDetail() {
         if (foundContract) {
           console.log('✅ Contrato ENCONTRADO en Redux, estableciendo en estado del componente');
           console.log('Contrato encontrado:', foundContract.folio);
+          console.log('🔍 ESTRUCTURA COMPLETA DEL CONTRATO:', foundContract);
+          console.log('🔍 THRESHOLDS EN EL CONTRATO:', foundContract.thresholds);
           setCurrentContractData(foundContract);
           setLoading(false);
           setError(null);
@@ -653,19 +655,26 @@ export default function PurchaseContractDetail() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.thresholds')}</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {t('min')}: {formatNumber({ 
-                          value: currentContractData?.thresholds?.min_thresholds_weight || 0, 
-                          minDecimals: 0, 
-                          maxDecimals: 0,
-                          formatPattern: '0,000.00',
-                          roundMode: 'truncate'
-                        })} {currentContractData?.measurement_unit || 'N/A'} | {t('max')}: {formatNumber({ 
-                          value: currentContractData?.thresholds?.max_thresholds_weight || 0, 
-                          minDecimals: 0, 
-                          maxDecimals: 0,
-                          formatPattern: '0,000.00',
-                          roundMode: 'truncate'
-                        })} {currentContractData?.measurement_unit || 'N/A'}
+                        {(() => {
+                          console.log('🔍 DEBUG THRESHOLDS:', currentContractData?.thresholds);
+                          const minValue = currentContractData?.thresholds?.min_thresholds_weight || 0;
+                          const maxValue = currentContractData?.thresholds?.max_thresholds_weight || 0;
+                          console.log('📊 Min/Max values:', { minValue, maxValue });
+                          
+                          return `${t('min')}: ${formatNumber({ 
+                            value: minValue, 
+                            minDecimals: 0, 
+                            maxDecimals: 0,
+                            formatPattern: '0,000.00',
+                            roundMode: 'truncate'
+                          })} ${currentContractData?.measurement_unit || 'N/A'} | ${t('max')}: ${formatNumber({ 
+                            value: maxValue, 
+                            minDecimals: 0, 
+                            maxDecimals: 0,
+                            formatPattern: '0,000.00',
+                            roundMode: 'truncate'
+                          })} ${currentContractData?.measurement_unit || 'N/A'}`;
+                        })()}
                       </span>
                     </div>
 
