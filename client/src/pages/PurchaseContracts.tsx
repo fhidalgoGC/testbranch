@@ -295,49 +295,83 @@ export default function PurchaseContracts() {
 
   // Función de fetch de datos usando el servicio externo
   const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
-    // Obtener datos de autenticación desde localStorage
-    const partitionKey = localStorage.getItem('partitionKey') || localStorage.getItem('partition_key');
-    const idToken = localStorage.getItem('id_token');
-
-    // Aplicar filtros seleccionados
-    const filters = selectedFilters;
+    // Iniciar loading y tiempo de control
+    setContractsLoading(true);
+    const startTime = Date.now();
     
-    console.log('📤 ENVIANDO AL ENDPOINT - Filtros:', filters);
-    console.log('📤 ENVIANDO AL ENDPOINT - Parámetros completos:', { ...params, filters });
+    try {
+      // Obtener datos de autenticación desde localStorage
+      const partitionKey = localStorage.getItem('partitionKey') || localStorage.getItem('partition_key');
+      const idToken = localStorage.getItem('id_token');
 
-    const result = await fetchContractsData({
-      ...params,
-      filters,
-      commodities,
-      authData: {
-        partitionKey: partitionKey || '',
-        idToken: idToken || ''
+      // Aplicar filtros seleccionados
+      const filters = selectedFilters;
+      
+      console.log('📤 ENVIANDO AL ENDPOINT - Filtros:', filters);
+      console.log('📤 ENVIANDO AL ENDPOINT - Parámetros completos:', { ...params, filters });
+
+      const result = await fetchContractsData({
+        ...params,
+        filters,
+        commodities,
+        authData: {
+          partitionKey: partitionKey || '',
+          idToken: idToken || ''
+        }
+      });
+
+      // Calcular tiempo transcurrido
+      const elapsedTime = Date.now() - startTime;
+      const minLoadingTime = 300; // 300ms mínimo
+      
+      // Si han pasado menos de 300ms, esperar hasta completar el tiempo mínimo
+      if (elapsedTime < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
       }
-    });
 
-    // Guardar los datos en el estado local (tabla)
-    setTableData({
-      contracts: result.data,
-      totalElements: result.total,
-      currentPage: params.page,
-      filters: filters
-    });
+      // Guardar los datos en el estado local (tabla)
+      setTableData({
+        contracts: result.data,
+        totalElements: result.total,
+        currentPage: params.page,
+        filters: filters
+      });
 
-    // Actualizar el estado JSON principal con los contratos
-    setPageStateData(prev => ({ 
-      ...prev, 
-      contracts: result.data 
-    }));
-    
-    console.log('🔄 DATOS ACTUALIZADOS - Total contratos encontrados:', result.data.length);
-    console.log('🔄 DATOS ACTUALIZADOS - Contratos (primeros 2):', result.data.slice(0, 2).map(c => ({ folio: c.folio, commodity: c.commodity?.name })));
+      // Actualizar el estado JSON principal con los contratos
+      setPageStateData(prev => ({ 
+        ...prev, 
+        contracts: result.data 
+      }));
+      
+      console.log('🔄 DATOS ACTUALIZADOS - Total contratos encontrados:', result.data.length);
+      console.log('🔄 DATOS ACTUALIZADOS - Contratos (primeros 2):', result.data.slice(0, 2).map(c => ({ folio: c.folio, commodity: c.commodity?.name })));
 
-    // Guardar contratos en Redux state para uso en otras páginas
-    updateState({
-      contractsData: result.data
-    });
+      // Guardar contratos en Redux state para uso en otras páginas
+      updateState({
+        contractsData: result.data
+      });
 
-    return result;
+      return result;
+    } catch (error) {
+      console.error('❌ Error cargando contratos:', error);
+      
+      // Asegurar tiempo mínimo incluso en error
+      const elapsedTime = Date.now() - startTime;
+      const minLoadingTime = 300;
+      
+      if (elapsedTime < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
+      }
+      
+      // Retornar datos vacíos en caso de error
+      return {
+        data: [] as PurchaseContract[],
+        total: 0,
+        totalPages: 0
+      };
+    } finally {
+      setContractsLoading(false);
+    }
   };
 
   // Función para toggle de filtros
