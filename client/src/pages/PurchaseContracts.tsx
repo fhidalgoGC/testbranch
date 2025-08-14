@@ -305,6 +305,9 @@ export default function PurchaseContracts() {
 
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {
+    console.log('🔄 TOGGLE FILTER:', filterKey, 'Value:', value);
+    console.log('Current filters before toggle:', selectedFilters);
+    
     setSelectedFilters(prev => {
       // Comportamiento especial para pricingType: solo un valor a la vez
       if (filterKey === 'pricingType') {
@@ -346,6 +349,7 @@ export default function PurchaseContracts() {
           newValues = [...newValues, value];
         }
         
+        console.log('📦 COMMODITY - New values:', newValues);
         return { ...prev, [filterKey]: newValues };
       }
       
@@ -357,7 +361,9 @@ export default function PurchaseContracts() {
             : [...currentValues, value])
         : [value];
       
-      return { ...prev, [filterKey]: newValues };
+      const result = { ...prev, [filterKey]: newValues };
+      console.log('📋 Final filter result:', result);
+      return result;
     });
     setCurrentPage(1);
   };
@@ -605,7 +611,7 @@ export default function PurchaseContracts() {
               size="sm"
               onClick={() => toggleFilter('commodity', commodity.key)}
               className={`px-4 py-2 rounded-full border transition-colors ${
-                selectedFilters.commodity?.includes(commodity.key) && !selectedFilters.commodity?.includes('all')
+                selectedFilters.commodity?.includes(commodity.key)
                   ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 shadow-md hover:bg-green-200 hover:border-green-400 dark:hover:bg-green-900/50'
                   : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-green-100 hover:border-green-400 hover:text-green-800 dark:hover:bg-green-900/40 dark:hover:border-green-400 dark:hover:text-green-200'
               }`}
