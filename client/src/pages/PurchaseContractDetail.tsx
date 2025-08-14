@@ -44,6 +44,20 @@ export default function PurchaseContractDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(contractState.activeTab || 'general');
+  
+  // Buscar contrato en Redux state y guardarlo en el estado del componente
+  const [currentContractData, setCurrentContractData] = useState<any>(null);
+  
+  useEffect(() => {
+    if (contractId && contractsData.length > 0) {
+      const foundContract = contractsData.find((contract: any) => contract.id === contractId);
+      if (foundContract) {
+        setCurrentContractData(foundContract);
+        // Actualizar el estado Redux con el contrato actual
+        updateState({ currentContract: foundContract });
+      }
+    }
+  }, [contractId, contractsData]);
 
   // Efecto para persistir cambios de tab activo
   useEffect(() => {
@@ -419,10 +433,16 @@ export default function PurchaseContractDetail() {
                   variant="outline" 
                   className="text-purple-600 border-purple-600 hover:bg-purple-50"
                   onClick={() => {
-                    console.log('=== DEBUG: Contratos JSON ===');
-                    console.log('Total contratos en Redux:', contractsData.length);
-                    console.log('Contratos completos:', JSON.stringify(contractsData, null, 2));
-                    console.log('Contract ID actual:', contractId);
+                    console.log('=== DEBUG: Contrato Específico ===');
+                    console.log('Contract ID buscado:', contractId);
+                    
+                    // Mostrar el contrato del estado del componente
+                    if (currentContractData) {
+                      console.log('Contrato del estado actual:', JSON.stringify(currentContractData, null, 2));
+                    } else {
+                      console.log('Contrato NO encontrado en estado del componente');
+                      console.log('IDs disponibles en Redux:', contractsData.map((c: any) => c.id));
+                    }
                     console.log('=== FIN DEBUG ===');
                   }}
                 >
