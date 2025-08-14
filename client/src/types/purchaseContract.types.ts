@@ -69,7 +69,7 @@ export interface Thresholds {
 }
 
 export interface PurchaseContract {
-  id?: string;
+  _id?: string;
   _partitionKey?: string;
   active?: boolean;
   created_by?: string;

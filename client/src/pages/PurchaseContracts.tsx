@@ -242,7 +242,7 @@ export default function PurchaseContracts() {
       console.log('Setting contracts in state. Total contracts:', mappedContracts.length);
       console.log('First contract example:', mappedContracts[0] || 'No contracts found');
       console.log('=== TODOS LOS IDs MAPEADOS ===');
-      console.log('IDs de contratos cargados:', mappedContracts.map(c => ({ id: c.id, folio: c.folio })));
+      console.log('IDs de contratos cargados:', mappedContracts.map(c => ({ _id: c._id, folio: c.folio })));
       console.log('===========================');
       
       setContracts(mappedContracts);
@@ -512,7 +512,7 @@ export default function PurchaseContracts() {
       titleKey: 'id',
       render: (contract) => (
         <span className="text-gray-600 dark:text-gray-400 font-mono text-sm">
-          {contract.folio || contract.id}
+          {contract.folio || contract._id}
         </span>
       ),
       sortable: true,
@@ -624,16 +624,16 @@ export default function PurchaseContracts() {
               key: 'view',
               labelKey: 'view',
               action: (contract: PurchaseContract) => {
-                console.log('Ver contrato:', contract.id);
-                handleNavigateToPage('contractDetail', contract.id);
-                setLocation(`/purchase-contracts/${contract.id}`);
+                console.log('Ver contrato:', contract._id);
+                handleNavigateToPage('contractDetail', contract._id);
+                setLocation(`/purchase-contracts/${contract._id}`);
               }
             },
             {
               key: 'edit',
               labelKey: 'edit',
               action: (contract: PurchaseContract) => {
-                console.log('Editar contrato:', contract.id);
+                console.log('Editar contrato:', contract._id);
                 // Implementar navegación a editar
               }
             },
@@ -641,7 +641,7 @@ export default function PurchaseContracts() {
               key: 'duplicate',
               labelKey: 'duplicate',
               action: (contract: PurchaseContract) => {
-                console.log('Duplicar contrato:', contract.id);
+                console.log('Duplicar contrato:', contract._id);
                 // Implementar duplicación
               }
             },
@@ -649,7 +649,7 @@ export default function PurchaseContracts() {
               key: 'delete',
               labelKey: 'delete',
               action: (contract: PurchaseContract) => {
-                console.log('Eliminar contrato:', contract.id);
+                console.log('Eliminar contrato:', contract._id);
                 // Implementar eliminación
               },
               className: 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'

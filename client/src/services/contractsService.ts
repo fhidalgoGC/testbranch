@@ -125,9 +125,9 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     if (filters?.commodity?.length && !filters.commodity.includes('all')) {
       // Mapear todos los valores seleccionados a sus IDs correspondientes
       const selectedCommodityIds = filters.commodity
-        .map((commodityValue: string) => commodities.find(c => c.value === commodityValue))
-        .filter((commodity): commodity is NonNullable<typeof commodity> => commodity !== undefined)
-        .map(commodity => commodity.key);
+        .map((commodityValue: string) => commodities.find((c: any) => c.value === commodityValue))
+        .filter((commodity: any): commodity is NonNullable<typeof commodity> => commodity !== undefined)
+        .map((commodity: any) => commodity.key);
       
       if (selectedCommodityIds.length > 0) {
         andConditions.push({ 'commodity.commodity_id': { $in: selectedCommodityIds } });
@@ -213,7 +213,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
 
     // Mapear los datos de la API real a nuestro formato
     const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
-      id: contract._id,
+      _id: contract._id,
       folio: contract.folio,
       reference_number: contract.folio,
       commodity: contract.commodity,

@@ -57,9 +57,9 @@ export default function PurchaseContractDetail() {
     if (contractId) {
       if (contractsData.length > 0) {
         console.log('Buscando contrato con ID:', contractId);
-        console.log('IDs disponibles en contractsData:', contractsData.map((c: any) => c.id));
+        console.log('IDs disponibles en contractsData:', contractsData.map((c: any) => c._id));
         
-        const foundContract = contractsData.find((contract: any) => contract.id === contractId);
+        const foundContract = contractsData.find((contract: any) => contract._id === contractId);
         
         if (foundContract) {
           console.log('✅ Contrato ENCONTRADO en Redux, estableciendo en estado del componente');
@@ -72,7 +72,7 @@ export default function PurchaseContractDetail() {
         } else {
           console.log('❌ Contrato NO encontrado en Redux state');
           console.log('Contract ID buscado:', contractId);
-          console.log('IDs disponibles:', contractsData.map((c: any) => ({ id: c.id, folio: c.folio })));
+          console.log('IDs disponibles:', contractsData.map((c: any) => ({ _id: c._id, folio: c.folio })));
           setCurrentContractData(null);
           setError('Contrato no encontrado en los datos cargados');
           setLoading(false);
