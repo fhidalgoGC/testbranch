@@ -54,34 +54,32 @@ export default function PurchaseContractDetail() {
   // Función para cargar la dirección del participante
   const loadParticipantAddress = async (participantId: string) => {
     try {
-      // Obtener token y partition key del localStorage
-      const authData = localStorage.getItem('auth');
-      const organizationData = localStorage.getItem('organization');
+      // Obtener tokens del localStorage siguiendo el patrón de la app
+      const accessToken = localStorage.getItem('access_token');
+      const idToken = localStorage.getItem('id_token');
+      const jwt = localStorage.getItem('jwt');
+      const partitionKey = localStorage.getItem('partition_key');
       
-      console.log('📋 Verificando datos de autenticación...');
-      console.log('Auth data:', authData ? 'Disponible' : 'No disponible');
-      console.log('Organization data:', organizationData ? 'Disponible' : 'No disponible');
+      // Para este endpoint específico necesitamos usar el id_token (JWT)
+      const authToken = idToken || jwt;
       
-      if (!authData || !organizationData) {
-        console.error('❌ No se encontraron datos de autenticación');
+      if (!authToken || !partitionKey) {
+        console.error('❌ No se encontraron tokens de autenticación o partition key');
         setParticipantAddress('Address requires authentication');
         return;
       }
       
-      const auth = JSON.parse(authData);
-      const org = JSON.parse(organizationData);
-      
       const response = await fetch(`https://crm-develop.grainchain.io/api/v1/crm-locations/address/contracts-owner/${participantId}`, {
         method: 'GET',
         headers: {
-          '_partitionkey': org.partition_key,
+          '_partitionkey': partitionKey,
           'accept': '*/*',
           'accept-language': 'es-419,es;q=0.9',
-          'authorization': `Bearer ${auth.accessToken}`,
-          'bt-organization': org.partition_key,
-          'bt-uid': org.partition_key,
-          'organization_id': org.partition_key,
-          'pk-organization': org.partition_key,
+          'authorization': `Bearer ${authToken}`,
+          'bt-organization': partitionKey,
+          'bt-uid': partitionKey,
+          'organization_id': partitionKey,
+          'pk-organization': partitionKey,
           'origin': 'https://contracts-develop.grainchain.io',
           'referer': 'https://contracts-develop.grainchain.io/',
           'sec-fetch-dest': 'empty',
@@ -92,19 +90,25 @@ export default function PurchaseContractDetail() {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('📍 Dirección cargada:', data.data);
         
-        if (data.data && data.data.string_format) {
+        if (data.data && data.data.string_format && data.data.string_format !== '-') {
           setParticipantAddress(data.data.string_format);
-        } else {
+        } else if (data.data) {
           // Construir dirección manualmente si no viene el string_format
           const address = data.data;
-          const formattedAddress = `${address.address_line_1}, ${address.city}, ${address.state_code} ${address.zip_code}, ${address.country_slug}`;
-          setParticipantAddress(formattedAddress);
+          if (address.address_line_1 !== '-' && address.city !== '-') {
+            const formattedAddress = `${address.address_line_1}, ${address.city}, ${address.state_code} ${address.zip_code}, ${address.country_slug}`;
+            setParticipantAddress(formattedAddress);
+          } else {
+            setParticipantAddress('Address not available');
+          }
+        } else {
+          setParticipantAddress('No address data available');
         }
       } else {
-        console.error('❌ Error al cargar dirección:', response.status);
-        setParticipantAddress('Address not available');
+        const errorText = await response.text();
+        console.error('❌ Error al cargar dirección:', response.status, errorText);
+        setParticipantAddress(`Error ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
       console.error('❌ Error al cargar dirección del participante:', error);
@@ -135,7 +139,6 @@ export default function PurchaseContractDetail() {
           // Cargar dirección del seller
           const seller = foundContract.participants?.find((p: any) => p.role === 'seller');
           if (seller && seller.people_id) {
-            console.log('📍 Cargando dirección para seller ID:', seller.people_id);
             loadParticipantAddress(seller.people_id);
           }
           
