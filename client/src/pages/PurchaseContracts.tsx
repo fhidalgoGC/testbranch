@@ -141,20 +141,21 @@ export default function PurchaseContracts() {
 
       // Agregar filtro de commodity si está seleccionado
       if (activeFilters.commodity && !activeFilters.commodity.includes('all')) {
-        // Mapear todos los valores seleccionados a sus IDs correspondientes
-        const selectedCommodityIds = activeFilters.commodity
-          .map((commodityValue: string) => commodities.find((c: any) => c.value === commodityValue))
-          .filter((commodity: any): commodity is NonNullable<typeof commodity> => commodity !== undefined)
-          .map((commodity: any) => commodity.key);
+        // Ahora los filtros ya contienen los IDs directamente, no necesitamos mapear
+        const selectedCommodityIds = activeFilters.commodity.filter((id: string) => id !== 'all');
         
         if (selectedCommodityIds.length > 0) {
           filter['commodity.commodity_id'] = { $in: selectedCommodityIds };
         }
       }
 
-      // Agregar filtro de pricing_type si está seleccionado
-      if (activeFilters.pricingType && !activeFilters.pricingType.includes('all')) {
-        filter['price_schedule.pricing_type'] = activeFilters.pricingType[0];
+      // Agregar filtro de pricing_type si está seleccionado (no debe incluir 'all')
+      if (activeFilters.pricingType && activeFilters.pricingType.length > 0) {
+        const validPricingTypes = activeFilters.pricingType.filter((type: string) => type !== 'all');
+        if (validPricingTypes.length > 0) {
+          // Para pricingType usamos solo el primer valor ya que es single selection
+          filter['price_schedule.pricing_type'] = validPricingTypes[0];
+        }
       }
 
       // Construir parámetros de URL
@@ -602,9 +603,9 @@ export default function PurchaseContracts() {
               key={commodity.key}
               variant="ghost"
               size="sm"
-              onClick={() => toggleFilter('commodity', commodity.value)}
+              onClick={() => toggleFilter('commodity', commodity.key)}
               className={`px-4 py-2 rounded-full border transition-colors ${
-                selectedFilters.commodity?.includes(commodity.value) && !selectedFilters.commodity?.includes('all')
+                selectedFilters.commodity?.includes(commodity.key) && !selectedFilters.commodity?.includes('all')
                   ? 'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-600 text-green-700 dark:text-green-300 shadow-md hover:bg-green-200 hover:border-green-400 dark:hover:bg-green-900/50'
                   : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-green-100 hover:border-green-400 hover:text-green-800 dark:hover:bg-green-900/40 dark:hover:border-green-400 dark:hover:text-green-200'
               }`}
