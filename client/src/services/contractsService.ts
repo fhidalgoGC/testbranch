@@ -57,6 +57,8 @@ interface ContractResponse {
     application_priority: number;
     min_thresholds_percentage: number;
     max_thresholds_percentage: number;
+    min_thresholds_weight: number;
+    max_thresholds_weight: number;
     status?: string;
     inventory?: {
       total: number;
@@ -273,9 +275,9 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       status: contract.status,
       thresholds: {
         min_thresholds_percentage: contract.min_thresholds_percentage || 0,
-        min_thresholds_weight: 0,
+        min_thresholds_weight: contract.min_thresholds_weight || 0,
         max_thresholds_percentage: contract.max_thresholds_percentage || 0,
-        max_thresholds_weight: 0
+        max_thresholds_weight: contract.max_thresholds_weight || 0
       },
       inventory: contract.inventory,
       remarks: contract.remarks?.map(r => r.comment) || []

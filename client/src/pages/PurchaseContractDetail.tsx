@@ -219,8 +219,7 @@ export default function PurchaseContractDetail() {
         if (foundContract) {
           console.log('✅ Contrato ENCONTRADO en Redux, estableciendo en estado del componente');
           console.log('Contrato encontrado:', foundContract.folio);
-          console.log('🔍 ESTRUCTURA COMPLETA DEL CONTRATO:', foundContract);
-          console.log('🔍 THRESHOLDS EN EL CONTRATO:', foundContract.thresholds);
+          console.log('🔍 THRESHOLDS EN EL CONTRATO (CORREGIDO):', foundContract.thresholds);
           setCurrentContractData(foundContract);
           setLoading(false);
           setError(null);
