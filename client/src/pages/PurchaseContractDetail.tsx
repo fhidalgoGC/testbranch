@@ -560,28 +560,7 @@ export default function PurchaseContractDetail() {
                 <Button size="sm" variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
                   <Printer className="w-4 h-4" />
                 </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="text-purple-600 border-purple-600 hover:bg-purple-50"
-                  onClick={() => {
-                    console.log('=== DEBUG: Estado del Componente ===');
-                    console.log('Contract ID actual:', contractId);
-                    console.log('Estado del componente currentContractData:');
-                    
-                    if (currentContractData) {
-                      console.log(JSON.stringify(currentContractData, null, 2));
-                    } else {
-                      console.log('NULL - No hay contrato en el estado del componente');
-                    }
-                    
-                    console.log('Estado Redux del componente:', contractState);
-                    console.log('=== FIN DEBUG ===');
-                  }}
-                >
-                  Debug
-                </Button>
-                
+
                 {/* Botones de editar y eliminar - solo visibles cuando status es 'created' */}
                 {currentContractData?.status === 'created' && (
                   <>
