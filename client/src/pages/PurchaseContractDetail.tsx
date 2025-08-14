@@ -588,22 +588,34 @@ export default function PurchaseContractDetail() {
                   size="sm" 
                   variant="outline" 
                   className="text-orange-600 border-orange-600 hover:bg-orange-50"
-                  onClick={() => setShowActionButtons(!showActionButtons)}
+                  onClick={() => {
+                    console.log('🔄 TOGGLE DEBUG BUTTONS');
+                    console.log('Estado actual showActionButtons:', showActionButtons);
+                    console.log('Estado del contrato:', currentContractData?.status);
+                    console.log('Nuevo estado showActionButtons:', !showActionButtons);
+                    setShowActionButtons(!showActionButtons);
+                  }}
                 >
                   {showActionButtons ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
                 
-                {/* Botones de editar y eliminar - solo visibles si el contrato está en 'created' O si showActionButtons es true */}
-                {((currentContractData?.status === 'created') || showActionButtons) && (
-                  <>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="destructive">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </>
-                )}
+                {/* Botones de editar y eliminar - NUEVA LÓGICA: Solo con toggle o si status !== 'created' */}
+                {(() => {
+                  const isCreated = currentContractData?.status === 'created';
+                  const shouldShow = showActionButtons || isCreated;
+                  console.log('🔍 RENDER BUTTONS - isCreated:', isCreated, 'showActionButtons:', showActionButtons, 'shouldShow:', shouldShow);
+                  
+                  return shouldShow && (
+                    <>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="destructive">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </>
+                  );
+                })()}
               </div>
             </div>
           </div>
