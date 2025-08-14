@@ -50,26 +50,39 @@ export default function PurchaseContractDetail() {
   
   // Buscar y establecer el contrato específico al cargar la página
   useEffect(() => {
+    console.log('=== EFFECT DE BÚSQUEDA EJECUTADO ===');
+    console.log('Contract ID:', contractId);
+    console.log('Contracts Data Length:', contractsData.length);
+    
     if (contractId && contractsData.length > 0) {
       console.log('Buscando contrato con ID:', contractId);
+      console.log('IDs disponibles en contractsData:', contractsData.map((c: any) => c.id));
+      
       const foundContract = contractsData.find((contract: any) => contract.id === contractId);
       
       if (foundContract) {
-        console.log('Contrato encontrado, estableciendo en estado del componente');
+        console.log('✅ Contrato ENCONTRADO, estableciendo en estado del componente');
+        console.log('Contrato encontrado:', foundContract.folio);
         setCurrentContractData(foundContract);
-        // Actualizar el estado Redux del componente con el contrato específico
         updateState({ currentContract: foundContract });
       } else {
-        console.log('Contrato NO encontrado en Redux data');
+        console.log('❌ Contrato NO encontrado en Redux data');
+        console.log('Contract ID buscado:', contractId);
+        console.log('IDs en Redux:', contractsData.map((c: any) => ({ id: c.id, folio: c.folio })));
         setCurrentContractData(null);
       }
+    } else if (!contractId) {
+      console.log('❌ No hay contractId');
+    } else if (contractsData.length === 0) {
+      console.log('❌ contractsData está vacío');
     }
-  }, [contractId, contractsData]); // Removemos updateState de las dependencias
+    console.log('=== FIN EFFECT ===');
+  }, [contractId, contractsData, updateState]);
 
   // Efecto para persistir cambios de tab activo
   useEffect(() => {
     updateState({ activeTab });
-  }, [activeTab]); // Eliminar updateState de deps
+  }, [activeTab, updateState]);
 
   // Configuración de campos para el componente agnóstico
   const fieldConfig: FieldConfig[] = [
