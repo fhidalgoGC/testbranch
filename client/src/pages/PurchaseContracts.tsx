@@ -263,9 +263,23 @@ export default function PurchaseContracts() {
       console.log('IDs de contratos cargados:', mappedContracts.map(c => ({ _id: c._id, folio: c.folio })));
       console.log('===========================');
       
+      // Calcular páginas totales basado en total_elements y pageSize
+      const totalElements = data._meta.total_elements;
+      const totalPages = Math.ceil(totalElements / tableParams.limit);
+      
       // Actualizar el estado principal con los contratos
       setPageStateData(prev => ({ ...prev, contracts: mappedContracts }));
-      setTotalContracts(data._meta.total_elements);
+      setTotalContracts(totalElements);
+      
+      // Actualizar tableData con información de paginación completa
+      setTableData({
+        contracts: mappedContracts,
+        totalElements: totalElements,
+        currentPage: tableParams.page,
+        filters: selectedFilters
+      });
+      
+      console.log('📊 PAGINACIÓN - Total elementos:', totalElements, 'Total páginas:', totalPages, 'Página actual:', tableParams.page);
       
       // Guardar contratos en Redux state para uso en otras páginas
       updateState({
@@ -749,6 +763,7 @@ export default function PurchaseContracts() {
           columns={columns}
           data={tableData.contracts} // Pass pre-loaded data directly
           totalElements={tableData.totalElements}
+          totalPages={Math.ceil(tableData.totalElements / tableParams.limit)} // Calculate total pages
           loading={contractsLoading}
           getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
           showFilters={false} // Filters are handled by parent component
