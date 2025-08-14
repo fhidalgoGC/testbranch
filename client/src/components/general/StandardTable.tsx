@@ -455,6 +455,7 @@ export function GenericTable<T = any>({
         sortDirection={sortDirection}
         searchValue={searchValue}
         loading={loading}
+        getItemId={(item: T) => (item as any)._id || (item as any).id || ''}
       />
     </div>
   );

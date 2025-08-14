@@ -44,7 +44,7 @@ export interface DataTableProps<T> {
   selectedItems?: string[];
   onSelectionChange?: (selectedIds: string[]) => void;
   selectable?: boolean;
-  getItemId?: (item: T) => string;
+  getItemId: (item: T) => string;
 }
 
 const pageSizeOptions = [5, 10, 20, 50];
@@ -67,7 +67,7 @@ export function DataTable<T>({
   selectedItems = [],
   onSelectionChange,
   selectable = false,
-  getItemId = (item: T) => (item as any)._id || (item as any).id,
+  getItemId,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState(searchValue);
@@ -218,7 +218,7 @@ export function DataTable<T>({
                 </tr>
               ) : (
                 data?.data.map((item, index) => (
-                  <tr key={(item as any)._id || (item as any).id || index} className="hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-colors duration-100">
+                  <tr key={getItemId(item)} className="hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-colors duration-100">
                     {columns.map((column) => (
                       <td 
                         key={column.key} 
