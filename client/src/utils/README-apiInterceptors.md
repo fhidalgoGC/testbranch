@@ -94,6 +94,7 @@ Los siguientes endpoints NO reciben headers de autenticación automáticamente:
 - `/identity/v2/customers` - Customer endpoint  
 - `/partition_keys` - Partition keys endpoint
 - `/organizations` - Organization endpoint
+- `/oauth/token` - Auth0 token endpoint
 
 ## Migración desde fetch() manual
 

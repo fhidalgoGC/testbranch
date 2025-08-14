@@ -20,6 +20,7 @@ export const addJwtPk = (url: string, options: RequestInit & InterceptorOptions 
     '/identity/v2/customers', // Customer endpoint
     '/partition_keys', // Partition keys endpoint
     '/organizations', // Organization endpoint (some variations)
+    '/oauth/token', // Auth0 token endpoint
   ];
   
   // Verificar si el URL debe ser excluido de autenticación
