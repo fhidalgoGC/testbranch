@@ -271,10 +271,27 @@ export default function PurchaseContracts() {
     }
   };
 
-  // REMOVED: Duplicate API call - GenericTable handles data fetching
-  // useEffect(() => {
-  //   fetchContracts();
-  // }, []);
+  // Cargar contratos inicialmente para el estado JSON
+  useEffect(() => {
+    const loadInitialContracts = async () => {
+      if (commodities.length > 0) {
+        console.log('🚀 Cargando contratos iniciales para estado JSON...');
+        try {
+          await handleFetchContractsData({
+            page: 1,
+            limit: 10,
+            sort: null,
+            search: ''
+          });
+          console.log('✅ Contratos cargados en estado JSON');
+        } catch (error) {
+          console.error('❌ Error cargando contratos iniciales:', error);
+        }
+      }
+    };
+    
+    loadInitialContracts();
+  }, [commodities.length]); // Solo ejecutar cuando las commodities estén cargadas
 
   // Función de fetch de datos usando el servicio externo
   const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
@@ -295,13 +312,19 @@ export default function PurchaseContracts() {
       }
     });
 
-    // Guardar los datos en el estado local
+    // Guardar los datos en el estado local (tabla)
     setTableData({
       contracts: result.data,
       totalElements: result.total,
       currentPage: params.page,
       filters: filters
     });
+
+    // Actualizar el estado JSON principal con los contratos
+    setPageStateData(prev => ({ 
+      ...prev, 
+      contracts: result.data 
+    }));
 
     // Guardar contratos en Redux state para uso en otras páginas
     updateState({
