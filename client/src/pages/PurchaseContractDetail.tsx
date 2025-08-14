@@ -410,23 +410,27 @@ export default function PurchaseContractDetail() {
           <div className="flex items-start justify-between mb-4">
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                ID Contract #{contract.folio || (contract.id ? contract.id.slice(-6) : 'N/A')}
+                ID Contract #{currentContractData?.folio || 'N/A'}
               </h2>
               <div className="flex gap-3 items-center mt-1">
                 <span className="text-base font-bold text-gray-600 dark:text-gray-400">
-                  Contract: {contract.contract_type || (contract.type === 'purchase' ? 'Purchase' : 'Sale')}
+                  Contract: {currentContractData?.type === 'purchase' ? 'Purchase' : 'Sale'}
                 </span>
                 <Badge 
                   variant="secondary" 
-                  className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-sm px-2 py-1"
+                  className={`text-sm px-2 py-1 ${
+                    currentContractData?.price_schedule?.[0]?.pricing_type === 'fixed' 
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' 
+                      : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
+                  }`}
                 >
-                  {priceInfo?.pricing_type || 'basis'}
+                  {currentContractData?.price_schedule?.[0]?.pricing_type || 'basis'}
                 </Badge>
               </div>
             </div>
             <div className="flex flex-col space-y-2 items-end">
               <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                {t('contractDetail.statusContract')}: <span className="text-green-600 dark:text-green-400">{t('contractDetail.created')}</span>
+                {t('contractDetail.statusContract')}: <span className="text-green-600 dark:text-green-400">{currentContractData?.status || 'active'}</span>
               </span>
               <div className="flex space-x-2">
                 <Button size="sm" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
@@ -485,7 +489,7 @@ export default function PurchaseContractDetail() {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                {seller?.name || 'Test Seller LLC'}
+                {currentContractData?.participants?.find((p: any) => p.role === 'seller')?.name || 'N/A'}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Street 10, Arizona City, AZ 23412, USA
@@ -511,7 +515,7 @@ export default function PurchaseContractDetail() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.commodity')}:</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white text-right max-w-xs">
-                        {contract.commodity?.name || 'HRW - Wheat Hard Red'}
+                        {currentContractData?.commodity?.name || 'N/A'}
                       </span>
                     </div>
 
@@ -519,12 +523,12 @@ export default function PurchaseContractDetail() {
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.quantityUnits')}:</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
                         {formatNumber({ 
-                          value: contract.quantity || 1400, 
+                          value: currentContractData?.quantity || 0, 
                           minDecimals: 2, 
                           maxDecimals: 2,
                           formatPattern: '0,000.00',
                           roundMode: 'truncate'
-                        })} {contract.measurement_unit || 'bu60'}
+                        })} {currentContractData?.measurement_unit || 'N/A'}
                       </span>
                     </div>
 
@@ -532,18 +536,18 @@ export default function PurchaseContractDetail() {
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.thresholds')}</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
                         {t('min')}: {formatNumber({ 
-                          value: contract.quantity ? contract.quantity * 0.9 : 1260, 
+                          value: currentContractData?.thresholds?.min_thresholds_weight || 0, 
                           minDecimals: 0, 
                           maxDecimals: 0,
                           formatPattern: '0,000.00',
                           roundMode: 'truncate'
-                        })} {contract.measurement_unit || 'bu60'} | {t('max')}: {formatNumber({ 
-                          value: contract.quantity ? contract.quantity * 1.1 : 1540, 
+                        })} {currentContractData?.measurement_unit || 'N/A'} | {t('max')}: {formatNumber({ 
+                          value: currentContractData?.thresholds?.max_thresholds_weight || 0, 
                           minDecimals: 0, 
                           maxDecimals: 0,
                           formatPattern: '0,000.00',
                           roundMode: 'truncate'
-                        })} {contract.measurement_unit || 'bu60'}
+                        })} {currentContractData?.measurement_unit || 'N/A'}
                       </span>
                     </div>
 
@@ -551,7 +555,7 @@ export default function PurchaseContractDetail() {
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.price')}:</span>
                       <span className="text-lg font-bold text-green-600 dark:text-green-400">
                         $ {formatNumber({ 
-                          value: priceInfo?.price || 0, 
+                          value: currentContractData?.price_schedule?.[0]?.price || 0, 
                           minDecimals: 2, 
                           maxDecimals: 2,
                           formatPattern: '0,000.00',
@@ -564,7 +568,7 @@ export default function PurchaseContractDetail() {
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.basis')}:</span>
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                         $ {formatNumber({ 
-                          value: priceInfo?.basis || 1500, 
+                          value: currentContractData?.price_schedule?.[0]?.basis || 0, 
                           minDecimals: 2, 
                           maxDecimals: 2,
                           formatPattern: '0,000.00',
@@ -577,7 +581,7 @@ export default function PurchaseContractDetail() {
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.future')}:</span>
                       <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
                         $ {formatNumber({ 
-                          value: priceInfo?.future_price || 0, 
+                          value: currentContractData?.price_schedule?.[0]?.future_price || 0, 
                           minDecimals: 2, 
                           maxDecimals: 2,
                           formatPattern: '0,000.00',
@@ -589,7 +593,7 @@ export default function PurchaseContractDetail() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Reference Number:</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {contract.reference_number || 'NA'}
+                        {currentContractData?.reference_number || 'N/A'}
                       </span>
                     </div>
                   </div>
