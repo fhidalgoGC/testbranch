@@ -118,7 +118,10 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       { type: 'purchase' }
     ];
     
+    console.log('🔍 SERVICIO - Filtros recibidos:', filters);
+    
     if (filters?.pricingType?.length && !filters.pricingType.includes('all')) {
+      console.log('📍 SERVICIO - Aplicando filtro pricingType:', filters.pricingType[0]);
       andConditions.push({ 'price_schedule.pricing_type': filters.pricingType[0] });
     }
     
@@ -128,6 +131,9 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
         .map((commodityValue: string) => commodities.find((c: any) => c.value === commodityValue))
         .filter((commodity: any): commodity is NonNullable<typeof commodity> => commodity !== undefined)
         .map((commodity: any) => commodity.key);
+      
+      console.log('📍 SERVICIO - Commodities seleccionadas:', filters.commodity);
+      console.log('📍 SERVICIO - IDs de commodities:', selectedCommodityIds);
       
       if (selectedCommodityIds.length > 0) {
         andConditions.push({ 'commodity.commodity_id': { $in: selectedCommodityIds } });
@@ -165,6 +171,8 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     }
 
     const apiFilter = { '$and': andConditions };
+    
+    console.log('🎯 SERVICIO - Filtro final para API:', JSON.stringify(apiFilter, null, 2));
 
     // Construir parámetros de consulta usando el mismo formato que fetchContracts
     const queryParams = new URLSearchParams({
@@ -173,6 +181,8 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       page: (page || 1).toString(),
       limit: (pageSize || 10).toString()
     });
+    
+    console.log('🌐 SERVICIO - URL con parámetros:', queryParams.toString());
 
     // Agregar ordenamiento en el mismo formato que fetchContracts
     if (sort) {

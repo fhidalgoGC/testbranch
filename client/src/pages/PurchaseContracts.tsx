@@ -301,6 +301,9 @@ export default function PurchaseContracts() {
 
     // Aplicar filtros seleccionados
     const filters = selectedFilters;
+    
+    console.log('📤 ENVIANDO AL ENDPOINT - Filtros:', filters);
+    console.log('📤 ENVIANDO AL ENDPOINT - Parámetros completos:', { ...params, filters });
 
     const result = await fetchContractsData({
       ...params,
