@@ -675,6 +675,7 @@ export default function PurchaseContracts() {
         <GenericTable
           columns={columns}
           fetchData={handleFetchContractsData}
+          getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
           defaultFilters={selectedFilters}
           actionMenuItems={[
             {

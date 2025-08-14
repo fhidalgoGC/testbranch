@@ -61,6 +61,7 @@ export interface GenericTableProps<T = any> {
   // Configuración básica
   columns: TableColumn<T>[];
   fetchData: DataFetchFunction<T>;
+  getItemId: (item: T) => string; // REQUIRED: Función para obtener ID único del item
   title?: string;
   titleKey?: string; // Clave para i18n del título
   description?: string;
@@ -122,6 +123,7 @@ function searchInAllColumns<T>(item: T, searchTerm: string, columns: TableColumn
 export function GenericTable<T = any>({
   columns,
   fetchData,
+  getItemId, // NEW: Required prop for getting unique ID
   title,
   titleKey,
   description,
@@ -455,7 +457,7 @@ export function GenericTable<T = any>({
         sortDirection={sortDirection}
         searchValue={searchValue}
         loading={loading}
-        getItemId={(item: T) => (item as any)._id || (item as any).id || ''}
+        getItemId={getItemId}
       />
     </div>
   );
