@@ -8,6 +8,7 @@ interface SubContractsSectionProps {
   subContracts: SubContract[];
   fields: FieldConfig[];
   progressBar?: ProgressBarConfig;
+  parentContractFixed?: number; // Valor fixed del contrato padre para calcular porcentajes
   onNewSubContract?: () => void;
   onViewSubContract?: (id: string) => void;
   onPrintSubContract?: (id: string) => void;
@@ -20,6 +21,7 @@ export default function SubContractsSection({
   subContracts,
   fields,
   progressBar,
+  parentContractFixed = 1000, // Default fallback
   onNewSubContract,
   onViewSubContract,
   onPrintSubContract,
@@ -28,6 +30,99 @@ export default function SubContractsSection({
   onSettleSubContract
 }: SubContractsSectionProps) {
   const { t } = useTranslation();
+
+  // Calculate percentages based on reserved amounts vs parent contract fixed amount
+  const calculateChartData = () => {
+    if (!subContracts.length || parentContractFixed <= 0) {
+      return { segments: [], totalPercentage: 0 };
+    }
+
+    const segments = subContracts.map((contract) => {
+      const reservedAmount = contract.reserved || 0;
+      const percentage = (reservedAmount / parentContractFixed) * 100;
+      return {
+        id: contract.id,
+        contractNumber: contract.contractNumber,
+        percentage: Math.round(percentage * 10) / 10, // Round to 1 decimal
+        reserved: reservedAmount,
+        color: contract.dotColor,
+        borderColor: contract.borderColor
+      };
+    });
+
+    const totalPercentage = segments.reduce((sum, seg) => sum + seg.percentage, 0);
+    
+    return { segments, totalPercentage: Math.round(totalPercentage * 10) / 10 };
+  };
+
+  const chartData = calculateChartData();
+
+  // Color mapping for SVG fill
+  const colorMap: Record<string, string> = {
+    'bg-blue-500': '#3b82f6',
+    'bg-green-500': '#10b981', 
+    'bg-purple-500': '#8b5cf6',
+    'bg-orange-500': '#f97316',
+    'bg-red-500': '#ef4444',
+    'bg-yellow-500': '#eab308',
+    'bg-pink-500': '#ec4899',
+    'bg-indigo-500': '#6366f1',
+    'bg-teal-500': '#14b8a6',
+    'bg-gray-500': '#6b7280'
+  };
+
+  // Generate SVG path for pie chart segments
+  const generatePieSegments = () => {
+    if (chartData.segments.length === 0) return null;
+
+    const radius = 56; // Slightly smaller radius for better fit
+    const centerX = 64;
+    const centerY = 64;
+    let currentAngle = -90; // Start from top
+
+    return chartData.segments.map((segment) => {
+      if (segment.percentage === 0) return null;
+
+      const angleStep = (segment.percentage / 100) * 360;
+      const startAngle = currentAngle;
+      const endAngle = currentAngle + angleStep;
+
+      // Convert angles to radians
+      const startAngleRad = (startAngle * Math.PI) / 180;
+      const endAngleRad = (endAngle * Math.PI) / 180;
+
+      // Calculate arc coordinates
+      const x1 = centerX + radius * Math.cos(startAngleRad);
+      const y1 = centerY + radius * Math.sin(startAngleRad);
+      const x2 = centerX + radius * Math.cos(endAngleRad);
+      const y2 = centerY + radius * Math.sin(endAngleRad);
+
+      // Large arc flag (1 if angle > 180 degrees)
+      const largeArcFlag = angleStep > 180 ? 1 : 0;
+
+      // Create SVG path
+      const pathData = [
+        `M ${centerX} ${centerY}`, // Move to center
+        `L ${x1} ${y1}`, // Line to start point
+        `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`, // Arc to end point
+        'Z' // Close path back to center
+      ].join(' ');
+
+      currentAngle = endAngle;
+
+      const fillColor = colorMap[segment.color] || '#6b7280'; // Default gray
+
+      return (
+        <path
+          key={segment.id}
+          d={pathData}
+          fill={fillColor}
+          stroke="white"
+          strokeWidth="2"
+        />
+      );
+    });
+  };
 
   return (
     <>
@@ -50,24 +145,42 @@ export default function SubContractsSection({
           </div>
           <div className="flex items-center justify-center flex-1 p-4">
             <div className="flex flex-col items-center justify-center space-y-4">
-              {/* Pie Chart - Top */}
+              {/* Dynamic Pie Chart - Top */}
               <div className="flex items-center justify-center flex-shrink-0">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 relative">
-                  <div className="absolute inset-3 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center">
+                <div className="w-32 h-32 relative">
+                  <svg width="128" height="128" className="transform -rotate-90">
+                    {/* Background circle */}
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      fill="none"
+                      stroke="#e5e7eb"
+                      strokeWidth="8"
+                      className="dark:stroke-gray-700"
+                    />
+                    {/* Dynamic segments */}
+                    {generatePieSegments()}
+                  </svg>
+                  {/* Center text overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
                       <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
-                      <div className="text-sm font-bold">100%</div>
+                      <div className="text-sm font-bold">{chartData.totalPercentage}%</div>
                     </div>
                   </div>
                 </div>
               </div>
               
-              {/* Legend - Bottom with scroll if needed */}
+              {/* Enhanced Legend with percentages */}
               <div className="flex flex-col space-y-2 items-center max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
-                {subContracts.map((contract) => (
-                  <div key={contract.id} className="flex items-center text-xs whitespace-nowrap">
-                    <div className={`w-3 h-3 rounded mr-2 flex-shrink-0 ${contract.dotColor}`}></div>
-                    <span className="text-gray-700 dark:text-gray-300">{contract.contractNumber}</span>
+                {chartData.segments.map((segment) => (
+                  <div key={segment.id} className="flex items-center justify-between text-xs whitespace-nowrap min-w-[180px]">
+                    <div className="flex items-center">
+                      <div className={`w-3 h-3 rounded mr-2 flex-shrink-0 ${segment.color}`}></div>
+                      <span className="text-gray-700 dark:text-gray-300">{segment.contractNumber}</span>
+                    </div>
+                    <span className="text-gray-600 dark:text-gray-400 font-medium">{segment.percentage}%</span>
                   </div>
                 ))}
               </div>

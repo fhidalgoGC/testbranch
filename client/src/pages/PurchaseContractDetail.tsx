@@ -900,6 +900,7 @@ export default function PurchaseContractDetail() {
               subContracts={subContractsData}
               fields={fieldConfig}
               progressBar={progressBarConfig}
+              parentContractFixed={currentContractData?.inventory?.fixed || 1000}
               onNewSubContract={() => setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`)}
               onViewSubContract={(id) => console.log('View sub-contract:', id)}
               onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
