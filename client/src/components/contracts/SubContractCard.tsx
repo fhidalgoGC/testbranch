@@ -88,7 +88,7 @@ export default function SubContractCard({
     <Card className={`border-l-4 ${subContract.borderColor}`}>
       <CardContent className="p-4">
         <div className="mb-2">
-          {/* Primera línea: ID Contract y Status Sub Contract */}
+          {/* Primera línea: ID Contract y Status */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
               <div className={`w-3 h-3 rounded ${subContract.dotColor}`}></div>
@@ -104,8 +104,8 @@ export default function SubContractCard({
             </div>
           </div>
           
-          {/* Segunda línea: Quantity alineado a la derecha */}
-          <div className="flex justify-end">
+          {/* Segunda línea: Quantity alineado a la izquierda */}
+          <div className="flex justify-start">
             <div className="text-base">
               <span className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.quantity')}:</span>{' '}
               <span className="font-medium text-green-600">
