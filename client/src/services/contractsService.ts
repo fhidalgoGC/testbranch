@@ -126,14 +126,11 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     }
     
     if (filters?.commodity?.length && !filters.commodity.includes('all')) {
-      // Mapear todos los valores seleccionados a sus IDs correspondientes
-      const selectedCommodityIds = filters.commodity
-        .map((commodityValue: string) => commodities.find((c: any) => c.value === commodityValue))
-        .filter((commodity: any): commodity is NonNullable<typeof commodity> => commodity !== undefined)
-        .map((commodity: any) => commodity.key);
+      // Los filtros ya contienen los IDs directamente, solo necesitamos usarlos
+      const selectedCommodityIds = filters.commodity;
       
-      console.log('📍 SERVICIO - Commodities seleccionadas:', filters.commodity);
-      console.log('📍 SERVICIO - IDs de commodities:', selectedCommodityIds);
+      console.log('📍 SERVICIO - Commodities seleccionadas (IDs):', filters.commodity);
+      console.log('📍 SERVICIO - Aplicando filtro con IDs:', selectedCommodityIds);
       
       if (selectedCommodityIds.length > 0) {
         andConditions.push({ 'commodity.commodity_id': { $in: selectedCommodityIds } });
