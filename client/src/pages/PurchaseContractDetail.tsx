@@ -598,10 +598,6 @@ export default function PurchaseContractDetail() {
                 const inventory = currentContractData?.inventory || {};
                 const unit = currentContractData?.measurement_unit || 'bu60';
                 
-                // Debug inventory data
-                console.log('📦 INVENTORY DEBUG - Raw inventory object:', inventory);
-                console.log('📦 INVENTORY DEBUG - currentContractData keys:', Object.keys(currentContractData || {}));
-                
                 // Real data from inventory object (use actual values, no fallbacks)
                 const totalInventory = inventory.total || 0;
                 const openAmount = inventory.open || 0;
@@ -610,13 +606,17 @@ export default function PurchaseContractDetail() {
                 const unsettledAmount = inventory.unsettled || 0;
                 const reservedAmount = inventory.reserved || 0;
                 
-                // Calculate remaining amounts (complement values)
-                const availableAmount = totalInventory - reservedAmount;
+                // Calculate available amount - handle edge case where reserved might be larger than total
+                const availableAmount = Math.max(0, totalInventory - reservedAmount);
                 
-                // Calculate percentages based on total inventory
-                const fixedPercentage = totalInventory > 0 ? (fixedAmount / totalInventory) * 100 : 0;
-                const reservedPercentage = totalInventory > 0 ? (reservedAmount / totalInventory) * 100 : 0;
-                const settledPercentage = totalInventory > 0 ? (settledAmount / totalInventory) * 100 : 0;
+                // Calculate percentages based on actual totals, handle edge cases
+                const fixedPercentage = totalInventory > 0 ? Math.min(100, (fixedAmount / totalInventory) * 100) : 0;
+                const settledPercentage = totalInventory > 0 ? Math.min(100, (settledAmount / totalInventory) * 100) : 0;
+                
+                // For reserved, calculate percentage based on comparison with total
+                const reservedPercentage = reservedAmount > 0 && totalInventory > 0 
+                  ? Math.min(100, (reservedAmount / Math.max(reservedAmount, totalInventory)) * 100) 
+                  : 0;
                 
                 return (
                   <>
