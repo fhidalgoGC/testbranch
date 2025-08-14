@@ -91,8 +91,7 @@ export default function PurchaseContracts() {
     sort: null as any
   });
 
-  // Función de reload de la tabla (será asignada por el callback)
-  const [tableReloadFunction, setTableReloadFunction] = useState<((fetchFn: any) => void) | null>(null);
+
 
   // Efecto para persistir cambios de filtros y página
   useEffect(() => {
@@ -282,21 +281,27 @@ export default function PurchaseContracts() {
     }
   };
 
-  // Auto-reload table data when selectedFilters change
+  // Auto-reload table data when selectedFilters change (without using table callback to avoid loops)
   useEffect(() => {
     const reloadTableWithFilters = async () => {
-      if (commodities.length > 0 && tableReloadFunction) {
+      if (commodities.length > 0) {
         console.log('🔄 Filtros cambiaron, recargando tabla con nuevos filtros:', selectedFilters);
         
-        // Usar la función de reload de la tabla que incluye los parámetros internos
-        tableReloadFunction(handleFetchContractsData);
+        // Usar parámetros básicos para evitar loops
+        const basicParams = {
+          page: 1,
+          pageSize: tableParams.limit,
+          search: '',
+          sort: null
+        };
         
+        await handleFetchContractsData(basicParams);
         console.log('✅ Tabla recargada con filtros actualizados');
       }
     };
 
     reloadTableWithFilters();
-  }, [selectedFilters, commodities.length, tableReloadFunction]); // Trigger when filters or commodities change
+  }, [selectedFilters, commodities.length]); // Trigger when filters or commodities change
 
   // Función de fetch de datos usando el servicio externo
   const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
@@ -316,7 +321,10 @@ export default function PurchaseContracts() {
       console.log('📤 ENVIANDO AL ENDPOINT - Parámetros completos:', { ...params, filters });
 
       const result = await fetchContractsData({
-        ...params,
+        page: params.page,
+        limit: params.limit || params.pageSize,
+        search: params.search,
+        sort: params.sort,
         filters,
         commodities,
         authData: {
@@ -745,28 +753,26 @@ export default function PurchaseContracts() {
           getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
           showFilters={false} // Filters are handled by parent component
           onPageChange={(page) => {
-            const newParams = { ...tableParams, page };
-            setTableParams(newParams);
+            const newParams = { page, pageSize: tableParams.limit, search: tableParams.search, sort: tableParams.sort };
+            setTableParams({ ...tableParams, page });
             handleFetchContractsData(newParams);
           }}
           onPageSizeChange={(pageSize) => {
-            const newParams = { ...tableParams, page: 1, limit: pageSize };
-            setTableParams(newParams);
+            const newParams = { page: 1, pageSize, search: tableParams.search, sort: tableParams.sort };
+            setTableParams({ ...tableParams, page: 1, limit: pageSize });
             handleFetchContractsData(newParams);
           }}
           onSearchChange={(search) => {
-            const newParams = { ...tableParams, page: 1, search };
-            setTableParams(newParams);
+            const newParams = { page: 1, pageSize: tableParams.limit, search, sort: tableParams.sort };
+            setTableParams({ ...tableParams, page: 1, search });
             handleFetchContractsData(newParams);
           }}
           onSortChange={(sort) => {
-            const newParams = { ...tableParams, page: 1, sort };
-            setTableParams(newParams);
+            const newParams = { page: 1, pageSize: tableParams.limit, search: tableParams.search, sort };
+            setTableParams({ ...tableParams, page: 1, sort });
             handleFetchContractsData(newParams);
           }}
-          onReloadDataCallback={(reloadFn) => {
-            setTableReloadFunction(() => reloadFn);
-          }}
+
           actionMenuItems={[
             {
               key: 'view',

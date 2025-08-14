@@ -229,6 +229,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       characteristics: contract.characteristics,
       type: contract.type as 'purchase',
       sub_type: contract.sub_type as 'direct' | 'imported' | 'importedFreight',
+      grade: contract.grade,
       quantity: contract.quantity,
       measurement_unit_id: contract.measurement_unit_id,
       measurement_unit: contract.measurement_unit,
@@ -243,8 +244,12 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       inspections: contract.inspections,
       proteins: contract.proteins,
       application_priority: contract.application_priority,
-      min_thresholds_percentage: contract.application_priority,
+      min_thresholds_percentage: contract.min_thresholds_percentage,
       max_thresholds_percentage: contract.max_thresholds_percentage,
+      thresholds: {
+        min: contract.min_thresholds_percentage,
+        max: contract.max_thresholds_percentage
+      },
       inventory: contract.inventory,
       remarks: contract.remarks
     }));

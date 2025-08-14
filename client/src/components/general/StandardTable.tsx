@@ -92,8 +92,7 @@ export interface GenericTableProps<T = any> {
   onSearchChange?: (search: string) => void;
   onSortChange?: (sort: { key: string; direction: 'asc' | 'desc' } | null) => void;
   
-  // Callback to expose reload function that provides current table state
-  onReloadDataCallback?: (reloadFn: (params: { page: number; limit: number; search: string; sort: any }) => void) => void;
+
 }
 
 // Función auxiliar para obtener valor anidado usando dot notation
@@ -158,7 +157,6 @@ export function GenericTable<T = any>({
   onPageSizeChange,
   onSearchChange,
   onSortChange,
-  onReloadDataCallback
 }: GenericTableProps<T>) {
   const { t } = useTranslation();
   
@@ -223,25 +221,7 @@ export function GenericTable<T = any>({
     }
   };
 
-  // Función para reload en modo controlado (usando estado interno de la tabla)
-  const reloadControlledData = (fetchFn: (params: { page: number; limit: number; search: string; sort: any }) => void) => {
-    const params = {
-      page: currentPage,
-      limit: pageSize, 
-      search: searchValue,
-      sort: sortKey ? { key: sortKey, direction: sortDirection } : null
-    };
-    
-    console.log('🔄 TABLA - Llamando reload con parámetros:', params);
-    fetchFn(params);
-  };
 
-  // Exponer la función de reload al padre através del callback
-  useEffect(() => {
-    if (onReloadDataCallback) {
-      onReloadDataCallback(reloadControlledData);
-    }
-  }, [onReloadDataCallback]);
 
   // Cargar datos cuando cambien los parámetros (solo en modo no-controlado)
   useEffect(() => {
