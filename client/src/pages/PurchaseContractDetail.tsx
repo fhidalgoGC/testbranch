@@ -149,14 +149,9 @@ export default function PurchaseContractDetail() {
               { border: 'border-l-red-500', dot: 'bg-red-500', text: 'text-red-600' },
               { border: 'border-l-pink-500', dot: 'bg-pink-500', text: 'text-pink-600' },
               { border: 'border-l-yellow-500', dot: 'bg-yellow-500', text: 'text-yellow-600' },
-              { border: 'border-l-indigo-500', dot: 'bg-indigo-500', text: 'text-indigo-600' },
-              { border: 'border-l-teal-500', dot: 'bg-teal-500', text: 'text-teal-600' },
-              { border: 'border-l-cyan-500', dot: 'bg-cyan-500', text: 'text-cyan-600' },
-              { border: 'border-l-emerald-500', dot: 'bg-emerald-500', text: 'text-emerald-600' },
-              { border: 'border-l-lime-500', dot: 'bg-lime-500', text: 'text-lime-600' }
+              { border: 'border-l-indigo-500', dot: 'bg-indigo-500', text: 'text-indigo-600' }
             ];
-            // Usar índice directo para evitar repetición de colores
-            const color = colors[index] || colors[index % colors.length];
+            const color = colors[index % colors.length];
             
             const quantity = item.quantity || 0;
             const reserved = item.inventory?.reserved || 0;
@@ -280,17 +275,13 @@ export default function PurchaseContractDetail() {
     { key: 'delivered', label: t('contractDetail.settled'), color: 'green', unit: 'bu60' }
   ];
 
-  // Configuración del progress bar - nueva lógica usando inventario del contrato padre
+  // Configuración del progress bar - solo configuración y campos
   const progressBarConfig: ProgressBarConfig = {
-    settledField: 'delivered', 
-    reservedField: 'reserved',  
-    totalField: 'quantity',
+    settledField: 'delivered', // Campo que contiene el valor entregado
+    reservedField: 'reserved', // Campo que contiene el valor reservado  
+    totalField: 'quantity', // Campo que contiene el total para porcentajes
     label: t('contractDetail.progress'),
-    colorPriority: 'reserved', // Azul (reservado) tiene prioridad
-    // Nueva configuración para progress global
-    useGlobalProgress: true,
-    globalTotal: currentContractData?.inventory?.fixed || currentContractData?.quantity || 1,
-    globalReservedTotal: subContractsData.reduce((sum: number, sub: any) => sum + (sub.reserved || 0), 0)
+    colorPriority: 'settled' // Verde tiene prioridad en caso de empate
   };
 
   // Generar 10 sub-contratos con datos random para testing

@@ -23,10 +23,6 @@ export interface ProgressBarConfig {
   totalField: string; // Campo que contiene el total para calcular porcentajes
   label?: string; // Label del progress bar (por defecto "Progress")
   colorPriority?: 'settled' | 'reserved'; // Color prioritario en caso de empate (por defecto 'settled' = verde)
-  // Nuevas propiedades para progress global
-  useGlobalProgress?: boolean; // Si true, usa totales globales en lugar de valores individuales
-  globalTotal?: number; // Total global (ej: inventario fijado del contrato padre)
-  globalReservedTotal?: number; // Total global reservado (suma de todos los sub-contratos)
 }
 
 export interface SubContract {
@@ -130,36 +126,7 @@ export default function SubContractCard({
         {progressBar && (
           <div className="mb-3">
             {(() => {
-              // Modo global: usar totales del contrato padre
-              if (progressBar.useGlobalProgress) {
-                const globalTotal = progressBar.globalTotal || 1;
-                const globalReserved = progressBar.globalReservedTotal || 0;
-                
-                // Solo mostrar el progreso global basado en reservado
-                const reservedPercentage = (globalReserved / globalTotal) * 100;
-                const settledPercentage = 0; // No mostrar settled en modo global
-                
-                return (
-                  <>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-gray-500">{progressBar.label || 'Progress'}</span>
-                      <span className="font-medium text-blue-600">{Math.round(reservedPercentage)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
-                      {reservedPercentage > 0 && (
-                        <div 
-                          className="absolute left-0 bg-blue-500 h-full transition-all duration-300"
-                          style={{
-                            width: `${Math.min(reservedPercentage, 100)}%`
-                          }}
-                        ></div>
-                      )}
-                    </div>
-                  </>
-                );
-              }
-              
-              // Modo normal: usar valores individuales del sub-contrato
+              // Cálculos internos del componente usando configuración
               const settledValue = subContract[progressBar.settledField] || 0;
               const reservedValue = subContract[progressBar.reservedField] || 0;
               const totalValue = subContract[progressBar.totalField] || 1;
