@@ -527,11 +527,11 @@ export default function PurchaseContractDetail() {
           <div className="flex items-start justify-between mb-4">
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                ID Contract #{currentContractData?.folio || 'N/A'}
+                {t('contractDetail.contractNumber')} #{currentContractData?.folio || 'N/A'}
               </h2>
               <div className="flex gap-3 items-center mt-1">
                 <span className="text-base font-bold text-gray-600 dark:text-gray-400">
-                  Contract: {currentContractData?.type === 'purchase' ? 'Purchase' : 'Sale'}
+                  {t('contractDetail.contractHeader')}: {currentContractData?.type === 'purchase' ? t('contractDetail.purchase') : t('contractDetail.sale')}
                 </span>
                 <Badge 
                   variant="secondary" 
@@ -797,8 +797,8 @@ export default function PurchaseContractDetail() {
                     {/* Fijado Section - Amarillo */}
                     <div className="space-y-1">
                       <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                        <span>Fijado</span>
-                        <span>Abierto</span>
+                        <span>{t('contractDetail.fixed')}</span>
+                        <span>{t('contractDetail.open')}</span>
                       </div>
                       <Progress 
                         value={fixedPercentage} 
@@ -830,8 +830,8 @@ export default function PurchaseContractDetail() {
                     {/* Reservado Section - Azul */}
                     <div className="space-y-1">
                       <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                        <span>Reservado</span>
-                        <span>Disponible</span>
+                        <span>{t('contractDetail.reserved')}</span>
+                        <span>{t('contractDetail.available')}</span>
                       </div>
                       <Progress 
                         value={reservedPercentage} 
@@ -863,8 +863,8 @@ export default function PurchaseContractDetail() {
                     {/* Liquidado Section - Verde */}
                     <div className="space-y-1">
                       <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
-                        <span>Liquidado</span>
-                        <span>Sin liquidar</span>
+                        <span>{t('contractDetail.settled')}</span>
+                        <span>{t('contractDetail.unsettled')}</span>
                       </div>
                       <Progress 
                         value={settledPercentage} 
