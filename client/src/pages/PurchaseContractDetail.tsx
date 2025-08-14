@@ -123,11 +123,18 @@ export default function PurchaseContractDetail() {
     try {
       setLoadingSubContracts(true);
       
-      const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      // Usar el mismo patrón que otros endpoints del proyecto
+      const jwt = localStorage.getItem('jwt') || localStorage.getItem('id_token');
       const partition_key = localStorage.getItem('partition_key') || '';
       
-      if (!auth.id_token || !partition_key) {
-        console.log('🔐 Sin autenticación - no se cargarán sub-contratos (solo para contratos basis autenticados)');
+      console.log('🔐 Auth check para sub-contratos:', { 
+        hasJwt: !!jwt, 
+        hasPartition: !!partition_key,
+        jwtLength: jwt?.length || 0
+      });
+      
+      if (!jwt || !partition_key) {
+        console.log('🔐 Sin autenticación válida - no se cargarán sub-contratos');
         setSubContractsData([]);
         return;
       }
@@ -141,7 +148,7 @@ export default function PurchaseContractDetail() {
           '_partitionkey': partition_key,
           'accept': '*/*',
           'accept-language': 'es-419,es;q=0.9',
-          'authorization': `Bearer ${auth.id_token}`,
+          'authorization': `Bearer ${jwt}`,
           'bt-organization': partition_key,
           'bt-uid': partition_key,
           'organization_id': partition_key,
@@ -159,18 +166,66 @@ export default function PurchaseContractDetail() {
         }
       });
 
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+      
       if (response.ok) {
         const data = await response.json();
-        console.log('📋 Sub-contratos cargados:', data);
+        console.log('📋 Sub-contratos response:', data);
         
         if (data.data && Array.isArray(data.data)) {
-          setSubContractsData(data.data);
+          console.log(`✅ ${data.data.length} sub-contratos cargados exitosamente`);
+          
+          // Transformar datos del API al formato esperado por SubContractCard
+          const transformedData = data.data.map((item: any, index: number) => {
+            const colors = [
+              { border: 'border-l-blue-500', dot: 'bg-blue-500', text: 'text-blue-600' },
+              { border: 'border-l-green-500', dot: 'bg-green-500', text: 'text-green-600' },
+              { border: 'border-l-purple-500', dot: 'bg-purple-500', text: 'text-purple-600' },
+              { border: 'border-l-orange-500', dot: 'bg-orange-500', text: 'text-orange-600' },
+              { border: 'border-l-red-500', dot: 'bg-red-500', text: 'text-red-600' },
+              { border: 'border-l-pink-500', dot: 'bg-pink-500', text: 'text-pink-600' },
+              { border: 'border-l-yellow-500', dot: 'bg-yellow-500', text: 'text-yellow-600' },
+              { border: 'border-l-indigo-500', dot: 'bg-indigo-500', text: 'text-indigo-600' }
+            ];
+            const color = colors[index % colors.length];
+            
+            return {
+              id: item._id,
+              contractNumber: item.folio,
+              quantity: item.quantity || 0,
+              unit: item.measurement_unit || 'bu60',
+              thresholds: {
+                min: item.thresholds?.min_thresholds_weight || 0,
+                max: item.thresholds?.max_thresholds_weight || 0
+              },
+              basis: item.price_schedule?.[0]?.basis || 0,
+              price: item.price_schedule?.[0]?.price || 0,
+              future: item.price_schedule?.[0]?.future_price || 0,
+              delivered: item.inventory?.settled || 0,
+              balance: item.inventory?.total || 0,
+              reserved: item.inventory?.reserved || 0,
+              totalPayment: item.inventory_value?.total || item.total_price || 0,
+              borderColor: color.border,
+              dotColor: color.dot,
+              textColor: color.text,
+              // Conservar datos originales para acceso directo por key
+              ...item
+            };
+          });
+          
+          setSubContractsData(transformedData);
         } else {
+          console.log('⚠️ Respuesta exitosa pero sin datos de sub-contratos');
           setSubContractsData([]);
         }
       } else {
         const errorText = await response.text();
-        console.error('❌ Error al cargar sub-contratos:', response.status, errorText);
+        console.error('❌ Error HTTP al cargar sub-contratos:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText
+        });
         setSubContractsData([]);
       }
     } catch (error) {
@@ -243,14 +298,14 @@ export default function PurchaseContractDetail() {
     }
   }, [activeTab]);
 
-  // Configuración de campos para el componente agnóstico
+  // Configuración de campos para el componente agnóstico - usar estructura transformada
   const fieldConfig: FieldConfig[] = [
     { key: 'price', label: t('contractDetail.price'), color: 'black', format: 'currency' },
     { key: 'basis', label: t('contractDetail.basis'), color: 'black', format: 'currency' },
     { key: 'future', label: t('contractDetail.future'), color: 'black', format: 'currency' },
     { key: 'reserved', label: t('contractDetail.reserved'), color: 'blue', unit: 'bu60' },
     { key: 'delivered', label: t('contractDetail.settled'), color: 'green', unit: 'bu60' },
-    { key: 'balance', label: t('contractDetail.yourBalance'), color: 'black', unit: 'bu60' }
+    { key: 'totalPayment', label: t('contractDetail.yourBalance'), color: 'black', format: 'currency' }
   ];
 
   // Configuración del progress bar - solo configuración y campos
