@@ -598,12 +598,16 @@ export default function PurchaseContractDetail() {
                 const inventory = currentContractData?.inventory || {};
                 const unit = currentContractData?.measurement_unit || 'bu60';
                 
-                // Real data from inventory object
-                const totalInventory = inventory.total || 1400;
-                const openAmount = inventory.open || 690;
-                const fixedAmount = inventory.fixed || 710;
+                // Debug inventory data
+                console.log('📦 INVENTORY DEBUG - Raw inventory object:', inventory);
+                console.log('📦 INVENTORY DEBUG - currentContractData keys:', Object.keys(currentContractData || {}));
+                
+                // Real data from inventory object (use actual values, no fallbacks)
+                const totalInventory = inventory.total || 0;
+                const openAmount = inventory.open || 0;
+                const fixedAmount = inventory.fixed || 0;
                 const settledAmount = inventory.settled || 0;
-                const unsettledAmount = inventory.unsettled || 1400;
+                const unsettledAmount = inventory.unsettled || 0;
                 const reservedAmount = inventory.reserved || 0;
                 
                 // Calculate remaining amounts (complement values)
