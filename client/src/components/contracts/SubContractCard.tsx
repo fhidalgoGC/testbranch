@@ -96,7 +96,7 @@ export default function SubContractCard({
                 ID Contract#{subContract.contractNumber}
               </span>
             </div>
-            <div className="text-sm">
+            <div className="text-base">
               <span className="font-bold text-gray-700 dark:text-gray-300">Status Sub Contract:</span>{' '}
               <span className="font-medium text-gray-600 dark:text-gray-400">
                 {subContract.status || 'created'}
