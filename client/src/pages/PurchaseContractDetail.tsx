@@ -64,7 +64,11 @@ export default function PurchaseContractDetail() {
         console.log('✅ Contrato ENCONTRADO, estableciendo en estado del componente');
         console.log('Contrato encontrado:', foundContract.folio);
         setCurrentContractData(foundContract);
-        updateState({ currentContract: foundContract });
+        
+        // Solo actualizar Redux si es diferente para evitar loops
+        if (contractState.currentContract?.id !== foundContract.id) {
+          updateState({ currentContract: foundContract });
+        }
       } else {
         console.log('❌ Contrato NO encontrado en Redux data');
         console.log('Contract ID buscado:', contractId);
@@ -77,12 +81,14 @@ export default function PurchaseContractDetail() {
       console.log('❌ contractsData está vacío');
     }
     console.log('=== FIN EFFECT ===');
-  }, [contractId, contractsData, updateState]);
+  }, [contractId, contractsData]);
 
   // Efecto para persistir cambios de tab activo
   useEffect(() => {
-    updateState({ activeTab });
-  }, [activeTab, updateState]);
+    if (contractState.activeTab !== activeTab) {
+      updateState({ activeTab });
+    }
+  }, [activeTab]);
 
   // Configuración de campos para el componente agnóstico
   const fieldConfig: FieldConfig[] = [
