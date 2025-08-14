@@ -328,6 +328,9 @@ export default function PurchaseContracts() {
       ...prev, 
       contracts: result.data 
     }));
+    
+    console.log('🔄 DATOS ACTUALIZADOS - Total contratos encontrados:', result.data.length);
+    console.log('🔄 DATOS ACTUALIZADOS - Contratos (primeros 2):', result.data.slice(0, 2).map(c => ({ folio: c.folio, commodity: c.commodity?.name })));
 
     // Guardar contratos en Redux state para uso en otras páginas
     updateState({
@@ -697,7 +700,9 @@ export default function PurchaseContracts() {
         {/* Table without filters, title, or create button */}
         <GenericTable
           columns={columns}
-          fetchData={handleFetchContractsData}
+          data={tableData.contracts} // Pass pre-loaded data directly
+          totalElements={tableData.totalElements}
+          loading={contractsLoading}
           getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
           showFilters={false} // Filters are handled by parent component
           actionMenuItems={[

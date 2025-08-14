@@ -60,7 +60,11 @@ export interface DataFetchFunction<T = any> {
 export interface GenericTableProps<T = any> {
   // Configuración básica
   columns: TableColumn<T>[];
-  fetchData: DataFetchFunction<T>;
+  fetchData?: DataFetchFunction<T>; // OPTIONAL: Function to fetch data (for tables that manage their own data)
+  data?: T[]; // OPTIONAL: Pre-loaded data (for controlled tables)
+  totalElements?: number; // Total elements for pagination
+  totalPages?: number; // Total pages for pagination
+  loading?: boolean; // Loading state
   getItemId: (item: T) => string; // REQUIRED: Función para obtener ID único del item
   title?: string;
   titleKey?: string; // Clave para i18n del título
@@ -81,6 +85,12 @@ export interface GenericTableProps<T = any> {
   showActionColumn?: boolean;
   actionMenuItems?: ActionMenuItem[];
   actionColumnTitleKey?: string;
+  
+  // Callbacks for controlled mode
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  onSearchChange?: (search: string) => void;
+  onSortChange?: (sort: { key: string; direction: 'asc' | 'desc' } | null) => void;
 }
 
 // Función auxiliar para obtener valor anidado usando dot notation
@@ -123,6 +133,10 @@ function searchInAllColumns<T>(item: T, searchTerm: string, columns: TableColumn
 export function GenericTable<T = any>({
   columns,
   fetchData,
+  data, // NEW: Pre-loaded data for controlled mode
+  totalElements,
+  totalPages,
+  loading = false,
   getItemId, // NEW: Required prop for getting unique ID
   title,
   titleKey,
@@ -136,7 +150,11 @@ export function GenericTable<T = any>({
   defaultFilters = {},
   showActionColumn = true,
   actionMenuItems = [],
-  actionColumnTitleKey = 'actions'
+  actionColumnTitleKey = 'actions',
+  onPageChange,
+  onPageSizeChange,
+  onSearchChange,
+  onSortChange
 }: GenericTableProps<T>) {
   const { t } = useTranslation();
   
@@ -148,15 +166,17 @@ export function GenericTable<T = any>({
   const [sortKey, setSortKey] = useState<string>();
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   
-  // Estados para datos
-  const [data, setData] = useState<T[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [totalElements, setTotalElements] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  // Estados para datos (internos - solo para modo no-controlado)
+  const [internalData, setInternalData] = useState<T[]>([]);
+  const [internalLoading, setInternalLoading] = useState(false);
+  const [internalTotalElements, setInternalTotalElements] = useState(0);
+  const [internalTotalPages, setInternalTotalPages] = useState(0);
 
-  // Función para cargar datos con loading mínimo de 300ms
+  // Función para cargar datos con loading mínimo de 300ms (solo para modo no-controlado)
   const loadData = async () => {
-    setLoading(true);
+    if (!fetchData) return; // Skip if no fetchData function provided (controlled mode)
+    
+    setInternalLoading(true);
     const startTime = Date.now();
     
     try {
@@ -178,9 +198,9 @@ export function GenericTable<T = any>({
         await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
       }
       
-      setData(result.data);
-      setTotalElements(result.total);
-      setTotalPages(result.totalPages);
+      setInternalData(result.data);
+      setInternalTotalElements(result.total);
+      setInternalTotalPages(result.totalPages);
     } catch (error) {
       console.error('Error loading data:', error);
       // Asegurar tiempo mínimo incluso en error
@@ -191,18 +211,20 @@ export function GenericTable<T = any>({
         await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime));
       }
       
-      setData([]);
-      setTotalElements(0);
-      setTotalPages(0);
+      setInternalData([]);
+      setInternalTotalElements(0);
+      setInternalTotalPages(0);
     } finally {
-      setLoading(false);
+      setInternalLoading(false);
     }
   };
 
-  // Cargar datos cuando cambien los parámetros
+  // Cargar datos cuando cambien los parámetros (solo en modo no-controlado)
   useEffect(() => {
-    loadData();
-  }, [currentPage, pageSize, searchValue, selectedFilters, sortKey, sortDirection]);
+    if (fetchData) {
+      loadData();
+    }
+  }, [currentPage, pageSize, searchValue, selectedFilters, sortKey, sortDirection, fetchData]);
 
   // Crear las columnas de la tabla con i18n
   const tableColumns: Column<T>[] = useMemo(() => {
@@ -253,14 +275,20 @@ export function GenericTable<T = any>({
     return cols;
   }, [columns, t, showActionColumn, actionMenuItems, actionColumnTitleKey]);
 
+  // Determinar qué datos usar (externos o internos)
+  const currentData = data || internalData;
+  const currentLoading = loading || internalLoading;
+  const currentTotalElements = totalElements || internalTotalElements;
+  const currentTotalPages = totalPages || internalTotalPages;
+
   // Crear estructura de datos para DataTable
-  const tableData: TableData<T> = {
-    data: data,
+  const tableDataStructure: TableData<T> = {
+    data: currentData,
     meta: {
       page_size: pageSize,
       page_number: currentPage,
-      total_elements: totalElements,
-      total_pages: totalPages
+      total_elements: currentTotalElements,
+      total_pages: currentTotalPages
     }
   };
 
@@ -446,17 +474,25 @@ export function GenericTable<T = any>({
       {/* Data Table */}
       <DataTable
         columns={tableColumns}
-        data={tableData}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-        onSortChange={handleSortChange}
-        onSearchChange={handleSearchChange}
+        data={tableDataStructure}
+        onPageChange={(page) => setCurrentPage(page)}
+        onPageSizeChange={(size) => setPageSize(size)}
+        onSortChange={(sort) => {
+          if (sort) {
+            setSortKey(sort.key);
+            setSortDirection(sort.direction);
+          } else {
+            setSortKey(undefined);
+            setSortDirection('asc');
+          }
+        }}
+        onSearchChange={(search) => setSearchValue(search)}
         currentPage={currentPage}
         pageSize={pageSize}
         sortKey={sortKey}
         sortDirection={sortDirection}
         searchValue={searchValue}
-        loading={loading}
+        loading={currentLoading}
         getItemId={getItemId}
       />
     </div>
