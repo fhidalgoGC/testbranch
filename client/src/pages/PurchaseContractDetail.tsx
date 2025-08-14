@@ -594,26 +594,25 @@ export default function PurchaseContractDetail() {
             </CardHeader>
             <CardContent className="space-y-3">
               {(() => {
-                // Calculate real data from current contract
-                const totalQuantity = currentContractData?.quantity || 1000;
+                // Extract real inventory data from current contract
+                const inventory = currentContractData?.inventory || {};
                 const unit = currentContractData?.measurement_unit || 'bu60';
                 
-                // Based on the image: Fixed = 910, Available = 490 (Total for Fixed section = 1400)
-                // Reserved = 1050, Available = 350 (Total for Reserved section = 1400)  
-                // Settled = 350, Unsettled = 1050 (Total for Settled section = 1400)
+                // Real data from inventory object
+                const totalInventory = inventory.total || 1400;
+                const openAmount = inventory.open || 690;
+                const fixedAmount = inventory.fixed || 710;
+                const settledAmount = inventory.settled || 0;
+                const unsettledAmount = inventory.unsettled || 1400;
+                const reservedAmount = inventory.reserved || 0;
                 
-                // Calculate values proportional to actual contract quantity
-                const fixedAmount = Math.round(totalQuantity * 0.65); // 65% fixed
-                const openAmount = totalQuantity - fixedAmount;
-                const fixedPercentage = (fixedAmount / totalQuantity) * 100;
+                // Calculate remaining amounts (complement values)
+                const availableAmount = totalInventory - reservedAmount;
                 
-                const reservedAmount = Math.round(totalQuantity * 0.75); // 75% reserved
-                const availableAmount = totalQuantity - reservedAmount;
-                const reservedPercentage = (reservedAmount / totalQuantity) * 100;
-                
-                const settledAmount = Math.round(totalQuantity * 0.25); // 25% settled
-                const unsettledAmount = totalQuantity - settledAmount;
-                const settledPercentage = (settledAmount / totalQuantity) * 100;
+                // Calculate percentages based on total inventory
+                const fixedPercentage = totalInventory > 0 ? (fixedAmount / totalInventory) * 100 : 0;
+                const reservedPercentage = totalInventory > 0 ? (reservedAmount / totalInventory) * 100 : 0;
+                const settledPercentage = totalInventory > 0 ? (settledAmount / totalInventory) * 100 : 0;
                 
                 return (
                   <>
