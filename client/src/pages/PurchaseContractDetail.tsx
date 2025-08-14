@@ -599,10 +599,12 @@ export default function PurchaseContractDetail() {
                   {showActionButtons ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
                 
-                {/* Botones de editar y eliminar - NUEVA LÓGICA: Solo con toggle o si status !== 'created' */}
+                {/* Botones de editar y eliminar - LÓGICA CORREGIDA: Solo cuando el toggle está activado */}
                 {(() => {
                   const isCreated = currentContractData?.status === 'created';
-                  const shouldShow = showActionButtons || isCreated;
+                  // NUEVA LÓGICA: Solo mostrar cuando showActionButtons es true (para debugging)
+                  // En producción, la lógica normal sería solo cuando isCreated = true
+                  const shouldShow = showActionButtons;
                   console.log('🔍 RENDER BUTTONS - isCreated:', isCreated, 'showActionButtons:', showActionButtons, 'shouldShow:', shouldShow);
                   
                   return shouldShow && (
