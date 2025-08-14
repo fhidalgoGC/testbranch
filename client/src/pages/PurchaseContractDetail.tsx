@@ -763,147 +763,128 @@ export default function PurchaseContractDetail() {
                 // Extract real inventory data from current contract
                 const inventory = currentContractData?.inventory || {};
                 const unit = currentContractData?.measurement_unit || 'bu60';
-                const contractFixedAmount = inventory.fixed || 0;
                 
-                // Calculate sub-contract data for chart
-                const chartData = subContractsData.map((subContract, index) => {
-                  const colors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#84cc16', '#6366f1', '#06b6d4', '#059669'];
-                  return {
-                    folio: subContract.contractNumber,
-                    reserved: subContract.reserved || 0,
-                    color: colors[index % colors.length]
-                  };
-                });
+                // Real data from inventory object (use actual values, no fallbacks)
+                const totalInventory = inventory.total || 0;
+                const openAmount = inventory.open || 0;
+                const fixedAmount = inventory.fixed || 0;
+                const settledAmount = inventory.settled || 0;
+                const unsettledAmount = inventory.unsettled || 0;
+                const reservedAmount = inventory.reserved || 0;
                 
-                // Calculate total reserved from all sub-contracts
-                const totalReservedFromSubContracts = chartData.reduce((sum, item) => sum + item.reserved, 0);
-                const totalPercentage = contractFixedAmount > 0 ? Math.min(100, (totalReservedFromSubContracts / contractFixedAmount) * 100) : 0;
+                // Calculate available amount - handle edge case where reserved might be larger than total
+                const availableAmount = Math.max(0, totalInventory - reservedAmount);
                 
-                // Create SVG arc paths for donut chart
-                const createArcPath = (startAngle: number, endAngle: number, innerRadius: number, outerRadius: number) => {
-                  const start = polarToCartesian(120, 120, outerRadius, endAngle);
-                  const end = polarToCartesian(120, 120, outerRadius, startAngle);
-                  const innerStart = polarToCartesian(120, 120, innerRadius, endAngle);
-                  const innerEnd = polarToCartesian(120, 120, innerRadius, startAngle);
-                  
-                  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-                  
-                  return [
-                    "M", start.x, start.y,
-                    "A", outerRadius, outerRadius, 0, largeArcFlag, 0, end.x, end.y,
-                    "L", innerEnd.x, innerEnd.y,
-                    "A", innerRadius, innerRadius, 0, largeArcFlag, 1, innerStart.x, innerStart.y,
-                    "Z"
-                  ].join(" ");
-                };
+                // Calculate percentages based on actual totals, handle edge cases
+                const fixedPercentage = totalInventory > 0 ? Math.min(100, (fixedAmount / totalInventory) * 100) : 0;
+                const settledPercentage = totalInventory > 0 ? Math.min(100, (settledAmount / totalInventory) * 100) : 0;
                 
-                const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
-                  const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-                  return {
-                    x: centerX + (radius * Math.cos(angleInRadians)),
-                    y: centerY + (radius * Math.sin(angleInRadians))
-                  };
-                };
+                // For reserved, calculate percentage based on comparison with total
+                const reservedPercentage = reservedAmount > 0 && totalInventory > 0 
+                  ? Math.min(100, (reservedAmount / Math.max(reservedAmount, totalInventory)) * 100) 
+                  : 0;
                 
                 return (
-                  <div className="flex flex-col items-center space-y-4">
-                    {/* Donut Chart */}
-                    <div className="relative">
-                      <svg width="240" height="240" viewBox="0 0 240 240" className="transform -rotate-90">
-                        {/* Background circle */}
-                        <circle 
-                          cx="120" 
-                          cy="120" 
-                          r="80" 
-                          fill="none" 
-                          stroke="#e5e7eb" 
-                          strokeWidth="30"
-                          className="dark:stroke-gray-600"
-                        />
-                        
-                        {/* Sub-contract segments */}
-                        {chartData.map((item, index) => {
-                          if (item.reserved <= 0) return null;
-                          
-                          const percentage = contractFixedAmount > 0 ? (item.reserved / contractFixedAmount) * 100 : 0;
-                          const angle = (percentage / 100) * 360;
-                          
-                          // Calculate cumulative start angle
-                          const startAngle = chartData.slice(0, index).reduce((sum, prevItem) => {
-                            const prevPercentage = contractFixedAmount > 0 ? (prevItem.reserved / contractFixedAmount) * 100 : 0;
-                            return sum + (prevPercentage / 100) * 360;
-                          }, 0);
-                          
-                          const endAngle = startAngle + angle;
-                          
-                          // Create arc path
-                          const pathData = createArcPath(startAngle, endAngle, 50, 80);
-                          
-                          return (
-                            <path
-                              key={index}
-                              d={pathData}
-                              fill={item.color}
-                              className="transition-opacity hover:opacity-80"
-                            />
-                          );
-                        })}
-                      </svg>
-                      
-                      {/* Center text */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <div className="text-2xl font-bold text-gray-900 dark:text-white">Total</div>
-                        <div className="text-lg font-medium text-gray-600 dark:text-gray-400">
-                          {Math.round(totalPercentage)}%
+                  <>
+                    {/* Fijado Section - Amarillo */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <span>Fijado</span>
+                        <span>Abierto</span>
+                      </div>
+                      <Progress 
+                        value={fixedPercentage} 
+                        className="w-full h-3"
+                        indicatorClassName="bg-yellow-500 dark:bg-yellow-400"
+                      />
+                      <div className="flex justify-between items-center">
+                        <div className="text-base font-bold text-yellow-600 dark:text-yellow-400">
+                          {formatNumber({ 
+                            value: fixedAmount, 
+                            minDecimals: 2, 
+                            maxDecimals: 2,
+                            formatPattern: '0,000.00',
+                            roundMode: 'truncate'
+                          })} {unit}
+                        </div>
+                        <div className="text-base font-bold text-yellow-600 dark:text-yellow-400">
+                          {formatNumber({ 
+                            value: openAmount, 
+                            minDecimals: 2, 
+                            maxDecimals: 2,
+                            formatPattern: '0,000.00',
+                            roundMode: 'truncate'
+                          })} {unit}
                         </div>
                       </div>
                     </div>
-                    
-                    {/* Legend */}
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                      {chartData.map((item, index) => (
-                        item.reserved > 0 && (
-                          <div key={index} className="flex items-center space-x-2">
-                            <div 
-                              className="w-3 h-3 rounded-full flex-shrink-0"
-                              style={{ backgroundColor: item.color }}
-                            />
-                            <span className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                              {item.folio}
-                            </span>
-                          </div>
-                        )
-                      ))}
-                    </div>
-                    
-                    {/* Summary Stats */}
-                    <div className="w-full pt-2 border-t border-gray-200 dark:border-gray-700">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Contract Fixed:</span>
-                        <span className="font-medium text-gray-900 dark:text-white">
+
+                    {/* Reservado Section - Azul */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <span>Reservado</span>
+                        <span>Disponible</span>
+                      </div>
+                      <Progress 
+                        value={reservedPercentage} 
+                        className="w-full h-3"
+                        indicatorClassName="bg-blue-500 dark:bg-blue-400"
+                      />
+                      <div className="flex justify-between items-center">
+                        <div className="text-base font-bold text-blue-600 dark:text-blue-400">
                           {formatNumber({ 
-                            value: contractFixedAmount, 
+                            value: reservedAmount, 
                             minDecimals: 2, 
                             maxDecimals: 2,
                             formatPattern: '0,000.00',
                             roundMode: 'truncate'
                           })} {unit}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600 dark:text-gray-400">Total Reserved:</span>
-                        <span className="font-medium text-blue-600 dark:text-blue-400">
+                        </div>
+                        <div className="text-base font-bold text-blue-600 dark:text-blue-400">
                           {formatNumber({ 
-                            value: totalReservedFromSubContracts, 
+                            value: availableAmount, 
                             minDecimals: 2, 
                             maxDecimals: 2,
                             formatPattern: '0,000.00',
                             roundMode: 'truncate'
                           })} {unit}
-                        </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+
+                    {/* Liquidado Section - Verde */}
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <span>Liquidado</span>
+                        <span>Sin liquidar</span>
+                      </div>
+                      <Progress 
+                        value={settledPercentage} 
+                        className="w-full h-3"
+                        indicatorClassName="bg-green-500 dark:bg-green-400"
+                      />
+                      <div className="flex justify-between items-center">
+                        <div className="text-base font-bold text-green-600 dark:text-green-400">
+                          {formatNumber({ 
+                            value: settledAmount, 
+                            minDecimals: 2, 
+                            maxDecimals: 2,
+                            formatPattern: '0,000.00',
+                            roundMode: 'truncate'
+                          })} {unit}
+                        </div>
+                        <div className="text-base font-bold text-green-600 dark:text-green-400">
+                          {formatNumber({ 
+                            value: unsettledAmount, 
+                            minDecimals: 2, 
+                            maxDecimals: 2,
+                            formatPattern: '0,000.00',
+                            roundMode: 'truncate'
+                          })} {unit}
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 );
               })()}
             </CardContent>
