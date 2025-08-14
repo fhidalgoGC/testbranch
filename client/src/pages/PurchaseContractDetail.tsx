@@ -68,10 +68,7 @@ export default function PurchaseContractDetail() {
           setLoading(false);
           setError(null);
           
-          // Solo actualizar Redux si es diferente para evitar loops
-          if (contractState.currentContract?.id !== foundContract.id) {
-            updateState({ currentContract: foundContract });
-          }
+          // Contrato encontrado - Redux state ya tiene los datos necesarios
         } else {
           console.log('❌ Contrato NO encontrado en Redux state');
           console.log('Contract ID buscado:', contractId);
