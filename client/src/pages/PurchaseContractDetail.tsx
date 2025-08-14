@@ -801,20 +801,22 @@ export default function PurchaseContractDetail() {
 
 
 
-        {/* Sub-contracts Section */}
-        <div className="mt-8">
-          <SubContractsSection
-            subContracts={subContracts}
-            fields={fieldConfig}
-            progressBar={progressBarConfig}
-            onNewSubContract={() => setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`)}
-            onViewSubContract={(id) => console.log('View sub-contract:', id)}
-            onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
-            onEditSubContract={(id) => console.log('Edit sub-contract:', id)}
-            onDeleteSubContract={(id) => console.log('Delete sub-contract:', id)}
-            onSettleSubContract={(id) => console.log('Settle sub-contract:', id)}
-          />
-        </div>
+        {/* Sub-contracts Section - Solo para contratos con pricing_type "basis" */}
+        {currentContractData?.price_schedule?.[0]?.pricing_type === 'basis' && (
+          <div className="mt-8">
+            <SubContractsSection
+              subContracts={subContracts}
+              fields={fieldConfig}
+              progressBar={progressBarConfig}
+              onNewSubContract={() => setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`)}
+              onViewSubContract={(id) => console.log('View sub-contract:', id)}
+              onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
+              onEditSubContract={(id) => console.log('Edit sub-contract:', id)}
+              onDeleteSubContract={(id) => console.log('Delete sub-contract:', id)}
+              onSettleSubContract={(id) => console.log('Settle sub-contract:', id)}
+            />
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
