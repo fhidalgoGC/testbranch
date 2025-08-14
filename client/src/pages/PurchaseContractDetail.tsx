@@ -48,34 +48,6 @@ export default function PurchaseContractDetail() {
   // Estado para el contrato específico encontrado
   const [currentContractData, setCurrentContractData] = useState<any>(null);
   
-  // Función para cargar contrato específico desde API
-  const loadSpecificContract = async (contractId: string) => {
-    try {
-      console.log('🔄 Cargando contrato específico desde API:', contractId);
-      setLoading(true);
-      
-      const response = await fetch(`https://crm-develop.grainchain.io/api/v1/crm-contracts/contracts/${contractId}?access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjVieGczWHVjR09ldDJWd3lhUWMyQSJ9.eyJpc3MiOiJodHRwczovL2dyYWluY2hhaW4tZGV2LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NTBjNTkxN2UzMzE3ZTFhNWI1M2E1NmEiLCJhdWQiOlsiaHR0cHM6Ly9kZXZlbG9wZXJzLmdyYWluY2hhaW4uaW8iLCJodHRwczovL2dyYWluY2hhaW4tZGV2LnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NTUxNjQ1NDcsImV4cCI6MTc1NTI1MDk0Nywic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsImF6cCI6InhOUXQyNjhxVklkRThTczRPSGp2aGMzU2oyWG9nYmROIn0.dCWR8y8Y2xKd6wevNXx3b5lZdyJzgBmj_YQy9eIFgAGHWqjJh9Xt6S9Zl9_W0mXNuEUr9SdUzN7y_Ry9fUcx_WVBWyE2fwV5Hqy0Eo2nNZYzHUfZE_4JdJ5FfqO8VJ6mWjt_JA7hF5Z3Q7H4zP8yN4W1A6B9C3Y2E5I7U9xNqJ8vL2dG6rT1S0oMfJ3bK8pQ4eR7Nw5A3zZcXvY6lT8hN1sQ9pL4kF6gE2wIjC5bB8aD0yH3vU6nJ9mL7cV5tR4eN8wP1uK3fG5jZ2sY9bQ7lM6aE4dT1hV0xJ8cW3rN5oL9kP2gF6vB3yU7nT4mC1sE0dR5jL8aH2qV9kW3fN7pG5bS6uY1tM4lC0eV8hJ3rQ9xZ2nF5kP7oL1aW4jU6vB9yS3gT8mC5nE0dR2hL6fQ7kV1xN9pG3bY5oA8lM4uT2sC6rJ7vW0kF5eN1qH3gL9pZ8bY4mT7aC5vN2xJ6sE1dF9kR0uL3gP5oW8hV4nM7tC2eQ6jB9yS1kL0fZ3gH5pN8vU4rA7mT2dE6cW1xJ9sL5bY3oQ8hM0kF7nP4gV6uC2eR1tN9jL3sW5fH8bY0mQ7pA4vC6xE2gN1kU9oL5hT8rJ3dF0sW7nP4bY1mV6uC9eQ3gH2kN5jL8vT0sA7pF4bY6mU1rC3eW9xH5kL8gN0vT7sJ2pQ6uM4bF1cY9eR5hL3wN8kV0jG7sP2oA6mU4bT1yC9eQ5xH8kL0vN3sJ7pF6bY4mR1uC2eW9gH5kT8sL0jN7vP3oA6mU4bQ1yC9eR5xH8`);
-      
-      if (response.ok) {
-        const contractData = await response.json();
-        console.log('✅ Contrato cargado desde API:', contractData.data);
-        setCurrentContractData(contractData.data);
-        updateState({ currentContract: contractData.data });
-        setError(null);
-      } else {
-        console.log('❌ Error al cargar contrato desde API:', response.status);
-        setError('Contrato no encontrado');
-        setCurrentContractData(null);
-      }
-    } catch (err) {
-      console.log('❌ Error de red al cargar contrato:', err);
-      setError('Error al cargar el contrato');
-      setCurrentContractData(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Buscar y establecer el contrato específico al cargar la página
   useEffect(() => {
     console.log('=== EFFECT DE BÚSQUEDA EJECUTADO ===');
@@ -83,7 +55,6 @@ export default function PurchaseContractDetail() {
     console.log('Contracts Data Length:', contractsData.length);
     
     if (contractId) {
-      // Primero intentar encontrar en los datos de Redux
       if (contractsData.length > 0) {
         console.log('Buscando contrato con ID:', contractId);
         console.log('IDs disponibles en contractsData:', contractsData.map((c: any) => c.id));
@@ -95,20 +66,30 @@ export default function PurchaseContractDetail() {
           console.log('Contrato encontrado:', foundContract.folio);
           setCurrentContractData(foundContract);
           setLoading(false);
+          setError(null);
           
           // Solo actualizar Redux si es diferente para evitar loops
           if (contractState.currentContract?.id !== foundContract.id) {
             updateState({ currentContract: foundContract });
           }
-          return;
+        } else {
+          console.log('❌ Contrato NO encontrado en Redux state');
+          console.log('Contract ID buscado:', contractId);
+          console.log('IDs disponibles:', contractsData.map((c: any) => ({ id: c.id, folio: c.folio })));
+          setCurrentContractData(null);
+          setError('Contrato no encontrado en los datos cargados');
+          setLoading(false);
         }
+      } else {
+        console.log('❌ No hay datos de contratos en Redux state');
+        setCurrentContractData(null);
+        setError('No hay datos de contratos disponibles');
+        setLoading(false);
       }
-      
-      // Si no se encuentra en Redux, cargar desde API
-      console.log('❌ Contrato NO encontrado en Redux, cargando desde API');
-      loadSpecificContract(contractId);
     } else {
       console.log('❌ No hay contractId');
+      setCurrentContractData(null);
+      setError('ID de contrato no válido');
       setLoading(false);
     }
     console.log('=== FIN EFFECT ===');
@@ -289,88 +270,7 @@ export default function PurchaseContractDetail() {
 
   const [subContracts] = useState<SubContract[]>(generateRandomSubContracts());
 
-  // Cargar datos del contrato
-  useEffect(() => {
-    if (contractId) {
-      fetchContractDetail(contractId);
-    }
-  }, [contractId]);
-
-  const fetchContractDetail = async (id: string) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Obtener datos de autenticación
-      const partitionKey = localStorage.getItem('partitionKey') || localStorage.getItem('partition_key') || '';
-      const idToken = localStorage.getItem('id_token') || '';
-
-      if (!partitionKey || !idToken) {
-        setError('No authentication data available');
-        return;
-      }
-
-      const headers = {
-        '_partitionkey': partitionKey,
-        'accept': '*/*',
-        'accept-language': 'es-419,es;q=0.9',
-        'authorization': `Bearer ${idToken}`,
-        'bt-organization': partitionKey,
-        'bt-uid': partitionKey,
-        'organization_id': partitionKey,
-        'origin': 'https://contracts-develop.grainchain.io',
-        'pk-organization': partitionKey
-      };
-
-      const response = await fetch(
-        `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/${id}`,
-        {
-          method: 'GET',
-          headers: headers
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Mapear los datos igual que en la lista
-      const mappedContract: PurchaseContract = {
-        id: data._id,
-        folio: data.folio,
-        reference_number: data.folio,
-        commodity: data.commodity,
-        participants: data.participants,
-        characteristics: data.characteristics,
-        type: data.type,
-        sub_type: data.sub_type,
-        quantity: data.quantity,
-        measurement_unit_id: data.measurement_unit_id,
-        measurement_unit: data.measurement_unit,
-        price_schedule: data.price_schedule,
-        logistic_schedule: data.logistic_schedule,
-        contract_date: data.created_at,
-        status: data.active ? 'active' : 'inactive',
-        inventory: {
-          total: data.quantity || 0,
-          open: data.quantity || 0,
-          fixed: 0,
-          unsettled: data.quantity || 0,
-          settled: 0,
-          reserved: 0
-        }
-      };
-
-      setContract(mappedContract);
-    } catch (error) {
-      console.error('Error fetching contract:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch contract');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // REMOVED: Legacy API fetch - now using only Redux state data
 
   if (loading) {
     return (
@@ -412,13 +312,16 @@ export default function PurchaseContractDetail() {
     );
   }
 
-  if (!contract) {
+  if (!currentContractData) {
     return (
       <DashboardLayout title={t('contractDetail.title')}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               {t('contractDetail.contractNotFound')}
+            </div>
+            <div className="text-gray-600 dark:text-gray-400 mb-4">
+              {error || 'Contrato no encontrado en los datos cargados'}
             </div>
             <Link href="/purchase-contracts">
               <Button className="mt-4" variant="outline">
@@ -432,10 +335,10 @@ export default function PurchaseContractDetail() {
     );
   }
 
-  const seller = contract.participants?.find(p => p.role === 'seller');
-  const buyer = contract.participants?.find(p => p.role === 'buyer');
-  const priceInfo = contract.price_schedule?.[0];
-  const logisticInfo = contract.logistic_schedule?.[0];
+  const seller = currentContractData.participants?.find((p: any) => p.role === 'seller');
+  const buyer = currentContractData.participants?.find((p: any) => p.role === 'buyer');
+  const priceInfo = currentContractData.price_schedule?.[0];
+  const logisticInfo = currentContractData.logistic_schedule?.[0];
 
   return (
     <DashboardLayout title={t('contractDetail.title')}>
@@ -528,8 +431,8 @@ export default function PurchaseContractDetail() {
               <div className="mb-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('contractDetail.contractDate')}:</p>
                 <p className="text-lg text-gray-900 dark:text-white">
-                  {contract.contract_date 
-                    ? new Date(contract.contract_date).toLocaleDateString('en-US', {
+                  {currentContractData?.contract_date 
+                    ? new Date(currentContractData.contract_date).toLocaleDateString('en-US', {
                         month: 'numeric',
                         day: 'numeric', 
                         year: 'numeric'
