@@ -40,31 +40,37 @@ export default function PurchaseContracts() {
     handleNavigateToPage('purchaseContracts');
   }, []);
   
-  // Estados para la carga de contratos
-  const [contracts, setContracts] = useState<PurchaseContract[]>([]);
+  // Estado principal organizado como JSON
+  const [pageStateData, setPageStateData] = useState<{
+    selectedFilters: Record<string, any>;
+    contracts: PurchaseContract[];
+  }>(() => {
+    // Inicializar filtros con valores por defecto o desde el estado persistido
+    const defaultFilters = { pricingType: ['all'], commodity: ['all'] };
+    const saved = pageState.filters;
+    
+    const selectedFilters = saved && (
+      (saved.pricingType && !saved.pricingType.includes('all')) || 
+      (saved.commodity && !saved.commodity.includes('all'))
+    ) ? saved : defaultFilters;
+
+    return {
+      selectedFilters,
+      contracts: pageState.contractsData || []
+    };
+  });
+
+  // Estados adicionales para el control de la UI
+  const [currentPage, setCurrentPage] = useState(pageState.currentPage || 1);
   const [contractsLoading, setContractsLoading] = useState(false);
   const [contractsError, setContractsError] = useState<string | null>(null);
   const [totalContracts, setTotalContracts] = useState(0);
 
-  // Estados para filtros - siempre inicializar en 'all' por defecto
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(() => {
-    // Forzar que siempre inicie en 'all' - ignorar estado persistido inicialmente
-    const defaultFilters = { pricingType: ['all'], commodity: ['all'] };
-    
-    // Solo usar estado persistido si ya hay filtros aplicados diferentes a 'all'
-    const saved = pageState.filters;
-    if (saved && (
-      (saved.pricingType && !saved.pricingType.includes('all')) || 
-      (saved.commodity && !saved.commodity.includes('all'))
-    )) {
-      return saved;
-    }
-    
-    return defaultFilters;
-  });
-  const [currentPage, setCurrentPage] = useState(pageState.currentPage || 1);
+  // Para compatibilidad con componentes existentes
+  const selectedFilters = pageStateData.selectedFilters;
+  const contracts = pageStateData.contracts;
   
-  // Estado para guardar los datos de la tabla que vienen del API
+  // Estado para guardar los datos de la tabla que vienen del API (mantenido para compatibilidad)
   const [tableData, setTableData] = useState<{
     contracts: PurchaseContract[];
     totalElements: number;
@@ -77,14 +83,15 @@ export default function PurchaseContracts() {
     filters: {}
   });
 
-  // Efecto para persistir cambios de filtros y página - usando JSON.stringify para comparación profunda
+  // Efecto para persistir cambios de filtros y página
   useEffect(() => {
     updateState({
-      filters: selectedFilters,
+      filters: pageStateData.selectedFilters,
       currentPage,
-      searchTerm: '', // Agregar cuando implementemos búsqueda
+      searchTerm: '',
+      contractsData: pageStateData.contracts
     });
-  }, [JSON.stringify(selectedFilters), currentPage]); // Eliminar updateState de deps
+  }, [JSON.stringify(pageStateData.selectedFilters), currentPage, pageStateData.contracts.length]);
 
   // Debug: Log commodity data
   useEffect(() => {
@@ -130,7 +137,7 @@ export default function PurchaseContracts() {
 
       if (!partitionKey || !idToken) {
         console.error('No hay datos de autenticación disponibles para contratos');
-        setContracts([]);
+        setPageStateData(prev => ({ ...prev, contracts: [] }));
         return;
       }
 
@@ -246,7 +253,8 @@ export default function PurchaseContracts() {
       console.log('IDs de contratos cargados:', mappedContracts.map(c => ({ _id: c._id, folio: c.folio })));
       console.log('===========================');
       
-      setContracts(mappedContracts);
+      // Actualizar el estado principal con los contratos
+      setPageStateData(prev => ({ ...prev, contracts: mappedContracts }));
       setTotalContracts(data._meta.total_elements);
       
       // Guardar contratos en Redux state para uso en otras páginas
@@ -257,7 +265,7 @@ export default function PurchaseContracts() {
     } catch (error) {
       console.error('Error al cargar contratos:', error);
       setContractsError(error instanceof Error ? error.message : 'Error al cargar contratos');
-      setContracts([]);
+      setPageStateData(prev => ({ ...prev, contracts: [] }));
     } finally {
       setContractsLoading(false);
     }
@@ -308,21 +316,22 @@ export default function PurchaseContracts() {
     console.log('🔄 TOGGLE FILTER:', filterKey, 'Value:', value);
     console.log('Current filters before toggle:', selectedFilters);
     
-    setSelectedFilters(prev => {
+    setPageStateData(prev => {
+      const currentFilters = prev.selectedFilters;
       // Comportamiento especial para pricingType: solo un valor a la vez
       if (filterKey === 'pricingType') {
-        const currentValues = prev[filterKey] || [];
+        const currentValues = currentFilters[filterKey] || [];
         // Si ya está seleccionado, lo deseleccionamos (permitir quitar el filtro)
         const newValues = currentValues.includes(value) 
           ? [] 
           : [value]; // Solo un valor seleccionado a la vez
         
-        return { ...prev, [filterKey]: newValues };
+        return { ...prev, selectedFilters: { ...currentFilters, [filterKey]: newValues } };
       }
       
       // Comportamiento especial para commodity: "All" es mutuamente exclusivo
       if (filterKey === 'commodity') {
-        const currentValues = prev[filterKey] || [];
+        const currentValues = currentFilters[filterKey] || [];
         
         // Si se selecciona "all"
         if (value === 'all') {
@@ -331,7 +340,7 @@ export default function PurchaseContracts() {
             return prev;
           }
           // Si "all" no está seleccionado, seleccionarlo y deseleccionar todo lo demás
-          return { ...prev, [filterKey]: ['all'] };
+          return { ...prev, selectedFilters: { ...currentFilters, [filterKey]: ['all'] } };
         }
         
         // Si se selecciona cualquier valor que no es "all"
@@ -350,20 +359,20 @@ export default function PurchaseContracts() {
         }
         
         console.log('📦 COMMODITY - New values:', newValues);
-        return { ...prev, [filterKey]: newValues };
+        return { ...prev, selectedFilters: { ...currentFilters, [filterKey]: newValues } };
       }
       
       // Comportamiento por defecto para otros filtros (múltiple selección)
-      const currentValues = prev[filterKey] || [];
+      const currentValues = currentFilters[filterKey] || [];
       const newValues = Array.isArray(currentValues)
         ? (currentValues.includes(value) 
             ? currentValues.filter(v => v !== value)
             : [...currentValues, value])
         : [value];
       
-      const result = { ...prev, [filterKey]: newValues };
-      console.log('📋 Final filter result:', result);
-      return result;
+      const newFilters = { ...currentFilters, [filterKey]: newValues };
+      console.log('📋 Final filter result:', newFilters);
+      return { ...prev, selectedFilters: newFilters };
     });
     setCurrentPage(1);
   };
@@ -555,16 +564,15 @@ export default function PurchaseContracts() {
               size="sm" 
               variant="outline"
               onClick={() => {
-                console.log('=== ESTADO DE PURCHASECONTRACTS PAGE ===');
-                console.log('selectedFilters:', selectedFilters);
-                console.log('currentPage:', currentPage);
-                console.log('contracts length:', contracts?.length || 0);
-                console.log('totalContracts:', totalContracts);
-                console.log('contractsLoading:', contractsLoading);
-                console.log('contractsError:', contractsError);
-                console.log('commodities loaded:', commodities?.length || 0);
-                console.log('pageState para purchaseContracts:', pageState);
-                console.log('==========================================');
+                console.log('=== ESTADO JSON DE PURCHASECONTRACTS ===');
+                console.log('JSON State Structure:', JSON.stringify({
+                  selectedFilters: pageStateData.selectedFilters,
+                  contracts: pageStateData.contracts
+                }, null, 2));
+                console.log('selectedFilters:', pageStateData.selectedFilters);
+                console.log('contracts (total):', pageStateData.contracts.length);
+                console.log('contracts (first 3):', pageStateData.contracts.slice(0, 3));
+                console.log('========================================');
               }}
               className="bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
             >
