@@ -496,18 +496,32 @@ export function GenericTable<T = any>({
           setPageSize(size);
           onPageSizeChange?.(size); // Call parent callback
         }}
-        onSortChange={(sort) => {
-          if (sort) {
-            setSortKey(sort.key);
-            setSortDirection(sort.direction);
-            // Map UI field to API field for parent callback
-            const apiFieldKey = sortFieldMapping[sort.key] || sort.key;
-            onSortChange?.({ key: apiFieldKey, direction: sort.direction });
+        onSortChange={(keyOrSort, direction) => {
+          // Handle both formats: object {key, direction} and separate parameters (key, direction)
+          let sortKey: string;
+          let sortDirection: 'asc' | 'desc';
+          
+          if (typeof keyOrSort === 'object' && keyOrSort !== null) {
+            // Object format: {key, direction}
+            sortKey = keyOrSort.key;
+            sortDirection = keyOrSort.direction;
+          } else if (typeof keyOrSort === 'string' && direction) {
+            // Separate parameters format: (key, direction)
+            sortKey = keyOrSort;
+            sortDirection = direction;
           } else {
+            // No sort or invalid format
             setSortKey(undefined);
             setSortDirection('asc');
             onSortChange?.(null);
+            return;
           }
+          
+          setSortKey(sortKey);
+          setSortDirection(sortDirection);
+          // Map UI field to API field for parent callback
+          const apiFieldKey = sortFieldMapping[sortKey] || sortKey;
+          onSortChange?.({ key: apiFieldKey, direction: sortDirection });
         }}
         onSearchChange={(search) => {
           setSearchValue(search);
