@@ -92,6 +92,9 @@ export interface GenericTableProps<T = any> {
   onSearchChange?: (search: string) => void;
   onSortChange?: (sort: { key: string; direction: 'asc' | 'desc' } | null) => void;
   
+  // Field mapping for sorting (UI field key to API field key)
+  sortFieldMapping?: Record<string, string>;
+  
 
 }
 
@@ -157,6 +160,7 @@ export function GenericTable<T = any>({
   onPageSizeChange,
   onSearchChange,
   onSortChange,
+  sortFieldMapping = {},
 }: GenericTableProps<T>) {
   const { t } = useTranslation();
   
@@ -496,11 +500,13 @@ export function GenericTable<T = any>({
           if (sort) {
             setSortKey(sort.key);
             setSortDirection(sort.direction);
-            onSortChange?.(sort); // Call parent callback
+            // Map UI field to API field for parent callback
+            const apiFieldKey = sortFieldMapping[sort.key] || sort.key;
+            onSortChange?.({ key: apiFieldKey, direction: sort.direction });
           } else {
             setSortKey(undefined);
             setSortDirection('asc');
-            onSortChange?.(null); // Call parent callback
+            onSortChange?.(null);
           }
         }}
         onSearchChange={(search) => {

@@ -767,6 +767,18 @@ export default function PurchaseContracts() {
           loading={contractsLoading}
           getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
           showFilters={false} // Filters are handled by parent component
+          sortFieldMapping={{
+            // UI field -> API field mapping
+            'seller': 'participants.name',
+            'date': 'contract_date',
+            'commodity': 'commodity.name',
+            'quantity': 'quantity',
+            'price': 'price_schedule.price',
+            'basis': 'price_schedule.basis',
+            'future': 'price_schedule.future_price',
+            'reserve': 'inventory.reserved',
+            'id': 'folio'
+          }}
           onPageChange={(page) => {
             const newParams = { page, pageSize: tableParams.limit, search: tableParams.search, sort: tableParams.sort };
             setTableParams({ ...tableParams, page });
