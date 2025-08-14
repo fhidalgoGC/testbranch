@@ -48,6 +48,70 @@ export default function PurchaseContractDetail() {
   // Estado para el contrato específico encontrado
   const [currentContractData, setCurrentContractData] = useState<any>(null);
   
+  // Estado para la dirección del participante
+  const [participantAddress, setParticipantAddress] = useState<string>('Loading address...');
+  
+  // Función para cargar la dirección del participante
+  const loadParticipantAddress = async (participantId: string) => {
+    try {
+      // Obtener token y partition key del localStorage
+      const authData = localStorage.getItem('auth');
+      const organizationData = localStorage.getItem('organization');
+      
+      console.log('📋 Verificando datos de autenticación...');
+      console.log('Auth data:', authData ? 'Disponible' : 'No disponible');
+      console.log('Organization data:', organizationData ? 'Disponible' : 'No disponible');
+      
+      if (!authData || !organizationData) {
+        console.error('❌ No se encontraron datos de autenticación');
+        setParticipantAddress('Address requires authentication');
+        return;
+      }
+      
+      const auth = JSON.parse(authData);
+      const org = JSON.parse(organizationData);
+      
+      const response = await fetch(`https://crm-develop.grainchain.io/api/v1/crm-locations/address/contracts-owner/${participantId}`, {
+        method: 'GET',
+        headers: {
+          '_partitionkey': org.partition_key,
+          'accept': '*/*',
+          'accept-language': 'es-419,es;q=0.9',
+          'authorization': `Bearer ${auth.accessToken}`,
+          'bt-organization': org.partition_key,
+          'bt-uid': org.partition_key,
+          'organization_id': org.partition_key,
+          'pk-organization': org.partition_key,
+          'origin': 'https://contracts-develop.grainchain.io',
+          'referer': 'https://contracts-develop.grainchain.io/',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-site'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📍 Dirección cargada:', data.data);
+        
+        if (data.data && data.data.string_format) {
+          setParticipantAddress(data.data.string_format);
+        } else {
+          // Construir dirección manualmente si no viene el string_format
+          const address = data.data;
+          const formattedAddress = `${address.address_line_1}, ${address.city}, ${address.state_code} ${address.zip_code}, ${address.country_slug}`;
+          setParticipantAddress(formattedAddress);
+        }
+      } else {
+        console.error('❌ Error al cargar dirección:', response.status);
+        setParticipantAddress('Address not available');
+      }
+    } catch (error) {
+      console.error('❌ Error al cargar dirección del participante:', error);
+      setParticipantAddress('Error loading address');
+    }
+  };
+  
   // Buscar y establecer el contrato específico al cargar la página
   useEffect(() => {
     console.log('=== EFFECT DE BÚSQUEDA EJECUTADO ===');
@@ -64,10 +128,16 @@ export default function PurchaseContractDetail() {
         if (foundContract) {
           console.log('✅ Contrato ENCONTRADO en Redux, estableciendo en estado del componente');
           console.log('Contrato encontrado:', foundContract.folio);
-          console.log('📊 STATUS field en contrato:', foundContract.status);
           setCurrentContractData(foundContract);
           setLoading(false);
           setError(null);
+          
+          // Cargar dirección del seller
+          const seller = foundContract.participants?.find((p: any) => p.role === 'seller');
+          if (seller && seller.people_id) {
+            console.log('📍 Cargando dirección para seller ID:', seller.people_id);
+            loadParticipantAddress(seller.people_id);
+          }
           
           // Contrato encontrado - Redux state ya tiene los datos necesarios
         } else {
@@ -445,7 +515,7 @@ export default function PurchaseContractDetail() {
                 {currentContractData?.participants?.find((p: any) => p.role === 'seller')?.name || 'Test Seller LLC'}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Street 10, Arizona City, AZ 23412, USA
+                {participantAddress}
               </p>
             </div>
           </div>
