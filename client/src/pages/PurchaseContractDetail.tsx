@@ -126,12 +126,9 @@ export default function PurchaseContractDetail() {
       const auth = JSON.parse(localStorage.getItem('auth') || '{}');
       const partition_key = localStorage.getItem('partition_key') || '';
       
-      console.log('🔐 Debug auth para sub-contratos:', { hasIdToken: !!auth.id_token, hasPartitionKey: !!partition_key });
-      
       if (!auth.id_token || !partition_key) {
-        console.error('❌ No hay token JWT o partition_key para cargar sub-contratos');
-        console.log('Auth object:', auth);
-        console.log('Partition key:', partition_key);
+        console.log('🔐 Sin autenticación - no se cargarán sub-contratos (solo para contratos basis autenticados)');
+        setSubContractsData([]);
         return;
       }
 
