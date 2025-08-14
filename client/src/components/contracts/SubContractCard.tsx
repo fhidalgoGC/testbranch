@@ -108,7 +108,7 @@ export default function SubContractCard({
           <div className="flex justify-start">
             <div className="text-base">
               <span className="font-bold text-gray-700 dark:text-gray-300">{t('contractDetail.quantity')}:</span>{' '}
-              <span className="font-medium text-green-600">
+              <span className="font-medium text-yellow-600">
                 {formatNumber(subContract.quantity)} {subContract.unit}
               </span>
             </div>
