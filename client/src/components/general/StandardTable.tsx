@@ -160,8 +160,10 @@ export function GenericTable<T = any>({
 }: GenericTableProps<T>) {
   const { t } = useTranslation();
   
-  // Estados para paginación únicamente - los filtros se pasan como props
+  // Estados para filtros únicamente (modo no controlado) - paginación manejada por parent
   const [selectedFilters, setSelectedFilters] = useState<Record<string, any>>(defaultFilters || {});
+  
+  // Estados para UI internos únicamente (no afectan API)
   const [searchValue, setSearchValue] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -479,18 +481,29 @@ export function GenericTable<T = any>({
       <DataTable
         columns={tableColumns}
         data={tableDataStructure}
-        onPageChange={(page) => setCurrentPage(page)}
-        onPageSizeChange={(size) => setPageSize(size)}
+        onPageChange={(page) => {
+          setCurrentPage(page);
+          onPageChange?.(page); // Call parent callback
+        }}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          onPageSizeChange?.(size); // Call parent callback
+        }}
         onSortChange={(sort) => {
           if (sort) {
             setSortKey(sort.key);
             setSortDirection(sort.direction);
+            onSortChange?.(sort); // Call parent callback
           } else {
             setSortKey(undefined);
             setSortDirection('asc');
+            onSortChange?.(null); // Call parent callback
           }
         }}
-        onSearchChange={(search) => setSearchValue(search)}
+        onSearchChange={(search) => {
+          setSearchValue(search);
+          onSearchChange?.(search); // Call parent callback
+        }}
         currentPage={currentPage}
         pageSize={pageSize}
         sortKey={sortKey}
