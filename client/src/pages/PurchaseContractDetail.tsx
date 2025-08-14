@@ -64,6 +64,7 @@ export default function PurchaseContractDetail() {
         if (foundContract) {
           console.log('✅ Contrato ENCONTRADO en Redux, estableciendo en estado del componente');
           console.log('Contrato encontrado:', foundContract.folio);
+          console.log('📊 STATUS field en contrato:', foundContract.status);
           setCurrentContractData(foundContract);
           setLoading(false);
           setError(null);

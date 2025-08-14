@@ -19,7 +19,7 @@ interface ContractResponse {
     participants: Array<{
       people_id: string;
       name: string;
-      role: string;
+      role: 'buyer' | 'seller';
     }>;
     price_schedule: Array<{
       pricing_type: string;
@@ -57,7 +57,13 @@ interface ContractResponse {
     application_priority: number;
     min_thresholds_percentage: number;
     max_thresholds_percentage: number;
+    status?: string;
     inventory?: {
+      total: number;
+      open: number;
+      fixed: number;
+      unsettled: number;
+      settled: number;
       reserved: number;
     };
     remarks: Array<{
@@ -228,7 +234,10 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       folio: contract.folio,
       reference_number: contract.folio,
       commodity: contract.commodity,
-      participants: contract.participants,
+      participants: contract.participants.map(p => ({
+        ...p,
+        role: p.role as 'buyer' | 'seller'
+      })),
       characteristics: contract.characteristics,
       type: contract.type as 'purchase',
       sub_type: contract.sub_type as 'direct' | 'imported' | 'importedFreight',
@@ -236,8 +245,22 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       quantity: contract.quantity,
       measurement_unit_id: contract.measurement_unit_id,
       measurement_unit: contract.measurement_unit,
-      price_schedule: contract.price_schedule,
-      logistic_schedule: contract.logistic_schedule,
+      price_schedule: contract.price_schedule.map(ps => ({
+        ...ps,
+        pricing_type: ps.pricing_type as 'fixed' | 'basis',
+        basis_operation: ps.basis_operation as 'add' | 'subtract',
+        payment_currency: ps.payment_currency as 'USD' | 'MXN'
+      })),
+      logistic_schedule: contract.logistic_schedule.map(ls => ({
+        ...ls,
+        logistic_payment_responsability: ls.logistic_payment_responsability as 'buyer' | 'seller' | 'other',
+        logistic_coordination_responsability: ls.logistic_coordination_responsability as 'buyer' | 'seller' | 'other',
+        payment_currency: ls.payment_currency as 'USD' | 'MXN',
+        freight_cost: {
+          ...ls.freight_cost,
+          type: ls.freight_cost.type as 'none' | 'fixed' | 'variable'
+        }
+      })),
       shipping_start_date: contract.shipping_start_date,
       shipping_end_date: contract.shipping_end_date,
       contract_date: contract.contract_date,
@@ -247,14 +270,15 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       inspections: contract.inspections,
       proteins: contract.proteins,
       application_priority: contract.application_priority,
-      min_thresholds_percentage: contract.min_thresholds_percentage,
-      max_thresholds_percentage: contract.max_thresholds_percentage,
+      status: contract.status,
       thresholds: {
-        min: contract.min_thresholds_percentage,
-        max: contract.max_thresholds_percentage
+        min_thresholds_percentage: contract.min_thresholds_percentage || 0,
+        min_thresholds_weight: 0,
+        max_thresholds_percentage: contract.max_thresholds_percentage || 0,
+        max_thresholds_weight: 0
       },
       inventory: contract.inventory,
-      remarks: contract.remarks
+      remarks: contract.remarks?.map(r => r.comment) || []
     }));
 
     return {
