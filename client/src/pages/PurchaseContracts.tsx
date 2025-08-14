@@ -540,6 +540,21 @@ export default function PurchaseContracts() {
               size="sm" 
               variant="outline"
               onClick={() => {
+                console.log('=== ESTADO DE LA PÁGINA (TABLE DATA) ===');
+                console.log('Contracts:', tableData.contracts);
+                console.log('Total Elements:', tableData.totalElements);
+                console.log('Current Page:', tableData.currentPage);
+                console.log('Filters:', tableData.filters);
+                console.log('Total contracts in state:', tableData.contracts.length);
+                console.log('==========================================');
+              }}
+            >
+              Debug Table
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => {
                 console.log('=== ESTADO COMPLETO DE LA PÁGINA ===');
                 console.log('selectedFilters:', selectedFilters);
                 console.log('currentPage:', currentPage);
@@ -558,7 +573,7 @@ export default function PurchaseContracts() {
               }}
               className="bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
             >
-              🐛 Debug State
+              Debug Full State
             </Button>
             <Link href="/purchase-contracts/create" className="inline-block">
               <Button 
