@@ -49,6 +49,7 @@ interface SubContractCardProps {
   subContract: SubContract;
   fields: FieldConfig[]; // Configuración de campos a mostrar
   progressBar?: ProgressBarConfig; // Configuración del progress bar
+  contractStatus?: string; // Estado del contrato principal para controlar visibilidad de botones
   onView?: (id: string) => void;
   onPrint?: (id: string) => void;
   onEdit?: (id: string) => void;
@@ -60,6 +61,7 @@ export default function SubContractCard({
   subContract, 
   fields,
   progressBar,
+  contractStatus,
   onView, 
   onPrint, 
   onEdit, 
@@ -221,39 +223,44 @@ export default function SubContractCard({
             </Tooltip>
           </TooltipProvider>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  size="sm" 
-                  className="h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
-                  onClick={() => onEdit?.(subContract.id)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t('edit')}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          {/* Botones de editar y eliminar - solo visibles cuando contractStatus es 'created' */}
+          {contractStatus === 'created' && (
+            <>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
+                      onClick={() => onEdit?.(subContract.id)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('edit')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  size="sm" 
-                  className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white"
-                  onClick={() => onDelete?.(subContract.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t('delete')}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white"
+                      onClick={() => onDelete?.(subContract.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t('delete')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
 
           <TooltipProvider>
             <Tooltip>

@@ -9,6 +9,7 @@ interface SubContractsSectionProps {
   fields: FieldConfig[];
   progressBar?: ProgressBarConfig;
   parentContractFixed?: number; // Valor fixed del contrato padre para calcular porcentajes
+  contractStatus?: string; // Estado del contrato principal para controlar visibilidad de botones
   onNewSubContract?: () => void;
   onViewSubContract?: (id: string) => void;
   onPrintSubContract?: (id: string) => void;
@@ -22,6 +23,7 @@ export default function SubContractsSection({
   fields,
   progressBar,
   parentContractFixed = 1000, // Default fallback
+  contractStatus,
   onNewSubContract,
   onViewSubContract,
   onPrintSubContract,
@@ -197,6 +199,7 @@ export default function SubContractsSection({
                 subContract={subContract}
                 fields={fields}
                 progressBar={progressBar}
+                contractStatus={contractStatus}
                 onView={onViewSubContract}
                 onPrint={onPrintSubContract}
                 onEdit={onEditSubContract}
