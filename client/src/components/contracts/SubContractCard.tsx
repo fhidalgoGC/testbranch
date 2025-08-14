@@ -97,7 +97,7 @@ export default function SubContractCard({
               </span>
             </div>
             <div className="text-base">
-              <span className="font-bold text-gray-700 dark:text-gray-300">STATUS SUB CONTRACT:</span>{' '}
+              <span className="font-bold text-gray-700 dark:text-gray-300">STATUS:</span>{' '}
               <span className="font-medium text-gray-600 dark:text-gray-400">
                 {subContract.status || 'created'}
               </span>
