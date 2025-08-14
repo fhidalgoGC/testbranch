@@ -153,10 +153,14 @@ export default function PurchaseContractDetail() {
             ];
             const color = colors[index % colors.length];
             
+            const quantity = item.quantity || 0;
+            const reserved = item.inventory?.reserved || 0;
+            const unreserved = quantity - reserved;
+            
             return {
               id: item._id,
               contractNumber: item.folio,
-              quantity: item.quantity || 0,
+              quantity: quantity,
               unit: item.measurement_unit || 'bu60',
               thresholds: {
                 min: item.thresholds?.min_thresholds_weight || 0,
@@ -166,8 +170,8 @@ export default function PurchaseContractDetail() {
               price: item.price_schedule?.[0]?.price || 0,
               future: item.price_schedule?.[0]?.future_price || 0,
               delivered: item.inventory?.settled || 0,
-              balance: item.inventory?.total || 0,
-              reserved: item.inventory?.reserved || 0,
+              reserved: reserved,
+              unreserved: unreserved,
               totalPayment: item.inventory_value?.total || item.total_price || 0,
               borderColor: color.border,
               dotColor: color.dot,
@@ -267,8 +271,8 @@ export default function PurchaseContractDetail() {
     { key: 'basis', label: t('contractDetail.basis'), color: 'black', format: 'currency' },
     { key: 'future', label: t('contractDetail.future'), color: 'black', format: 'currency' },
     { key: 'reserved', label: t('contractDetail.reserved'), color: 'blue', unit: 'bu60' },
-    { key: 'delivered', label: t('contractDetail.settled'), color: 'green', unit: 'bu60' },
-    { key: 'totalPayment', label: t('contractDetail.yourBalance'), color: 'black', format: 'currency' }
+    { key: 'unreserved', label: 'Unreserved', color: 'black', unit: 'bu60' },
+    { key: 'delivered', label: t('contractDetail.settled'), color: 'green', unit: 'bu60' }
   ];
 
   // Configuración del progress bar - solo configuración y campos
