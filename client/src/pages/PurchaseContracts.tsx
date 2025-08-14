@@ -91,6 +91,9 @@ export default function PurchaseContracts() {
     sort: null as any
   });
 
+  // Función de reload de la tabla (será asignada por el callback)
+  const [tableReloadFunction, setTableReloadFunction] = useState<((fetchFn: any) => void) | null>(null);
+
   // Efecto para persistir cambios de filtros y página
   useEffect(() => {
     updateState({
@@ -282,19 +285,18 @@ export default function PurchaseContracts() {
   // Auto-reload table data when selectedFilters change
   useEffect(() => {
     const reloadTableWithFilters = async () => {
-      if (commodities.length > 0) {
+      if (commodities.length > 0 && tableReloadFunction) {
         console.log('🔄 Filtros cambiaron, recargando tabla con nuevos filtros:', selectedFilters);
-        try {
-          await handleFetchContractsData(tableParams);
-          console.log('✅ Tabla recargada con filtros actualizados');
-        } catch (error) {
-          console.error('❌ Error recargando tabla con filtros:', error);
-        }
+        
+        // Usar la función de reload de la tabla que incluye los parámetros internos
+        tableReloadFunction(handleFetchContractsData);
+        
+        console.log('✅ Tabla recargada con filtros actualizados');
       }
     };
 
     reloadTableWithFilters();
-  }, [selectedFilters, commodities.length]); // Trigger when filters or commodities change
+  }, [selectedFilters, commodities.length, tableReloadFunction]); // Trigger when filters or commodities change
 
   // Función de fetch de datos usando el servicio externo
   const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
@@ -761,6 +763,9 @@ export default function PurchaseContracts() {
             const newParams = { ...tableParams, page: 1, sort };
             setTableParams(newParams);
             handleFetchContractsData(newParams);
+          }}
+          onReloadDataCallback={(reloadFn) => {
+            setTableReloadFunction(() => reloadFn);
           }}
           actionMenuItems={[
             {
