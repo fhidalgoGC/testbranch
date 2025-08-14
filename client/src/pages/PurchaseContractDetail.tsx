@@ -509,20 +509,7 @@ export default function PurchaseContractDetail() {
   return (
     <DashboardLayout title={t('contractDetail.title')}>
       <div className="space-y-6 max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link href="/purchase-contracts">
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('back')}
-              </Button>
-            </Link>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {t('contractDetail.title')}
-            </h1>
-          </div>
-        </div>
+
 
         {/* Main Contract Header */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
