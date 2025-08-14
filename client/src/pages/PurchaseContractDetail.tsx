@@ -883,6 +883,7 @@ export default function PurchaseContractDetail() {
               fields={fieldConfig}
               progressBar={progressBarConfig}
               parentContractFixed={currentContractData?.inventory?.fixed || 1000}
+              parentContractQuantity={currentContractData?.quantity || 0}
 
               onNewSubContract={() => setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`)}
               onViewSubContract={(id) => console.log('View sub-contract:', id)}

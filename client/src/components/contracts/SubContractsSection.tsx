@@ -9,6 +9,7 @@ interface SubContractsSectionProps {
   fields: FieldConfig[];
   progressBar?: ProgressBarConfig;
   parentContractFixed?: number; // Valor fixed del contrato padre para calcular porcentajes
+  parentContractQuantity?: number; // Cantidad total del contrato padre
   onNewSubContract?: () => void;
   onViewSubContract?: (id: string) => void;
   onPrintSubContract?: (id: string) => void;
@@ -22,6 +23,7 @@ export default function SubContractsSection({
   fields,
   progressBar,
   parentContractFixed = 1000, // Default fallback
+  parentContractQuantity = 0,
   onNewSubContract,
   onViewSubContract,
   onPrintSubContract,
@@ -56,6 +58,14 @@ export default function SubContractsSection({
   };
 
   const chartData = calculateChartData();
+
+  // Calculate total quantity of all sub-contracts
+  const totalSubContractQuantity = subContracts.reduce((sum, subContract) => {
+    return sum + (subContract.quantity || 0);
+  }, 0);
+
+  // Check if we can add more sub-contracts (sum of sub-contract quantities < parent contract quantity)
+  const canAddSubContract = totalSubContractQuantity < parentContractQuantity;
 
   // Color mapping for SVG fill
   const colorMap: Record<string, string> = {
@@ -128,13 +138,15 @@ export default function SubContractsSection({
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">{t('contractDetail.subContracts')}</h2>
-        <Button 
-          onClick={onNewSubContract}
-          className="bg-green-600 hover:bg-green-700 text-white"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          {t('contractDetail.newSubContract')}
-        </Button>
+        {canAddSubContract && (
+          <Button 
+            onClick={onNewSubContract}
+            className="bg-green-600 hover:bg-green-700 text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {t('contractDetail.newSubContract')}
+          </Button>
+        )}
       </div>
 
       <div className="flex gap-6 h-[480px]">
