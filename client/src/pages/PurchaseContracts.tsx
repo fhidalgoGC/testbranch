@@ -271,7 +271,27 @@ export default function PurchaseContracts() {
     }
   };
 
-  // REMOVED: Duplicated call - GenericTable will handle initial data loading and update pageStateData
+  // Auto-reload table data when selectedFilters change
+  useEffect(() => {
+    const reloadTableWithFilters = async () => {
+      if (commodities.length > 0) {
+        console.log('🔄 Filtros cambiaron, recargando tabla con nuevos filtros:', selectedFilters);
+        try {
+          await handleFetchContractsData({
+            page: 1,
+            limit: 5,
+            sort: null,
+            search: ''
+          });
+          console.log('✅ Tabla recargada con filtros actualizados');
+        } catch (error) {
+          console.error('❌ Error recargando tabla con filtros:', error);
+        }
+      }
+    };
+
+    reloadTableWithFilters();
+  }, [selectedFilters, commodities.length]); // Trigger when filters or commodities change
 
   // Función de fetch de datos usando el servicio externo
   const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
@@ -676,7 +696,7 @@ export default function PurchaseContracts() {
           columns={columns}
           fetchData={handleFetchContractsData}
           getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
-          defaultFilters={selectedFilters}
+          showFilters={false} // Filters are handled by parent component
           actionMenuItems={[
             {
               key: 'view',
