@@ -249,10 +249,10 @@ export default function PurchaseContracts() {
     }
   };
 
-  // Cargar contratos al montar el componente
-  useEffect(() => {
-    fetchContracts();
-  }, []);
+  // REMOVED: Duplicate API call - GenericTable handles data fetching
+  // useEffect(() => {
+  //   fetchContracts();
+  // }, []);
 
   // Función de fetch de datos usando el servicio externo
   const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
@@ -571,7 +571,6 @@ export default function PurchaseContracts() {
 
         {/* Table without filters, title, or create button */}
         <GenericTable
-          key={`${JSON.stringify(selectedFilters)}`}
           columns={columns}
           fetchData={handleFetchContractsData}
           defaultFilters={selectedFilters}
