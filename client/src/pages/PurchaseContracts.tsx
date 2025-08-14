@@ -719,7 +719,11 @@ export default function PurchaseContracts() {
                     : filter.value === 'basis'
                     ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 shadow-md hover:bg-purple-200 hover:border-purple-400 dark:hover:bg-purple-900/50'
                     : 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-md hover:bg-blue-200 hover:border-blue-400 dark:hover:bg-blue-900/50'
-                  : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-100 hover:border-purple-400 hover:text-purple-800 dark:hover:bg-purple-900/40 dark:hover:border-purple-400 dark:hover:text-purple-200'
+                  : filter.value === 'fixed'
+                    ? 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-blue-100 hover:border-blue-400 hover:text-blue-800 dark:hover:bg-blue-900/40 dark:hover:border-blue-400 dark:hover:text-blue-200'
+                    : filter.value === 'basis'
+                    ? 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-purple-100 hover:border-purple-400 hover:text-purple-800 dark:hover:bg-purple-900/40 dark:hover:border-purple-400 dark:hover:text-purple-200'
+                    : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-800 dark:hover:bg-gray-700/40 dark:hover:border-gray-400 dark:hover:text-gray-200'
               }`}
             >
               {t(filter.labelKey)}
