@@ -271,27 +271,7 @@ export default function PurchaseContracts() {
     }
   };
 
-  // Cargar contratos inicialmente para el estado JSON
-  useEffect(() => {
-    const loadInitialContracts = async () => {
-      if (commodities.length > 0) {
-        console.log('🚀 Cargando contratos iniciales para estado JSON...');
-        try {
-          await handleFetchContractsData({
-            page: 1,
-            limit: 10,
-            sort: null,
-            search: ''
-          });
-          console.log('✅ Contratos cargados en estado JSON');
-        } catch (error) {
-          console.error('❌ Error cargando contratos iniciales:', error);
-        }
-      }
-    };
-    
-    loadInitialContracts();
-  }, [commodities.length]); // Solo ejecutar cuando las commodities estén cargadas
+  // REMOVED: Duplicated call - GenericTable will handle initial data loading and update pageStateData
 
   // Función de fetch de datos usando el servicio externo
   const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (params) => {
