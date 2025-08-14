@@ -272,7 +272,7 @@ export default function PurchaseContractDetail() {
     { key: 'basis', label: t('contractDetail.basis'), color: 'black', format: 'currency' },
     { key: 'future', label: t('contractDetail.future'), color: 'black', format: 'currency' },
     { key: 'reserved', label: t('contractDetail.reserved'), color: 'blue', unit: 'bu60' },
-    { key: 'unreserved', label: 'Unreserved', color: 'black', unit: 'bu60' },
+    { key: 'unreserved', label: t('contractDetail.unreserved'), color: 'black', unit: 'bu60' },
     { key: 'delivered', label: t('contractDetail.settled'), color: 'green', unit: 'bu60' }
   ];
 

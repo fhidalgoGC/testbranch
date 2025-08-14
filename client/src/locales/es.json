@@ -367,12 +367,21 @@
     "thresholds": "Umbrales",
     "delivered": "Entregado",
     "yourBalance": "Tu Balance",
+    "unreserved": "Sin reservar",
     "quantity": "Cantidad", 
     "totalPayment": "Pago Total",
     "progress": "Progreso",
     "printSubContract": "Imprimir SubContrato",
     "loadingContract": "Cargando contrato...",
     "contractNotFound": "Contrato no encontrado",
-    "errorLoadingContract": "Error al cargar el contrato"
+    "errorLoadingContract": "Error al cargar el contrato",
+    "contractStatus": "Estado del Contrato",
+    "contractHeader": "Contrato",
+    "contractNumber": "ID Contrato",
+    "contractDetails": "Detalles del Contrato",
+    "contractAddress": "Dirección del Contrato",
+    "sellerAddress": "Dirección del Vendedor",
+    "buyerAddress": "Dirección del Comprador",
+    "participantAddress": "Dirección del Participante"
   }
 }
