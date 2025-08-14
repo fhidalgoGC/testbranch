@@ -83,6 +83,14 @@ export default function PurchaseContracts() {
     filters: {}
   });
 
+  // Estado para parámetros de tabla (paginación, búsqueda, etc)
+  const [tableParams, setTableParams] = useState({
+    page: 1,
+    limit: 5,
+    search: '',
+    sort: null as any
+  });
+
   // Efecto para persistir cambios de filtros y página
   useEffect(() => {
     updateState({
@@ -277,12 +285,7 @@ export default function PurchaseContracts() {
       if (commodities.length > 0) {
         console.log('🔄 Filtros cambiaron, recargando tabla con nuevos filtros:', selectedFilters);
         try {
-          await handleFetchContractsData({
-            page: 1,
-            limit: 5,
-            sort: null,
-            search: ''
-          });
+          await handleFetchContractsData(tableParams);
           console.log('✅ Tabla recargada con filtros actualizados');
         } catch (error) {
           console.error('❌ Error recargando tabla con filtros:', error);
@@ -739,6 +742,26 @@ export default function PurchaseContracts() {
           loading={contractsLoading}
           getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
           showFilters={false} // Filters are handled by parent component
+          onPageChange={(page) => {
+            const newParams = { ...tableParams, page };
+            setTableParams(newParams);
+            handleFetchContractsData(newParams);
+          }}
+          onPageSizeChange={(pageSize) => {
+            const newParams = { ...tableParams, page: 1, limit: pageSize };
+            setTableParams(newParams);
+            handleFetchContractsData(newParams);
+          }}
+          onSearchChange={(search) => {
+            const newParams = { ...tableParams, page: 1, search };
+            setTableParams(newParams);
+            handleFetchContractsData(newParams);
+          }}
+          onSortChange={(sort) => {
+            const newParams = { ...tableParams, page: 1, sort };
+            setTableParams(newParams);
+            handleFetchContractsData(newParams);
+          }}
           actionMenuItems={[
             {
               key: 'view',

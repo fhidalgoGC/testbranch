@@ -74,7 +74,7 @@ interface ContractResponse {
 
 interface FetchContractsParams {
   page: number;
-  pageSize: number;
+  limit: number;
   search?: string;
   filters?: Record<string, any>;
   sort?: { key: string; direction: 'asc' | 'desc' };
@@ -99,7 +99,7 @@ const sortFieldMapping: Record<string, string> = {
 };
 
 export const fetchContractsData = async (params: FetchContractsParams) => {
-  const { page, pageSize, search, filters, sort, commodities, authData } = params;
+  const { page, limit, search, filters, sort, commodities, authData } = params;
   const { partitionKey, idToken } = authData;
 
   try {
@@ -176,11 +176,9 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       all: 'true',
       filter: JSON.stringify(apiFilter),
       page: (page || 1).toString(),
-      limit: (pageSize || 10).toString()
+      limit: (limit || 10).toString()
     });
     
-    console.log('🌐 SERVICIO - URL con parámetros:', queryParams.toString());
-
     // Agregar ordenamiento en el mismo formato que fetchContracts
     if (sort) {
       const apiFieldName = sortFieldMapping[sort.key] || sort.key;
@@ -189,8 +187,11 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       // Ordenamiento por defecto por fecha de contrato descendente
       queryParams.append('sort[contract_date]', '-1');
     }
-
+    
+    console.log('🌐 SERVICIO - URL con parámetros:', queryParams.toString());
+    
     const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${queryParams.toString()}`;
+    console.log('📡 SERVICIO - URL completa:', url);
 
     // Headers de la petición
     const headers = {
