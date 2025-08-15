@@ -376,6 +376,7 @@ export default function CreateSubContract() {
                         totalQuantity,
                         openInventory,
                         openPercentage: openPercentage.toFixed(2) + '%',
+                        inventoryTotal: parentContractData?.inventory?.total,
                         inventory: parentContractData?.inventory
                       });
                       
@@ -402,6 +403,9 @@ export default function CreateSubContract() {
                       );
                     })()}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span className="text-xs text-amber-500 dark:text-amber-400 font-medium">
+                        {(parentContractData?.inventory?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
                       <span className="text-xs text-rose-500 dark:text-rose-400">Open</span>
                       <span className="text-sm font-bold text-rose-500 dark:text-rose-400">
                         {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
