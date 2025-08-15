@@ -381,22 +381,22 @@ export default function CreateSubContract() {
                       
                       return (
                         <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                          {/* Background circle */}
+                          {/* Background circle - used inventory in yellow */}
                           <path
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
-                            className="text-gray-200 dark:text-gray-700"
+                            className="text-yellow-400 dark:text-yellow-500"
                           />
-                          {/* Progress circle showing open inventory */}
+                          {/* Progress circle showing open inventory in pink */}
                           <path
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
                             strokeDasharray={strokeDasharray}
-                            className="text-green-600 dark:text-green-400"
+                            className="text-pink-500 dark:text-pink-400"
                           />
                         </svg>
                       );
