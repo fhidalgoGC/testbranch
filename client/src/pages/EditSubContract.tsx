@@ -292,22 +292,38 @@ export default function EditSubContract() {
     setIsSubmitting(true);
     
     try {
-      // Prepare API payload
+      // Get original values from current sub-contract to maintain structure  
+      const originalSubContract = currentSubContract;
+      const parentPriceSchedule = parentContractData?.price_schedule?.[0];
+      
+      // Prepare API payload using same structure as creation
       const payload = {
-        quantity: formDataForSubmission.quantity,
-        measurement_unit_id: formDataForSubmission.measurementUnitId,
+        contract_id: contractId,
+        contract_folio: originalSubContract.contract_folio,
+        measurement_unit: formDataForSubmission.measurementUnitId,
+        total_price: formDataForSubmission.totalPrice,
+        created_by_id: originalSubContract.created_by_id || '',
+        created_by_name: originalSubContract.created_by_name || '',
         price_schedule: [{
-          pricing_type: 'basis',
-          price: formDataForSubmission.totalPrice,
+          pricing_type: parentPriceSchedule?.pricing_type || 'basis',
+          price: formDataForSubmission.price, // Use price from form (future + basis)
           basis: formDataForSubmission.basis,
           future_price: formDataForSubmission.future || 0,
-          option_month: parentContractData?.price_schedule?.[0]?.option_month || 'september',
-          option_year: parentContractData?.price_schedule?.[0]?.option_year || 2025,
-          payment_currency: 'usd',
-          exchange: 'Chicago Board of Trade'
+          basis_operation: parentPriceSchedule?.basis_operation || 'add',
+          option_month: parentPriceSchedule?.option_month || 'september',
+          option_year: parentPriceSchedule?.option_year || 2025,
+          exchange: parentPriceSchedule?.exchange || 'Chicago Board of Trade',
+          payment_currency: parentPriceSchedule?.payment_currency || 'usd'
         }],
-        total_price: formDataForSubmission.totalPrice,
-        sub_contract_date: formDataForSubmission.totalDate
+        quantity: formDataForSubmission.quantity,
+        sub_contract_date: formDataForSubmission.totalDate,
+        measurement_unit_id: formDataForSubmission.measurementUnitId,
+        thresholds: originalSubContract.thresholds || {
+          max_thresholds_percentage: 0,
+          max_thresholds_weight: formDataForSubmission.quantity,
+          min_thresholds_percentage: 0,
+          min_thresholds_weight: formDataForSubmission.quantity
+        }
       };
       
       console.log('🔄 Updating sub-contract with payload:', payload);
