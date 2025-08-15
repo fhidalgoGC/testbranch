@@ -551,9 +551,21 @@ export default function EditSubContract() {
                   <span className="font-mono text-orange-900 dark:text-orange-100">{currentSubContract.folio}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-orange-700 dark:text-orange-300">{t('editSubContract.confirmModal.newQuantity')}</span>
+                  <span className="text-orange-700 dark:text-orange-300">Old Quantity:</span>
+                  <span className="font-mono text-orange-900 dark:text-orange-100">
+                    {formatQuantity(currentSubContract?.quantity || 0)} {parentContractData?.measurement_unit || 'bu60'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-orange-700 dark:text-orange-300">New Quantity:</span>
                   <span className="font-mono text-orange-900 dark:text-orange-100">
                     {formatQuantity(formDataForSubmission?.quantity || 0)} {parentContractData?.measurement_unit || 'bu60'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-orange-700 dark:text-orange-300">Old Future:</span>
+                  <span className="font-mono text-orange-900 dark:text-orange-100">
+                    ${(currentSubContract?.price_schedule?.[0]?.future_price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -563,13 +575,25 @@ export default function EditSubContract() {
                   </span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-orange-700 dark:text-orange-300">Old Price:</span>
+                  <span className="font-mono text-orange-900 dark:text-orange-100">
+                    ${(currentSubContract?.price_schedule?.[0]?.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-orange-700 dark:text-orange-300">New Price:</span>
                   <span className="font-mono text-orange-900 dark:text-orange-100">
                     ${(formDataForSubmission?.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-orange-700 dark:text-orange-300">{t('editSubContract.confirmModal.newTotalPrice')}</span>
+                  <span className="text-orange-700 dark:text-orange-300">Old Total Price:</span>
+                  <span className="font-mono text-orange-900 dark:text-orange-100">
+                    ${(currentSubContract?.total_price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-orange-700 dark:text-orange-300">New Total Price:</span>
                   <span className="font-mono text-orange-900 dark:text-orange-100">
                     ${(formDataForSubmission?.totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
