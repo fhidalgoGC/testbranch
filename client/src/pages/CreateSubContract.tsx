@@ -715,7 +715,7 @@ export default function CreateSubContract() {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                          Date
+                          Date <span className="text-red-500">*</span>
                         </label>
                         <Controller
                           name="totalDate"
@@ -740,7 +740,7 @@ export default function CreateSubContract() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                          Quantity
+                          Quantity <span className="text-red-500">*</span>
                         </label>
                         <Controller
                           name="quantity"
@@ -761,7 +761,7 @@ export default function CreateSubContract() {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                          Measurement Unit
+                          Measurement Unit <span className="text-red-500">*</span>
                         </label>
                         <Controller
                           name="measurementUnitId"
