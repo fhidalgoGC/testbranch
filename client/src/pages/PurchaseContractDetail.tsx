@@ -113,6 +113,7 @@ export default function PurchaseContractDetail() {
       if (!authCheck.isAuthenticated) {
         console.log('🔐 Sin autenticación válida - no se cargarán sub-contratos');
         setSubContractsData([]);
+        setSubContracts([]);
         return;
       }
 
@@ -184,9 +185,11 @@ export default function PurchaseContractDetail() {
           });
           
           setSubContractsData(transformedData);
+          setSubContracts(transformedData);
         } else {
           console.log('⚠️ Respuesta exitosa pero sin datos de sub-contratos');
           setSubContractsData([]);
+          setSubContracts([]);
         }
       } else {
         const errorText = await response.text();
@@ -196,10 +199,12 @@ export default function PurchaseContractDetail() {
           error: errorText
         });
         setSubContractsData([]);
+        setSubContracts([]);
       }
     } catch (error) {
       console.error('❌ Error al cargar sub-contratos:', error);
       setSubContractsData([]);
+      setSubContracts([]);
     } finally {
       setLoadingSubContracts(false);
     }
@@ -287,154 +292,8 @@ export default function PurchaseContractDetail() {
     colorPriority: 'settled' // Verde tiene prioridad en caso de empate
   };
 
-  // Generar 10 sub-contratos con datos random para testing
-  const generateRandomSubContracts = (): SubContract[] => {
-    const colors = [
-      { border: 'border-l-blue-500', dot: 'bg-blue-500', text: 'text-blue-600' },
-      { border: 'border-l-green-500', dot: 'bg-green-500', text: 'text-green-600' },
-      { border: 'border-l-purple-500', dot: 'bg-purple-500', text: 'text-purple-600' },
-      { border: 'border-l-orange-500', dot: 'bg-orange-500', text: 'text-orange-600' },
-      { border: 'border-l-red-500', dot: 'bg-red-500', text: 'text-red-600' },
-      { border: 'border-l-pink-500', dot: 'bg-pink-500', text: 'text-pink-600' },
-      { border: 'border-l-yellow-500', dot: 'bg-yellow-500', text: 'text-yellow-600' },
-      { border: 'border-l-indigo-500', dot: 'bg-indigo-500', text: 'text-indigo-600' },
-      { border: 'border-l-cyan-500', dot: 'bg-cyan-500', text: 'text-cyan-600' },
-      { border: 'border-l-emerald-500', dot: 'bg-emerald-500', text: 'text-emerald-600' }
-    ];
-
-    // Primeros 10 cards con datos variados
-    const regularCards = Array.from({ length: 10 }, (_, i) => {
-      const quantity = Math.floor(Math.random() * 500) + 100; // 100-600
-      
-      // Datos más variados para progress bars realistas
-      const reservedPercent = 0.2 + Math.random() * 0.7; // 20%-90% reserved
-      const deliveredPercent = Math.random() * reservedPercent; // 0% a reservedPercent delivered
-      
-      const reserved = Math.floor(quantity * reservedPercent);
-      const delivered = Math.floor(quantity * deliveredPercent);
-      const balance = quantity - delivered;
-      const color = colors[i];
-      
-      return {
-        id: `${i + 1}`,
-        contractNumber: `SPC-46-SUBC-${i + 1}`,
-        quantity,
-        reserved, // Agregamos campo reserved
-        delivered,
-        balance,
-        unit: 'bu60',
-        thresholds: { 
-          min: quantity * 0.9, 
-          max: quantity * 1.1 
-        },
-        basis: Math.floor(Math.random() * 1000) + 1000, // 1000-2000
-        price: Math.floor(Math.random() * 1000) + 1500, // 1500-2500
-        future: (99 + Math.random() * 4).toFixed(2), // 99.00-103.00 como precio futures
-        totalPayment: quantity * (Math.floor(Math.random() * 1000) + 1500),
-        borderColor: color.border,
-        dotColor: color.dot,
-        textColor: color.text
-      };
-    });
-
-    // 5 cards adicionales con empates para probar prioridad de colores
-    const tieCards = [
-      // Card 11: Empate 240-240 (60% cada uno)
-      {
-        id: '11',
-        contractNumber: 'SPC-46-SUBC-11',
-        quantity: 400,
-        reserved: 240, // 60%
-        delivered: 240, // 60% - EMPATE
-        balance: 160,
-        unit: 'bu60',
-        thresholds: { min: 360, max: 440 },
-        basis: 1500,
-        price: 2000,
-        future: 101.25,
-        totalPayment: 400 * 2000,
-        borderColor: 'border-l-yellow-500',
-        dotColor: 'bg-yellow-500',
-        textColor: 'text-yellow-600'
-      },
-      // Card 12: Empate 360-360 (60% cada uno)
-      {
-        id: '12',
-        contractNumber: 'SPC-46-SUBC-12',
-        quantity: 600,
-        reserved: 360, // 60%
-        delivered: 360, // 60% - EMPATE
-        balance: 240,
-        unit: 'bu60',
-        thresholds: { min: 540, max: 660 },
-        basis: 1200,
-        price: 1800,
-        future: 99.75,
-        totalPayment: 600 * 1800,
-        borderColor: 'border-l-purple-500',
-        dotColor: 'bg-purple-500',
-        textColor: 'text-purple-600'
-      },
-      // Card 13: Empate 120-120 (60% cada uno)
-      {
-        id: '13',
-        contractNumber: 'SPC-46-SUBC-13',
-        quantity: 200,
-        reserved: 120, // 60%
-        delivered: 120, // 60% - EMPATE
-        balance: 80,
-        unit: 'bu60',
-        thresholds: { min: 180, max: 220 },
-        basis: 1800,
-        price: 2200,
-        future: 102.50,
-        totalPayment: 200 * 2200,
-        borderColor: 'border-l-pink-500',
-        dotColor: 'bg-pink-500',
-        textColor: 'text-pink-600'
-      },
-      // Card 14: Empate 300-300 (60% cada uno)
-      {
-        id: '14',
-        contractNumber: 'SPC-46-SUBC-14',
-        quantity: 500,
-        reserved: 300, // 60%
-        delivered: 300, // 60% - EMPATE
-        balance: 200,
-        unit: 'bu60',
-        thresholds: { min: 450, max: 550 },
-        basis: 1600,
-        price: 1900,
-        future: 100.80,
-        totalPayment: 500 * 1900,
-        borderColor: 'border-l-indigo-500',
-        dotColor: 'bg-indigo-500',
-        textColor: 'text-indigo-600'
-      },
-      // Card 15: Empate 480-480 (60% cada uno)
-      {
-        id: '15',
-        contractNumber: 'SPC-46-SUBC-15',
-        quantity: 800,
-        reserved: 480, // 60%
-        delivered: 480, // 60% - EMPATE
-        balance: 320,
-        unit: 'bu60',
-        thresholds: { min: 720, max: 880 },
-        basis: 1300,
-        price: 2100,
-        future: 98.95,
-        totalPayment: 800 * 2100,
-        borderColor: 'border-l-teal-500',
-        dotColor: 'bg-teal-500',
-        textColor: 'text-teal-600'
-      }
-    ];
-
-    return [...regularCards, ...tieCards];
-  };
-
-  const [subContracts] = useState<SubContract[]>(generateRandomSubContracts());
+  // Estado para sub-contratos reales del API
+  const [subContracts, setSubContracts] = useState<any[]>([]);
 
   // REMOVED: Legacy API fetch - now using only Redux state data
 
@@ -565,9 +424,11 @@ export default function PurchaseContractDetail() {
                   size="sm" 
                   variant="outline" 
                   onClick={() => {
-                    console.log('🔍 DEBUG STATE - Current Contract Data:', currentContractData);
-                    console.log('🔍 DEBUG STATE - Sub-contracts:', subContracts);
-                    console.log('🔍 DEBUG STATE - All Redux Data:', contractsData);
+                    const debugState = {
+                      contract: currentContractData,
+                      subcontracts: subContractsData
+                    };
+                    console.log('🔍 DEBUG STATE:', debugState);
                   }}
                   className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-yellow-300"
                 >
