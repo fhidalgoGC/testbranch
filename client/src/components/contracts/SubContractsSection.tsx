@@ -10,6 +10,7 @@ interface SubContractsSectionProps {
   progressBar?: ProgressBarConfig;
   parentContractFixed?: number; // Valor fixed del contrato padre para calcular porcentajes
   parentContractQuantity?: number; // Cantidad total del contrato padre
+  parentContractStatus?: string; // Status del contrato padre para validar si se puede agregar sub-contratos
   onNewSubContract?: () => void;
   onViewSubContract?: (id: string) => void;
   onPrintSubContract?: (id: string) => void;
@@ -24,6 +25,7 @@ export default function SubContractsSection({
   progressBar,
   parentContractFixed = 1000, // Default fallback
   parentContractQuantity = 0,
+  parentContractStatus = '',
   onNewSubContract,
   onViewSubContract,
   onPrintSubContract,
@@ -64,8 +66,8 @@ export default function SubContractsSection({
     return sum + (subContract.quantity || 0);
   }, 0);
 
-  // Check if we can add more sub-contracts (sum of sub-contract quantities < parent contract quantity)
-  const canAddSubContract = totalSubContractQuantity < parentContractQuantity;
+  // Check if we can add more sub-contracts (sum of sub-contract quantities < parent contract quantity AND contract is not closed)
+  const canAddSubContract = totalSubContractQuantity < parentContractQuantity && parentContractStatus !== 'closed';
 
   // Color mapping for SVG fill
   const colorMap: Record<string, string> = {
@@ -179,13 +181,15 @@ export default function SubContractsSection({
             </div>
             
             {/* CTA Button - Same as header button */}
-            <Button 
-              onClick={onNewSubContract}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {t('contractDetail.newSubContract')}
-            </Button>
+            {canAddSubContract && (
+              <Button 
+                onClick={onNewSubContract}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t('contractDetail.newSubContract')}
+              </Button>
+            )}
           </div>
         </div>
       ) : (
