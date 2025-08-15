@@ -319,7 +319,7 @@ export default function CreateSubContract() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Quantity / Units</span>
-                    <span className="text-sm font-bold font-mono">
+                    <span className="text-sm font-bold font-mono text-amber-500 dark:text-amber-400">
                       {(parentContractData?.quantity || contractData.quantityUnits).toLocaleString()} {parentContractData?.measurement_unit || 'bushel'}
                     </span>
                   </div>
@@ -403,10 +403,6 @@ export default function CreateSubContract() {
                       );
                     })()}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-xs text-amber-500 dark:text-amber-400">Total</span>
-                      <span className="text-xs text-amber-500 dark:text-amber-400 font-medium">
-                        {(parentContractData?.inventory?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </span>
                       <span className="text-xs text-rose-500 dark:text-rose-400">Open</span>
                       <span className="text-sm font-bold text-rose-500 dark:text-rose-400">
                         {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
