@@ -634,51 +634,109 @@ export default function CreateSubContract() {
           </div>
           
           <div className="p-6 space-y-6">
-            {/* Parent Contract Information */}
+            {/* Sub-Contract Form Data */}
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Contract Number</span>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {parentContractData?.folio || 'N/A'}
+                    {formDataForSubmission?.contractNumber || 'N/A'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Contract Date</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formDataForSubmission?.contractDate || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Customer Number</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formDataForSubmission?.customerNumber || 'N/A'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">ID Contract</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formDataForSubmission?.idContract || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Reference Number</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formDataForSubmission?.referenceNumber || 'N/A'}
                   </p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Commodity</span>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {parentContractData?.commodity?.name || parentContractData?.commodity || 'N/A'}
+                    {formDataForSubmission?.commodity || 'N/A'}
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Total Quantity</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Quantity</span>
                   <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                    {parentContractData?.quantity?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
+                    {formDataForSubmission?.quantity?.toLocaleString() || '0'}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Open Inventory</span>
-                  <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                    {parentContractData?.inventory?.open?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Measurement Unit</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {measurementUnits.find(unit => unit.key === formDataForSubmission?.measurementUnitId)?.label || formDataForSubmission?.measurementUnitId || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Future Price</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    ${formDataForSubmission?.future?.toLocaleString() || '0'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Basis</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    ${formDataForSubmission?.basis?.toLocaleString() || '0'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Total Price</span>
+                  <p className="text-sm font-medium text-green-600 dark:text-green-400 font-semibold">
+                    ${formDataForSubmission?.totalPrice?.toLocaleString() || '0'}
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Sub-Contract Quantity</span>
-                  <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
-                    {formDataForSubmission?.quantity?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Date</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Total Date</span>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {formDataForSubmission?.totalDate || 'N/A'}
                   </p>
                 </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Contact</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formDataForSubmission?.contact || '-'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-sm text-gray-500 dark:text-gray-400">Shipment Period</span>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {formDataForSubmission?.shipmentPeriod || '-'}
+                </p>
               </div>
             </div>
 
@@ -705,6 +763,10 @@ export default function CreateSubContract() {
               <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
                 <span>0</span>
                 <span>{parentContractData?.inventory?.open?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}</span>
+              </div>
+              
+              <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                Sub-Contract: {formDataForSubmission?.quantity?.toLocaleString() || '0'} / Available: {parentContractData?.inventory?.open?.toLocaleString() || '0'}
               </div>
             </div>
 
