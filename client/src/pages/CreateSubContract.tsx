@@ -389,21 +389,21 @@ export default function CreateSubContract() {
                             strokeWidth="2"
                             className="text-yellow-400 dark:text-yellow-500"
                           />
-                          {/* Progress circle showing open inventory in pink */}
+                          {/* Progress circle showing open inventory in light pink */}
                           <path
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
                             strokeDasharray={strokeDasharray}
-                            className="text-pink-500 dark:text-pink-400"
+                            className="text-pink-300 dark:text-pink-300"
                           />
                         </svg>
                       );
                     })()}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Open</span>
-                      <span className="text-sm font-bold">
+                      <span className="text-xs text-pink-300 dark:text-pink-300">Open</span>
+                      <span className="text-sm font-bold text-pink-300 dark:text-pink-300">
                         {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
