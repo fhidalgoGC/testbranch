@@ -311,12 +311,7 @@ export default function CreateSubContract() {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Commodity</span>
-                    <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
-                      {parentContractData?.commodity?.name || contractData.commodity}
-                    </Badge>
-                  </div>
+
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Quantity / Units</span>
                     <span className="text-sm font-bold font-mono text-amber-500 dark:text-amber-400">
