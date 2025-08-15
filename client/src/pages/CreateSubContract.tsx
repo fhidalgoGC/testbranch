@@ -336,7 +336,7 @@ export default function CreateSubContract() {
           <div className="space-y-6">
             
             {/* Quantity Overview Card */}
-            <Card className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-xl border-0 ring-1 ring-gray-200/50 dark:ring-gray-700/50 w-[calc(100%+50px)]">
+            <Card className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-xl border-0 ring-1 ring-gray-200/50 dark:ring-gray-700/50 w-[calc(100%+50px)] mr-6">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 rounded-t-lg">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
