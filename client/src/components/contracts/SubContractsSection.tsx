@@ -73,6 +73,24 @@ export default function SubContractsSection({
   // - Parent contract must have open amount > 0
   const canAddSubContract = parentContractStatus !== 'closed' && parentContractOpen > 0;
 
+  const debugProps = () => {
+    console.log('🐛 DEBUG SubContractsSection Props:', {
+      subContracts,
+      subContractsLength: subContracts.length,
+      fields,
+      progressBar,
+      parentContractFixed,
+      parentContractQuantity,
+      parentContractOpen,
+      parentContractStatus,
+      firstSubContract: subContracts[0],
+      targetSubContract: subContracts.find(sc => sc.contractNumber === 'SPC-46-SUBC-27')
+    });
+    console.log('🐛 DEBUG Chart Data:', chartData);
+    console.log('🐛 DEBUG Total Sub-Contract Quantity:', totalSubContractQuantity);
+    console.log('🐛 DEBUG Can Add Sub-Contract:', canAddSubContract);
+  };
+
   // Color mapping for SVG fill
   const colorMap: Record<string, string> = {
     'bg-blue-500': '#3b82f6',
@@ -144,15 +162,24 @@ export default function SubContractsSection({
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">{t('contractDetail.subContracts')}</h2>
-        {canAddSubContract && (
+        <div className="flex gap-2">
           <Button 
-            onClick={onNewSubContract}
-            className="bg-green-600 hover:bg-green-700 text-white"
+            onClick={debugProps}
+            variant="outline"
+            className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-yellow-300"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            {t('contractDetail.newSubContract')}
+            🐛 DEBUG
           </Button>
-        )}
+          {canAddSubContract && (
+            <Button 
+              onClick={onNewSubContract}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {t('contractDetail.newSubContract')}
+            </Button>
+          )}
+        </div>
       </div>
 
       {subContracts.length === 0 ? (
