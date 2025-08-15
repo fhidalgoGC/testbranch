@@ -20,6 +20,7 @@ import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { DatePicker } from '@/components/ui/datepicker';
 import { formatNumber } from '@/lib/numberFormatter';
 import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
+import { authenticatedFetch } from '@/utils/apiInterceptors';
 
 // Sub-contract form schema matching API structure
 const subContractSchema = z.object({
@@ -215,59 +216,85 @@ export default function CreateSubContract() {
     setShowConfirmModal(true);
   });
 
-  const handleConfirmSubmission = () => {
+  const handleConfirmSubmission = async () => {
     if (!formDataForSubmission) return;
     
     const data = formDataForSubmission;
     
-    // Get auth data from localStorage  
-    const createdById = localStorage.getItem('user_id') || '';
-    const createdByName = localStorage.getItem('user_name') || '';
-    
-    // Find selected measurement unit details from raw API data
-    const measurementUnitsData = measurementUnits;
-    const selectedUnitSlug = data.measurementUnitId; // This is the slug like "bu60"
-    
-    // Find the full unit data from the API response to get the ObjectId
-    // We need to find it in the raw API response that was logged
-    const selectedUnitId = parentContractData?.measurement_unit_id || ''; // Use parent's ObjectId as fallback
-    
-    // Construct API payload matching the required structure
-    const apiPayload = {
-      contract_id: contractId,
-      contract_folio: data.contractNumber,
-      measurement_unit: selectedUnitSlug, // Short code like "bu60"
-      total_price: data.totalPrice,
-      created_by_id: createdById,
-      created_by_name: createdByName,
-      price_schedule: [{
-        pricing_type: 'basis',
-        price: data.totalPrice,
-        basis: data.basis,
-        future_price: data.future,
-        basis_operation: 'add',
-        option_month: 'september',
-        option_year: 2025,
-        exchange: 'Chicago Board of Trade',
-        payment_currency: 'usd'
-      }],
-      quantity: data.quantity,
-      sub_contract_date: data.totalDate,
-      measurement_unit_id: selectedUnitId, // ObjectId from parent contract
-      thresholds: {
-        max_thresholds_percentage: 0,
-        max_thresholds_weight: data.quantity,
-        min_thresholds_percentage: 0,
-        min_thresholds_weight: data.quantity
+    try {
+      // Get auth data from localStorage  
+      const createdById = localStorage.getItem('user_id') || '';
+      const createdByName = localStorage.getItem('user_name') || '';
+      
+      // Find selected measurement unit details from raw API data
+      const measurementUnitsData = measurementUnits;
+      const selectedUnitSlug = data.measurementUnitId; // This is the slug like "bu60"
+      
+      // Find the full unit data from the API response to get the ObjectId
+      // We need to find it in the raw API response that was logged
+      const selectedUnitId = parentContractData?.measurement_unit_id || ''; // Use parent's ObjectId as fallback
+      
+      // Construct API payload matching the required structure from curl example
+      const apiPayload = {
+        contract_id: contractId,
+        contract_folio: data.contractNumber,
+        measurement_unit: selectedUnitSlug, // Short code like "bu60"
+        total_price: data.totalPrice,
+        created_by_id: createdById,
+        created_by_name: createdByName,
+        price_schedule: [{
+          pricing_type: 'basis',
+          price: data.basis, // Use basis as price per curl example
+          basis: data.basis,
+          future_price: data.future,
+          basis_operation: 'add',
+          option_month: 'september',
+          option_year: 2025,
+          exchange: 'Chicago Board of Trade',
+          payment_currency: 'usd'
+        }],
+        quantity: data.quantity,
+        sub_contract_date: data.totalDate,
+        measurement_unit_id: selectedUnitId, // ObjectId from parent contract
+        thresholds: {
+          percentage: 0 // Set percentage to 0 as requested
+        },
+        weights: {
+          amount: data.quantity // Same amount as quantity as requested
+        }
+      };
+      
+      console.log('📤 Creating sub-contract with API payload:', apiPayload);
+      
+      // Make API call to create sub-contract
+      const response = await authenticatedFetch(
+        `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${contractId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(apiPayload)
+        }
+      );
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API call failed with status ${response.status}: ${errorText}`);
       }
-    };
-    
-    console.log('Creating sub-contract with API payload:', apiPayload);
-    
-    // Close modal and navigate back
-    setShowConfirmModal(false);
-    setFormDataForSubmission(null);
-    setLocation(`/purchase-contracts/${contractId}`);
+      
+      const result = await response.json();
+      console.log('✅ Sub-contract created successfully:', result);
+      
+      // Close modal and navigate back
+      setShowConfirmModal(false);
+      setFormDataForSubmission(null);
+      setLocation(`/purchase-contracts/${contractId}`);
+      
+    } catch (error) {
+      console.error('❌ Error creating sub-contract:', error);
+      alert(`Error creating sub-contract: ${error.message}`);
+    }
   };
 
   const handleCancelSubmission = () => {
