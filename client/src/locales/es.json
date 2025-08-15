@@ -459,5 +459,36 @@
     "cancel": "Cancelar",
     "deleteButton": "Eliminar Sub-Contrato",
     "deleting": "Eliminando..."
+  },
+  "editSubContract": {
+    "editSubContract": "Editar Sub-Contrato",
+    "editingSubContract": "Editando sub-contrato",
+    "backToContract": "Volver al Contrato",
+    "subContractNotFound": "Sub-Contrato No Encontrado",
+    "purchasePriceContract": "Contrato de Precio de Compra",
+    "idContract": "ID Contrato",
+    "contractDate": "Fecha del Contrato",
+    "seller": "Vendedor",
+    "buyer": "Comprador",
+    "referenceNumber": "Número de Referencia",
+    "generalInformation": "Información General",
+    "quantityUnits": "Cantidad / Unidades",
+    "availableInventory": "Inventario Disponible",
+    "price": "Precio",
+    "basis": "Basis",
+    "future": "Futuro",
+    "updateSubContract": "Actualizar Sub-Contrato",
+    "cancel": "Cancelar",
+    "confirmModal": {
+      "title": "Actualizar Sub-Contrato",
+      "description": "Revisa y confirma los cambios antes de actualizar el sub-contrato",
+      "changesSummary": "Resumen de Cambios",
+      "subContractId": "ID Sub-Contrato:",
+      "newQuantity": "Nueva Cantidad:",
+      "newTotalPrice": "Nuevo Precio Total:",
+      "cancel": "Cancelar",
+      "confirmUpdate": "Confirmar Actualización",
+      "updating": "Actualizando..."
+    }
   }
 }

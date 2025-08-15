@@ -1153,7 +1153,10 @@ export default function PurchaseContractDetail() {
               }}
               onViewSubContract={(id) => console.log('View sub-contract:', id)}
               onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
-              onEditSubContract={(id) => console.log('Edit sub-contract:', id)}
+              onEditSubContract={(id) => {
+                console.log('Edit sub-contract:', id);
+                setLocation(`/purchase-contracts/${contractId}/sub-contracts/${id}/edit`);
+              }}
               onDeleteSubContract={openDeleteSubContractModal}
               onSettleSubContract={(id) => console.log('Settle sub-contract:', id)}
             />
