@@ -381,29 +381,29 @@ export default function CreateSubContract() {
                       
                       return (
                         <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                          {/* Background circle - used inventory in yellow */}
+                          {/* Background circle - used inventory in amber */}
                           <path
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
-                            className="text-yellow-400 dark:text-yellow-500"
+                            className="text-amber-400 dark:text-amber-500"
                           />
-                          {/* Progress circle showing open inventory in light pink */}
+                          {/* Progress circle showing open inventory in rose */}
                           <path
                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
                             strokeDasharray={strokeDasharray}
-                            className="text-pink-300 dark:text-pink-300"
+                            className="text-rose-500 dark:text-rose-400"
                           />
                         </svg>
                       );
                     })()}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-xs text-pink-300 dark:text-pink-300">Open</span>
-                      <span className="text-sm font-bold text-pink-300 dark:text-pink-300">
+                      <span className="text-xs text-rose-500 dark:text-rose-400">Open</span>
+                      <span className="text-sm font-bold text-rose-500 dark:text-rose-400">
                         {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
