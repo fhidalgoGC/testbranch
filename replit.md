@@ -57,6 +57,21 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Architectural Changes (August 2025)
 
+### Complete Sub-Contract API Integration
+- **Date**: August 15, 2025
+- **Change**: Implemented complete API integration for sub-contract creation with proper authentication and payload structure
+- **Key Features**:
+  - **Two-step API flow**: POST `/sp-sub-contracts` to get key → PUT `/sp-sub-contracts/{key}` to create
+  - **Redis state management**: Sub-contract key stored persistently in Redux for session continuity
+  - **Proper payload structure**: Thresholds with correct format (`max_thresholds_percentage: 0`, `max_thresholds_weight: quantity`, etc.)
+  - **Error handling**: Console-only error logging, no disruptive alerts for better developer experience
+  - **Key persistence**: Avoids duplicate API calls by checking existing key in Redux state
+- **API Structure**:
+  - Initial call: `POST /sp-sub-contracts` → returns `{data: {key: "..."}}`
+  - Final submission: `PUT /sp-sub-contracts/{key}` with complete payload
+  - Authentication: JWT + partition_key headers via `authenticatedFetch`
+- **Benefits**: Complete real API integration, proper state persistence, optimized API usage
+
 ### Sub-Contract Confirmation Modal Implementation
 - **Date**: August 15, 2025
 - **Change**: Implemented comprehensive confirmation modal for sub-contract creation

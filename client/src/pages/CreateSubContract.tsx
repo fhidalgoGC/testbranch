@@ -318,7 +318,10 @@ export default function CreateSubContract() {
         sub_contract_date: data.totalDate,
         measurement_unit_id: selectedUnitId, // ObjectId from parent contract
         thresholds: {
-          percentage: 0 // Set percentage to 0 as requested
+          max_thresholds_percentage: 0,
+          max_thresholds_weight: data.quantity,
+          min_thresholds_percentage: 0,
+          min_thresholds_weight: data.quantity
         },
         weights: {
           amount: data.quantity // Same amount as quantity as requested
@@ -358,8 +361,7 @@ export default function CreateSubContract() {
       
     } catch (error) {
       console.error('❌ Error creating sub-contract:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Error creating sub-contract: ${errorMessage}`);
+      // Error will be visible in console, no modal/alert needed
     }
   };
 
