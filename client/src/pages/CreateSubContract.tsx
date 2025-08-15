@@ -472,7 +472,7 @@ export default function CreateSubContract() {
   }, [futureValue, basisValue, setValue]);
 
   return (
-    <DashboardLayout title="New Sub-Contract">
+    <DashboardLayout title={t('createSubContract.title')}>
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         
         {/* Header */}
@@ -485,7 +485,7 @@ export default function CreateSubContract() {
             </Link>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                New Sub-Contract
+                {t('createSubContract.title')}
               </h1>
             </div>
           </div>
@@ -516,7 +516,7 @@ export default function CreateSubContract() {
             className="bg-yellow-500 hover:bg-yellow-600 text-white"
             size="sm"
           >
-            Debug State
+            {t('createSubContract.debugState')}
           </Button>
         </div>
 
@@ -530,29 +530,29 @@ export default function CreateSubContract() {
               <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 rounded-t-lg">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  <span>Purchase Price Contract</span>
+                  <span>{t('createSubContract.purchasePriceContract')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">ID Contract</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.idContract')}</span>
                     <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono">
                       #{contractData.idContract}
                     </Badge>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Contract Date</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.contractDate')}</span>
                     <span className="text-sm font-medium">{contractData.contractDate}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {parentContractData?.type === 'purchase' ? 'Seller' : 'Buyer'}
+                      {parentContractData?.type === 'purchase' ? t('createSubContract.seller') : t('createSubContract.buyer')}
                     </span>
                     <span className="text-sm font-medium">{contractData.customerNumber}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Reference Number</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.referenceNumber')}</span>
                     <span className="text-sm font-medium">{contractData.referenceNumber}</span>
                   </div>
                 </div>
@@ -564,32 +564,32 @@ export default function CreateSubContract() {
               <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 rounded-t-lg">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <Package className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <span>General Information</span>
+                  <span>{t('createSubContract.generalInformation')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
 
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Quantity / Units</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.quantityUnits')}</span>
                     <span className="text-sm font-bold font-mono text-amber-500 dark:text-amber-400">
                       {(parentContractData?.quantity || contractData.quantityUnits).toLocaleString()} {parentContractData?.measurement_unit || 'bushel'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Price</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.price')}</span>
                     <span className="text-sm font-bold font-mono text-blue-600 dark:text-blue-400">
                       $ {(parentContractData?.price_schedule?.[0]?.price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Basis</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.basis')}</span>
                     <span className="text-sm font-bold font-mono text-purple-600 dark:text-purple-400">
                       $ {(parentContractData?.price_schedule?.[0]?.basis ?? 0).toFixed(2)} {parentContractData?.price_schedule?.[0]?.option_month || 'september'}{parentContractData?.price_schedule?.[0]?.option_year || '2025'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Future</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.future')}</span>
                     <span className="text-sm font-bold font-mono text-orange-600 dark:text-orange-400">
                       $ {(parentContractData?.price_schedule?.[0]?.future_price ?? 0).toFixed(2)}
                     </span>
@@ -609,7 +609,7 @@ export default function CreateSubContract() {
               <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 rounded-t-lg">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  <span>Quantity Actual Overview</span>
+                  <span>{t('createSubContract.quantityActualOverview')}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
@@ -656,7 +656,7 @@ export default function CreateSubContract() {
                       );
                     })()}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-xs text-rose-500 dark:text-rose-400">Open</span>
+                      <span className="text-xs text-rose-500 dark:text-rose-400">{t('createSubContract.open')}</span>
                       <span className="text-sm font-bold text-rose-500 dark:text-rose-400">
                         {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
@@ -677,7 +677,7 @@ export default function CreateSubContract() {
                     {/* Future Field */}
                     <div>
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                        Future
+                        {t('createSubContract.future')}
                       </label>
                       <Controller
                         name="future"
@@ -700,7 +700,7 @@ export default function CreateSubContract() {
                     {/* Basis Field (Read-only) */}
                     <div>
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                        Basis
+                        {t('createSubContract.basis')}
                       </label>
                       <Controller
                         name="basis"
@@ -720,11 +720,11 @@ export default function CreateSubContract() {
 
                   {/* Total Section */}
                   <div className="mt-6">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Total</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('createSubContract.total')}</h3>
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                          Price
+                          {t('createSubContract.priceLabel')}
                         </label>
                         <Controller
                           name="totalPrice"
@@ -742,7 +742,7 @@ export default function CreateSubContract() {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                          Date <span className="text-red-500">*</span>
+                          {t('createSubContract.date')} <span className="text-red-500">*</span>
                         </label>
                         <Controller
                           name="totalDate"
@@ -751,7 +751,7 @@ export default function CreateSubContract() {
                             <DatePicker
                               value={field.value}
                               onChange={field.onChange}
-                              placeholder="Select date"
+                              placeholder={t('createSubContract.selectDate')}
                               className="text-sm"
                               error={!!errors.totalDate}
                               minDate={parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date()}
@@ -767,7 +767,7 @@ export default function CreateSubContract() {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                          Quantity <span className="text-red-500">*</span>
+                          {t('createSubContract.quantity')} <span className="text-red-500">*</span>
                         </label>
                         <Controller
                           name="quantity"
@@ -788,7 +788,7 @@ export default function CreateSubContract() {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                          Measurement Unit <span className="text-red-500">*</span>
+                          {t('createSubContract.measurementUnit')} <span className="text-red-500">*</span>
                         </label>
                         <Controller
                           name="measurementUnitId"
@@ -799,15 +799,15 @@ export default function CreateSubContract() {
                               onValueChange={field.onChange}
                             >
                               <SelectTrigger className={`text-sm ${errors.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                                <SelectValue placeholder="Select measurement unit" />
+                                <SelectValue placeholder={t('createSubContract.selectMeasurementUnit')} />
                               </SelectTrigger>
                               <SelectContent>
                                 {loadingUnits ? (
-                                  <SelectItem value="loading" disabled>Loading units...</SelectItem>
+                                  <SelectItem value="loading" disabled>{t('createSubContract.loadingUnits')}</SelectItem>
                                 ) : unitsError ? (
-                                  <SelectItem value="error" disabled>Error loading units</SelectItem>
+                                  <SelectItem value="error" disabled>{t('createSubContract.errorLoadingUnits')}</SelectItem>
                                 ) : measurementUnits.length === 0 ? (
-                                  <SelectItem value="empty" disabled>No units available</SelectItem>
+                                  <SelectItem value="empty" disabled>{t('createSubContract.noUnitsAvailable')}</SelectItem>
                                 ) : (
                                   measurementUnits.map((unit) => (
                                     <SelectItem key={unit.key} value={unit.key}>
@@ -835,14 +835,14 @@ export default function CreateSubContract() {
                 onClick={handleCreateSubContract}
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                Create Sub - Contract
+                {t('createSubContract.createSubContract')}
               </Button>
               <Button
                 onClick={handleCancel}
                 variant="outline"
                 className="w-full py-3 text-base font-medium border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                Cancel
+                {t('createSubContract.cancel')}
               </Button>
             </div>
           </div>
@@ -854,10 +854,10 @@ export default function CreateSubContract() {
         <DialogContent className="max-w-xl mx-auto p-0 overflow-hidden">
           <DialogHeader className="bg-white dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
             <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              Create Sub-Contract
+              {t('createSubContract.confirmModal.title')}
             </DialogTitle>
             <DialogDescription className="text-xs text-gray-600 dark:text-gray-400">
-              Review and confirm the sub-contract details before creating
+              {t('createSubContract.confirmModal.description')}
             </DialogDescription>
           </DialogHeader>
           
@@ -865,19 +865,19 @@ export default function CreateSubContract() {
             {/* Partial Pricing Summary Card */}
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 space-y-2">
               <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                Partial Pricing Summary
+                {t('createSubContract.confirmModal.partialPricingSummary')}
               </h3>
               
               <div className="space-y-1">
                 <div className="flex justify-between items-center text-xs">
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Quantity Sub-Contract:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.quantitySubContract')}</span>
                     <div className="text-blue-600 dark:text-blue-400 font-semibold">
                       {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-gray-600 dark:text-gray-400">Open Contract:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.openContract')}</span>
                     <div className="text-gray-900 dark:text-gray-100 font-semibold">
                       {formatQuantity(parentContractData?.inventory?.open)} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
@@ -901,13 +901,13 @@ export default function CreateSubContract() {
               {/* Contract Changes Card */}
               <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 space-y-1">
                 <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                  Contract Changes
+                  {t('createSubContract.confirmModal.contractChanges')}
                 </h3>
                 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">ID Contract:</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Quantity</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.idContract')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.quantity')}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -920,7 +920,7 @@ export default function CreateSubContract() {
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Balance</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.balance')}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -935,15 +935,15 @@ export default function CreateSubContract() {
               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2 space-y-1">
                 <div className="flex justify-between items-center">
                   <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                    New Sub Contract
+                    {t('createSubContract.confirmModal.newSubContract')}
                   </h3>
                   <div className="text-sm">→</div>
                 </div>
                 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">ID Contract:</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Quantity</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.idContract')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.quantity')}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -956,7 +956,7 @@ export default function CreateSubContract() {
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Balance</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.balance')}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -969,8 +969,8 @@ export default function CreateSubContract() {
                   <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Basis</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Futures</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.basis')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.futures')}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -983,7 +983,7 @@ export default function CreateSubContract() {
                   </div>
                   
                   <div className="flex justify-between items-center pt-1">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Price</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.price')}</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -1005,7 +1005,7 @@ export default function CreateSubContract() {
                 className="flex-1 h-8 text-xs border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                 disabled={isSubmittingSubContract}
               >
-                Cancel
+                {t('createSubContract.confirmModal.cancel')}
               </Button>
               <Button
                 onClick={handleConfirmSubmission}
@@ -1015,10 +1015,10 @@ export default function CreateSubContract() {
                 {isSubmittingSubContract ? (
                   <div className="flex items-center space-x-1">
                     <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Creating...</span>
+                    <span>{t('createSubContract.confirmModal.creating')}</span>
                   </div>
                 ) : (
-                  'Create'
+                  t('createSubContract.confirmModal.create')
                 )}
               </Button>
             </div>
