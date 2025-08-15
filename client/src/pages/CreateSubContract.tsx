@@ -213,6 +213,7 @@ export default function CreateSubContract() {
   // Modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [formDataForSubmission, setFormDataForSubmission] = useState<SubContractFormData | null>(null);
+  const [isSubmittingSubContract, setIsSubmittingSubContract] = useState(false);
   
   // Sub-contract key state for API
   const [subContractKey, setSubContractKey] = useState<string | null>(initialSubContractKey);
@@ -347,6 +348,10 @@ export default function CreateSubContract() {
     
     const data = formDataForSubmission;
     
+    // Start loading and track timing for minimum duration
+    setIsSubmittingSubContract(true);
+    const startTime = Date.now();
+    
     try {
       // Get auth data from localStorage  
       const createdById = localStorage.getItem('user_id') || '';
@@ -421,7 +426,16 @@ export default function CreateSubContract() {
       const result = await response.json();
       console.log('✅ Sub-contract created successfully:', result);
       
-      // Close modal
+      // Calculate elapsed time and ensure minimum duration of 0.3 seconds
+      const elapsedTime = Date.now() - startTime;
+      const minimumDuration = 300; // 0.3 seconds in milliseconds
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+      
+      // Wait for remaining time if API was faster than minimum duration
+      await new Promise(resolve => setTimeout(resolve, remainingTime));
+      
+      // Close modal and reset states
+      setIsSubmittingSubContract(false);
       setShowConfirmModal(false);
       setFormDataForSubmission(null);
       
@@ -430,6 +444,17 @@ export default function CreateSubContract() {
       
     } catch (error) {
       console.error('❌ Error creating sub-contract:', error);
+      
+      // Calculate elapsed time and ensure minimum duration even for errors
+      const elapsedTime = Date.now() - startTime;
+      const minimumDuration = 300; // 0.3 seconds in milliseconds
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+      
+      // Wait for remaining time if API was faster than minimum duration
+      await new Promise(resolve => setTimeout(resolve, remainingTime));
+      
+      // Reset loading state
+      setIsSubmittingSubContract(false);
       // Error will be visible in console, no modal/alert needed
     }
   };
@@ -978,14 +1003,23 @@ export default function CreateSubContract() {
                 onClick={handleCancelSubmission}
                 variant="outline"
                 className="flex-1 h-8 text-xs border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                disabled={isSubmittingSubContract}
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleConfirmSubmission}
-                className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700 text-white font-medium"
+                className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSubmittingSubContract}
               >
-                Create
+                {isSubmittingSubContract ? (
+                  <div className="flex items-center space-x-1">
+                    <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Creating...</span>
+                  </div>
+                ) : (
+                  'Create'
+                )}
               </Button>
             </div>
           </div>
