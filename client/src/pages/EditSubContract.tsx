@@ -515,7 +515,6 @@ export default function EditSubContract() {
                   console.log('🐛 DEBUG - Current Sub-Contract:', currentSubContract);
                   console.log('🐛 DEBUG - Parent Contract Data:', parentContractData);
                   console.log('🐛 DEBUG - Form Errors:', errors);
-                  alert('Debug info logged to console');
                 }}
                 variant="outline"
                 className="w-full py-2 text-sm font-medium border border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
