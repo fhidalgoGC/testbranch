@@ -138,6 +138,13 @@ export default function CreateSubContract() {
     console.log('- Count:', measurementUnits.length);
     console.log('🔍 Parent Contract measurement_unit_id:', parentContractData?.measurement_unit_id);
     console.log('🔍 Parent Contract measurement_unit:', parentContractData?.measurement_unit);
+    
+    // Debug form default values
+    console.log('📝 Form Default Values Debug:');
+    console.log('- Today date:', new Date().toISOString().split('T')[0]);
+    console.log('- Open inventory:', parentContractData?.inventory?.open);
+    console.log('- Contract created_at:', parentContractData?.created_at);
+    console.log('- Min date for picker:', parentContractData?.created_at ? new Date(parentContractData.created_at) : new Date());
   }, [measurementUnits, loadingUnits, unitsError, parentContractData]);
   
   // Form setup with react-hook-form
@@ -153,8 +160,8 @@ export default function CreateSubContract() {
       future: parentContractData?.price_schedule?.[0]?.future_price ?? 0,
       basis: parentContractData?.price_schedule?.[0]?.basis ?? contractData.basis,
       totalPrice: (parentContractData?.price_schedule?.[0]?.future_price ?? 0) + (parentContractData?.price_schedule?.[0]?.basis ?? contractData.basis),
-      totalDate: '2025-08-13',
-      quantity: 700.00,
+      totalDate: new Date().toISOString().split('T')[0], // Fecha de hoy en formato YYYY-MM-DD
+      quantity: parentContractData?.inventory?.open ?? 0, // Usar el valor "open" del inventario
       measurementUnitId: parentContractData?.measurement_unit || 'bu60',
       contact: contractData.contact,
       shipmentPeriod: contractData.shipmentPeriod,
@@ -496,6 +503,7 @@ export default function CreateSubContract() {
                               placeholder="Select date"
                               className="text-sm"
                               error={!!errors.totalDate}
+                              minDate={parentContractData?.created_at ? new Date(parentContractData.created_at) : new Date()}
                             />
                           )}
                         />
