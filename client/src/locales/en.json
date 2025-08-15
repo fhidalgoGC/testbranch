@@ -441,5 +441,15 @@
     "message": "Add your first sub-contract to start managing partial pricing for this basis contract.",
     "buttonText": "Create First Sub-Contract",
     "chartMessage": "Chart will appear when you create sub-contracts"
+  },
+  "deleteSubContract": {
+    "title": "Delete Sub-Contract",
+    "description": "This action cannot be undone. This will permanently delete the selected sub-contract.",
+    "contractDetails": "Sub-contract details to delete:",
+    "contractNumber": "Sub-contract number",
+    "quantity": "Quantity",
+    "cancel": "Cancel",
+    "deleteButton": "Delete Sub-Contract",
+    "deleting": "Deleting..."
   }
 }

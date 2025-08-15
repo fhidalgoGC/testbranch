@@ -449,5 +449,15 @@
     "message": "Agrega tu primer sub-contrato para comenzar a manejar precios parciales para este contrato basis.",
     "buttonText": "Crear Primer Sub-Contrato",
     "chartMessage": "El gráfico aparecerá cuando crees sub-contratos"
+  },
+  "deleteSubContract": {
+    "title": "Eliminar Sub-Contrato",
+    "description": "Esta acción no se puede deshacer. Se eliminará permanentemente el sub-contrato seleccionado.",
+    "contractDetails": "Detalles del sub-contrato a eliminar:",
+    "contractNumber": "Número de sub-contrato",
+    "quantity": "Cantidad",
+    "cancel": "Cancelar",
+    "deleteButton": "Eliminar Sub-Contrato",
+    "deleting": "Eliminando..."
   }
 }

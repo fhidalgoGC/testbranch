@@ -19,6 +19,7 @@ import { formatNumber } from '@/lib/numberFormatter';
 import SubContractsSection from '@/components/contracts/SubContractsSection';
 import { SubContract, FieldConfig, ProgressBarConfig } from '@/components/contracts/SubContractCard';
 import { authenticatedFetch, hasAuthTokens } from '@/utils/apiInterceptors';
+import { deleteSubContract } from '@/services/contractsService';
 
 export default function PurchaseContractDetail() {
   const { t } = useTranslation();
@@ -64,6 +65,11 @@ export default function PurchaseContractDetail() {
   // Delete confirmation modal states
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [deleting, setDeleting] = useState<boolean>(false);
+  
+  // Sub-contract delete modal states
+  const [showDeleteSubContractModal, setShowDeleteSubContractModal] = useState<boolean>(false);
+  const [deletingSubContract, setDeletingSubContract] = useState<boolean>(false);
+  const [selectedSubContractForDelete, setSelectedSubContractForDelete] = useState<any>(null);
   
 
   
@@ -370,6 +376,50 @@ export default function PurchaseContractDetail() {
     } finally {
       setDeleting(false);
       setShowDeleteModal(false);
+    }
+  };
+
+  // Función para eliminar sub-contrato
+  const handleDeleteSubContract = async () => {
+    if (!selectedSubContractForDelete) return;
+    
+    setDeletingSubContract(true);
+    const startTime = Date.now();
+    
+    try {
+      console.log('🗑️ Deleting sub-contract:', selectedSubContractForDelete.id);
+      
+      await deleteSubContract(selectedSubContractForDelete.id);
+      console.log('✅ Sub-contract deleted successfully');
+      
+      // Calculate elapsed time and ensure minimum duration of 0.3 seconds
+      const elapsedTime = Date.now() - startTime;
+      const minimumDuration = 300; // 0.3 seconds in milliseconds
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+      
+      // Wait for remaining time if API was faster than minimum duration
+      await new Promise(resolve => setTimeout(resolve, remainingTime));
+      
+      // Close modal and refresh data
+      setShowDeleteSubContractModal(false);
+      setSelectedSubContractForDelete(null);
+      
+      // Usar la misma función de refresh que el botón actualizar
+      await handleFullRefresh();
+      
+    } catch (error) {
+      console.error('❌ Error deleting sub-contract:', error);
+    } finally {
+      setDeletingSubContract(false);
+    }
+  };
+
+  // Función para abrir modal de confirmación de eliminación de sub-contrato
+  const openDeleteSubContractModal = (subContractId: string) => {
+    const subContract = subContractsData.find(sc => sc.id === subContractId);
+    if (subContract) {
+      setSelectedSubContractForDelete(subContract);
+      setShowDeleteSubContractModal(true);
     }
   };
 
@@ -1104,7 +1154,7 @@ export default function PurchaseContractDetail() {
               onViewSubContract={(id) => console.log('View sub-contract:', id)}
               onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
               onEditSubContract={(id) => console.log('Edit sub-contract:', id)}
-              onDeleteSubContract={(id) => console.log('Delete sub-contract:', id)}
+              onDeleteSubContract={openDeleteSubContractModal}
               onSettleSubContract={(id) => console.log('Settle sub-contract:', id)}
             />
           </div>
@@ -1192,6 +1242,71 @@ export default function PurchaseContractDetail() {
                 <>
                   <Trash2 className="w-4 h-4 mr-2" />
                   {t('deleteContract.deleteButton')}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Sub-Contract Confirmation Modal */}
+      <Dialog open={showDeleteSubContractModal} onOpenChange={setShowDeleteSubContractModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-red-600">
+              <Trash2 className="w-5 h-5" />
+              <span>{t('deleteSubContract.title')}</span>
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
+              {t('deleteSubContract.description')}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 my-4">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
+                  <span className="text-red-600 dark:text-red-400 text-sm font-semibold">!</span>
+                </div>
+              </div>
+              <div className="flex-grow">
+                <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">
+                  {t('deleteSubContract.contractDetails')}
+                </h4>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  <strong>{t('deleteSubContract.contractNumber')}:</strong> {selectedSubContractForDelete?.contractNumber || 'N/A'}
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  <strong>{t('deleteSubContract.quantity')}:</strong> {selectedSubContractForDelete?.quantity || 0} {selectedSubContractForDelete?.unit || 'bu60'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteSubContractModal(false)}
+              disabled={deletingSubContract}
+              className="flex-1"
+            >
+              {t('deleteSubContract.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteSubContract}
+              disabled={deletingSubContract}
+              className="flex-1"
+            >
+              {deletingSubContract ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  {t('deleteSubContract.deleting')}
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {t('deleteSubContract.deleteButton')}
                 </>
               )}
             </Button>

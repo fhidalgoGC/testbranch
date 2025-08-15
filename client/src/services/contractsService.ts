@@ -312,3 +312,42 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     };
   }
 };
+
+// Función para eliminar un sub-contrato
+export const deleteSubContract = async (subContractId: string): Promise<boolean> => {
+  try {
+    console.log('🗑️ Iniciando eliminación de sub-contrato:', subContractId);
+
+    // Headers con JWT y partition key
+    const headers = {
+      'Content-Type': 'application/json',
+      'accept': '*/*',
+      '_partitionkey': localStorage.getItem('partitionKey') || '',
+      'authorization': `Bearer ${localStorage.getItem('jwtToken') || ''}`,
+      'bt-organization': localStorage.getItem('partitionKey') || '',
+      'bt-uid': localStorage.getItem('partitionKey') || '',
+      'organization_id': localStorage.getItem('partitionKey') || '',
+      'pk-organization': localStorage.getItem('partitionKey') || ''
+    };
+
+    const response = await fetch(`https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${subContractId}`, {
+      method: 'DELETE',
+      headers: headers
+    });
+
+    console.log('📡 Delete response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Error al eliminar sub-contrato! status: ${response.status}, response: ${errorText}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    console.log('✅ Sub-contrato eliminado exitosamente');
+    return true;
+
+  } catch (error) {
+    console.error('❌ Error eliminando sub-contrato:', error);
+    throw error;
+  }
+};
