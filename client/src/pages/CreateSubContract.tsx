@@ -129,6 +129,15 @@ export default function CreateSubContract() {
   // API hooks
   const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
   
+  // Debug measurement units loading
+  useEffect(() => {
+    console.log('🔍 Measurement Units Debug:');
+    console.log('- Loading:', loadingUnits);
+    console.log('- Error:', unitsError);
+    console.log('- Data:', measurementUnits);
+    console.log('- Count:', measurementUnits.length);
+  }, [measurementUnits, loadingUnits, unitsError]);
+  
   // Form setup with react-hook-form
   const form = useForm<SubContractFormData>({
     resolver: zodResolver(subContractSchema),
@@ -144,7 +153,7 @@ export default function CreateSubContract() {
       totalPrice: (parentContractData?.price_schedule?.[0]?.future_price ?? 0) + (parentContractData?.price_schedule?.[0]?.basis ?? contractData.basis),
       totalDate: '2025-08-13',
       quantity: 700.00,
-      measurementUnitId: parentContractData?.measurement_unit_id || 'bushel60',
+      measurementUnitId: parentContractData?.measurement_unit_id || 'bu60',
       contact: contractData.contact,
       shipmentPeriod: contractData.shipmentPeriod,
     }
