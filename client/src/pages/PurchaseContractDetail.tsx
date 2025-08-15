@@ -209,7 +209,7 @@ export default function PurchaseContractDetail() {
         ),
         // 2. Refresh de sub-contratos
         authenticatedFetch(
-          `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(JSON.stringify({ "contract_id": contractId }))}`,
+          `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(JSON.stringify({ "contract_id": contractId }))}&limit=100`,
           {
             method: 'GET',
             customHeaders: {
@@ -438,7 +438,7 @@ export default function PurchaseContractDetail() {
       }
 
       const filter = JSON.stringify({ "contract_id": contractId });
-      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(filter)}`;
+      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(filter)}&limit=100`;
 
       // Usar el interceptor authenticatedFetch que maneja automáticamente JWT + partition_key
       const response = await authenticatedFetch(url, {
