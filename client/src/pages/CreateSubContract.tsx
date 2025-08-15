@@ -266,14 +266,46 @@ export default function CreateSubContract() {
   // Watch values for calculations
   const futureValue = watch('future');
   const basisValue = watch('basis');
+  const quantityValue = watch('quantity');
+  const totalPriceValue = watch('totalPrice');
+  const measurementUnitValue = watch('measurementUnitId');
+  const totalDateValue = watch('totalDate');
+
+  // Auto-save form data to Redux state whenever fields change
+  useEffect(() => {
+    const formData = {
+      future: futureValue,
+      basis: basisValue,
+      quantity: quantityValue,
+      totalPrice: totalPriceValue,
+      measurementUnitId: measurementUnitValue,
+      totalDate: totalDateValue,
+      contractNumber: parentContractData?.folio || 'SPC-46'
+    };
+    
+    updateState({ formData });
+    console.log('💾 Auto-saved form data to Redux:', formData);
+  }, [futureValue, basisValue, quantityValue, totalPriceValue, measurementUnitValue, totalDateValue, updateState, parentContractData?.folio]);
 
   const handleCancel = () => {
     setLocation(`/purchase-contracts/${contractId}`);
   };
 
   const handleCreateSubContract = handleSubmit((data: SubContractFormData) => {
-    // Store form data for submission and open confirmation modal
-    setFormDataForSubmission(data);
+    // Get the most up-to-date data from Redux state (auto-saved)
+    const stateFormData = formState.formData;
+    const mergedData = {
+      ...data,
+      ...stateFormData, // Redux state takes precedence
+      contractNumber: parentContractData?.folio || 'SPC-46'
+    };
+    
+    console.log('📋 Form submission data:', data);
+    console.log('📋 Redux state data:', stateFormData);
+    console.log('📋 Merged data for modal:', mergedData);
+    
+    // Store merged data for submission and open confirmation modal
+    setFormDataForSubmission(mergedData);
     setShowConfirmModal(true);
   });
 
@@ -305,7 +337,7 @@ export default function CreateSubContract() {
         created_by_name: createdByName,
         price_schedule: [{
           pricing_type: 'basis',
-          price: data.basis, // Use basis as price per curl example
+          price: data.totalPrice, // Use totalPrice (future + basis)
           basis: data.basis,
           future_price: data.future,
           basis_operation: 'add',
@@ -406,6 +438,15 @@ export default function CreateSubContract() {
               console.log('📊 Create Sub Contract State:', createSubContractState);
               console.log('🔑 Sub-contract Key:', subContractKey);
               console.log('🔐 Loading Key:', loadingSubContractKey);
+              console.log('📝 Redux Form Data:', formState.formData);
+              console.log('📝 Current Form Values:', { 
+                future: futureValue, 
+                basis: basisValue, 
+                quantity: quantityValue, 
+                totalPrice: totalPriceValue,
+                measurementUnit: measurementUnitValue,
+                date: totalDateValue
+              });
               console.log('=== END DEBUG ===');
             }}
             className="bg-yellow-500 hover:bg-yellow-600 text-white"
