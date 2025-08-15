@@ -421,10 +421,12 @@ export default function CreateSubContract() {
       const result = await response.json();
       console.log('✅ Sub-contract created successfully:', result);
       
-      // Close modal and navigate back
+      // Close modal
       setShowConfirmModal(false);
       setFormDataForSubmission(null);
-      setLocation(`/purchase-contracts/${contractId}`);
+      
+      // Navigate back to contract detail and trigger data refresh
+      setLocation(`/purchase-contracts/${contractId}?refresh=true`);
       
     } catch (error) {
       console.error('❌ Error creating sub-contract:', error);

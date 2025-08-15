@@ -25,7 +25,6 @@ export default function PurchaseContractDetail() {
   const [location, setLocation] = useLocation();
   
   const contractId = params.id;
-  const dispatch = useDispatch();
   
   // Hook para persistir estado del detalle de contrato
   const { contractState, updateState } = useContractDetailState(contractId!);
@@ -34,6 +33,9 @@ export default function PurchaseContractDetail() {
   // Obtener contratos del state de Redux
   const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
   const contractsData = contractsState.contractsData || [];
+  
+  // Get dispatch function for updating Redux state
+  const dispatch = useDispatch();
   
   usePageTracking(`/purchase-contracts/${contractId}`);
   
@@ -55,6 +57,7 @@ export default function PurchaseContractDetail() {
   const [participantAddress, setParticipantAddress] = useState<string>('Loading address...');
   const [subContractsData, setSubContractsData] = useState<any[]>([]);
   const [loadingSubContracts, setLoadingSubContracts] = useState<boolean>(false);
+  const [refreshingContract, setRefreshingContract] = useState<boolean>(false);
   
 
   
@@ -101,6 +104,62 @@ export default function PurchaseContractDetail() {
     } catch (error) {
       console.error('❌ Error al cargar dirección del participante:', error);
       setParticipantAddress('Error loading address');
+    }
+  };
+
+  // Función para refrescar los datos del contrato desde la API
+  const refreshContractData = async (contractId: string) => {
+    try {
+      setRefreshingContract(true);
+      console.log('🔄 Refreshing contract data for ID:', contractId);
+      
+      const authCheck = hasAuthTokens();
+      if (!authCheck.isAuthenticated) {
+        console.error('❌ No authentication tokens available for contract refresh');
+        return;
+      }
+      
+      // Call the contract detail endpoint using the provided curl structure
+      const response = await authenticatedFetch(
+        `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/${contractId}`,
+        {
+          method: 'GET',
+          customHeaders: {
+            'priority': 'u=1, i',
+            'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"'
+          }
+        }
+      );
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Contract data refreshed successfully:', result);
+        
+        if (result.data) {
+          // Update the current contract data immediately
+          setCurrentContractData(result.data);
+          console.log('🔄 Updated contract data in local state');
+          
+          // Reload related data
+          const seller = result.data.participants?.find((p: any) => p.role === 'seller');
+          if (seller && seller.people_id) {
+            loadParticipantAddress(seller.people_id);
+          }
+          
+          // Reload sub-contracts if it's a basis contract
+          if (result.data.price_schedule?.[0]?.pricing_type === 'basis') {
+            loadSubContracts(contractId);
+          }
+        }
+      } else {
+        console.error('❌ Failed to refresh contract data:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('❌ Error refreshing contract data:', error);
+    } finally {
+      setRefreshingContract(false);
     }
   };
 
@@ -212,6 +271,21 @@ export default function PurchaseContractDetail() {
     }
   };
   
+  // Check for refresh parameter and trigger data refresh
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get('refresh') === 'true';
+    
+    if (shouldRefresh && contractId) {
+      console.log('🔄 Refresh parameter detected, refreshing contract data');
+      refreshContractData(contractId);
+      
+      // Clean up the URL parameter
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [contractId, location]);
+
   // Buscar y establecer el contrato específico al cargar la página
   useEffect(() => {
     console.log('=== EFFECT DE BÚSQUEDA EJECUTADO ===');
