@@ -50,6 +50,8 @@ interface CreateSubContractState {
   selectedCommodity: string | null;
   selectedMeasurementUnit: string | null;
   pricingType: 'fixed' | 'basis';
+  parentContractData: any | null; // Estado del contrato principal
+  subContractsData: any[]; // Sub-contratos del contrato principal
 }
 
 interface PageState {
@@ -88,6 +90,8 @@ const initialCreateSubContractState: CreateSubContractState = {
   selectedCommodity: null,
   selectedMeasurementUnit: null,
   pricingType: 'fixed',
+  parentContractData: null,
+  subContractsData: [],
 };
 
 const initialState: PageState = {

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { useContractDetailState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateCreateSubContractState } from '@/store/slices/pageStateSlice';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +25,7 @@ export default function PurchaseContractDetail() {
   const [location, setLocation] = useLocation();
   
   const contractId = params.id;
+  const dispatch = useDispatch();
   
   // Hook para persistir estado del detalle de contrato
   const { contractState, updateState } = useContractDetailState(contractId!);
@@ -765,7 +767,17 @@ export default function PurchaseContractDetail() {
               parentContractFixed={currentContractData?.inventory?.fixed || 1000}
               parentContractQuantity={currentContractData?.quantity || 0}
 
-              onNewSubContract={() => setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`)}
+              onNewSubContract={() => {
+                // Establecer el estado del contrato principal en Redux antes de navegar
+                dispatch(updateCreateSubContractState({
+                  contractId: contractId!,
+                  updates: {
+                    parentContractData: currentContractData,
+                    subContractsData: subContractsData
+                  }
+                }));
+                setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`);
+              }}
               onViewSubContract={(id) => console.log('View sub-contract:', id)}
               onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
               onEditSubContract={(id) => console.log('Edit sub-contract:', id)}

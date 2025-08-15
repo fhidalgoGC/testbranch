@@ -73,6 +73,11 @@ export default function CreateSubContract() {
   const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
   const contractsData = contractsState.contractsData || [];
   
+  // Obtener el estado del contrato principal para crear sub-contrato
+  const createSubContractState = useSelector((state: any) => state.pageState.createSubContract[contractId!]);
+  const parentContractData = createSubContractState?.parentContractData;
+  const subContractsData = createSubContractState?.subContractsData || [];
+  
   usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/create`);
   
   // Notificar navegación al cargar la página
@@ -80,20 +85,41 @@ export default function CreateSubContract() {
     handleNavigateToPage('createSubContract', contractId);
   }, [contractId]);
 
-  // Estados locales
-  const [contractData] = useState<ContractData>({
-    contractNumber: 'SPC-46',
-    contractDate: '7/31/2025',
-    customerNumber: 'abcdef',
-    idContract: '8',
-    referenceNumber: 'NA',
-    commodity: 'HRW - Wheat Hard Red Winter',
-    quantityUnits: 1400,
-    price: 9.000,
-    basis: 1000.00,
-    future: 850.25,
-    contact: '-',
-    shipmentPeriod: '-'
+  // Estados locales - usar datos del contrato principal si están disponibles
+  const [contractData] = useState<ContractData>(() => {
+    if (parentContractData) {
+      // Mapear datos del contrato principal al formato esperado
+      return {
+        contractNumber: parentContractData.folio || 'N/A',
+        contractDate: parentContractData.created_at ? new Date(parentContractData.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
+        customerNumber: parentContractData.participants?.find((p: any) => p.role === 'buyer')?.name || 'N/A',
+        idContract: parentContractData._id?.slice(-8) || 'N/A',
+        referenceNumber: parentContractData.reference_number || 'N/A',
+        commodity: parentContractData.commodity?.name || 'N/A',
+        quantityUnits: parentContractData.quantity || 0,
+        price: parentContractData.price_schedule?.[0]?.price || 0,
+        basis: parentContractData.price_schedule?.[0]?.basis || 0,
+        future: parentContractData.price_schedule?.[0]?.future_price || 0,
+        contact: '-',
+        shipmentPeriod: '-'
+      };
+    }
+    
+    // Datos por defecto si no hay datos del contrato principal
+    return {
+      contractNumber: 'SPC-46',
+      contractDate: '7/31/2025',
+      customerNumber: 'abcdef',
+      idContract: '8',
+      referenceNumber: 'NA',
+      commodity: 'HRW - Wheat Hard Red Winter',
+      quantityUnits: 1400,
+      price: 9.000,
+      basis: 1000.00,
+      future: 850.25,
+      contact: '-',
+      shipmentPeriod: '-'
+    };
   });
 
   // API hooks
@@ -198,6 +224,22 @@ export default function CreateSubContract() {
               </h1>
             </div>
           </div>
+          
+          {/* Debug Button */}
+          <Button 
+            onClick={() => {
+              console.log('=== DEBUG STATE - CREATE SUB CONTRACT ===');
+              console.log('🔍 Parent Contract Data:', parentContractData);
+              console.log('📋 Sub-contracts Data:', subContractsData);
+              console.log('🧾 Contract Data (mapped):', contractData);
+              console.log('📊 Create Sub Contract State:', createSubContractState);
+              console.log('=== END DEBUG ===');
+            }}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white"
+            size="sm"
+          >
+            Debug State
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
