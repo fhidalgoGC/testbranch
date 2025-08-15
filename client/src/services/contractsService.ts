@@ -318,21 +318,22 @@ export const deleteSubContract = async (subContractId: string): Promise<boolean>
   try {
     console.log('🗑️ Iniciando eliminación de sub-contrato:', subContractId);
 
-    // Headers con JWT y partition key
-    const headers = {
-      'Content-Type': 'application/json',
-      'accept': '*/*',
-      '_partitionkey': localStorage.getItem('partitionKey') || '',
-      'authorization': `Bearer ${localStorage.getItem('jwtToken') || ''}`,
-      'bt-organization': localStorage.getItem('partitionKey') || '',
-      'bt-uid': localStorage.getItem('partitionKey') || '',
-      'organization_id': localStorage.getItem('partitionKey') || '',
-      'pk-organization': localStorage.getItem('partitionKey') || ''
-    };
-
-    const response = await fetch(`https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${subContractId}`, {
+    // Usar authenticatedFetch del interceptor
+    const { authenticatedFetch } = await import('@/utils/apiInterceptors');
+    
+    const response = await authenticatedFetch(`https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${subContractId}`, {
       method: 'DELETE',
-      headers: headers
+      customHeaders: {
+        '_partitionkey': localStorage.getItem('partition_key') || '',
+        'bt-organization': localStorage.getItem('partition_key') || '',
+        'bt-uid': localStorage.getItem('partition_key') || '',
+        'organization_id': localStorage.getItem('partition_key') || '',
+        'pk-organization': localStorage.getItem('partition_key') || '',
+        'priority': 'u=1, i',
+        'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"'
+      }
     });
 
     console.log('📡 Delete response status:', response.status);
