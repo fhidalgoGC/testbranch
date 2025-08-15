@@ -250,6 +250,7 @@ export default function EditSubContract() {
           quantity: currentSubContract.quantity,
           future: currentSubContract.price_schedule?.[0]?.future_price,
           basis: currentSubContract.price_schedule?.[0]?.basis,
+          price: currentSubContract.price_schedule?.[0]?.price,
           totalPrice: currentSubContract.total_price,
           measurementUnit: currentSubContract.measurement_unit
         });
