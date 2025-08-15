@@ -260,30 +260,26 @@ export default function CreateSubContract() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">ID Contract</span>
-                      <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono">
-                        #{contractData.idContract}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Contract Date</span>
-                      <span className="text-sm font-medium">{contractData.contractDate}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {parentContractData?.type === 'purchase' ? 'Seller' : 'Buyer'}
-                      </span>
-                      <span className="text-sm font-medium">{contractData.customerNumber}</span>
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">ID Contract</span>
+                    <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono">
+                      #{contractData.idContract}
+                    </Badge>
                   </div>
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Reference Number</span>
-                      <span className="text-sm font-medium">{contractData.referenceNumber}</span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Contract Date</span>
+                    <span className="text-sm font-medium">{contractData.contractDate}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {parentContractData?.type === 'purchase' ? 'Seller' : 'Buyer'}
+                    </span>
+                    <span className="text-sm font-medium">{contractData.customerNumber}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Reference Number</span>
+                    <span className="text-sm font-medium">{contractData.referenceNumber}</span>
                   </div>
                 </div>
               </CardContent>
