@@ -361,12 +361,15 @@ export default function EditSubContract() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
-            <Link href={`/purchase-contracts/${contractId}`}>
-              <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('editSubContract.backToContract')}
-              </Button>
-            </Link>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              onClick={handleCancel}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('editSubContract.backToContract')}
+            </Button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {t('editSubContract.editSubContract')}
