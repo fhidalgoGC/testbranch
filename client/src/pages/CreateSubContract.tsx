@@ -22,8 +22,8 @@ import { formatNumber } from '@/lib/numberFormatter';
 import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { authenticatedFetch } from '@/utils/apiInterceptors';
 
-// Sub-contract form schema matching API structure
-const subContractSchema = z.object({
+// Sub-contract form validation schema with business rules
+const createSubContractValidationSchema = (openInventory: number = 0) => z.object({
   // Form display fields
   contractNumber: z.string().min(1, 'Contract number is required'),
   contractDate: z.string().min(1, 'Contract date is required'),
@@ -31,19 +31,39 @@ const subContractSchema = z.object({
   idContract: z.string().min(1, 'ID Contract is required'),
   referenceNumber: z.string().min(1, 'Reference number is required'),
   commodity: z.string().min(1, 'Commodity is required'),
-  contact: z.string(),
-  shipmentPeriod: z.string(),
+  contact: z.string().optional(),
+  shipmentPeriod: z.string().optional(),
   
-  // API fields
-  future: z.number().min(0, 'Future price must be positive'),
+  // API fields with business validation
+  future: z.number().optional(), // Future is not required
   basis: z.number(),
   totalPrice: z.number().min(0, 'Total price must be positive'),
-  totalDate: z.string().min(1, 'Total date is required'),
-  quantity: z.number().min(0.01, 'Quantity must be greater than 0'),
-  measurementUnitId: z.string().min(1, 'Measurement unit is required'),
+  totalDate: z.string().min(1, 'Date is required'), // Required field
+  quantity: z.number()
+    .min(0.01, 'Quantity must be greater than 0') // Cannot be negative or zero
+    .max(openInventory, `Quantity cannot exceed available inventory (${openInventory})`), // Cannot exceed open inventory
+  measurementUnitId: z.string().min(1, 'Measurement unit is required'), // Required field
 });
 
-type SubContractFormData = z.infer<typeof subContractSchema>;
+// Create a base schema for type inference
+const baseSubContractSchema = z.object({
+  contractNumber: z.string(),
+  contractDate: z.string(),
+  customerNumber: z.string(),
+  idContract: z.string(),
+  referenceNumber: z.string(),
+  commodity: z.string(),
+  contact: z.string().optional(),
+  shipmentPeriod: z.string().optional(),
+  future: z.number().optional(),
+  basis: z.number(),
+  totalPrice: z.number(),
+  totalDate: z.string(),
+  quantity: z.number(),
+  measurementUnitId: z.string(),
+});
+
+type SubContractFormData = z.infer<typeof baseSubContractSchema>;
 
 interface ContractData {
   contractNumber: string; // Ya no se usa, mantener por compatibilidad
@@ -240,9 +260,15 @@ export default function CreateSubContract() {
     console.log('- Min date for picker:', parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date());
   }, [measurementUnits, loadingUnits, unitsError, parentContractData]);
   
+  // Get open inventory for validation
+  const openInventory = parentContractData?.inventory?.open || 0;
+  
+  // Create dynamic validation schema with current open inventory
+  const validationSchema = createSubContractValidationSchema(openInventory);
+  
   // Form setup with react-hook-form
   const form = useForm<SubContractFormData>({
-    resolver: zodResolver(subContractSchema),
+    resolver: zodResolver(validationSchema),
     defaultValues: {
       contractNumber: contractData.idContract, // Usar idContract (folio) como contractNumber
       contractDate: contractData.contractDate,
@@ -456,6 +482,8 @@ export default function CreateSubContract() {
                 measurementUnit: measurementUnitValue,
                 date: totalDateValue
               });
+              console.log('❌ Form Validation Errors:', errors);
+              console.log('📊 Open Inventory Limit:', openInventory);
               console.log('=== END DEBUG ===');
             }}
             className="bg-yellow-500 hover:bg-yellow-600 text-white"
