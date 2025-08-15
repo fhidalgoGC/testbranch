@@ -625,9 +625,9 @@ export default function CreateSubContract() {
 
       {/* Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-        <DialogContent className="max-w-lg mx-auto p-0 overflow-hidden">
-          <DialogHeader className="bg-white dark:bg-gray-900 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+        <DialogContent className="max-w-xl mx-auto p-0 overflow-hidden">
+          <DialogHeader className="bg-white dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+            <DialogTitle className="text-base font-semibold text-gray-900 dark:text-gray-100">
               Create Sub-Contract
             </DialogTitle>
             <DialogDescription className="text-xs text-gray-600 dark:text-gray-400">
@@ -635,18 +635,14 @@ export default function CreateSubContract() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="p-4 space-y-4">
+          <div className="p-3 space-y-3">
             {/* Partial Pricing Summary Card */}
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-3">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 space-y-2">
+              <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
                 Partial Pricing Summary
               </h3>
               
-              <div className="space-y-2">
-                <div className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                  Quantity Actual Overview
-                </div>
-                
+              <div className="space-y-1">
                 <div className="flex justify-between items-center text-xs">
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">Quantity Sub-Contract:</span>
@@ -663,9 +659,9 @@ export default function CreateSubContract() {
                 </div>
                 
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1">
                   <div 
-                    className="bg-blue-500 h-1.5 rounded-full transition-all duration-500" 
+                    className="bg-blue-500 h-1 rounded-full transition-all duration-500" 
                     style={{ 
                       width: `${Math.min(((formDataForSubmission?.quantity || 0) / (parentContractData?.inventory?.open || 1)) * 100, 100)}%` 
                     }}
@@ -675,14 +671,14 @@ export default function CreateSubContract() {
             </div>
 
             {/* Contract Changes and New Sub Contract Cards */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {/* Contract Changes Card */}
-              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 space-y-2">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 space-y-1">
+                <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
                   Contract Changes
                 </h3>
                 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600 dark:text-gray-400">ID Contract:</span>
                     <span className="text-xs text-gray-600 dark:text-gray-400">Quantity</span>
@@ -714,15 +710,15 @@ export default function CreateSubContract() {
               </div>
 
               {/* New Sub Contract Card */}
-              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-2">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2 space-y-1">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
                     New Sub Contract
                   </h3>
-                  <div className="text-lg">→</div>
+                  <div className="text-sm">→</div>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600 dark:text-gray-400">ID Contract:</span>
                     <span className="text-xs text-gray-600 dark:text-gray-400">Quantity</span>
@@ -771,17 +767,17 @@ export default function CreateSubContract() {
 
 
             {/* Action Buttons */}
-            <div className="flex space-x-3 pt-2">
+            <div className="flex space-x-2 pt-1">
               <Button
                 onClick={handleCancelSubmission}
                 variant="outline"
-                className="flex-1 h-9 text-sm border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
+                className="flex-1 h-8 text-xs border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleConfirmSubmission}
-                className="flex-1 h-9 text-sm bg-green-600 hover:bg-green-700 text-white font-medium"
+                className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700 text-white font-medium"
               >
                 Create
               </Button>
