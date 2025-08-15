@@ -301,7 +301,13 @@ export default function EditSubContract() {
         (unit: any) => unit.slug === formDataForSubmission.measurementUnitId
       );
       
-      const measurementUnitId = selectedMeasurementUnit?._id || formDataForSubmission.measurementUnitId;
+      const measurementUnitId = selectedMeasurementUnit?._id;
+      
+      console.log('🔍 Measurement Unit Debug:', {
+        slug: formDataForSubmission.measurementUnitId,
+        foundUnit: selectedMeasurementUnit,
+        _id: measurementUnitId
+      });
       
       // Prepare API payload using same structure as creation
       const payload = {
