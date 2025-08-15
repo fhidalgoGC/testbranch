@@ -505,13 +505,6 @@ export default function PurchaseContractDetail() {
             const reserved = item.inventory?.reserved || 0;
             const unreserved = quantity - reserved;
             
-            console.log('🔍 Sub-contract measurement unit debug (loadSubContracts):', {
-              item_id: item._id,
-              measurement_unit: item.measurement_unit,
-              measurement_unit_id: item.measurement_unit_id,
-              folio: item.folio
-            });
-
             return {
               id: item._id,
               contractNumber: item.folio,
@@ -636,14 +629,14 @@ export default function PurchaseContractDetail() {
     }
   }, [activeTab]);
 
-  // Configuración de campos para el componente agnóstico - usar estructura transformada
+  // Configuración de campos para el componente agnóstico - sin hardcodear unidades
   const fieldConfig: FieldConfig[] = [
     { key: 'price', label: t('contractDetail.price'), color: 'black', format: 'currency' },
     { key: 'basis', label: t('contractDetail.basis'), color: 'black', format: 'currency' },
     { key: 'future', label: t('contractDetail.future'), color: 'black', format: 'currency' },
-    { key: 'reserved', label: t('contractDetail.reserved'), color: 'blue', unit: 'bu60' },
-    { key: 'unreserved', label: t('contractDetail.unreserved'), color: 'black', unit: 'bu60' },
-    { key: 'delivered', label: t('contractDetail.settled'), color: 'green', unit: 'bu60' }
+    { key: 'reserved', label: t('contractDetail.reserved'), color: 'blue' },
+    { key: 'unreserved', label: t('contractDetail.unreserved'), color: 'black' },
+    { key: 'delivered', label: t('contractDetail.settled'), color: 'green' }
   ];
 
   // Configuración del progress bar - solo configuración y campos
@@ -1163,11 +1156,6 @@ export default function PurchaseContractDetail() {
         {/* Sub-contracts Section - Solo para contratos con pricing_type "basis" */}
         {currentContractData?.price_schedule?.[0]?.pricing_type === 'basis' && (
           <div className="mt-8">
-            {console.log('🔍 Data passed to SubContractsSection:', {
-              subContractsDataLength: subContractsData.length,
-              firstSubContract: subContractsData[0],
-              targetSubContract: subContractsData.find(sc => sc.contractNumber === 'SPC-46-SUBC-27')
-            })}
             <SubContractsSection
               subContracts={subContractsData}
               fields={fieldConfig}

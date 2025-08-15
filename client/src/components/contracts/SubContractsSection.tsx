@@ -162,24 +162,15 @@ export default function SubContractsSection({
     <>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold">{t('contractDetail.subContracts')}</h2>
-        <div className="flex gap-2">
+        {canAddSubContract && (
           <Button 
-            onClick={debugProps}
-            variant="outline"
-            className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-yellow-300"
+            onClick={onNewSubContract}
+            className="bg-green-600 hover:bg-green-700 text-white"
           >
-            🐛 DEBUG
+            <Plus className="h-4 w-4 mr-2" />
+            {t('contractDetail.newSubContract')}
           </Button>
-          {canAddSubContract && (
-            <Button 
-              onClick={onNewSubContract}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              {t('contractDetail.newSubContract')}
-            </Button>
-          )}
-        </div>
+        )}
       </div>
 
       {subContracts.length === 0 ? (
