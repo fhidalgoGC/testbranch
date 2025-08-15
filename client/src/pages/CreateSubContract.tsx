@@ -12,7 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calendar, Package, DollarSign, FileText, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ArrowLeft, Calendar, Package, DollarSign, FileText, X, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { FormattedNumberInput } from '@/components/PurchaseContractForm/components/FormattedNumberInput';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
@@ -129,6 +130,10 @@ export default function CreateSubContract() {
   // API hooks
   const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
   
+  // Modal state
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [formDataForSubmission, setFormDataForSubmission] = useState<SubContractFormData | null>(null);
+  
   // Debug measurement units loading
   useEffect(() => {
     console.log('🔍 Measurement Units Debug:');
@@ -181,6 +186,16 @@ export default function CreateSubContract() {
   };
 
   const handleCreateSubContract = handleSubmit((data: SubContractFormData) => {
+    // Store form data for submission and open confirmation modal
+    setFormDataForSubmission(data);
+    setShowConfirmModal(true);
+  });
+
+  const handleConfirmSubmission = () => {
+    if (!formDataForSubmission) return;
+    
+    const data = formDataForSubmission;
+    
     // Get auth data from localStorage  
     const createdById = localStorage.getItem('user_id') || '';
     const createdByName = localStorage.getItem('user_name') || '';
@@ -224,9 +239,17 @@ export default function CreateSubContract() {
     };
     
     console.log('Creating sub-contract with API payload:', apiPayload);
-    // TODO: Send apiPayload to API endpoint
+    
+    // Close modal and navigate back
+    setShowConfirmModal(false);
+    setFormDataForSubmission(null);
     setLocation(`/purchase-contracts/${contractId}`);
-  });
+  };
+
+  const handleCancelSubmission = () => {
+    setShowConfirmModal(false);
+    setFormDataForSubmission(null);
+  };
   
   // Update total price when future changes
   useEffect(() => {
@@ -599,6 +622,81 @@ export default function CreateSubContract() {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
+        <DialogContent className="max-w-md mx-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Confirmar creación de sub-contrato
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                <span>Progreso de inventario</span>
+                <span>{formDataForSubmission?.quantity || 0} / {parentContractData?.inventory?.open || 0}</span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div 
+                  className="bg-rose-500 h-2 rounded-full transition-all duration-300" 
+                  style={{ 
+                    width: `${Math.min(((formDataForSubmission?.quantity || 0) / (parentContractData?.inventory?.open || 1)) * 100, 100)}%` 
+                  }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Contract Details */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Contrato:</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {formDataForSubmission?.contractNumber}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Cantidad:</span>
+                <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                  {formDataForSubmission?.quantity?.toLocaleString()} {parentContractData?.measurement_unit}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Precio Total:</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  ${formDataForSubmission?.totalPrice?.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-600 dark:text-gray-400">Fecha:</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {formDataForSubmission?.totalDate}
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-3 pt-2">
+              <Button
+                onClick={handleCancelSubmission}
+                variant="outline"
+                className="flex-1 border-2 border-gray-300 dark:border-gray-600"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmSubmission}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
