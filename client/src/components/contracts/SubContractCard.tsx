@@ -5,7 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Eye, Printer, Edit, Trash2, Check } from 'lucide-react';
 // Placeholder for number formatting - will use real formatNumber when available
-const formatNumber = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const formatNumber = (value: number | undefined | null) => {
+  if (value === undefined || value === null || isNaN(value)) {
+    return '0.00';
+  }
+  return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
 
 export interface FieldConfig {
   key: string;

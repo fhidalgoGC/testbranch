@@ -258,20 +258,27 @@ export default function PurchaseContractDetail() {
             const unreserved = quantity - reserved;
             
             return {
-              id: item._id,
-              title: item.folio || `Sub-Contract ${index + 1}`,
+              id: item._id || `subcontract-${index}`,
+              contractNumber: item.folio || `Sub-Contract ${index + 1}`,
+              quantity: quantity,
+              unit: item.measurement_unit || 'bu60',
+              thresholds: {
+                min: item.thresholds?.min_thresholds_weight || 0,
+                max: item.thresholds?.max_thresholds_weight || 0
+              },
+              basis: item.price_schedule?.[0]?.basis || 0,
+              price: item.price_schedule?.[0]?.price || 0,
+              future: item.price_schedule?.[0]?.future_price || 0,
+              delivered: item.inventory?.settled || 0,
+              reserved: reserved,
+              unreserved: unreserved,
+              balance: unreserved,
+              totalPayment: item.inventory_value?.total || item.total_price || 0,
               borderColor: color.border,
               dotColor: color.dot,
               textColor: color.text,
-              fields: [
-                { label: 'Total', value: `${formatNumber({ value: quantity, minDecimals: 0, maxDecimals: 0, formatPattern: '0,000.00', roundMode: 'truncate' })} ${item.measurement_unit || 'bu60'}` },
-                { label: 'Reserved', value: `${formatNumber({ value: reserved, minDecimals: 0, maxDecimals: 0, formatPattern: '0,000.00', roundMode: 'truncate' })} ${item.measurement_unit || 'bu60'}` },
-                { label: 'Unreserved', value: `${formatNumber({ value: unreserved, minDecimals: 0, maxDecimals: 0, formatPattern: '0,000.00', roundMode: 'truncate' })} ${item.measurement_unit || 'bu60'}` }
-              ],
-              progressBar: {
-                progress: reserved > 0 ? (reserved / quantity) * 100 : 0,
-                color: 'bg-green-500'
-              }
+              // Conservar datos originales para acceso directo por key
+              ...item
             };
           });
           
