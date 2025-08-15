@@ -646,7 +646,7 @@ export default function CreateSubContract() {
                 <div className="space-y-1">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Commodity</span>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {parentContractData?.commodity || 'N/A'}
+                    {parentContractData?.commodity?.name || parentContractData?.commodity || 'N/A'}
                   </p>
                 </div>
               </div>
