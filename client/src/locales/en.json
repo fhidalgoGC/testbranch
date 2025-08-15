@@ -373,6 +373,20 @@
     "printSubContract": "Print SubContract",
     "loadingContract": "Loading contract...",
     "contractNotFound": "Contract not found",
-    "errorLoadingContract": "Error loading contract"
+    "errorLoadingContract": "Error loading contract",
+    "contractHeader": "Contract"
+  },
+  "deleteContract": {
+    "title": "Delete Contract",
+    "description": "Are you sure you want to delete this contract? This action cannot be undone.",
+    "contractDetails": "Contract Details",
+    "contract": "Contract",
+    "commodity": "Commodity",
+    "quantity": "Quantity",
+    "seller": "Seller",
+    "buyer": "Buyer",
+    "cancel": "Cancel",
+    "deleteButton": "Delete Contract",
+    "deleting": "Deleting..."
   }
 }

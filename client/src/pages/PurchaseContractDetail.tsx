@@ -1132,10 +1132,10 @@ export default function PurchaseContractDetail() {
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2 text-red-600">
               <Trash2 className="w-5 h-5" />
-              <span>Delete Contract</span>
+              <span>{t('deleteContract.title')}</span>
             </DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-400">
-              Are you sure you want to delete this contract? This action cannot be undone.
+              {t('deleteContract.description')}
             </DialogDescription>
           </DialogHeader>
           
@@ -1148,19 +1148,19 @@ export default function PurchaseContractDetail() {
               </div>
               <div className="flex-grow">
                 <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">
-                  Contract Details
+                  {t('deleteContract.contractDetails')}
                 </h4>
                 <p className="text-sm text-red-700 dark:text-red-400">
-                  <strong>Contract:</strong> {currentContractData?.folio || 'N/A'}
+                  <strong>{t('deleteContract.contract')}:</strong> {currentContractData?.folio || 'N/A'}
                 </p>
                 <p className="text-sm text-red-700 dark:text-red-400">
-                  <strong>Commodity:</strong> {currentContractData?.commodity?.name || 'N/A'}
+                  <strong>{t('deleteContract.commodity')}:</strong> {currentContractData?.commodity?.name || 'N/A'}
                 </p>
                 <p className="text-sm text-red-700 dark:text-red-400">
-                  <strong>Quantity:</strong> {currentContractData?.quantity?.toLocaleString() || '0'} {currentContractData?.measurement_unit || 'units'}
+                  <strong>{t('deleteContract.quantity')}:</strong> {currentContractData?.quantity?.toLocaleString() || '0'} {currentContractData?.measurement_unit || 'units'}
                 </p>
                 <p className="text-sm text-red-700 dark:text-red-400">
-                  <strong>{currentContractData?.type === 'purchase' ? 'Seller:' : 'Buyer:'}</strong> {currentContractData?.type === 'purchase' ? seller?.name || 'N/A' : buyer?.name || 'N/A'}
+                  <strong>{currentContractData?.type === 'purchase' ? t('deleteContract.seller') : t('deleteContract.buyer')}:</strong> {currentContractData?.type === 'purchase' ? seller?.name || 'N/A' : buyer?.name || 'N/A'}
                 </p>
               </div>
             </div>
@@ -1173,7 +1173,7 @@ export default function PurchaseContractDetail() {
               disabled={deleting}
               className="flex-1"
             >
-              Cancel
+              {t('deleteContract.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -1184,12 +1184,12 @@ export default function PurchaseContractDetail() {
               {deleting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Deleting...
+                  {t('deleteContract.deleting')}
                 </>
               ) : (
                 <>
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Contract
+                  {t('deleteContract.deleteButton')}
                 </>
               )}
             </Button>

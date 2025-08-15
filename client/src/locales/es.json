@@ -383,5 +383,18 @@
     "sellerAddress": "Dirección del Vendedor",
     "buyerAddress": "Dirección del Comprador",
     "participantAddress": "Dirección del Participante"
+  },
+  "deleteContract": {
+    "title": "Eliminar Contrato",
+    "description": "¿Estás seguro de que quieres eliminar este contrato? Esta acción no se puede deshacer.",
+    "contractDetails": "Detalles del Contrato",
+    "contract": "Contrato",
+    "commodity": "Materia Prima",
+    "quantity": "Cantidad",
+    "seller": "Vendedor",
+    "buyer": "Comprador",
+    "cancel": "Cancelar",
+    "deleteButton": "Eliminar Contrato",
+    "deleting": "Eliminando..."
   }
 }
