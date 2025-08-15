@@ -411,28 +411,7 @@ export default function EditSubContract() {
   return (
     <DashboardLayout title={t('editSubContract.editSubContract')}>
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              onClick={handleCancel}
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('editSubContract.backToContract')}
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {t('editSubContract.editSubContract')}
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {t('editSubContract.editingSubContract')} {currentSubContract.folio}
-              </p>
-            </div>
-          </div>
-        </div>
+
         
         {/* Main Form */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
