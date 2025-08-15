@@ -95,7 +95,7 @@ export default function CreateSubContract() {
       
       return {
         contractNumber: '', // Removido - ya no se usa
-        contractDate: parentContractData.created_at ? new Date(parentContractData.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
+        contractDate: parentContractData.contract_date ? new Date(parentContractData.contract_date).toLocaleDateString() : new Date().toLocaleDateString(),
         customerNumber: participant?.name || 'N/A', // Ahora muestra seller para purchase contracts
         idContract: parentContractData.folio || 'N/A', // Usar folio como ID Contract
         referenceNumber: parentContractData.reference_number || 'N/A',
@@ -143,8 +143,10 @@ export default function CreateSubContract() {
     console.log('📝 Form Default Values Debug:');
     console.log('- Today date:', new Date().toISOString().split('T')[0]);
     console.log('- Open inventory:', parentContractData?.inventory?.open);
+    console.log('- Contract contract_date:', parentContractData?.contract_date);
+    console.log('- All parent contract keys:', parentContractData ? Object.keys(parentContractData) : 'No parent data');
     console.log('- Contract created_at:', parentContractData?.created_at);
-    console.log('- Min date for picker:', parentContractData?.created_at ? new Date(parentContractData.created_at) : new Date());
+    console.log('- Min date for picker:', parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date());
   }, [measurementUnits, loadingUnits, unitsError, parentContractData]);
   
   // Form setup with react-hook-form
@@ -503,7 +505,7 @@ export default function CreateSubContract() {
                               placeholder="Select date"
                               className="text-sm"
                               error={!!errors.totalDate}
-                              minDate={parentContractData?.created_at ? new Date(parentContractData.created_at) : new Date()}
+                              minDate={parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date()}
                             />
                           )}
                         />
