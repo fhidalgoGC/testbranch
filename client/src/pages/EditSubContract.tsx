@@ -110,12 +110,13 @@ export default function EditSubContract() {
   const contractsData = contractsState.contractsData || [];
   
   // Obtener el estado del contrato principal para editar sub-contrato
-  const createSubContractState = useSelector((state: any) => state.pageState.createSubContract[contractId!]);
-  const parentContractData = createSubContractState?.parentContractData;
-  const subContractsData = createSubContractState?.subContractsData || [];
+  const editSubContractState = useSelector((state: any) => state.pageState.editSubContract[contractId!]);
+  const parentContractData = editSubContractState?.parentContractData;
+  const subContractsData = editSubContractState?.subContractsData || [];
+  const currentSubContractData = editSubContractState?.currentSubContractData;
   
-  // Find the specific sub-contract to edit
-  const currentSubContract = subContractsData.find((sc: SubContractData) => sc._id === subContractId);
+  // Use the specific sub-contract data from Redux state
+  const currentSubContract = currentSubContractData;
   
   usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/${subContractId}/edit`);
   

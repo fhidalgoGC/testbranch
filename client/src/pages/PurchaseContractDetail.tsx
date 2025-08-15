@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { useContractDetailState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateCreateSubContractState } from '@/store/slices/pageStateSlice';
+import { updateCreateSubContractState, updateEditSubContractState } from '@/store/slices/pageStateSlice';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -1155,7 +1155,27 @@ export default function PurchaseContractDetail() {
               onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
               onEditSubContract={(id) => {
                 console.log('Edit sub-contract:', id);
-                setLocation(`/purchase-contracts/${contractId}/sub-contracts/${id}/edit`);
+                
+                // Encontrar el sub-contrato específico
+                const subContractToEdit = subContractsData.find(sc => sc.id === id);
+                
+                if (subContractToEdit) {
+                  // Establecer el estado del sub-contrato a editar en Redux antes de navegar
+                  dispatch(updateEditSubContractState({
+                    contractId: contractId!,
+                    updates: {
+                      parentContractData: currentContractData,
+                      subContractsData: subContractsData,
+                      currentSubContractData: subContractToEdit,
+                      subContractId: id,
+                      pricingType: currentContractData?.price_schedule?.[0]?.pricing_type || 'basis'
+                    }
+                  }));
+                  
+                  setLocation(`/purchase-contracts/${contractId}/sub-contracts/${id}/edit`);
+                } else {
+                  console.error('Sub-contrato no encontrado:', id);
+                }
               }}
               onDeleteSubContract={openDeleteSubContractModal}
               onSettleSubContract={(id) => console.log('Settle sub-contract:', id)}

@@ -55,10 +55,22 @@ interface CreateSubContractState {
   subContractKey: string | null; // Key from API for sub-contract creation
 }
 
+interface EditSubContractState {
+  formData: Record<string, any>;
+  selectedCommodity: string | null;
+  selectedMeasurementUnit: string | null;
+  pricingType: 'fixed' | 'basis';
+  parentContractData: any | null; // Estado del contrato principal
+  subContractsData: any[]; // Sub-contratos del contrato principal
+  currentSubContractData: any | null; // Sub-contrato actual a editar
+  subContractId: string | null; // ID del sub-contrato que se está editando
+}
+
 interface PageState {
   purchaseContracts: ContractsPageState;
   contractDetail: Record<string, ContractDetailState>; // Por ID de contrato
   createSubContract: Record<string, CreateSubContractState>; // Por ID de contrato
+  editSubContract: Record<string, EditSubContractState>; // Por ID de contrato
   buyers: ContractsPageState;
   sellers: ContractsPageState;
   saleContracts: ContractsPageState;
@@ -96,10 +108,22 @@ const initialCreateSubContractState: CreateSubContractState = {
   subContractKey: null,
 };
 
+const initialEditSubContractState: EditSubContractState = {
+  formData: {},
+  selectedCommodity: null,
+  selectedMeasurementUnit: null,
+  pricingType: 'fixed',
+  parentContractData: null,
+  subContractsData: [],
+  currentSubContractData: null,
+  subContractId: null,
+};
+
 const initialState: PageState = {
   purchaseContracts: initialContractsState,
   contractDetail: {},
   createSubContract: {},
+  editSubContract: {},
   buyers: initialContractsState,
   sellers: initialContractsState,
   saleContracts: initialContractsState,
@@ -271,6 +295,28 @@ const pageStateSlice = createSlice({
       delete state.createSubContract[action.payload];
     },
 
+    // Acciones para editar sub-contrato
+    updateEditSubContractState: (
+      state,
+      action: PayloadAction<{ 
+        contractId: string;
+        updates: Partial<EditSubContractState> 
+      }>
+    ) => {
+      const { contractId, updates } = action.payload;
+      if (!state.editSubContract[contractId]) {
+        state.editSubContract[contractId] = { ...initialEditSubContractState };
+      }
+      state.editSubContract[contractId] = {
+        ...state.editSubContract[contractId],
+        ...updates,
+      };
+    },
+
+    clearEditSubContractState: (state, action: PayloadAction<string>) => {
+      delete state.editSubContract[action.payload];
+    },
+
     // Restaurar estado completo desde localStorage
     restoreState: (state, action: PayloadAction<Partial<PageState>>) => {
       return { ...state, ...action.payload };
@@ -283,11 +329,13 @@ export const {
   updateContractsState,
   updateContractDetailState,
   updateCreateSubContractState,
+  updateEditSubContractState,
   setLastVisited,
   clearContractDetailState,
   clearCreateSubContractState,
+  clearEditSubContractState,
   restoreState,
 } = pageStateSlice.actions;
 
 export default pageStateSlice.reducer;
-export type { PageState, ContractsPageState, ContractDetailState, CreateSubContractState };
+export type { PageState, ContractsPageState, ContractDetailState, CreateSubContractState, EditSubContractState };
