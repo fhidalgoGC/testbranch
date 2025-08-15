@@ -34,6 +34,7 @@ const editSubContractValidationSchema = (openInventory: number = 0, currentQuant
   // API fields with business validation - for editing, we need to consider current quantity
   future: z.number().optional(), // Future is not required
   basis: z.number(),
+  price: z.number(), // Add price field
   totalPrice: z.number().min(0, 'Total price must be positive'),
   totalDate: z.string().min(1, 'Date is required'), // Required field
   quantity: z.number()
@@ -54,6 +55,7 @@ const baseSubContractSchema = z.object({
   shipmentPeriod: z.string().optional(),
   future: z.number().optional(),
   basis: z.number(),
+  price: z.number(),
   totalPrice: z.number(),
   totalDate: z.string(),
   quantity: z.number(),
@@ -174,6 +176,7 @@ export default function EditSubContract() {
       shipmentPeriod: '',
       future: 0,
       basis: 0,
+      price: 0,
       totalPrice: 0,
       totalDate: '',
       quantity: 0,
@@ -235,6 +238,7 @@ export default function EditSubContract() {
           shipmentPeriod: '',
           future: currentSubContract.price_schedule?.[0]?.future_price || 0,
           basis: currentSubContract.price_schedule?.[0]?.basis || 0,
+          price: currentSubContract.price_schedule?.[0]?.price || 0, // Agregar price del sub-contrato
           totalPrice: currentSubContract.total_price || 0,
           totalDate: subContractDate,
           quantity: currentSubContract.quantity || 0,
