@@ -148,13 +148,14 @@ export default function CreateSubContract() {
   };
 
   const formatPrice = (value: number | undefined | null) => {
-    return formatNumber({
-      minDecimals: 0,
-      maxDecimals: 0,
+    const formattedValue = formatNumber({
+      minDecimals: 2,
+      maxDecimals: 2,
       value: value || 0,
       formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
       roundMode: NUMBER_FORMAT_CONFIG.roundMode
     });
+    return `$${formattedValue}`;
   };
   
   // Debug measurement units loading
