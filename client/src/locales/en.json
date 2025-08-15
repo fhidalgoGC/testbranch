@@ -56,8 +56,10 @@
     "dashboard": "Dashboard",
     "contractDetail": "Contract Detail",
     "newContract": "New Contract",
+    "editContract": "Edit Contract",
     "subContracts": "Sub-contracts",
-    "newSubContract": "New Sub-contract"
+    "newSubContract": "New Sub-contract",
+    "editSubContract": "Edit Sub-contract"
   },
   "buyerId": "Buyer ID",
   "fullName": "Full Name",

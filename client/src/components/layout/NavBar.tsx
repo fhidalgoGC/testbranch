@@ -75,6 +75,18 @@ export default function NavBar({ title }: NavBarProps) {
             label = 'Crear';
           }
           break;
+        case 'edit':
+          if (pathSegments[index - 2] === 'sub-contracts') {
+            label = t('breadcrumbs.editSubContract');
+            // Para edición de sub-contratos, el path debe ir al detalle del contrato padre
+            const contractId = pathSegments[pathSegments.length - 4]; // ID del contrato padre
+            path = `/purchase-contracts/${contractId}`;
+          } else if (pathSegments[index - 1] === 'purchase-contracts') {
+            label = t('breadcrumbs.editContract');
+          } else {
+            label = 'Editar';
+          }
+          break;
         case 'sub-contracts':
           label = t('breadcrumbs.subContracts');
           break;
