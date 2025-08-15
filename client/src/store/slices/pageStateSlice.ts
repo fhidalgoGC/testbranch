@@ -52,6 +52,7 @@ interface CreateSubContractState {
   pricingType: 'fixed' | 'basis';
   parentContractData: any | null; // Estado del contrato principal
   subContractsData: any[]; // Sub-contratos del contrato principal
+  subContractKey: string | null; // Key from API for sub-contract creation
 }
 
 interface PageState {
@@ -92,6 +93,7 @@ const initialCreateSubContractState: CreateSubContractState = {
   pricingType: 'fixed',
   parentContractData: null,
   subContractsData: [],
+  subContractKey: null,
 };
 
 const initialState: PageState = {

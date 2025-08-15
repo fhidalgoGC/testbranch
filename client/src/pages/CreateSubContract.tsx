@@ -73,6 +73,9 @@ export default function CreateSubContract() {
   const { formState, updateState } = useCreateSubContractState(contractId!);
   const { handleNavigateToPage } = useNavigationHandler();
   
+  // Initialize subContractKey from Redux state if available
+  const initialSubContractKey = formState.subContractKey;
+  
   // Obtener contratos del state de Redux para buscar el contrato actual
   const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
   const contractsData = contractsState.contractsData || [];
@@ -86,6 +89,12 @@ export default function CreateSubContract() {
   
   // Function to fetch sub-contract key when page loads
   const fetchSubContractKey = async () => {
+    // Skip if key already exists
+    if (subContractKey) {
+      console.log('🔑 Sub-contract key already exists:', subContractKey);
+      return;
+    }
+    
     setLoadingSubContractKey(true);
     try {
       console.log('🔑 Fetching sub-contract key...');
@@ -111,9 +120,15 @@ export default function CreateSubContract() {
       if (result.data?.key) {
         setSubContractKey(result.data.key);
         console.log('🔑 Sub-contract key set:', result.data.key);
+        
+        // Save the key to Redux state for persistence and debug visibility
+        updateState({ subContractKey: result.data.key });
       } else if (result.key) {
         setSubContractKey(result.key);
         console.log('🔑 Sub-contract key set (direct):', result.key);
+        
+        // Save the key to Redux state for persistence and debug visibility
+        updateState({ subContractKey: result.key });
       } else {
         console.warn('⚠️ No key found in response:', result);
       }
@@ -180,7 +195,7 @@ export default function CreateSubContract() {
   const [formDataForSubmission, setFormDataForSubmission] = useState<SubContractFormData | null>(null);
   
   // Sub-contract key state for API
-  const [subContractKey, setSubContractKey] = useState<string | null>(null);
+  const [subContractKey, setSubContractKey] = useState<string | null>(initialSubContractKey);
   const [loadingSubContractKey, setLoadingSubContractKey] = useState(false);
 
   // Helper functions for formatting numbers
@@ -387,6 +402,8 @@ export default function CreateSubContract() {
               console.log('📋 Sub-contracts Data:', subContractsData);
               console.log('🧾 Contract Data (mapped):', contractData);
               console.log('📊 Create Sub Contract State:', createSubContractState);
+              console.log('🔑 Sub-contract Key:', subContractKey);
+              console.log('🔐 Loading Key:', loadingSubContractKey);
               console.log('=== END DEBUG ===');
             }}
             className="bg-yellow-500 hover:bg-yellow-600 text-white"

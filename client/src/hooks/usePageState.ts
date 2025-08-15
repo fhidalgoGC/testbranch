@@ -86,7 +86,8 @@ export const useCreateSubContractState = (contractId: string) => {
       formData: {}, 
       selectedCommodity: null, 
       selectedMeasurementUnit: null, 
-      pricingType: 'fixed' 
+      pricingType: 'fixed',
+      subContractKey: null
     }, 
     updateState 
   };
