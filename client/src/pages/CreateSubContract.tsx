@@ -755,27 +755,36 @@ export default function CreateSubContract() {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600 dark:text-gray-400">Balance</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Basis</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
                       {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
+                  </div>
+                  
+                  {/* Divider line */}
+                  <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Basis</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Futures</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                       {formatPrice(formDataForSubmission?.basis)}
+                    </span>
+                    <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                      {formatPrice(formDataForSubmission?.future)}
                     </span>
                   </div>
                   
                   <div className="flex justify-between items-center pt-1">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Futures</span>
                     <span className="text-xs text-gray-600 dark:text-gray-400">Price</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      {formatPrice(formDataForSubmission?.future)}
-                    </span>
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
                       {formatPrice(formDataForSubmission?.totalPrice)}
                     </span>
