@@ -606,12 +606,7 @@ export default function PurchaseContractDetail() {
                 </span>
               </span>
               <div className="flex space-x-2">
-                <Button size="sm" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-                  <Eye className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
-                  <Printer className="w-4 h-4" />
-                </Button>
+                {/* 1. Refresh Button */}
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -631,19 +626,31 @@ export default function PurchaseContractDetail() {
                   </Tooltip>
                 </TooltipProvider>
 
-                {/* Botones de editar y eliminar - solo visibles cuando status es 'created' */}
+                {/* 2. Print Button */}
+                <Button size="sm" variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
+                  <Printer className="w-4 h-4" />
+                </Button>
+
+                {/* 3. View Button */}
+                <Button size="sm" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
+                  <Eye className="w-4 h-4" />
+                </Button>
+
+                {/* 4. Edit Button - solo visible cuando status es 'created' */}
                 {currentContractData?.status === 'created' && (
-                  <>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="destructive">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </>
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                )}
+
+                {/* 5. Delete Button - solo visible cuando status es 'created' */}
+                {currentContractData?.status === 'created' && (
+                  <Button size="sm" variant="destructive">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 )}
                 
-                {/* Debug Button */}
+                {/* 6. Debug State Button */}
                 <Button 
                   size="sm" 
                   variant="outline" 
