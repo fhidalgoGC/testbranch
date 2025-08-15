@@ -364,30 +364,48 @@ export default function CreateSubContract() {
                 {/* Circular Progress */}
                 <div className="flex justify-center mb-6">
                   <div className="relative w-32 h-32">
-                    <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
-                      {/* Background circle */}
-                      <path
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className="text-gray-200 dark:text-gray-700"
-                      />
-                      {/* Progress circle */}
-                      <path
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeDasharray="50, 100"
-                        className="text-blue-600 dark:text-blue-400"
-                      />
-                    </svg>
+                    {(() => {
+                      // Calculate open inventory percentage
+                      const totalQuantity = parentContractData?.quantity || 1400;
+                      const openInventory = parentContractData?.inventory?.open || 0;
+                      const openPercentage = totalQuantity > 0 ? (openInventory / totalQuantity) * 100 : 0;
+                      const strokeDasharray = `${openPercentage}, 100`;
+                      
+                      // Debug inventory calculation
+                      console.log('🔵 Inventory Debug:', {
+                        totalQuantity,
+                        openInventory,
+                        openPercentage: openPercentage.toFixed(2) + '%',
+                        inventory: parentContractData?.inventory
+                      });
+                      
+                      return (
+                        <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 36 36">
+                          {/* Background circle */}
+                          <path
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-gray-200 dark:text-gray-700"
+                          />
+                          {/* Progress circle showing open inventory */}
+                          <path
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeDasharray={strokeDasharray}
+                            className="text-green-600 dark:text-green-400"
+                          />
+                        </svg>
+                      );
+                    })()}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Contract #</span>
-                      <span className="text-sm font-bold">{contractData.idContract}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Reserved / Open</span>
-                      <span className="text-xs font-medium">700.00</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Open</span>
+                      <span className="text-sm font-bold">
+                        {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
                     </div>
                   </div>
                 </div>
