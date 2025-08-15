@@ -45,6 +45,24 @@ export default function PurchaseContractDetail() {
   useEffect(() => {
     handleNavigateToPage('contractDetail', contractId);
   }, [contractId]);
+
+  // Detectar parámetro refresh en URL y disparar actualización completa
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get('refresh') === 'true';
+    
+    if (shouldRefresh && contractId) {
+      console.log('🔄 Refresh parameter detected, triggering full refresh');
+      // Limpiar el parámetro de la URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+      
+      // Disparar refresh después de un breve delay para asegurar que el componente esté montado
+      setTimeout(() => {
+        handleFullRefresh();
+      }, 100);
+    }
+  }, [location, contractId]);
   
   // Estados
   const [contract, setContract] = useState<PurchaseContract | null>(null);

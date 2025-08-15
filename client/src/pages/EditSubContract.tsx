@@ -371,9 +371,9 @@ export default function EditSubContract() {
         // Close modal first
         setShowConfirmModal(false);
         
-        // Reload sub-contracts data and navigate back using Wouter
+        // Reload sub-contracts data and navigate back using Wouter with refresh parameter
         await reloadSubContracts();
-        setLocation(`/purchase-contracts/${contractId}`);
+        setLocation(`/purchase-contracts/${contractId}?refresh=true`);
       } else {
         console.error('❌ Failed to update sub-contract:', response.status, response.statusText);
         // Handle error - show user feedback
