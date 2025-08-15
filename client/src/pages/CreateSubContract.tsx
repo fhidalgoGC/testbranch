@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ArrowLeft, Calendar, Package, DollarSign, FileText, X, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { FormattedNumberInput } from '@/components/PurchaseContractForm/components/FormattedNumberInput';
@@ -626,12 +626,14 @@ export default function CreateSubContract() {
       {/* Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
         <DialogContent className="max-w-lg mx-auto p-0 overflow-hidden">
-          {/* Header */}
-          <div className="bg-white dark:bg-gray-900 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <DialogHeader className="bg-white dark:bg-gray-900 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               Create Sub-Contract
-            </h2>
-          </div>
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Review and confirm the sub-contract details before creating
+            </DialogDescription>
+          </DialogHeader>
           
           <div className="p-6 space-y-6">
             {/* Partial Pricing Summary Card */}
