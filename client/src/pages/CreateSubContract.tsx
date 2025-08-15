@@ -271,21 +271,28 @@ export default function CreateSubContract() {
   const measurementUnitValue = watch('measurementUnitId');
   const totalDateValue = watch('totalDate');
 
-  // Auto-save form data to Redux state whenever fields change
+  // Auto-save form data to Redux state whenever fields change (with debounce)
   useEffect(() => {
-    const formData = {
-      future: futureValue,
-      basis: basisValue,
-      quantity: quantityValue,
-      totalPrice: totalPriceValue,
-      measurementUnitId: measurementUnitValue,
-      totalDate: totalDateValue,
-      contractNumber: parentContractData?.folio || 'SPC-46'
-    };
-    
-    updateState({ formData });
-    console.log('💾 Auto-saved form data to Redux:', formData);
-  }, [futureValue, basisValue, quantityValue, totalPriceValue, measurementUnitValue, totalDateValue, updateState, parentContractData?.folio]);
+    // Only update if we have valid values to prevent infinite loops
+    if (futureValue !== undefined && basisValue !== undefined) {
+      const timeoutId = setTimeout(() => {
+        const formData = {
+          future: futureValue,
+          basis: basisValue,
+          quantity: quantityValue,
+          totalPrice: totalPriceValue,
+          measurementUnitId: measurementUnitValue,
+          totalDate: totalDateValue,
+          contractNumber: parentContractData?.folio || 'SPC-46'
+        };
+        
+        updateState({ formData });
+        console.log('💾 Auto-saved form data to Redux:', formData);
+      }, 300); // 300ms debounce
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [futureValue, basisValue, quantityValue, totalPriceValue, measurementUnitValue, totalDateValue, parentContractData?.folio]);
 
   const handleCancel = () => {
     setLocation(`/purchase-contracts/${contractId}`);
