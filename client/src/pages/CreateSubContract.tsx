@@ -246,7 +246,7 @@ export default function CreateSubContract() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1.2fr] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
           
           {/* Left Column - Contract Details */}
           <div className="space-y-6">
