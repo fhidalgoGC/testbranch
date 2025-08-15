@@ -647,13 +647,13 @@ export default function CreateSubContract() {
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">Quantity Sub-Contract:</span>
                     <div className="text-blue-600 dark:text-blue-400 font-semibold">
-                      {formDataForSubmission?.quantity?.toFixed(2) || '0.00'} {parentContractData?.measurement_unit || 'bu60'}
+                      {(formDataForSubmission?.quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
                   </div>
                   <div className="text-right">
                     <span className="text-gray-600 dark:text-gray-400">Open Contract:</span>
                     <div className="text-gray-900 dark:text-gray-100 font-semibold">
-                      {parentContractData?.inventory?.open?.toFixed(2) || '0.00'} {parentContractData?.measurement_unit || 'bu60'}
+                      {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
                   </div>
                 </div>
@@ -689,21 +689,17 @@ export default function CreateSubContract() {
                       #{parentContractData?.folio || 'SPC-46'}
                     </span>
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {parentContractData?.inventory?.open?.toFixed(2) || '690.00'} {parentContractData?.measurement_unit || 'bu60'}
+                      {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-600 dark:text-gray-400">Balance</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Basis</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {((parentContractData?.inventory?.open || 0) - (formDataForSubmission?.quantity || 0)).toFixed(2)} {parentContractData?.measurement_unit || 'bu60'}
-                    </span>
-                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                      {formDataForSubmission?.basis || parentContractData?.price_schedule?.[0]?.basis || '1500'}
+                      {((parentContractData?.inventory?.open || 0) - (formDataForSubmission?.quantity || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                   </div>
                 </div>
@@ -729,7 +725,7 @@ export default function CreateSubContract() {
                       #{formDataForSubmission?.contractNumber || 'SPC-46-SUBC-5'}
                     </span>
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {formDataForSubmission?.quantity?.toFixed(2) || '30.00'} {parentContractData?.measurement_unit || 'bu60'}
+                      {(formDataForSubmission?.quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                   </div>
                   
@@ -740,10 +736,10 @@ export default function CreateSubContract() {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {formDataForSubmission?.quantity?.toFixed(2) || '30.00'} {parentContractData?.measurement_unit || 'bu60'}
+                      {(formDataForSubmission?.quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                     <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                      {formDataForSubmission?.basis || '1500'}
+                      {(formDataForSubmission?.basis || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
                   </div>
                   
@@ -754,10 +750,10 @@ export default function CreateSubContract() {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      {formDataForSubmission?.future || '0'}
+                      {(formDataForSubmission?.future || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      {formDataForSubmission?.totalPrice || '1500'}
+                      {(formDataForSubmission?.totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
                   </div>
                 </div>
