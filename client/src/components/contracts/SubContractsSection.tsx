@@ -69,10 +69,9 @@ export default function SubContractsSection({
   }, 0);
 
   // Check if we can add more sub-contracts 
-  // - If no sub-contracts exist: always allow (except if closed)
-  // - If sub-contracts exist: check that sum < parent open amount
-  const canAddSubContract = parentContractStatus !== 'closed' && 
-    (subContracts.length === 0 || totalSubContractQuantity < parentContractOpen);
+  // - Contract must not be closed
+  // - Parent contract must have open amount > 0
+  const canAddSubContract = parentContractStatus !== 'closed' && parentContractOpen > 0;
 
   // Color mapping for SVG fill
   const colorMap: Record<string, string> = {
