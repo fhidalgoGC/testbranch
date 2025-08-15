@@ -89,10 +89,66 @@ export const addJwtPk = (url: string, options: RequestInit & InterceptorOptions 
 
 /**
  * Wrapper de fetch que aplica automáticamente el interceptor addJwtPk
+ * y agrega created_by_id y created_by_name para métodos PUT y POST
  */
 export const authenticatedFetch = (url: string, options: RequestInit & InterceptorOptions = {}): Promise<Response> => {
-  const interceptedOptions = addJwtPk(url, options);
-  return fetch(url, interceptedOptions);
+  const { excludeAuth = false, ...fetchOptions } = options;
+  
+  // Lista de endpoints que NO deben usar autenticación JWT (excluidos)
+  const excludedEndpoints = [
+    '/identity/customers', // Token endpoint
+    '/identity/v2/customers', // Customer endpoint
+    '/partition_keys', // Partition keys endpoint
+    '/organizations', // Organization endpoint (some variations)
+    '/oauth/token', // Auth0 token endpoint
+  ];
+  
+  // Verificar si el URL debe ser excluido
+  const shouldExcludeAuth = excludeAuth || excludedEndpoints.some(endpoint => url.includes(endpoint));
+  
+  let modifiedOptions = addJwtPk(url, options);
+  
+  // Solo agregar created_by para métodos PUT/POST en endpoints no excluidos
+  if (!shouldExcludeAuth && (fetchOptions.method === 'PUT' || fetchOptions.method === 'POST')) {
+    try {
+      // Obtener datos del usuario del localStorage
+      const createdById = localStorage.getItem('user_id') || '';
+      const createdByName = localStorage.getItem('user_name') || '';
+      
+      // Si hay un body existente, parsearlo y agregar los campos
+      if (modifiedOptions.body) {
+        let bodyData: any = {};
+        
+        // Intentar parsear el body si es string
+        if (typeof modifiedOptions.body === 'string') {
+          try {
+            bodyData = JSON.parse(modifiedOptions.body);
+          } catch (e) {
+            // Si no se puede parsear, crear objeto nuevo
+            bodyData = {};
+          }
+        }
+        
+        // Agregar created_by_id y created_by_name al body
+        bodyData.created_by_id = createdById;
+        bodyData.created_by_name = createdByName;
+        
+        // Convertir de vuelta a string
+        modifiedOptions.body = JSON.stringify(bodyData);
+        
+        // Asegurar Content-Type para JSON
+        const headers = new Headers(modifiedOptions.headers);
+        if (!headers.has('Content-Type')) {
+          headers.set('Content-Type', 'application/json');
+        }
+        modifiedOptions.headers = headers;
+      }
+    } catch (error) {
+      console.warn('⚠️ Error adding created_by fields:', error);
+    }
+  }
+  
+  return fetch(url, modifiedOptions);
 };
 
 /**

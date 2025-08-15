@@ -302,8 +302,6 @@ export default function EditSubContract() {
         contract_folio: originalSubContract.contract_folio,
         measurement_unit: formDataForSubmission.measurementUnitId,
         total_price: formDataForSubmission.totalPrice,
-        created_by_id: originalSubContract.created_by_id || '',
-        created_by_name: originalSubContract.created_by_name || '',
         price_schedule: [{
           pricing_type: parentPriceSchedule?.pricing_type || 'basis',
           price: formDataForSubmission.price, // Use price from form (future + basis)
