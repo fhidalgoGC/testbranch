@@ -625,73 +625,103 @@ export default function CreateSubContract() {
 
       {/* Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-        <DialogContent className="max-w-md mx-auto">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Confirmar creación de sub-contrato
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-lg mx-auto p-0 overflow-hidden">
+          {/* Header */}
+          <div className="bg-white dark:bg-gray-900 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              Create Sub-Contract
+            </h2>
+          </div>
           
-          <div className="space-y-4">
-            {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                <span>Progreso de inventario</span>
-                <span>{formDataForSubmission?.quantity || 0} / {parentContractData?.inventory?.open || 0}</span>
+          <div className="p-6 space-y-6">
+            {/* Parent Contract Information */}
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Contract Number</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {parentContractData?.folio || 'N/A'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Commodity</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {parentContractData?.commodity || 'N/A'}
+                  </p>
+                </div>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Total Quantity</span>
+                  <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                    {parentContractData?.quantity?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Open Inventory</span>
+                  <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                    {parentContractData?.inventory?.open?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Sub-Contract Quantity</span>
+                  <p className="text-sm font-medium text-rose-600 dark:text-rose-400">
+                    {formDataForSubmission?.quantity?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Date</span>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formDataForSubmission?.totalDate || 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar Section */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  Inventory Consumption
+                </span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  {((formDataForSubmission?.quantity || 0) / (parentContractData?.inventory?.open || 1) * 100).toFixed(1)}%
+                </span>
+              </div>
+              
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
                 <div 
-                  className="bg-rose-500 h-2 rounded-full transition-all duration-300" 
+                  className="bg-rose-500 h-3 rounded-full transition-all duration-500" 
                   style={{ 
                     width: `${Math.min(((formDataForSubmission?.quantity || 0) / (parentContractData?.inventory?.open || 1)) * 100, 100)}%` 
                   }}
                 ></div>
               </div>
-            </div>
-
-            {/* Contract Details */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Contrato:</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {formDataForSubmission?.contractNumber}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Cantidad:</span>
-                <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
-                  {formDataForSubmission?.quantity?.toLocaleString()} {parentContractData?.measurement_unit}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Precio Total:</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  ${formDataForSubmission?.totalPrice?.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Fecha:</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {formDataForSubmission?.totalDate}
-                </span>
+              
+              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                <span>0</span>
+                <span>{parentContractData?.inventory?.open?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}</span>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex space-x-3 pt-2">
+            <div className="flex space-x-3 pt-4">
               <Button
                 onClick={handleCancelSubmission}
                 variant="outline"
-                className="flex-1 border-2 border-gray-300 dark:border-gray-600"
+                className="flex-1 h-11 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                Cancelar
+                Cancel
               </Button>
               <Button
                 onClick={handleConfirmSubmission}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                className="flex-1 h-11 bg-green-600 hover:bg-green-700 text-white font-medium"
               >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Confirmar
+                Create
               </Button>
             </div>
           </div>
