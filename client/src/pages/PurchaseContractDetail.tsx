@@ -559,6 +559,20 @@ export default function PurchaseContractDetail() {
                     </Button>
                   </>
                 )}
+                
+                {/* Debug Button */}
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => {
+                    console.log('🔍 DEBUG STATE - Current Contract Data:', currentContractData);
+                    console.log('🔍 DEBUG STATE - Sub-contracts:', subContracts);
+                    console.log('🔍 DEBUG STATE - All Redux Data:', contractsData);
+                  }}
+                  className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-yellow-300"
+                >
+                  Debug State
+                </Button>
               </div>
             </div>
           </div>
