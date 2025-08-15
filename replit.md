@@ -57,6 +57,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Architectural Changes (August 2025)
 
+### Automatic Data Refresh After Sub-Contract Creation
+- **Date**: August 15, 2025
+- **Change**: Implemented automatic data refresh when returning from sub-contract creation modal
+- **Key Features**:
+  - **URL Parameter Integration**: Uses `refresh=true` parameter to trigger automatic refresh
+  - **Full Data Refresh**: Calls same `handleFullRefresh()` function as refresh button
+  - **Seamless UX**: Users see updated data immediately after creating sub-contracts
+  - **Full-Screen Loading**: Shows professional loading overlay with minimum 0.3 seconds duration
+  - **Parallel API Calls**: Refreshes both contract and sub-contracts data simultaneously
+  - **URL Cleanup**: Automatically removes refresh parameter from URL after triggering
+- **Implementation**: 
+  - Sub-contract creation navigates with `?refresh=true` parameter
+  - Contract detail page detects parameter and triggers `handleFullRefresh()`
+  - Same visual feedback as manual refresh button (spinner, loading overlay)
+- **Benefits**: Consistent data state, improved user experience, unified refresh behavior
+
 ### Complete Sub-Contract API Integration
 - **Date**: August 15, 2025
 - **Change**: Implemented complete API integration for sub-contract creation with proper authentication and payload structure

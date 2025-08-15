@@ -408,14 +408,14 @@ export default function PurchaseContractDetail() {
     }
   };
   
-  // Check for refresh parameter and trigger data refresh
+  // Check for refresh parameter and trigger full refresh (same as refresh button)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const shouldRefresh = urlParams.get('refresh') === 'true';
     
     if (shouldRefresh && contractId) {
-      console.log('🔄 Refresh parameter detected, refreshing contract data');
-      refreshContractData(contractId);
+      console.log('🔄 Refresh parameter detected from sub-contract creation, triggering full refresh');
+      handleFullRefresh();
       
       // Clean up the URL parameter
       const newUrl = window.location.pathname;
