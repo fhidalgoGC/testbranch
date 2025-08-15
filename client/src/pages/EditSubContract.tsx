@@ -252,7 +252,18 @@ export default function EditSubContract() {
           basis: currentSubContract.price_schedule?.[0]?.basis,
           price: currentSubContract.price_schedule?.[0]?.price,
           totalPrice: currentSubContract.total_price,
+          totalDate: subContractDate,
           measurementUnit: currentSubContract.measurement_unit
+        });
+        
+        console.log('✅ All fields loaded from sub-contract state:', {
+          'Future from API': currentSubContract.price_schedule?.[0]?.future_price,
+          'Basis from API': currentSubContract.price_schedule?.[0]?.basis,
+          'Price from API': currentSubContract.price_schedule?.[0]?.price,
+          'Quantity from API': currentSubContract.quantity,
+          'Date from API': currentSubContract.sub_contract_date,
+          'Measurement Unit from API': currentSubContract.measurement_unit,
+          'Total Price from API': currentSubContract.total_price
         });
       }
     }
