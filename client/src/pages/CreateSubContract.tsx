@@ -650,7 +650,7 @@ export default function CreateSubContract() {
                     {/* Future Field */}
                     <div>
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                        Future <span className="text-red-500">*</span>
+                        Future
                       </label>
                       <Controller
                         name="future"
