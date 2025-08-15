@@ -84,9 +84,51 @@ export default function CreateSubContract() {
   
   usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/create`);
   
-  // Notificar navegación al cargar la página
+  // Function to fetch sub-contract key when page loads
+  const fetchSubContractKey = async () => {
+    setLoadingSubContractKey(true);
+    try {
+      console.log('🔑 Fetching sub-contract key...');
+      const response = await authenticatedFetch(
+        'https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({})
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch sub-contract key: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('✅ Sub-contract key response:', result);
+      
+      // The key is nested in result.data.key based on the API response
+      if (result.data?.key) {
+        setSubContractKey(result.data.key);
+        console.log('🔑 Sub-contract key set:', result.data.key);
+      } else if (result.key) {
+        setSubContractKey(result.key);
+        console.log('🔑 Sub-contract key set (direct):', result.key);
+      } else {
+        console.warn('⚠️ No key found in response:', result);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error fetching sub-contract key:', error);
+    } finally {
+      setLoadingSubContractKey(false);
+    }
+  };
+  
+  // Notificar navegación al cargar la página y obtener key del sub-contrato
   useEffect(() => {
     handleNavigateToPage('createSubContract', contractId);
+    fetchSubContractKey();
   }, [contractId]);
 
   // Estados locales - usar datos del contrato principal si están disponibles
@@ -136,6 +178,10 @@ export default function CreateSubContract() {
   // Modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [formDataForSubmission, setFormDataForSubmission] = useState<SubContractFormData | null>(null);
+  
+  // Sub-contract key state for API
+  const [subContractKey, setSubContractKey] = useState<string | null>(null);
+  const [loadingSubContractKey, setLoadingSubContractKey] = useState(false);
 
   // Helper functions for formatting numbers
   const formatQuantity = (value: number | undefined | null) => {
@@ -266,9 +312,13 @@ export default function CreateSubContract() {
       
       console.log('📤 Creating sub-contract with API payload:', apiPayload);
       
-      // Make API call to create sub-contract
+      // Make API call to create sub-contract using the key from initial call
+      if (!subContractKey) {
+        throw new Error('Sub-contract key not available. Please try again.');
+      }
+      
       const response = await authenticatedFetch(
-        `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${contractId}`,
+        `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${subContractKey}`,
         {
           method: 'PUT',
           headers: {
@@ -293,7 +343,8 @@ export default function CreateSubContract() {
       
     } catch (error) {
       console.error('❌ Error creating sub-contract:', error);
-      alert(`Error creating sub-contract: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Error creating sub-contract: ${errorMessage}`);
     }
   };
 
