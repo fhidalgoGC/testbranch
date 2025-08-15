@@ -136,7 +136,9 @@ export default function CreateSubContract() {
     console.log('- Error:', unitsError);
     console.log('- Data:', measurementUnits);
     console.log('- Count:', measurementUnits.length);
-  }, [measurementUnits, loadingUnits, unitsError]);
+    console.log('🔍 Parent Contract measurement_unit_id:', parentContractData?.measurement_unit_id);
+    console.log('🔍 Parent Contract measurement_unit:', parentContractData?.measurement_unit);
+  }, [measurementUnits, loadingUnits, unitsError, parentContractData]);
   
   // Form setup with react-hook-form
   const form = useForm<SubContractFormData>({
@@ -153,7 +155,7 @@ export default function CreateSubContract() {
       totalPrice: (parentContractData?.price_schedule?.[0]?.future_price ?? 0) + (parentContractData?.price_schedule?.[0]?.basis ?? contractData.basis),
       totalDate: '2025-08-13',
       quantity: 700.00,
-      measurementUnitId: parentContractData?.measurement_unit_id || 'bu60',
+      measurementUnitId: parentContractData?.measurement_unit || 'bu60',
       contact: contractData.contact,
       shipmentPeriod: contractData.shipmentPeriod,
     }
@@ -174,14 +176,19 @@ export default function CreateSubContract() {
     const createdById = localStorage.getItem('user_id') || '';
     const createdByName = localStorage.getItem('user_name') || '';
     
-    // Find selected measurement unit details
-    const selectedUnit = measurementUnits.find(unit => unit.key === data.measurementUnitId);
+    // Find selected measurement unit details from raw API data
+    const measurementUnitsData = measurementUnits;
+    const selectedUnitSlug = data.measurementUnitId; // This is the slug like "bu60"
+    
+    // Find the full unit data from the API response to get the ObjectId
+    // We need to find it in the raw API response that was logged
+    const selectedUnitId = parentContractData?.measurement_unit_id || ''; // Use parent's ObjectId as fallback
     
     // Construct API payload matching the required structure
     const apiPayload = {
       contract_id: contractId,
       contract_folio: data.contractNumber,
-      measurement_unit: selectedUnit?.value || 'bu60', // Short code from API
+      measurement_unit: selectedUnitSlug, // Short code like "bu60"
       total_price: data.totalPrice,
       created_by_id: createdById,
       created_by_name: createdByName,
@@ -198,7 +205,7 @@ export default function CreateSubContract() {
       }],
       quantity: data.quantity,
       sub_contract_date: data.totalDate,
-      measurement_unit_id: data.measurementUnitId,
+      measurement_unit_id: selectedUnitId, // ObjectId from parent contract
       thresholds: {
         max_thresholds_percentage: 0,
         max_thresholds_weight: data.quantity,
