@@ -178,14 +178,14 @@ export default function SubContractsSection({
               </p>
             </div>
             
-            {/* CTA Button */}
+            {/* CTA Button - Same as header button */}
             {canAddSubContract && (
               <Button 
                 onClick={onNewSubContract}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {t('subContractsEmpty.buttonText')}
+                {t('contractDetail.newSubContract')}
               </Button>
             )}
           </div>
