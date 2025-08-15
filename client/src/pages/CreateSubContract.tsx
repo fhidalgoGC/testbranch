@@ -403,6 +403,7 @@ export default function CreateSubContract() {
                       );
                     })()}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span className="text-xs text-amber-500 dark:text-amber-400">Total</span>
                       <span className="text-xs text-amber-500 dark:text-amber-400 font-medium">
                         {(parentContractData?.inventory?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
