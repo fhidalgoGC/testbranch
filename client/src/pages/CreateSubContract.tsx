@@ -634,8 +634,70 @@ export default function CreateSubContract() {
           </div>
           
           <div className="p-6 space-y-6">
+            {/* Parent Contract Summary */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
+                Parent Contract Information
+              </h3>
+              <div className="grid grid-cols-2 gap-4 text-xs">
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Contract:</span>
+                  <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
+                    {parentContractData?.folio || 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Reference:</span>
+                  <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
+                    {parentContractData?.reference_number || 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Commodity:</span>
+                  <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
+                    {parentContractData?.commodity?.name || parentContractData?.commodity || 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Seller:</span>
+                  <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
+                    {parentContractData?.participants?.find(p => p.type === 'seller')?.name || 
+                     parentContractData?.participants?.[0]?.name || 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Total Qty:</span>
+                  <span className="ml-2 font-medium text-amber-600 dark:text-amber-400">
+                    {parentContractData?.quantity?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Open Inv:</span>
+                  <span className="ml-2 font-medium text-amber-600 dark:text-amber-400">
+                    {parentContractData?.inventory?.open?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Contract Date:</span>
+                  <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
+                    {parentContractData?.contract_date ? new Date(parentContractData.contract_date).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 dark:text-gray-400">Status:</span>
+                  <span className="ml-2 font-medium text-green-600 dark:text-green-400">
+                    {parentContractData?.status || 'Active'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
             {/* Sub-Contract Form Data */}
             <div className="space-y-4">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
+                New Sub-Contract Details
+              </h3>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <span className="text-sm text-gray-500 dark:text-gray-400">Contract Number</span>

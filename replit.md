@@ -57,6 +57,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Architectural Changes (August 2025)
 
+### Sub-Contract Confirmation Modal Implementation
+- **Date**: August 15, 2025
+- **Change**: Implemented comprehensive confirmation modal for sub-contract creation
+- **Key Features**:
+  - Complete page state representation in modal before submission
+  - Parent contract information summary (contract number, reference, commodity, seller, quantities, dates, status)
+  - Full sub-contract form data preview (all fields: contract details, pricing, quantities, dates, contact info)
+  - Real-time inventory consumption progress bar with percentage calculation
+  - Proper data extraction from complex objects (commodity.name, participant.name by type)
+  - Two-step confirmation process: form validation → modal confirmation → API submission
+- **User Experience**: 
+  - Users can review all information before final submission
+  - Visual progress indicator shows inventory impact
+  - Clear separation between parent contract context and new sub-contract details
+- **Data Flow**: Form submission → store data in state → open modal → user confirms → API call → navigation
+- **Benefits**: Reduced user errors, better data validation, improved user confidence in transactions
+
 ### Measurement Units Select Implementation
 - **Date**: August 15, 2025
 - **Change**: Implemented standardized measurement units select component for sub-contract creation
