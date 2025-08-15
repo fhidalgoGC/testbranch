@@ -42,10 +42,10 @@ const subContractSchema = z.object({
 type SubContractFormData = z.infer<typeof subContractSchema>;
 
 interface ContractData {
-  contractNumber: string;
+  contractNumber: string; // Ya no se usa, mantener por compatibilidad
   contractDate: string;
-  customerNumber: string;
-  idContract: string;
+  customerNumber: string; // Ahora representa seller para purchase contracts
+  idContract: string; // Ahora es el folio
   referenceNumber: string;
   commodity: string;
   quantityUnits: number;
@@ -88,12 +88,16 @@ export default function CreateSubContract() {
   // Estados locales - usar datos del contrato principal si están disponibles
   const [contractData] = useState<ContractData>(() => {
     if (parentContractData) {
-      // Mapear datos del contrato principal al formato esperado
+      // Determinar qué participante mostrar basado en el tipo de contrato
+      const contractType = parentContractData.type; // 'purchase' o 'sale'
+      const targetRole = contractType === 'purchase' ? 'seller' : 'buyer';
+      const participant = parentContractData.participants?.find((p: any) => p.role === targetRole);
+      
       return {
-        contractNumber: parentContractData.folio || 'N/A',
+        contractNumber: '', // Removido - ya no se usa
         contractDate: parentContractData.created_at ? new Date(parentContractData.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
-        customerNumber: parentContractData.participants?.find((p: any) => p.role === 'buyer')?.name || 'N/A',
-        idContract: parentContractData._id?.slice(-8) || 'N/A',
+        customerNumber: participant?.name || 'N/A', // Ahora muestra seller para purchase contracts
+        idContract: parentContractData.folio || 'N/A', // Usar folio como ID Contract
         referenceNumber: parentContractData.reference_number || 'N/A',
         commodity: parentContractData.commodity?.name || 'N/A',
         quantityUnits: parentContractData.quantity || 0,
@@ -107,10 +111,10 @@ export default function CreateSubContract() {
     
     // Datos por defecto si no hay datos del contrato principal
     return {
-      contractNumber: 'SPC-46',
+      contractNumber: '',
       contractDate: '7/31/2025',
-      customerNumber: 'abcdef',
-      idContract: '8',
+      customerNumber: 'Test Seller LLC',
+      idContract: 'SPC-46',
       referenceNumber: 'NA',
       commodity: 'HRW - Wheat Hard Red Winter',
       quantityUnits: 1400,
@@ -129,7 +133,7 @@ export default function CreateSubContract() {
   const form = useForm<SubContractFormData>({
     resolver: zodResolver(subContractSchema),
     defaultValues: {
-      contractNumber: contractData.contractNumber,
+      contractNumber: contractData.idContract, // Usar idContract (folio) como contractNumber
       contractDate: contractData.contractDate,
       customerNumber: contractData.customerNumber,
       idContract: contractData.idContract,
@@ -259,9 +263,9 @@ export default function CreateSubContract() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Contract Number</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">ID Contract</span>
                       <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono">
-                        #{contractData.contractNumber}
+                        #{contractData.idContract}
                       </Badge>
                     </div>
                     <div className="flex justify-between">
@@ -269,12 +273,10 @@ export default function CreateSubContract() {
                       <span className="text-sm font-medium">{contractData.contractDate}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Customer Number</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {parentContractData?.type === 'purchase' ? 'Seller' : 'Buyer'}
+                      </span>
                       <span className="text-sm font-medium">{contractData.customerNumber}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">ID Contract</span>
-                      <span className="text-sm font-medium">{contractData.idContract}</span>
                     </div>
                   </div>
                   <div className="space-y-4">
@@ -369,7 +371,7 @@ export default function CreateSubContract() {
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                       <span className="text-xs text-gray-500 dark:text-gray-400">Contract #</span>
-                      <span className="text-sm font-bold">SPC-46</span>
+                      <span className="text-sm font-bold">{contractData.idContract}</span>
                       <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">Reserved / Open</span>
                       <span className="text-xs font-medium">700.00</span>
                     </div>
@@ -379,7 +381,7 @@ export default function CreateSubContract() {
                 {/* Commodity Badge */}
                 <div className="text-center mb-6">
                   <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm px-3 py-1">
-                    HRW - Wheat Hard Red Winter september 2025
+                    {contractData.commodity} {parentContractData?.price_schedule?.[0]?.option_month} {parentContractData?.price_schedule?.[0]?.option_year}
                   </Badge>
                 </div>
 
