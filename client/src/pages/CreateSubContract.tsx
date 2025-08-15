@@ -651,7 +651,7 @@ export default function CreateSubContract() {
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
         <DialogContent className="max-w-xl mx-auto p-0 overflow-hidden">
           <DialogHeader className="bg-white dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-            <DialogTitle className="text-base font-semibold text-gray-900 dark:text-gray-100">
+            <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100">
               Create Sub-Contract
             </DialogTitle>
             <DialogDescription className="text-xs text-gray-600 dark:text-gray-400">
