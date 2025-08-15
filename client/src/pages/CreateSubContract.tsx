@@ -634,6 +634,44 @@ export default function CreateSubContract() {
           </div>
           
           <div className="p-6 space-y-6">
+            {/* Partial Pricing Summary Card */}
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Partial Pricing Summary
+              </h3>
+              
+              <div className="space-y-3">
+                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Quantity Actual Overview
+                </div>
+                
+                <div className="flex justify-between items-center text-sm">
+                  <div>
+                    <span className="text-gray-600 dark:text-gray-400">Quantity Sub-Contract:</span>
+                    <div className="text-blue-600 dark:text-blue-400 font-semibold">
+                      {formDataForSubmission?.quantity?.toFixed(2) || '0.00'} {parentContractData?.measurement_unit || 'bu60'}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-gray-600 dark:text-gray-400">Open Contract:</span>
+                    <div className="text-gray-900 dark:text-gray-100 font-semibold">
+                      {parentContractData?.inventory?.open?.toFixed(2) || '0.00'} {parentContractData?.measurement_unit || 'bu60'}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                  <div 
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-500" 
+                    style={{ 
+                      width: `${Math.min(((formDataForSubmission?.quantity || 0) / (parentContractData?.inventory?.open || 1)) * 100, 100)}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+
             {/* Parent Contract Summary */}
             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-3">
               <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">
@@ -802,35 +840,7 @@ export default function CreateSubContract() {
               </div>
             </div>
 
-            {/* Progress Bar Section */}
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  Inventory Consumption
-                </span>
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  {((formDataForSubmission?.quantity || 0) / (parentContractData?.inventory?.open || 1) * 100).toFixed(1)}%
-                </span>
-              </div>
-              
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                <div 
-                  className="bg-rose-500 h-3 rounded-full transition-all duration-500" 
-                  style={{ 
-                    width: `${Math.min(((formDataForSubmission?.quantity || 0) / (parentContractData?.inventory?.open || 1)) * 100, 100)}%` 
-                  }}
-                ></div>
-              </div>
-              
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                <span>0</span>
-                <span>{parentContractData?.inventory?.open?.toLocaleString() || '0'} {parentContractData?.measurement_unit || ''}</span>
-              </div>
-              
-              <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                Sub-Contract: {formDataForSubmission?.quantity?.toLocaleString() || '0'} / Available: {parentContractData?.inventory?.open?.toLocaleString() || '0'}
-              </div>
-            </div>
+
 
             {/* Action Buttons */}
             <div className="flex space-x-3 pt-4">
