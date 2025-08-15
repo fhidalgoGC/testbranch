@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check, RefreshCw } from 'lucide-react';
 import { Link } from 'wouter';
@@ -59,6 +60,10 @@ export default function PurchaseContractDetail() {
   const [loadingSubContracts, setLoadingSubContracts] = useState<boolean>(false);
   const [refreshingContract, setRefreshingContract] = useState<boolean>(false);
   const [fullScreenLoading, setFullScreenLoading] = useState<boolean>(false);
+  
+  // Delete confirmation modal states
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
   
 
   
@@ -302,6 +307,69 @@ export default function PurchaseContractDetail() {
       // Quitar el loading de pantalla completa
       setFullScreenLoading(false);
       console.log('✅ Full refresh completed');
+    }
+  };
+
+  // Función para eliminar contrato
+  const handleDeleteContract = async () => {
+    if (!contractId) return;
+    
+    setDeleting(true);
+    const startTime = Date.now();
+    
+    try {
+      console.log('🗑️ Deleting contract:', contractId);
+      
+      const authCheck = hasAuthTokens();
+      if (!authCheck.isAuthenticated) {
+        console.error('❌ No authentication tokens available for delete operation');
+        return;
+      }
+      
+      // Call delete endpoint using the provided curl structure
+      const response = await authenticatedFetch(
+        `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/${contractId}`,
+        {
+          method: 'DELETE',
+          customHeaders: {
+            '_partitionkey': localStorage.getItem('partition_key') || '',
+            'bt-organization': localStorage.getItem('partition_key') || '',
+            'bt-uid': localStorage.getItem('partition_key') || '',
+            'organization_id': localStorage.getItem('partition_key') || '',
+            'pk-organization': localStorage.getItem('partition_key') || '',
+            'priority': 'u=1, i',
+            'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"'
+          }
+        }
+      );
+      
+      if (response.ok) {
+        console.log('✅ Contract deleted successfully');
+        
+        // Calculate elapsed time and ensure minimum duration of 0.3 seconds
+        const elapsedTime = Date.now() - startTime;
+        const minimumDuration = 300; // 0.3 seconds in milliseconds
+        const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+        
+        // Wait for remaining time if API was faster than minimum duration
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
+        
+        // Navigate back to contracts list
+        setLocation('/purchase-contracts');
+        
+      } else {
+        console.error('❌ Failed to delete contract:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('Delete error details:', errorText);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error deleting contract:', error);
+    } finally {
+      setDeleting(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -652,7 +720,12 @@ export default function PurchaseContractDetail() {
 
                 {/* 5. Delete Button - solo visible cuando status es 'created' */}
                 {currentContractData?.status === 'created' && (
-                  <Button size="sm" variant="destructive">
+                  <Button 
+                    size="sm" 
+                    variant="destructive"
+                    onClick={() => setShowDeleteModal(true)}
+                    disabled={deleting}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 )}
@@ -1040,6 +1113,74 @@ export default function PurchaseContractDetail() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-red-600">
+              <Trash2 className="w-5 h-5" />
+              <span>Delete Contract</span>
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
+              Are you sure you want to delete this contract? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 my-4">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
+                  <span className="text-red-600 dark:text-red-400 text-sm font-semibold">!</span>
+                </div>
+              </div>
+              <div className="flex-grow">
+                <h4 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">
+                  Contract Details
+                </h4>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  <strong>Contract:</strong> {currentContractData?.folio || 'N/A'}
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  <strong>Commodity:</strong> {currentContractData?.commodity?.name || 'N/A'}
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  <strong>Quantity:</strong> {currentContractData?.quantity?.toLocaleString() || '0'} {currentContractData?.measurement_unit || 'units'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteModal(false)}
+              disabled={deleting}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteContract}
+              disabled={deleting}
+              className="flex-1"
+            >
+              {deleting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Contract
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }
