@@ -184,20 +184,18 @@ export default function EditSubContract() {
     }
   });
   
-  // Watch form changes for total price calculation
-  const watchedFuture = watch('future');
-  const watchedBasis = watch('basis');
+  // Watch form changes for total price calculation  
+  const watchedPrice = watch('price');
   const watchedQuantity = watch('quantity');
   
-  // Calculate total price whenever future, basis, or quantity changes
+  // Calculate total price whenever price or quantity changes
   useEffect(() => {
-    const future = watchedFuture || 0;
-    const basis = watchedBasis || 0;
+    const price = watchedPrice || 0;
     const quantity = watchedQuantity || 0;
     
-    const totalPrice = (future + basis) * quantity;
+    const totalPrice = price * quantity;
     setValue('totalPrice', totalPrice);
-  }, [watchedFuture, watchedBasis, watchedQuantity, setValue]);
+  }, [watchedPrice, watchedQuantity, setValue]);
   
   // Initialize form with sub-contract data
   useEffect(() => {
@@ -484,6 +482,7 @@ export default function EditSubContract() {
             <QuantityActualOverview
               control={control}
               errors={errors}
+              setValue={setValue}
               parentContractData={parentContractData}
               contractData={contractData}
               measurementUnits={measurementUnits}

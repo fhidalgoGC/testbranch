@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Controller, Control, FieldErrors } from 'react-hook-form';
+import { Controller, Control, FieldErrors, useWatch } from 'react-hook-form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,7 @@ interface QuantityActualOverviewProps {
   // Form control props
   control: Control<any>;
   errors: FieldErrors<any>;
+  setValue: (name: string, value: any) => void;
   
   // Data props
   parentContractData?: ParentContractData;
@@ -51,6 +52,7 @@ interface QuantityActualOverviewProps {
 export function QuantityActualOverview({
   control,
   errors,
+  setValue,
   parentContractData,
   contractData,
   measurementUnits,
@@ -59,6 +61,20 @@ export function QuantityActualOverview({
   className = ''
 }: QuantityActualOverviewProps) {
   const { t } = useTranslation();
+
+  // Watch future and basis values to calculate price automatically
+  const watchedFuture = useWatch({ control, name: 'future' });
+  const watchedBasis = useWatch({ control, name: 'basis' });
+
+  // Calculate price whenever future or basis changes
+  useEffect(() => {
+    const future = watchedFuture || 0;
+    const basis = watchedBasis || 0;
+    const calculatedPrice = future + basis;
+    
+    setValue('price', calculatedPrice);
+    console.log('💰 Price calculated:', { future, basis, calculatedPrice });
+  }, [watchedFuture, watchedBasis, setValue]);
 
   return (
     <Card className={`bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-xl border-0 ring-1 ring-gray-200/50 dark:ring-gray-700/50 ${className}`}>
