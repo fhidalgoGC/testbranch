@@ -57,6 +57,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Architectural Changes (August 2025)
 
+### Measurement Units Select Implementation
+- **Date**: August 15, 2025
+- **Change**: Implemented standardized measurement units select component for sub-contract creation
+- **Key Features**:
+  - Automatic loading from real CRM API (`/unit-conversions/units` endpoint)
+  - Standard select structure: `{key, value, label, type}` format using unit slugs
+  - Proper mapping between parent contract and sub-contract forms
+  - Default value inheritance: uses parent contract's `measurement_unit` (slug) not `measurement_unit_id` (ObjectId)
+  - Support for both weight and volume unit types with filtering
+  - React Query caching and error handling
+- **Data Flow**: 
+  - Parent contract stores both `measurement_unit_id` (ObjectId) and `measurement_unit` (slug)
+  - Select component uses slug for UI display and selection
+  - API submission uses ObjectId for backend compatibility
+- **Benefits**: Consistent measurement unit selection across all contract forms with real API data
+
 ### API Authentication Interceptor Implementation
 - **Date**: August 14, 2025
 - **Change**: Created centralized `addJwtPk` interceptor for API authentication
