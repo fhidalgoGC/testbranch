@@ -334,6 +334,9 @@ export default function CreateSubContract() {
       // We need to find it in the raw API response that was logged
       const selectedUnitId = parentContractData?.measurement_unit_id || ''; // Use parent's ObjectId as fallback
       
+      // Extract price schedule values from parent contract
+      const parentPriceSchedule = parentContractData?.price_schedule?.[0] || {};
+      
       // Construct API payload matching the required structure from curl example
       const apiPayload = {
         contract_id: contractId,
@@ -343,15 +346,15 @@ export default function CreateSubContract() {
         created_by_id: createdById,
         created_by_name: createdByName,
         price_schedule: [{
-          pricing_type: 'basis',
+          pricing_type: parentPriceSchedule.pricing_type || 'basis',
           price: data.totalPrice, // Use totalPrice (future + basis)
           basis: data.basis,
           future_price: data.future,
-          basis_operation: 'add',
-          option_month: 'september',
-          option_year: 2025,
-          exchange: 'Chicago Board of Trade',
-          payment_currency: 'usd'
+          basis_operation: parentPriceSchedule.basis_operation || 'add',
+          option_month: parentPriceSchedule.option_month || 'september',
+          option_year: parentPriceSchedule.option_year || 2025,
+          exchange: parentPriceSchedule.exchange || 'Chicago Board of Trade',
+          payment_currency: parentPriceSchedule.payment_currency || 'usd'
         }],
         quantity: data.quantity,
         sub_contract_date: data.totalDate,
@@ -361,9 +364,6 @@ export default function CreateSubContract() {
           max_thresholds_weight: data.quantity,
           min_thresholds_percentage: 0,
           min_thresholds_weight: data.quantity
-        },
-        weights: {
-          amount: data.quantity // Same amount as quantity as requested
         }
       };
       
