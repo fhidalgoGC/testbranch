@@ -73,6 +73,17 @@ export default function SubContractCard({
 }: SubContractCardProps) {
   const { t } = useTranslation();
 
+  const debugCardData = () => {
+    console.log('🐛 DEBUG SubContractCard Data:', {
+      contractNumber: subContract.contractNumber,
+      unit: subContract.unit,
+      measurement_unit: subContract.measurement_unit,
+      measurement_unit_id: subContract.measurement_unit_id,
+      quantity: subContract.quantity,
+      fullSubContract: subContract
+    });
+  };
+
   const getColorClass = (color: string) => {
     switch (color) {
       case 'blue': return 'text-blue-600';
@@ -101,11 +112,21 @@ export default function SubContractCard({
                 ID Contract#{subContract.contractNumber}
               </span>
             </div>
-            <div className="text-base">
-              <span className="font-bold text-gray-700 dark:text-gray-300">Status:</span>{' '}
-              <span className="font-medium text-gray-600 dark:text-gray-400">
-                {subContract.status || 'created'}
-              </span>
+            <div className="flex items-center gap-2">
+              <div className="text-base">
+                <span className="font-bold text-gray-700 dark:text-gray-300">Status:</span>{' '}
+                <span className="font-medium text-gray-600 dark:text-gray-400">
+                  {subContract.status || 'created'}
+                </span>
+              </div>
+              <Button 
+                onClick={debugCardData}
+                variant="outline"
+                size="sm"
+                className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-yellow-300 px-2 py-1 h-6 text-xs"
+              >
+                🐛
+              </Button>
             </div>
           </div>
           
