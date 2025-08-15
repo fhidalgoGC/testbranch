@@ -296,17 +296,13 @@ export default function EditSubContract() {
       const originalSubContract = currentSubContract;
       const parentPriceSchedule = parentContractData?.price_schedule?.[0];
       
-      // Find the measurement unit object by slug to get the _id
-      const selectedMeasurementUnit = measurementUnits.find(
-        (unit: any) => unit.slug === formDataForSubmission.measurementUnitId
-      );
-      
-      const measurementUnitId = selectedMeasurementUnit?._id;
+      // Use the measurement_unit_id from the current sub-contract (it has the correct _id)
+      const measurementUnitId = originalSubContract.measurement_unit_id;
       
       console.log('🔍 Measurement Unit Debug:', {
-        slug: formDataForSubmission.measurementUnitId,
-        foundUnit: selectedMeasurementUnit,
-        _id: measurementUnitId
+        slugFromForm: formDataForSubmission.measurementUnitId,
+        idFromSubContract: measurementUnitId,
+        originalSubContract: originalSubContract
       });
       
       // Prepare API payload using same structure as creation
