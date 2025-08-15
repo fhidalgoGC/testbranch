@@ -339,7 +339,7 @@ export default function CreateSubContract() {
       
       // Construct API payload matching the required structure from curl example
       const apiPayload = {
-        contract_id: contractId,
+        contract_id: contractId, // Parent contract ID from route params
         contract_folio: data.contractNumber,
         measurement_unit: selectedUnitSlug, // Short code like "bu60"
         total_price: data.totalPrice,
@@ -368,6 +368,8 @@ export default function CreateSubContract() {
       };
       
       console.log('📤 Creating sub-contract with API payload:', apiPayload);
+      console.log('🔗 Parent Contract ID from route:', contractId);
+      console.log('🔗 Parent Contract Data ID:', parentContractData?._id);
       
       // Make API call to create sub-contract using the key from initial call
       if (!subContractKey) {
