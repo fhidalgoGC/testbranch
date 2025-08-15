@@ -296,11 +296,18 @@ export default function EditSubContract() {
       const originalSubContract = currentSubContract;
       const parentPriceSchedule = parentContractData?.price_schedule?.[0];
       
+      // Find the measurement unit object by slug to get the _id
+      const selectedMeasurementUnit = measurementUnits.find(
+        (unit: any) => unit.slug === formDataForSubmission.measurementUnitId
+      );
+      
+      const measurementUnitId = selectedMeasurementUnit?._id || formDataForSubmission.measurementUnitId;
+      
       // Prepare API payload using same structure as creation
       const payload = {
         contract_id: contractId,
         contract_folio: originalSubContract.contract_folio,
-        measurement_unit: formDataForSubmission.measurementUnitId,
+        measurement_unit: formDataForSubmission.measurementUnitId, // Keep slug for this field
         total_price: formDataForSubmission.totalPrice,
         price_schedule: [{
           pricing_type: parentPriceSchedule?.pricing_type || 'basis',
@@ -315,7 +322,7 @@ export default function EditSubContract() {
         }],
         quantity: formDataForSubmission.quantity,
         sub_contract_date: formDataForSubmission.totalDate,
-        measurement_unit_id: formDataForSubmission.measurementUnitId,
+        measurement_unit_id: measurementUnitId, // Use _id for this field
         thresholds: {
           max_thresholds_percentage: 0,
           max_thresholds_weight: formDataForSubmission.quantity,
