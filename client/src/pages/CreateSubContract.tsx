@@ -298,29 +298,31 @@ export default function CreateSubContract() {
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Commodity</span>
                     <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
-                      {contractData.commodity}
+                      {parentContractData?.commodity?.name || contractData.commodity}
                     </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Quantity / Units</span>
-                    <span className="text-sm font-bold font-mono">{contractData.quantityUnits.toLocaleString()} bushel</span>
+                    <span className="text-sm font-bold font-mono">
+                      {(parentContractData?.quantity || contractData.quantityUnits).toLocaleString()} {parentContractData?.measurement_unit || 'bushel'}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Price</span>
                     <span className="text-sm font-bold font-mono text-blue-600 dark:text-blue-400">
-                      $ {contractData.price.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
+                      $ {(parentContractData?.price_schedule?.[0]?.price || contractData.price).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Basis</span>
                     <span className="text-sm font-bold font-mono text-purple-600 dark:text-purple-400">
-                      $ {contractData.basis.toFixed(2)} september2025
+                      $ {(parentContractData?.price_schedule?.[0]?.basis || contractData.basis).toFixed(2)} {parentContractData?.price_schedule?.[0]?.option_month || 'september'}{parentContractData?.price_schedule?.[0]?.option_year || '2025'}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">Future</span>
                     <span className="text-sm font-bold font-mono text-orange-600 dark:text-orange-400">
-                      $ {contractData.future.toFixed(2)}
+                      $ {(parentContractData?.price_schedule?.[0]?.future_price || contractData.future).toFixed(2)}
                     </span>
                   </div>
                 </div>
