@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
+import { setLocation } from 'wouter/use-browser-location';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -142,6 +143,22 @@ export default function EditSubContract() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [formDataForSubmission, setFormDataForSubmission] = useState<SubContractFormData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Function to reload sub-contracts after successful update
+  const reloadSubContracts = async () => {
+    try {
+      const response = await authenticatedFetch(
+        `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter={"contract_id":"${contractId}"}`
+      );
+      if (response.ok) {
+        const result = await response.json();
+        console.log('🔄 Sub-contracts reloaded after update:', result.data?.length || 0);
+        // Dispatch to Redux to update sub-contracts data if needed
+      }
+    } catch (error) {
+      console.error('Error reloading sub-contracts:', error);
+    }
+  };
   
   // Load measurement units
   const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
@@ -354,8 +371,9 @@ export default function EditSubContract() {
         // Close modal first
         setShowConfirmModal(false);
         
-        // Navigate back immediately using window.location for reliable redirect
-        window.location.href = `/purchase-contracts/${contractId}`;
+        // Reload sub-contracts data and navigate back using Wouter
+        await reloadSubContracts();
+        setLocation(`/purchase-contracts/${contractId}`);
       } else {
         console.error('❌ Failed to update sub-contract:', response.status, response.statusText);
         // Handle error - show user feedback
@@ -370,7 +388,7 @@ export default function EditSubContract() {
   
   // Handle cancel
   const handleCancel = () => {
-    handleNavigateToPage('contractDetail', contractId!);
+    setLocation(`/purchase-contracts/${contractId}`);
   };
   
   if (!currentSubContract) {
