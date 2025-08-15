@@ -693,13 +693,7 @@ export default function PurchaseContractDetail() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Reference Number:</span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {(() => {
-                          const refNumber = currentContractData?.reference_number;
-                          console.log('🔍 Reference Number from API:', refNumber);
-                          // Si el valor es "NA" del API, mostrarlo directamente
-                          // Si no hay valor o es null/undefined, mostrar "N/A"
-                          return refNumber === 'NA' ? 'NA' : (refNumber || 'N/A');
-                        })()}
+                        NA
                       </span>
                     </div>
                   </div>
