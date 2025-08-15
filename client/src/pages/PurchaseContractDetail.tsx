@@ -1163,6 +1163,11 @@ export default function PurchaseContractDetail() {
         {/* Sub-contracts Section - Solo para contratos con pricing_type "basis" */}
         {currentContractData?.price_schedule?.[0]?.pricing_type === 'basis' && (
           <div className="mt-8">
+            {console.log('🔍 Data passed to SubContractsSection:', {
+              subContractsDataLength: subContractsData.length,
+              firstSubContract: subContractsData[0],
+              targetSubContract: subContractsData.find(sc => sc.contractNumber === 'SPC-46-SUBC-27')
+            })}
             <SubContractsSection
               subContracts={subContractsData}
               fields={fieldConfig}
