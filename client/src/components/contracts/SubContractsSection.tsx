@@ -10,6 +10,7 @@ interface SubContractsSectionProps {
   progressBar?: ProgressBarConfig;
   parentContractFixed?: number; // Valor fixed del contrato padre para calcular porcentajes
   parentContractQuantity?: number; // Cantidad total del contrato padre
+  parentContractOpen?: number; // Cantidad abierta del contrato padre
   parentContractStatus?: string; // Status del contrato padre para validar si se puede agregar sub-contratos
   onNewSubContract?: () => void;
   onViewSubContract?: (id: string) => void;
@@ -25,6 +26,7 @@ export default function SubContractsSection({
   progressBar,
   parentContractFixed = 1000, // Default fallback
   parentContractQuantity = 0,
+  parentContractOpen = 0,
   parentContractStatus = '',
   onNewSubContract,
   onViewSubContract,
@@ -68,9 +70,9 @@ export default function SubContractsSection({
 
   // Check if we can add more sub-contracts 
   // - If no sub-contracts exist: always allow (except if closed)
-  // - If sub-contracts exist: check that sum < parent quantity
+  // - If sub-contracts exist: check that sum < parent open amount
   const canAddSubContract = parentContractStatus !== 'closed' && 
-    (subContracts.length === 0 || totalSubContractQuantity < parentContractQuantity);
+    (subContracts.length === 0 || totalSubContractQuantity < parentContractOpen);
 
   // Color mapping for SVG fill
   const colorMap: Record<string, string> = {

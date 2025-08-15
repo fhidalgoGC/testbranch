@@ -1087,6 +1087,7 @@ export default function PurchaseContractDetail() {
               progressBar={progressBarConfig}
               parentContractFixed={currentContractData?.inventory?.fixed || 1000}
               parentContractQuantity={currentContractData?.quantity || 0}
+              parentContractOpen={currentContractData?.inventory?.open || 0}
               parentContractStatus={currentContractData?.status || ''}
 
               onNewSubContract={() => {
