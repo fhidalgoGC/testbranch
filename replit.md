@@ -1,7 +1,7 @@
 # GrainChain Platform
 
 ## Overview
-This project is a full-stack web application designed for creating grain and commodity trading contracts. It aims to provide a modular and scalable platform for managing the entire trading contract lifecycle, from buyer/seller management to contract creation and tracking. The application emphasizes a modern user experience, robust authentication, and efficient data management to streamline agricultural commodity trading.
+This project is a full-stack web application for creating and managing grain and commodity trading contracts. Its purpose is to provide a modular and scalable platform covering the entire contract lifecycle, from buyer/seller management to contract creation and tracking. The application emphasizes a modern user experience, robust authentication, and efficient data management to streamline agricultural commodity trading.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -9,200 +9,61 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend
-- **Framework**: React 18 with TypeScript
-- **Bundler**: Vite
-- **UI Framework**: Shadcn/ui (built on Radix UI primitives)
-- **Styling**: Tailwind CSS with CSS variables for theming
-- **Routing**: Wouter
-- **State Management**: Redux Toolkit with RTK Query
-- **Forms**: React Hook Form with Zod validation
-- **Internationalization**: i18next (Spanish/English support)
-- **Design System**: Microsoft Fluent UI styling applied for consistency.
+- **Framework**: React 18 with TypeScript and Vite.
+- **UI/Styling**: Shadcn/ui (Radix UI primitives), Tailwind CSS with CSS variables, Microsoft Fluent UI styling.
+- **State Management**: Redux Toolkit with RTK Query.
+- **Forms**: React Hook Form with Zod validation.
+- **Internationalization**: i18next (Spanish/English).
 - **Theming**: Dark mode and an agricultural green theme with persistence.
+- **Routing**: Wouter for SPA navigation.
 
 ### Backend
-- **Framework**: Express.js with TypeScript
-- **Database**: PostgreSQL with Drizzle ORM (via Neon serverless)
+- **Framework**: Express.js with TypeScript.
+- **Database**: PostgreSQL with Drizzle ORM (via Neon serverless).
 - **Authentication**: Auth0 integration with JWT, refresh, and access token management.
-- **Session Management**: In-memory storage (extensible).
 - **API Structure**: RESTful endpoints (`/api` prefix).
 
 ### Project Structure
-- `client/src/`: Contains frontend application code, organized into:
-  - `components/ui`: Shadcn/ui components
-  - `components/general`: Reusable components like StandardTable/GenericTable
-  - `services/`: Business logic services (e.g., `contractsService.ts`)
-  - `features`: Feature-based modules like `auth`
-  - `pages`: Page components handling UI layout and user interactions
-  - `locales`: Internationalization files
-- `server/`: Houses backend logic including `index.ts`, `routes.ts`, `storage.ts`, and `vite.ts`.
-- `shared/`: For shared database schema and types.
+- `client/src/`: Frontend code (components, services, features, pages, locales).
+- `server/`: Backend logic.
+- `shared/`: Shared database schema and types.
 
 ### Key Features & Design Decisions
-- **Authentication**: Auth0 for secure login, token storage in localStorage, Redux for state, and protected routes. User profile and organizational data fetched post-login.
-- **Database Layer**: Drizzle ORM for type-safe interactions, shared schema with Zod, and managed migrations. Abstracted storage layer for flexibility.
-- **UI System**: Shadcn/ui for consistent design, responsive layout with Tailwind CSS, CSS variables for theming (including dark mode), and accessibility built on Radix UI.
-- **Data Flow**:
-    - **Authentication Flow**: User credentials -> Auth0 API -> tokens stored -> identity, partition keys, organization, and representative people data fetched and stored in localStorage.
-    - **API Request Flow**: RTK Query hooks for frontend API calls with authentication headers; Express middleware for logging and routing to storage layer.
-    - **State Management**: Redux for global state, RTK Query for server state caching, React hooks for local state, and localStorage for persistent preferences.
-- **Form Management**: Extensive use of React Hook Form with Zod for validation, ensuring type-safe and controlled input fields across the application (e.g., price, basis, freight cost).
-- **Dynamic Data Handling**:
-    - **Characteristics Configuration**: Dynamic loading of configurations based on commodity selection.
-    - **Pricing Logic**: Conditional display and calculation of price, basis, and futures fields based on pricing type (`fixed` vs. `basis`). Supports negative basis.
-    - **Flag Validation**: Robust system for validating flag URLs and providing automatic fallbacks for invalid or missing flags.
-- **Reusable Components**: 
-  - **StandardTable/GenericTable**: Highly configurable and reusable table component with pagination, sorting, debounced search, i18n reactive translations. Component is completely agnostic and only receives processed data from parent components.
-  - **Separation of Concerns**: Page-level elements (titles, filters, action buttons) are handled by page components, not table components. Business logic moved to external services (e.g., `contractsService.ts`) for better maintainability and testability.
-
-## Recent Architectural Changes (August 2025)
-
-### Automatic Data Refresh After Sub-Contract Creation
-- **Date**: August 15, 2025
-- **Change**: Implemented automatic data refresh when returning from sub-contract creation modal
-- **Key Features**:
-  - **URL Parameter Integration**: Uses `refresh=true` parameter to trigger automatic refresh
-  - **Full Data Refresh**: Calls same `handleFullRefresh()` function as refresh button
-  - **Seamless UX**: Users see updated data immediately after creating sub-contracts
-  - **Full-Screen Loading**: Shows professional loading overlay with minimum 0.3 seconds duration
-  - **Parallel API Calls**: Refreshes both contract and sub-contracts data simultaneously
-  - **URL Cleanup**: Automatically removes refresh parameter from URL after triggering
-- **Implementation**: 
-  - Sub-contract creation navigates with `?refresh=true` parameter
-  - Contract detail page detects parameter and triggers `handleFullRefresh()`
-  - Same visual feedback as manual refresh button (spinner, loading overlay)
-- **Benefits**: Consistent data state, improved user experience, unified refresh behavior
-
-### Complete Sub-Contract API Integration
-- **Date**: August 15, 2025
-- **Change**: Implemented complete API integration for sub-contract creation with proper authentication and payload structure
-- **Key Features**:
-  - **Two-step API flow**: POST `/sp-sub-contracts` to get key → PUT `/sp-sub-contracts/{key}` to create
-  - **Redis state management**: Sub-contract key stored persistently in Redux for session continuity
-  - **Proper payload structure**: Thresholds with correct format (`max_thresholds_percentage: 0`, `max_thresholds_weight: quantity`, etc.)
-  - **Error handling**: Console-only error logging, no disruptive alerts for better developer experience
-  - **Key persistence**: Avoids duplicate API calls by checking existing key in Redux state
-- **API Structure**:
-  - Initial call: `POST /sp-sub-contracts` → returns `{data: {key: "..."}}`
-  - Final submission: `PUT /sp-sub-contracts/{key}` with complete payload
-  - Authentication: JWT + partition_key headers via `authenticatedFetch`
-- **Benefits**: Complete real API integration, proper state persistence, optimized API usage
-
-### Sub-Contract Confirmation Modal Implementation
-- **Date**: August 15, 2025
-- **Change**: Implemented comprehensive confirmation modal for sub-contract creation
-- **Key Features**:
-  - Complete page state representation in modal before submission
-  - Parent contract information summary (contract number, reference, commodity, seller, quantities, dates, status)
-  - Full sub-contract form data preview (all fields: contract details, pricing, quantities, dates, contact info)
-  - Real-time inventory consumption progress bar with percentage calculation
-  - Proper data extraction from complex objects (commodity.name, participant.name by type)
-  - Two-step confirmation process: form validation → modal confirmation → API submission
-- **User Experience**: 
-  - Users can review all information before final submission
-  - Visual progress indicator shows inventory impact
-  - Clear separation between parent contract context and new sub-contract details
-- **Data Flow**: Form submission → store data in state → open modal → user confirms → API call → navigation
-- **Benefits**: Reduced user errors, better data validation, improved user confidence in transactions
-
-### Measurement Units Select Implementation
-- **Date**: August 15, 2025
-- **Change**: Implemented standardized measurement units select component for sub-contract creation
-- **Key Features**:
-  - Automatic loading from real CRM API (`/unit-conversions/units` endpoint)
-  - Standard select structure: `{key, value, label, type}` format using unit slugs
-  - Proper mapping between parent contract and sub-contract forms
-  - Default value inheritance: uses parent contract's `measurement_unit` (slug) not `measurement_unit_id` (ObjectId)
-  - Support for both weight and volume unit types with filtering
-  - React Query caching and error handling
-- **Data Flow**: 
-  - Parent contract stores both `measurement_unit_id` (ObjectId) and `measurement_unit` (slug)
-  - Select component uses slug for UI display and selection
-  - API submission uses ObjectId for backend compatibility
-- **Benefits**: Consistent measurement unit selection across all contract forms with real API data
-
-### API Authentication Interceptor Implementation
-- **Date**: August 14, 2025
-- **Change**: Created centralized `addJwtPk` interceptor for API authentication
-- **Location**: `client/src/utils/apiInterceptors.ts`
-- **Key Features**:
-  - Automatic JWT token and partition_key header injection
-  - Smart endpoint exclusion for public APIs (token, customer, partition_keys, organization)
-  - Reusable `authenticatedFetch` and `publicFetch` utilities
-  - Customizable headers support
-  - Authentication status checking with `hasAuthTokens()`
-- **Benefits**: 
-  - DRY principle - no repeated header configuration
-  - Consistent authentication across all API calls
-  - Easy maintenance and updates to auth headers
-  - Clear separation between authenticated and public endpoints
-- **Usage**: Replace manual fetch with `authenticatedFetch(url, options)` for all CRM endpoints
-
-### StandardTable Component Refactoring
-- **Date**: August 13, 2025
-- **Change**: Complete architectural refactoring of StandardTable component
-- **Key Improvements**:
-  - Moved all business logic from StandardTable to external services (`contractsService.ts`)
-  - Page-level elements (title, filters, action buttons) moved from table component to page components
-  - StandardTable is now completely agnostic and data-driven
-  - Better separation of concerns: UI vs business logic
-  - Improved maintainability and testability
-- **Impact**: Cleaner component structure, reusable services, better code organization
-
-### Action Menu Items Architecture
-- **Date**: August 13, 2025
-- **Principle**: Table components must be completely agnostic about navigation and business logic
-- **Implementation**: Page components pass pre-configured action items with handlers to the table
-- **Rule**: Tables should never contain hardcoded navigation URLs or business logic - all actions are externally defined and passed as props
-
-### Navigation Performance Optimization
-- **Date**: August 13, 2025
-- **Issue**: Slow page navigation due to full page reloads with `window.location.href`
-- **Solution**: Implemented Wouter router's `setLocation()` for SPA navigation
-- **Result**: Instant, fluid navigation between pages without page reloads
-- **Impact**: Significantly improved user experience and application performance
-
-### Hierarchical Navigation State Management Fix
-- **Date**: August 13, 2025
-- **Issue**: State persistence was inconsistent across pages - only PurchaseContracts had proper hierarchical navigation, other pages maintained state when they shouldn't
-- **Root Cause**: Not all pages were implementing the same navigation hierarchy behavior
-- **Solution**: 
-  - Implemented `useNavigationHandler` and `handleNavigateToPage()` in all main pages (Home, Buyers, Sellers, SaleContracts)
-  - Added `saleContracts` to Redux state and navigation hierarchy
-  - All top-level pages now clear their state when navigating between sibling pages
-- **Result**: Consistent state management across all pages - state persists when navigating deeper in hierarchy but clears when moving between same-level pages
-- **Impact**: Unified user experience and predictable state behavior throughout the application
-
-### Color Standards for Pricing Types
-- **Date**: August 13, 2025
-- **Standard**: Fixed pricing type must always use blue colors throughout the project
-- **Implementation**: 
-  - Fixed: Blue color palette (`bg-blue-100`, `text-blue-700`, etc.)
-  - Basis: Purple color palette (`bg-purple-100`, `text-purple-700`, etc.)
-- **Consistency**: Applied across filters, badges, indicators, and all UI elements displaying pricing type
+- **Authentication**: Auth0 integration for secure login, token management, and protected routes.
+- **Database Layer**: Drizzle ORM for type-safe interactions and managed migrations.
+- **UI System**: Consistent design via Shadcn/ui, responsive layout with Tailwind CSS, and accessible components.
+- **Data Flow**: RTK Query for API calls, Redux for global state, and localStorage for persistent preferences.
+- **Form Management**: Extensive use of React Hook Form and Zod for type-safe and validated inputs.
+- **Dynamic Data Handling**: Dynamic configuration loading based on commodity selection, conditional pricing logic (fixed vs. basis), and robust flag validation.
+- **Reusable Components**: Agnostic `StandardTable`/`GenericTable` for data display, designed for reusability with business logic separated into external services.
+- **Contract Management**: Comprehensive contract deletion with confirmation modal, dynamic seller/buyer information display in contract details, and automatic data refresh after sub-contract creation.
+- **Sub-Contract Management**: Two-step API integration for sub-contract creation with Redis state management, comprehensive confirmation modal for data preview, and standardized measurement unit selection.
+- **API Authentication**: Centralized `addJwtPk` interceptor for automatic JWT token and partition key header injection, supporting both authenticated and public endpoints.
+- **Navigation**: Optimized navigation using Wouter's `setLocation()` for instant page transitions and consistent hierarchical navigation state management across all pages.
+- **Color Standards**: Consistent color schemes for pricing types (blue for fixed, purple for basis) applied across the UI for visual consistency.
 
 ## External Dependencies
 
 ### Core
-- `@neondatabase/serverless`: Serverless PostgreSQL driver
-- `drizzle-orm`: Type-safe ORM
-- `@reduxjs/toolkit`: Redux state management
-- `react-hook-form`: Form management
-- `zod`: Schema validation
-- `i18next`: Internationalization library
+- `@neondatabase/serverless`
+- `drizzle-orm`
+- `@reduxjs/toolkit`
+- `react-hook-form`
+- `zod`
+- `i18next`
 
 ### UI
-- `@radix-ui/*`: Accessible UI primitives
-- `tailwindcss`: CSS framework
-- `class-variance-authority`: Component variant management
-- `lucide-react`: Icon library
+- `@radix-ui/*`
+- `tailwindcss`
+- `class-variance-authority`
+- `lucide-react`
 
 ### Development & Build Tools
-- `vite`: Build tool and dev server
-- `tsx`: TypeScript execution for Node.js
-- `esbuild`: JavaScript bundler for production
+- `vite`
+- `tsx`
+- `esbuild`
 
 ### Third-Party Services
-- **Auth0**: For user authentication and authorization.
-- **Neon**: Serverless PostgreSQL database provider.
-- **CRM API**: External CRM system for managing buyer data.
+- **Auth0**: User authentication and authorization.
+- **Neon**: Serverless PostgreSQL database.
+- **CRM API**: External CRM system.

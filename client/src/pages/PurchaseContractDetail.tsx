@@ -673,6 +673,18 @@ export default function PurchaseContractDetail() {
                   {currentContractData?.price_schedule?.[0]?.pricing_type || 'basis'}
                 </Badge>
               </div>
+              
+              {/* Seller/Buyer Information */}
+              <div className="mt-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {currentContractData?.type === 'purchase' ? 'Seller:' : 'Buyer:'}
+                  </span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {currentContractData?.type === 'purchase' ? seller?.name || 'N/A' : buyer?.name || 'N/A'}
+                  </span>
+                </div>
+              </div>
             </div>
             <div className="flex flex-col space-y-2 items-end">
               <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
@@ -1146,6 +1158,9 @@ export default function PurchaseContractDetail() {
                 </p>
                 <p className="text-sm text-red-700 dark:text-red-400">
                   <strong>Quantity:</strong> {currentContractData?.quantity?.toLocaleString() || '0'} {currentContractData?.measurement_unit || 'units'}
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-400">
+                  <strong>{currentContractData?.type === 'purchase' ? 'Seller:' : 'Buyer:'}</strong> {currentContractData?.type === 'purchase' ? seller?.name || 'N/A' : buyer?.name || 'N/A'}
                 </p>
               </div>
             </div>
