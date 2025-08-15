@@ -18,6 +18,8 @@ import { Link } from 'wouter';
 import { FormattedNumberInput } from '@/components/PurchaseContractForm/components/FormattedNumberInput';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { DatePicker } from '@/components/ui/datepicker';
+import { formatNumber } from '@/lib/numberFormatter';
+import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 
 // Sub-contract form schema matching API structure
 const subContractSchema = z.object({
@@ -133,6 +135,27 @@ export default function CreateSubContract() {
   // Modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [formDataForSubmission, setFormDataForSubmission] = useState<SubContractFormData | null>(null);
+
+  // Helper functions for formatting numbers
+  const formatQuantity = (value: number | undefined | null) => {
+    return formatNumber({
+      minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+      maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+      value: value || 0,
+      formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+      roundMode: NUMBER_FORMAT_CONFIG.roundMode
+    });
+  };
+
+  const formatPrice = (value: number | undefined | null) => {
+    return formatNumber({
+      minDecimals: 0,
+      maxDecimals: 0,
+      value: value || 0,
+      formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+      roundMode: NUMBER_FORMAT_CONFIG.roundMode
+    });
+  };
   
   // Debug measurement units loading
   useEffect(() => {
@@ -647,13 +670,13 @@ export default function CreateSubContract() {
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">Quantity Sub-Contract:</span>
                     <div className="text-blue-600 dark:text-blue-400 font-semibold">
-                      {(formDataForSubmission?.quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
                   </div>
                   <div className="text-right">
                     <span className="text-gray-600 dark:text-gray-400">Open Contract:</span>
                     <div className="text-gray-900 dark:text-gray-100 font-semibold">
-                      {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(parentContractData?.inventory?.open)} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
                   </div>
                 </div>
@@ -689,7 +712,7 @@ export default function CreateSubContract() {
                       #{parentContractData?.folio || 'SPC-46'}
                     </span>
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(parentContractData?.inventory?.open)} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                   </div>
                   
@@ -699,7 +722,7 @@ export default function CreateSubContract() {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {((parentContractData?.inventory?.open || 0) - (formDataForSubmission?.quantity || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity((parentContractData?.inventory?.open || 0) - (formDataForSubmission?.quantity || 0))} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                   </div>
                 </div>
@@ -725,7 +748,7 @@ export default function CreateSubContract() {
                       #{formDataForSubmission?.contractNumber || 'SPC-46-SUBC-5'}
                     </span>
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {(formDataForSubmission?.quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                   </div>
                   
@@ -736,10 +759,10 @@ export default function CreateSubContract() {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {(formDataForSubmission?.quantity || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
                     </span>
                     <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                      {(formDataForSubmission?.basis || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      {formatPrice(formDataForSubmission?.basis)}
                     </span>
                   </div>
                   
@@ -750,10 +773,10 @@ export default function CreateSubContract() {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      {(formDataForSubmission?.future || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      {formatPrice(formDataForSubmission?.future)}
                     </span>
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      {(formDataForSubmission?.totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      {formatPrice(formDataForSubmission?.totalPrice)}
                     </span>
                   </div>
                 </div>
