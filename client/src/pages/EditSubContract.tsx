@@ -316,7 +316,7 @@ export default function EditSubContract() {
         quantity: formDataForSubmission.quantity,
         sub_contract_date: formDataForSubmission.totalDate,
         measurement_unit_id: formDataForSubmission.measurementUnitId,
-        thresholds: originalSubContract.thresholds || {
+        thresholds: {
           max_thresholds_percentage: 0,
           max_thresholds_weight: formDataForSubmission.quantity,
           min_thresholds_percentage: 0,
