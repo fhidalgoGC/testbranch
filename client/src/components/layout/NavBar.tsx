@@ -79,7 +79,7 @@ export default function NavBar({ title }: NavBarProps) {
           if (pathSegments[index - 2] === 'sub-contracts') {
             label = t('breadcrumbs.editSubContract');
             // Para edición de sub-contratos, el path debe ir al detalle del contrato padre
-            const contractId = pathSegments[pathSegments.length - 4]; // ID del contrato padre
+            const contractId = pathSegments[1]; // purchase-contracts/[contractId]/sub-contracts/[subContractId]/edit
             path = `/purchase-contracts/${contractId}`;
           } else if (pathSegments[index - 1] === 'purchase-contracts') {
             label = t('breadcrumbs.editContract');
@@ -89,33 +89,39 @@ export default function NavBar({ title }: NavBarProps) {
           break;
         case 'sub-contracts':
           label = t('breadcrumbs.subContracts');
+          // Skip sub-contracts si el siguiente es edit/create porque representan el mismo nivel conceptual
+          if (index < pathSegments.length - 1 && 
+              (pathSegments[index + 1] === 'create' || pathSegments[index + 2] === 'edit')) {
+            return;
+          }
           break;
         default:
           // Si es un ID (contiene guiones o números), usar el título de la página
           if (/^[a-f0-9-]+$/i.test(segment) || /^\d+$/.test(segment)) {
             if (pathSegments.includes('purchase-contracts')) {
               label = t('breadcrumbs.contractDetail');
+              // Si estamos en una ruta de sub-contrato, el contractDetail debe navegar al contrato padre
+              if (pathSegments.includes('sub-contracts')) {
+                const contractId = pathSegments[1]; // purchase-contracts/[contractId]
+                path = `/purchase-contracts/${contractId}`;
+              }
             } else {
               label = 'Detalle';
+            }
+            
+            // Skip el ID del sub-contrato en breadcrumbs para evitar duplicación
+            if (pathSegments[index - 1] === 'sub-contracts') {
+              return;
             }
           }
           break;
       }
 
-      // Para sub-contratos, ajustar el path de retorno
+      // Para sub-contratos, ajustar el path de retorno para create
       if (segment === 'create' && pathSegments[index - 1] === 'sub-contracts') {
         // El path debería ir al detalle del contrato padre
-        const contractId = pathSegments[pathSegments.length - 3];
+        const contractId = pathSegments[1];
         path = `/purchase-contracts/${contractId}`;
-      }
-
-      // No agregar "sub-contracts" si el siguiente es "create" 
-      // porque representan el mismo nivel conceptual
-      if (segment === 'sub-contracts' && 
-          index < pathSegments.length - 1 && 
-          pathSegments[index + 1] === 'create') {
-        // Skip este breadcrumb
-        return;
       }
 
       breadcrumbs.push({
