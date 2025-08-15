@@ -233,13 +233,24 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
 
     const data: ContractResponse = await response.json();
 
+    // Check if data exists and has data array
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      console.log('⚠️ SERVICIO - No data found in API response:', data);
+      return {
+        contracts: [],
+        totalElements: 0,
+        totalPages: 0,
+        currentPage: page
+      };
+    }
+
     // Mapear los datos de la API real a nuestro formato
     const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
       _id: contract._id,
       folio: contract.folio,
       reference_number: contract.reference_number || 'N/A',
       commodity: contract.commodity,
-      participants: contract.participants.map(p => ({
+      participants: (contract.participants || []).map(p => ({
         ...p,
         role: p.role as 'buyer' | 'seller'
       })),
@@ -250,20 +261,20 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       quantity: contract.quantity,
       measurement_unit_id: contract.measurement_unit_id,
       measurement_unit: contract.measurement_unit,
-      price_schedule: contract.price_schedule.map(ps => ({
+      price_schedule: (contract.price_schedule || []).map(ps => ({
         ...ps,
         pricing_type: ps.pricing_type as 'fixed' | 'basis',
         basis_operation: ps.basis_operation as 'add' | 'subtract',
         payment_currency: ps.payment_currency as 'USD' | 'MXN'
       })),
-      logistic_schedule: contract.logistic_schedule.map(ls => ({
+      logistic_schedule: (contract.logistic_schedule || []).map(ls => ({
         ...ls,
         logistic_payment_responsability: ls.logistic_payment_responsability as 'buyer' | 'seller' | 'other',
         logistic_coordination_responsability: ls.logistic_coordination_responsability as 'buyer' | 'seller' | 'other',
         payment_currency: ls.payment_currency as 'USD' | 'MXN',
         freight_cost: {
           ...ls.freight_cost,
-          type: ls.freight_cost.type as 'none' | 'fixed' | 'variable'
+          type: ls.freight_cost?.type as 'none' | 'fixed' | 'variable'
         }
       })),
       shipping_start_date: contract.shipping_start_date,
