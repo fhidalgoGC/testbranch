@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check, RefreshCw } from 'lucide-react';
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -58,6 +58,7 @@ export default function PurchaseContractDetail() {
   const [subContractsData, setSubContractsData] = useState<any[]>([]);
   const [loadingSubContracts, setLoadingSubContracts] = useState<boolean>(false);
   const [refreshingContract, setRefreshingContract] = useState<boolean>(false);
+  const [fullScreenLoading, setFullScreenLoading] = useState<boolean>(false);
   
 
   
@@ -163,6 +164,140 @@ export default function PurchaseContractDetail() {
     }
   };
 
+  // Función completa de refresh con overlay de pantalla completa y mínimo 0.3 segundos
+  const handleFullRefresh = async () => {
+    if (!contractId) return;
+    
+    // Iniciar el loading de pantalla completa y medir el tiempo
+    setFullScreenLoading(true);
+    const startTime = Date.now();
+    
+    try {
+      console.log('🔄 Full refresh started for contract:', contractId);
+      
+      const authCheck = hasAuthTokens();
+      if (!authCheck.isAuthenticated) {
+        console.error('❌ No authentication tokens available for full refresh');
+        return;
+      }
+      
+      // Ejecutar ambos endpoints en paralelo para mejor rendimiento
+      const [contractResponse, subContractsResponse] = await Promise.all([
+        // 1. Refresh del contrato principal
+        authenticatedFetch(
+          `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/${contractId}`,
+          {
+            method: 'GET',
+            customHeaders: {
+              'priority': 'u=1, i',
+              'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+              'sec-ch-ua-mobile': '?0',
+              'sec-ch-ua-platform': '"macOS"'
+            }
+          }
+        ),
+        // 2. Refresh de sub-contratos
+        authenticatedFetch(
+          `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(JSON.stringify({ "contract_id": contractId }))}`,
+          {
+            method: 'GET',
+            customHeaders: {
+              'pk-organization': localStorage.getItem('partition_key') || '',
+              'priority': 'u=1, i',
+              'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+              'sec-ch-ua-mobile': '?0',
+              'sec-ch-ua-platform': '"macOS"'
+            }
+          }
+        )
+      ]);
+      
+      // Procesar respuesta del contrato principal
+      if (contractResponse.ok) {
+        const contractResult = await contractResponse.json();
+        console.log('✅ Contract data refreshed successfully:', contractResult);
+        
+        if (contractResult.data) {
+          setCurrentContractData(contractResult.data);
+          console.log('🔄 Updated contract data in local state');
+          
+          // Cargar dirección del participante
+          const seller = contractResult.data.participants?.find((p: any) => p.role === 'seller');
+          if (seller && seller.people_id) {
+            loadParticipantAddress(seller.people_id);
+          }
+        }
+      } else {
+        console.error('❌ Failed to refresh contract data:', contractResponse.status, contractResponse.statusText);
+      }
+      
+      // Procesar respuesta de sub-contratos
+      if (subContractsResponse.ok) {
+        const subContractsResult = await subContractsResponse.json();
+        console.log('✅ Sub-contracts data refreshed successfully:', subContractsResult);
+        
+        if (subContractsResult.data && Array.isArray(subContractsResult.data)) {
+          console.log(`✅ ${subContractsResult.data.length} sub-contratos refrescados exitosamente`);
+          
+          // Transformar datos del API al formato esperado por SubContractCard
+          const transformedData = subContractsResult.data.map((item: any, index: number) => {
+            const colors = [
+              { border: 'border-l-blue-500', dot: 'bg-blue-500', text: 'text-blue-600' },
+              { border: 'border-l-green-500', dot: 'bg-green-500', text: 'text-green-600' },
+              { border: 'border-l-purple-500', dot: 'bg-purple-500', text: 'text-purple-600' },
+              { border: 'border-l-orange-500', dot: 'bg-orange-500', text: 'text-orange-600' },
+              { border: 'border-l-red-500', dot: 'bg-red-500', text: 'text-red-600' },
+              { border: 'border-l-pink-500', dot: 'bg-pink-500', text: 'text-pink-600' },
+              { border: 'border-l-yellow-500', dot: 'bg-yellow-500', text: 'text-yellow-600' },
+              { border: 'border-l-indigo-500', dot: 'bg-indigo-500', text: 'text-indigo-600' }
+            ];
+            const color = colors[index % colors.length];
+            
+            const quantity = item.quantity || 0;
+            const reserved = item.inventory?.reserved || 0;
+            const unreserved = quantity - reserved;
+            
+            return {
+              id: item._id,
+              title: item.folio || `Sub-Contract ${index + 1}`,
+              borderColor: color.border,
+              dotColor: color.dot,
+              textColor: color.text,
+              fields: [
+                { label: 'Total', value: `${formatNumber({ value: quantity, minDecimals: 0, maxDecimals: 0, formatPattern: '0,000.00', roundMode: 'truncate' })} ${item.measurement_unit || 'bu60'}` },
+                { label: 'Reserved', value: `${formatNumber({ value: reserved, minDecimals: 0, maxDecimals: 0, formatPattern: '0,000.00', roundMode: 'truncate' })} ${item.measurement_unit || 'bu60'}` },
+                { label: 'Unreserved', value: `${formatNumber({ value: unreserved, minDecimals: 0, maxDecimals: 0, formatPattern: '0,000.00', roundMode: 'truncate' })} ${item.measurement_unit || 'bu60'}` }
+              ],
+              progressBar: {
+                progress: reserved > 0 ? (reserved / quantity) * 100 : 0,
+                color: 'bg-green-500'
+              }
+            };
+          });
+          
+          setSubContractsData(transformedData);
+        }
+      } else {
+        console.error('❌ Failed to refresh sub-contracts data:', subContractsResponse.status, subContractsResponse.statusText);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error during full refresh:', error);
+    } finally {
+      // Calcular tiempo transcurrido y asegurar duración mínima de 0.3 segundos
+      const elapsedTime = Date.now() - startTime;
+      const minimumDuration = 300; // 0.3 segundos en milisegundos
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+      
+      // Esperar el tiempo restante si la API fue más rápida que la duración mínima
+      await new Promise(resolve => setTimeout(resolve, remainingTime));
+      
+      // Quitar el loading de pantalla completa
+      setFullScreenLoading(false);
+      console.log('✅ Full refresh completed');
+    }
+  };
+
   // Función para cargar sub-contratos usando el interceptor addJwtPk
   const loadSubContracts = async (contractId: string) => {
     try {
@@ -174,7 +309,6 @@ export default function PurchaseContractDetail() {
       if (!authCheck.isAuthenticated) {
         console.log('🔐 Sin autenticación válida - no se cargarán sub-contratos');
         setSubContractsData([]);
-        setSubContracts([]);
         return;
       }
 
@@ -246,11 +380,9 @@ export default function PurchaseContractDetail() {
           });
           
           setSubContractsData(transformedData);
-          setSubContracts(transformedData);
         } else {
           console.log('⚠️ Respuesta exitosa pero sin datos de sub-contratos');
           setSubContractsData([]);
-          setSubContracts([]);
         }
       } else {
         const errorText = await response.text();
@@ -260,12 +392,10 @@ export default function PurchaseContractDetail() {
           error: errorText
         });
         setSubContractsData([]);
-        setSubContracts([]);
       }
     } catch (error) {
       console.error('❌ Error al cargar sub-contratos:', error);
       setSubContractsData([]);
-      setSubContracts([]);
     } finally {
       setLoadingSubContracts(false);
     }
@@ -482,6 +612,24 @@ export default function PurchaseContractDetail() {
                 <Button size="sm" variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
                   <Printer className="w-4 h-4" />
                 </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={handleFullRefresh}
+                        disabled={fullScreenLoading}
+                        className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${fullScreenLoading ? 'animate-spin' : ''}`} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Refresh contract and sub-contracts data</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
                 {/* Botones de editar y eliminar - solo visibles cuando status es 'created' */}
                 {currentContractData?.status === 'created' && (
@@ -861,6 +1009,23 @@ export default function PurchaseContractDetail() {
           </div>
         )}
       </div>
+
+      {/* Full-Screen Loading Overlay */}
+      {fullScreenLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col items-center space-y-4 shadow-2xl">
+            <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                Refreshing Contract Data
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Loading contract and sub-contracts information...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 }
