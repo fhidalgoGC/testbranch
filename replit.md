@@ -38,7 +38,7 @@ Preferred communication style: Simple, everyday language.
 - **Reusable Components**: Agnostic `StandardTable`/`GenericTable` for data display, designed for reusability with business logic separated into external services.
 - **Contract Management**: Comprehensive contract deletion with confirmation modal, dynamic seller/buyer information display in contract details, and automatic data refresh after sub-contract creation.
 - **Sub-Contract Management**: Two-step API integration for sub-contract creation with Redis state management, comprehensive confirmation modal for data preview, and standardized measurement unit selection.
-- **API Authentication**: Centralized `addJwtPk` interceptor for automatic JWT token and partition key header injection, supporting both authenticated and public endpoints.
+- **API Authentication**: Centralized `authenticatedFetch` interceptor for automatic JWT token and partition key header injection. ALL external API calls must use this interceptor except for explicitly excluded endpoints (Auth0 token exchange, public APIs). This ensures consistent authentication, error handling, and header management across the application.
 - **Navigation**: Optimized navigation using Wouter's `setLocation()` for instant page transitions and consistent hierarchical navigation state management across all pages.
 - **Color Standards**: Consistent color schemes for pricing types (blue for fixed, purple for basis) applied across the UI for visual consistency.
 
