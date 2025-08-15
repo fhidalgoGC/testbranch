@@ -5,6 +5,7 @@ interface ContractResponse {
   data: Array<{
     _id: string;
     folio: string;
+    reference_number?: string;
     type: string;
     sub_type: string;
     commodity: {
@@ -236,7 +237,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
       _id: contract._id,
       folio: contract.folio,
-      reference_number: contract.folio,
+      reference_number: contract.reference_number || 'N/A',
       commodity: contract.commodity,
       participants: contract.participants.map(p => ({
         ...p,
