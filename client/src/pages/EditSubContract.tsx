@@ -238,8 +238,8 @@ export default function EditSubContract() {
           shipmentPeriod: '',
           future: currentSubContract.price_schedule?.[0]?.future_price || 0,
           basis: currentSubContract.price_schedule?.[0]?.basis || 0,
-          price: (currentSubContract.price_schedule?.[0]?.future_price || 0) + (currentSubContract.price_schedule?.[0]?.basis || 0), // Precio unitario (future + basis)
-          totalPrice: ((currentSubContract.price_schedule?.[0]?.future_price || 0) + (currentSubContract.price_schedule?.[0]?.basis || 0)) * (currentSubContract.quantity || 0),
+          price: currentSubContract.price_schedule?.[0]?.price || 0,
+          totalPrice: currentSubContract.total_price || 0,
           totalDate: subContractDate,
           quantity: currentSubContract.quantity || 0,
           measurementUnitId: currentSubContract.measurement_unit || 'bu60'
