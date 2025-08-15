@@ -354,10 +354,8 @@ export default function EditSubContract() {
         // Close modal first
         setShowConfirmModal(false);
         
-        // Navigate back with a small delay to ensure modal closes
-        setTimeout(() => {
-          handleNavigateToPage('contractDetail', contractId!);
-        }, 100);
+        // Navigate back immediately using window.location for reliable redirect
+        window.location.href = `/purchase-contracts/${contractId}`;
       } else {
         console.error('❌ Failed to update sub-contract:', response.status, response.statusText);
         // Handle error - show user feedback
