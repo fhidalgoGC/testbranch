@@ -601,18 +601,6 @@ export default function EditSubContract() {
                     ${(formDataForSubmission?.price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-orange-700 dark:text-orange-300">Old Total Price:</span>
-                  <span className="font-mono text-orange-900 dark:text-orange-100">
-                    ${(currentSubContract?.total_price || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-orange-700 dark:text-orange-300">New Total Price:</span>
-                  <span className="font-mono text-orange-900 dark:text-orange-100">
-                    ${(formDataForSubmission?.totalPrice || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </div>
               </div>
             </div>
 
