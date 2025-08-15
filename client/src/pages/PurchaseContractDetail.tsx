@@ -505,11 +505,18 @@ export default function PurchaseContractDetail() {
             const reserved = item.inventory?.reserved || 0;
             const unreserved = quantity - reserved;
             
+            console.log('🔍 Sub-contract measurement unit debug (loadSubContracts):', {
+              item_id: item._id,
+              measurement_unit: item.measurement_unit,
+              measurement_unit_id: item.measurement_unit_id,
+              folio: item.folio
+            });
+
             return {
               id: item._id,
               contractNumber: item.folio,
               quantity: quantity,
-              unit: item.measurement_unit || 'bu60',
+              unit: item.measurement_unit || 'Unknown Unit',
               thresholds: {
                 min: item.thresholds?.min_thresholds_weight || 0,
                 max: item.thresholds?.max_thresholds_weight || 0
