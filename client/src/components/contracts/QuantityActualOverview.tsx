@@ -183,7 +183,7 @@ export function QuantityActualOverview({
                   {t('createSubContract.priceLabel')}
                 </label>
                 <Controller
-                  name="totalPrice"
+                  name="price"
                   control={control}
                   render={({ field }) => (
                     <Input
