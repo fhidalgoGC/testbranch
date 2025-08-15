@@ -351,9 +351,13 @@ export default function EditSubContract() {
         const result = await response.json();
         console.log('✅ Sub-contract updated successfully:', result);
         
-        // Close modal and navigate back
+        // Close modal first
         setShowConfirmModal(false);
-        handleNavigateToPage('contractDetail', contractId!);
+        
+        // Navigate back with a small delay to ensure modal closes
+        setTimeout(() => {
+          handleNavigateToPage('contractDetail', contractId!);
+        }, 100);
       } else {
         console.error('❌ Failed to update sub-contract:', response.status, response.statusText);
         // Handle error - show user feedback
