@@ -31,22 +31,25 @@ interface ParentContractData {
 }
 
 interface QuantityActualOverviewProps {
-  // Form control props
-  control: Control<any>;
-  errors: FieldErrors<any>;
-  setValue: (name: string, value: any) => void;
+  // Form control props (optional for view mode)
+  control?: Control<any>;
+  errors?: FieldErrors<any>;
+  setValue?: (name: string, value: any) => void;
   
   // Data props
   parentContractData?: ParentContractData;
-  contractData: {
+  contractData?: {
     commodity: string;
   };
-  measurementUnits: MeasurementUnit[];
-  loadingUnits: boolean;
-  unitsError: any;
+  measurementUnits?: MeasurementUnit[];
+  loadingUnits?: boolean;
+  unitsError?: any;
   
   // Mode configuration
-  mode: 'create' | 'edit';
+  mode: 'create' | 'edit' | 'view';
+  
+  // View mode specific props
+  parentQuantity?: number;
   
   // Optional customization
   className?: string;
@@ -62,16 +65,19 @@ export function QuantityActualOverview({
   loadingUnits,
   unitsError,
   mode,
+  parentQuantity,
   className = ''
 }: QuantityActualOverviewProps) {
   const { t } = useTranslation();
 
-  // Watch future and basis values to calculate price automatically
-  const watchedFuture = useWatch({ control, name: 'future' });
-  const watchedBasis = useWatch({ control, name: 'basis' });
+  // Watch future and basis values to calculate price automatically (only for create/edit modes)
+  const watchedFuture = mode !== 'view' && control ? useWatch({ control, name: 'future' }) : null;
+  const watchedBasis = mode !== 'view' && control ? useWatch({ control, name: 'basis' }) : null;
 
   // Calculate price whenever future or basis changes (works in both create and edit modes)
   useEffect(() => {
+    if (mode === 'view' || !setValue) return;
+    
     // Handle empty or undefined values - treat as 0
     const future = (watchedFuture === '' || watchedFuture === null || watchedFuture === undefined) ? 0 : Number(watchedFuture) || 0;
     const basis = (watchedBasis === '' || watchedBasis === null || watchedBasis === undefined) ? 0 : Number(watchedBasis) || 0;
@@ -100,13 +106,14 @@ export function QuantityActualOverview({
           <div className="relative w-32 h-32">
             {(() => {
               // Calculate open inventory percentage
-              const totalQuantity = parentContractData?.quantity || 1400;
+              const totalQuantity = mode === 'view' ? (parentQuantity || 0) : (parentContractData?.quantity || 1400);
               const openInventory = parentContractData?.inventory?.open || 0;
               const openPercentage = totalQuantity > 0 ? (openInventory / totalQuantity) * 100 : 0;
               const strokeDasharray = `${openPercentage}, 100`;
               
               // Debug inventory calculation
               console.log('🔵 Inventory Debug:', {
+                mode,
                 totalQuantity,
                 openInventory,
                 openPercentage: openPercentage.toFixed(2) + '%',
@@ -148,71 +155,48 @@ export function QuantityActualOverview({
         {/* Commodity Badge */}
         <div className="text-center mb-6">
           <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm px-3 py-1">
-            {contractData.commodity} {parentContractData?.price_schedule?.[0]?.option_month} {parentContractData?.price_schedule?.[0]?.option_year}
+            {contractData?.commodity || 'N/A'} {parentContractData?.price_schedule?.[0]?.option_month} {parentContractData?.price_schedule?.[0]?.option_year}
           </Badge>
         </div>
 
-        {/* Future and Basis Fields */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Future Field */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                {t('createSubContract.future')}
-              </label>
-              <Controller
-                name="future"
-                control={control}
-                render={({ field }) => (
-                  <FormattedNumberInput
-                    value={field.value || ''}
-                    onChange={(value) => {
-                      // Convert empty string to 0 for calculations
-                      field.onChange(value === '' ? 0 : value);
-                    }}
-                    placeholder="0.00"
-                    className="text-sm"
-                    error={!!errors.future}
-                  />
-                )}
-              />
-              {errors.future && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.future.message as string}</p>
-              )}
-            </div>
-
-            {/* Basis Field (Read-only) */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                {t('createSubContract.basis')}
-              </label>
-              <Controller
-                name="basis"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    type="text"
-                    value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    readOnly
-                    className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
-                    tabIndex={-1}
-                  />
-                )}
-              />
-            </div>
-          </div>
-
-          {/* Total Section */}
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('createSubContract.total')}</h3>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+        {/* Future and Basis Fields - only show for create/edit modes */}
+        {mode !== 'view' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Future Field */}
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                  {t('createSubContract.priceLabel')}
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                  {t('createSubContract.future')}
                 </label>
                 <Controller
-                  name="price"
-                  control={control}
+                  name="future"
+                  control={control!}
+                  render={({ field }) => (
+                    <FormattedNumberInput
+                      value={field.value || ''}
+                      onChange={(value) => {
+                        // Convert empty string to 0 for calculations
+                        field.onChange(value === '' ? 0 : value);
+                      }}
+                      placeholder="0.00"
+                      className="text-sm"
+                      error={!!errors?.future}
+                    />
+                  )}
+                />
+                {errors?.future && (
+                  <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.future.message as string}</p>
+                )}
+              </div>
+
+              {/* Basis Field (Read-only) */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                  {t('createSubContract.basis')}
+                </label>
+                <Controller
+                  name="basis"
+                  control={control!}
                   render={({ field }) => (
                     <Input
                       type="text"
@@ -224,25 +208,49 @@ export function QuantityActualOverview({
                   )}
                 />
               </div>
-              <div>
+            </div>
+
+            {/* Total Section */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('createSubContract.total')}</h3>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
+                    {t('createSubContract.priceLabel')}
+                  </label>
+                  <Controller
+                    name="price"
+                    control={control!}
+                    render={({ field }) => (
+                      <Input
+                        type="text"
+                        value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        readOnly
+                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                        tabIndex={-1}
+                      />
+                    )}
+                  />
+                </div>
+                <div>
                 <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
                   {t('createSubContract.date')} <span className="text-red-500">*</span>
                 </label>
                 <Controller
                   name="totalDate"
-                  control={control}
+                  control={control!}
                   render={({ field }) => (
                     <DatePicker
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={t('createSubContract.selectDate')}
                       className="text-sm"
-                      error={!!errors.totalDate}
+                      error={!!errors?.totalDate}
                       minDate={parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date()}
                     />
                   )}
                 />
-                {errors.totalDate && (
+                {errors?.totalDate && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.totalDate.message as string}</p>
                 )}
               </div>
@@ -255,18 +263,18 @@ export function QuantityActualOverview({
                 </label>
                 <Controller
                   name="quantity"
-                  control={control}
+                  control={control!}
                   render={({ field }) => (
                     <FormattedNumberInput
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="0.00"
                       className="text-sm"
-                      error={!!errors.quantity}
+                      error={!!errors?.quantity}
                     />
                   )}
                 />
-                {errors.quantity && (
+                {errors?.quantity && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.quantity.message as string}</p>
                 )}
               </div>
@@ -276,13 +284,13 @@ export function QuantityActualOverview({
                 </label>
                 <Controller
                   name="measurementUnitId"
-                  control={control}
+                  control={control!}
                   render={({ field }) => (
                     <Select 
                       value={field.value} 
                       onValueChange={field.onChange}
                     >
-                      <SelectTrigger className={`text-sm ${errors.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                      <SelectTrigger className={`text-sm ${errors?.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                         <SelectValue placeholder={t('createSubContract.selectMeasurementUnit')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -290,10 +298,10 @@ export function QuantityActualOverview({
                           <SelectItem value="loading" disabled>{t('createSubContract.loadingUnits')}</SelectItem>
                         ) : unitsError ? (
                           <SelectItem value="error" disabled>{t('createSubContract.errorLoadingUnits')}</SelectItem>
-                        ) : measurementUnits.length === 0 ? (
+                        ) : measurementUnits && measurementUnits.length === 0 ? (
                           <SelectItem value="empty" disabled>{t('createSubContract.noUnitsAvailable')}</SelectItem>
                         ) : (
-                          measurementUnits.map((unit) => (
+                          measurementUnits?.map((unit) => (
                             <SelectItem key={unit.key} value={unit.key}>
                               {unit.label}
                             </SelectItem>
@@ -303,13 +311,23 @@ export function QuantityActualOverview({
                     </Select>
                   )}
                 />
-                {errors.measurementUnitId && (
+                {errors?.measurementUnitId && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.measurementUnitId.message as string}</p>
                 )}
               </div>
             </div>
+            </div>
           </div>
-        </div>
+        )}
+        
+        {/* View mode - simple display */}
+        {mode === 'view' && (
+          <div className="text-center">
+            <p className="text-gray-600 dark:text-gray-400">
+              {t('createSubContract.viewModeMessage')}
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

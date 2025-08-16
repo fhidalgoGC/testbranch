@@ -1204,7 +1204,11 @@ export default function PurchaseContractDetail() {
                 }));
                 setLocation(`/purchase-contracts/${contractId}/sub-contracts/create`);
               }}
-              onViewSubContract={(id) => console.log('View sub-contract:', id)}
+              onViewSubContract={(id) => {
+                console.log('View sub-contract:', id);
+                handleNavigateToPage('viewSubContract', id);
+                setLocation(`/purchase-contracts/${contractId}/sub-contracts/${id}/view`);
+              }}
               onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
               onEditSubContract={(id) => {
                 console.log('Edit sub-contract:', id);
