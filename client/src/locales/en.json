@@ -59,7 +59,8 @@
     "editContract": "Edit Contract",
     "subContracts": "Sub-contracts",
     "newSubContract": "New Sub-contract",
-    "editSubContract": "Edit Sub-contract"
+    "editSubContract": "Edit Sub-contract",
+    "viewSubContract": "View Sub-contract"
   },
   "buyerId": "Buyer ID",
   "fullName": "Full Name",

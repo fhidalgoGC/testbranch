@@ -59,7 +59,8 @@
     "editContract": "Editar Contrato",
     "subContracts": "Sub-contratos",
     "newSubContract": "Nuevo Sub-contrato",
-    "editSubContract": "Editar Sub-contrato"
+    "editSubContract": "Editar Sub-contrato",
+    "viewSubContract": "Ver Sub-contrato"
   },
   "buyerId": "Id Comprador",
   "fullName": "Nombre Completo",

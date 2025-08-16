@@ -48,7 +48,7 @@ export default function ViewSubContract() {
   // Use the specific sub-contract data from Redux state
   const currentSubContract = currentSubContractData;
   
-  usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/${subContractId}/view`);
+  usePageTracking('viewSubContract');
   
   // State management
   const [contractData, setContractData] = useState<ContractData>({
