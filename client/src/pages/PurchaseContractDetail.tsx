@@ -774,10 +774,9 @@ export default function PurchaseContractDetail() {
                     <TooltipTrigger asChild>
                       <Button 
                         size="sm" 
-                        variant="outline" 
                         onClick={handleFullRefresh}
                         disabled={fullScreenLoading}
-                        className="text-green-600 border-green-600 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <RefreshCw className={`w-4 h-4 ${fullScreenLoading ? 'animate-spin' : ''}`} />
                       </Button>
@@ -789,49 +788,78 @@ export default function PurchaseContractDetail() {
                 </TooltipProvider>
 
                 {/* 2. Print Button */}
-                <Button size="sm" variant="outline" className="text-gray-600 border-gray-600 hover:bg-gray-50">
-                  <Printer className="w-4 h-4" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        className="h-8 w-8 p-0 bg-gray-500 hover:bg-gray-600 text-white"
+                      >
+                        <Printer className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Print contract</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
                 {/* 3. View Button */}
-                <Button size="sm" variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">
-                  <Eye className="w-4 h-4" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>View contract</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
 
                 {/* 4. Edit Button - solo visible cuando status es 'created' */}
                 {currentContractData?.status === 'created' && (
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                    <Edit className="w-4 h-4" />
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          className="h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit contract</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
 
                 {/* 5. Delete Button - solo visible cuando status es 'created' */}
                 {currentContractData?.status === 'created' && (
-                  <Button 
-                    size="sm" 
-                    variant="destructive"
-                    onClick={() => setShowDeleteModal(true)}
-                    disabled={deleting}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          onClick={() => setShowDeleteModal(true)}
+                          disabled={deleting}
+                          className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete contract</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
-                
-                {/* 6. Debug State Button */}
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => {
-                    const debugState = {
-                      contract: currentContractData,
-                      subcontracts: subContractsData
-                    };
-                    console.log('🔍 DEBUG STATE:', debugState);
-                  }}
-                  className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border-yellow-300"
-                >
-                  Debug State
-                </Button>
               </div>
             </div>
           </div>
