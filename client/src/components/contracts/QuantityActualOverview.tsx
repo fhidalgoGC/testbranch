@@ -175,20 +175,29 @@ export function QuantityActualOverview({
                 <Controller
                   name="future"
                   control={control!}
-                  render={({ field }) => (
-                    <FormattedNumberInput
-                      value={field.value || ''}
-                      onChange={mode === 'view' ? () => {} : (value) => {
-                        // Convert empty string to 0 for calculations
-                        field.onChange(value === '' ? 0 : value);
-                      }}
-                      placeholder="0.00"
-                      className="text-sm"
-                      error={!!errors?.future}
-                      disabled={mode === 'view'}
-                      readOnly={mode === 'view'}
-                    />
-                  )}
+                  render={({ field }) => 
+                    mode === 'view' ? (
+                      <Input
+                        type="text"
+                        value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        readOnly
+                        disabled
+                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                        tabIndex={-1}
+                      />
+                    ) : (
+                      <FormattedNumberInput
+                        value={field.value || ''}
+                        onChange={(value) => {
+                          // Convert empty string to 0 for calculations
+                          field.onChange(value === '' ? 0 : value);
+                        }}
+                        placeholder="0.00"
+                        className="text-sm"
+                        error={!!errors?.future}
+                      />
+                    )
+                  }
                 />
                 {errors?.future && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.future.message as string}</p>
@@ -247,17 +256,27 @@ export function QuantityActualOverview({
                 <Controller
                   name="totalDate"
                   control={control!}
-                  render={({ field }) => (
-                    <DatePicker
-                      value={field.value}
-                      onChange={mode === 'view' ? () => {} : field.onChange}
-                      placeholder={t('createSubContract.selectDate')}
-                      className="text-sm"
-                      error={!!errors?.totalDate}
-                      minDate={parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date()}
-                      disabled={mode === 'view'}
-                    />
-                  )}
+                  render={({ field }) => 
+                    mode === 'view' ? (
+                      <Input
+                        type="text"
+                        value={field.value ? new Date(field.value).toLocaleDateString() : ''}
+                        readOnly
+                        disabled
+                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                        tabIndex={-1}
+                      />
+                    ) : (
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder={t('createSubContract.selectDate')}
+                        className="text-sm"
+                        error={!!errors?.totalDate}
+                        minDate={parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date()}
+                      />
+                    )
+                  }
                 />
                 {errors?.totalDate && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.totalDate.message as string}</p>
@@ -273,17 +292,26 @@ export function QuantityActualOverview({
                 <Controller
                   name="quantity"
                   control={control!}
-                  render={({ field }) => (
-                    <FormattedNumberInput
-                      value={field.value}
-                      onChange={mode === 'view' ? () => {} : field.onChange}
-                      placeholder="0.00"
-                      className="text-sm"
-                      error={!!errors?.quantity}
-                      disabled={mode === 'view'}
-                      readOnly={mode === 'view'}
-                    />
-                  )}
+                  render={({ field }) => 
+                    mode === 'view' ? (
+                      <Input
+                        type="text"
+                        value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        readOnly
+                        disabled
+                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                        tabIndex={-1}
+                      />
+                    ) : (
+                      <FormattedNumberInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="0.00"
+                        className="text-sm"
+                        error={!!errors?.quantity}
+                      />
+                    )
+                  }
                 />
                 {errors?.quantity && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.quantity.message as string}</p>
@@ -296,32 +324,42 @@ export function QuantityActualOverview({
                 <Controller
                   name="measurementUnitId"
                   control={control!}
-                  render={({ field }) => (
-                    <Select 
-                      value={field.value} 
-                      onValueChange={mode === 'view' ? () => {} : field.onChange}
-                      disabled={mode === 'view'}
-                    >
-                      <SelectTrigger className={`text-sm ${errors?.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                        <SelectValue placeholder={t('createSubContract.selectMeasurementUnit')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {loadingUnits ? (
-                          <SelectItem value="loading" disabled>{t('createSubContract.loadingUnits')}</SelectItem>
-                        ) : unitsError ? (
-                          <SelectItem value="error" disabled>{t('createSubContract.errorLoadingUnits')}</SelectItem>
-                        ) : measurementUnits && measurementUnits.length === 0 ? (
-                          <SelectItem value="empty" disabled>{t('createSubContract.noUnitsAvailable')}</SelectItem>
-                        ) : (
-                          measurementUnits?.map((unit) => (
-                            <SelectItem key={unit.key} value={unit.key}>
-                              {unit.label}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                  )}
+                  render={({ field }) => 
+                    mode === 'view' ? (
+                      <Input
+                        type="text"
+                        value={measurementUnits?.find(unit => unit.key === field.value)?.label || field.value || ''}
+                        readOnly
+                        disabled
+                        className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
+                        tabIndex={-1}
+                      />
+                    ) : (
+                      <Select 
+                        value={field.value} 
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className={`text-sm ${errors?.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                          <SelectValue placeholder={t('createSubContract.selectMeasurementUnit')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingUnits ? (
+                            <SelectItem value="loading" disabled>{t('createSubContract.loadingUnits')}</SelectItem>
+                          ) : unitsError ? (
+                            <SelectItem value="error" disabled>{t('createSubContract.errorLoadingUnits')}</SelectItem>
+                          ) : measurementUnits && measurementUnits.length === 0 ? (
+                            <SelectItem value="empty" disabled>{t('createSubContract.noUnitsAvailable')}</SelectItem>
+                          ) : (
+                            measurementUnits?.map((unit) => (
+                              <SelectItem key={unit.key} value={unit.key}>
+                                {unit.label}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    )
+                  }
                 />
                 {errors?.measurementUnitId && (
                   <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.measurementUnitId.message as string}</p>
