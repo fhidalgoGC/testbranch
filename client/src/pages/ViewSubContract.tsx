@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
-import { setLocation } from 'wouter/use-browser-location';
+
 import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -91,7 +91,8 @@ export default function ViewSubContract() {
   });
   
   // Load measurement units
-  const { measurementUnits } = useMeasurementUnits();
+  const { measurementUnits: measurementUnitsData } = useMeasurementUnits();
+  const measurementUnits = measurementUnitsData || [];
   
   // Navigate to parent contract detail
   const handleBackToContract = () => {
@@ -105,7 +106,7 @@ export default function ViewSubContract() {
       console.log('🔍 VIEW SUB-CONTRACT: Loading contract and sub-contract data', { contractId, subContractId });
       
       // Find parent contract data from Redux state
-      const foundContract = contractsData.find(contract => contract._id === contractId);
+      const foundContract = contractsData.find((contract: any) => contract._id === contractId);
       
       if (foundContract) {
         console.log('🔍 Parent contract found in Redux:', foundContract);
@@ -114,7 +115,7 @@ export default function ViewSubContract() {
         setContractData({
           contractNumber: foundContract.folio || '',
           contractDate: foundContract.contract_date ? new Date(foundContract.contract_date).toLocaleDateString() : '',
-          customerNumber: foundContract.participants?.find(p => p.role === 'buyer')?.name || '',
+          customerNumber: foundContract.participants?.find((p: any) => p.role === 'buyer')?.name || '',
           idContract: foundContract._id || '',
           referenceNumber: foundContract.reference_number || 'N/A',
           commodity: foundContract.commodity?.name || '',
@@ -122,7 +123,7 @@ export default function ViewSubContract() {
           price: foundContract.price_schedule?.[0]?.price || 0,
           basis: foundContract.price_schedule?.[0]?.basis || 0,
           future: foundContract.price_schedule?.[0]?.future_price || 0,
-          contact: foundContract.participants?.find(p => p.role === 'seller')?.name || '',
+          contact: foundContract.participants?.find((p: any) => p.role === 'seller')?.name || '',
           shipmentPeriod: 'N/A'
         });
       }
@@ -159,7 +160,7 @@ export default function ViewSubContract() {
 
   // Helper function to get measurement unit display
   const getMeasurementUnitDisplay = (unitId: string) => {
-    const unit = measurementUnits.find(u => u.id === unitId);
+    const unit = measurementUnits?.find((u: any) => u.id === unitId);
     return unit ? unit.name : unitId;
   };
 
@@ -168,7 +169,7 @@ export default function ViewSubContract() {
   const priceSchedule = displayData.price_schedule?.[0] || {};
 
   return (
-    <DashboardLayout>
+    <DashboardLayout title={t('subContract.viewTitle')}>
       <div className="space-y-6">
         {/* Header Section */}
         <div className="flex items-center justify-between">
@@ -280,7 +281,7 @@ export default function ViewSubContract() {
                       {t('createSubContract.quantity')}
                     </label>
                     <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
-                      {formatNumber(displayData.quantity || 0, NUMBER_FORMAT_CONFIG)}
+                      {formatNumber(displayData.quantity || 0)}
                     </div>
                   </div>
                   
@@ -289,7 +290,7 @@ export default function ViewSubContract() {
                       {t('createSubContract.measurementUnit')}
                     </label>
                     <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
-                      {getMeasurementUnitDisplay(displayData.measurement_unit_id || '')}
+                      {displayData.measurement_unit || getMeasurementUnitDisplay(displayData.measurement_unit_id || '') || 'N/A'}
                     </div>
                   </div>
                   
@@ -298,7 +299,7 @@ export default function ViewSubContract() {
                       {t('createSubContract.basis')}
                     </label>
                     <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
-                      ${formatNumber(priceSchedule.basis || 0, NUMBER_FORMAT_CONFIG)}
+                      ${formatNumber(priceSchedule.basis || 0)}
                     </div>
                   </div>
                   
@@ -307,7 +308,7 @@ export default function ViewSubContract() {
                       {t('createSubContract.future')}
                     </label>
                     <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
-                      ${formatNumber(priceSchedule.future_price || 0, NUMBER_FORMAT_CONFIG)}
+                      ${formatNumber(priceSchedule.future_price || 0)}
                     </div>
                   </div>
                   
@@ -316,7 +317,7 @@ export default function ViewSubContract() {
                       {t('createSubContract.price')}
                     </label>
                     <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
-                      ${formatNumber(priceSchedule.price || 0, NUMBER_FORMAT_CONFIG)}
+                      ${formatNumber(priceSchedule.price || 0)}
                     </div>
                   </div>
                   
@@ -325,7 +326,7 @@ export default function ViewSubContract() {
                       {t('createSubContract.totalPrice')}
                     </label>
                     <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
-                      ${formatNumber(displayData.total_price || 0, NUMBER_FORMAT_CONFIG)}
+                      ${formatNumber(displayData.total_price || 0)}
                     </div>
                   </div>
                   
