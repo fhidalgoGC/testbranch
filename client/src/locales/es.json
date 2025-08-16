@@ -492,5 +492,30 @@
       "confirmUpdate": "Confirmar Actualización",
       "updating": "Actualizando..."
     }
+  },
+  "viewSubContract": {
+    "viewSubContract": "Ver Sub-Contrato",
+    "viewingSubContract": "Viendo sub-contrato",
+    "backToContract": "Volver al Contrato",
+    "subContractNotFound": "Sub-Contrato No Encontrado",
+    "purchasePriceContract": "Contrato de Precio de Compra",
+    "idContract": "ID Contrato",
+    "contractDate": "Fecha del Contrato",
+    "seller": "Vendedor",
+    "buyer": "Comprador",
+    "referenceNumber": "Número de Referencia",
+    "generalInformation": "Información General",
+    "quantityUnits": "Cantidad / Unidades",
+    "availableInventory": "Inventario Disponible",
+    "price": "Precio",
+    "basis": "Basis",
+    "future": "Futuro",
+    "viewModeNotice": "Estás viendo este sub-contrato en modo de solo lectura"
+  },
+  "common": {
+    "viewMode": "Modo Vista"
+  },
+  "createSubContract": {
+    "viewModeMessage": "Estás viendo la creación de un nuevo sub-contrato. El formulario será pre-llenado con valores existentes."
   }
 }

@@ -484,5 +484,30 @@
       "confirmUpdate": "Confirm Update",
       "updating": "Updating..."
     }
+  },
+  "viewSubContract": {
+    "viewSubContract": "View Sub-Contract",
+    "viewingSubContract": "Viewing sub-contract",
+    "backToContract": "Back to Contract",
+    "subContractNotFound": "Sub-Contract Not Found",
+    "purchasePriceContract": "Purchase Price Contract",
+    "idContract": "ID Contract",
+    "contractDate": "Contract Date",
+    "seller": "Seller",
+    "buyer": "Buyer",
+    "referenceNumber": "Reference Number",
+    "generalInformation": "General Information",
+    "quantityUnits": "Quantity / Units",
+    "availableInventory": "Available Inventory",
+    "price": "Price",
+    "basis": "Basis",
+    "future": "Future",
+    "viewModeNotice": "You are viewing this sub-contract in read-only mode"
+  },
+  "common": {
+    "viewMode": "View Mode"
+  },
+  "createSubContract": {
+    "viewModeMessage": "You are viewing the creation of a new sub-contract. Form will be pre-filled with existing values."
   }
 }
