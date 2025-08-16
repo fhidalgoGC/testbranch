@@ -178,7 +178,7 @@ export function QuantityActualOverview({
                   render={({ field }) => (
                     <FormattedNumberInput
                       value={field.value || ''}
-                      onChange={(value) => {
+                      onChange={mode === 'view' ? undefined : (value) => {
                         // Convert empty string to 0 for calculations
                         field.onChange(value === '' ? 0 : value);
                       }}
@@ -186,6 +186,7 @@ export function QuantityActualOverview({
                       className="text-sm"
                       error={!!errors?.future}
                       disabled={mode === 'view'}
+                      readOnly={mode === 'view'}
                     />
                   )}
                 />
@@ -275,11 +276,12 @@ export function QuantityActualOverview({
                   render={({ field }) => (
                     <FormattedNumberInput
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={mode === 'view' ? undefined : field.onChange}
                       placeholder="0.00"
                       className="text-sm"
                       error={!!errors?.quantity}
                       disabled={mode === 'view'}
+                      readOnly={mode === 'view'}
                     />
                   )}
                 />
