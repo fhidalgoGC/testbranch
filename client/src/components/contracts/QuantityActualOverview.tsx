@@ -72,12 +72,17 @@ export function QuantityActualOverview({
 
   // Calculate price whenever future or basis changes (works in both create and edit modes)
   useEffect(() => {
-    const future = watchedFuture || 0;
-    const basis = watchedBasis || 0;
+    // Handle empty or undefined values - treat as 0
+    const future = (watchedFuture === '' || watchedFuture === null || watchedFuture === undefined) ? 0 : Number(watchedFuture) || 0;
+    const basis = (watchedBasis === '' || watchedBasis === null || watchedBasis === undefined) ? 0 : Number(watchedBasis) || 0;
     const calculatedPrice = future + basis;
     
     setValue('price', calculatedPrice);
-    console.log(`💰 Price calculated (${mode} mode):`, { future, basis, calculatedPrice });
+    console.log(`💰 Price calculated (${mode} mode):`, { 
+      future: `${watchedFuture} -> ${future}`, 
+      basis: `${watchedBasis} -> ${basis}`, 
+      calculatedPrice 
+    });
   }, [watchedFuture, watchedBasis, setValue, mode]);
 
   return (
@@ -160,8 +165,11 @@ export function QuantityActualOverview({
                 control={control}
                 render={({ field }) => (
                   <FormattedNumberInput
-                    value={field.value}
-                    onChange={field.onChange}
+                    value={field.value || ''}
+                    onChange={(value) => {
+                      // Convert empty string to 0 for calculations
+                      field.onChange(value === '' ? 0 : value);
+                    }}
                     placeholder="0.00"
                     className="text-sm"
                     error={!!errors.future}
