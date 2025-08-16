@@ -249,23 +249,7 @@ export default function SubContractCard({
           </p>
 
           <div className="flex space-x-1">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
-                    onClick={() => onView?.(subContract.id)}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t("view")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
+            {/* 1. Imprimir */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -283,7 +267,25 @@ export default function SubContractCard({
               </Tooltip>
             </TooltipProvider>
 
-            {/* Botones de editar y eliminar - solo visibles cuando el status del sub-contrato es 'created' */}
+            {/* 2. Ver */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
+                    onClick={() => onView?.(subContract.id)}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{t("view")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* 3. Editar y 4. Eliminar - solo visibles cuando el status del sub-contrato es 'created' */}
             {subContract.status === "created" && (
               <>
                 <TooltipProvider>
