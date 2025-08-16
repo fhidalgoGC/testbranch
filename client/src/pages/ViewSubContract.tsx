@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import { useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Calendar, Package, FileText } from 'lucide-react';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { QuantityActualOverview } from '@/components/contracts/QuantityActualOverview';
+// No validation needed for view mode
 
 interface ContractData {
   contractNumber: string;
@@ -24,6 +27,17 @@ interface ContractData {
   future: number;
   contact: string;
   shipmentPeriod: string;
+}
+
+interface SubContractFormData {
+  subContractId: string;
+  quantity: number;
+  future: number;
+  basis: number;
+  price: number;
+  totalPrice: number;
+  totalDate: string;
+  measurementUnitId: string;
 }
 
 export default function ViewSubContract() {
@@ -71,6 +85,27 @@ export default function ViewSubContract() {
   
   // Available inventory calculation
   const availableInventory = parentContractData?.inventory?.open || 0;
+  const openInventory = parentContractData?.inventory?.open || 0;
+  const currentQuantity = currentSubContract?.quantity || 0;
+
+  // Simple form setup for view mode (no validation needed)
+  const {
+    control,
+    setValue,
+    formState: { errors }
+  } = useForm<SubContractFormData>({
+    mode: 'onChange',
+    defaultValues: {
+      subContractId: currentSubContract?._id || '',
+      quantity: currentSubContract?.quantity || 0,
+      future: currentSubContract?.price_schedule?.[0]?.future_price || 0,
+      basis: currentSubContract?.price_schedule?.[0]?.basis || 0,
+      price: currentSubContract?.price_schedule?.[0]?.price || 0,
+      totalPrice: currentSubContract?.total_price || 0,
+      totalDate: currentSubContract?.sub_contract_date ? new Date(currentSubContract.sub_contract_date).toISOString().split('T')[0] : '',
+      measurementUnitId: currentSubContract?.measurement_unit || ''
+    }
+  });
 
   // Handle cancel - go back to contract detail
   const handleCancel = () => {
@@ -212,145 +247,22 @@ export default function ViewSubContract() {
             </Card>
           </div>
 
-          {/* Right Column - Form Fields (disabled) */}
+          {/* Right Column - Quantity Overview (same as EditSubContract) */}
           <div className="space-y-6">
             
-            {/* Sub-Contract Form Card - Same as EditSubContract but disabled */}
-            <Card className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-xl border-0 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
-              <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/50 dark:to-amber-950/50 rounded-t-lg">
-                <CardTitle className="flex items-center space-x-2 text-lg">
-                  <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                  <span>{t('viewSubContract.viewSubContract')} Details</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  
-                  {/* Quantity Field */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t('editSubContract.quantity')} ({parentContractData?.measurement_unit || 'bu60'})
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={currentSubContract?.quantity?.toLocaleString() || '0'}
-                        disabled
-                        className="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg 
-                                 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 
-                                 font-mono text-right cursor-not-allowed"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Future Price Field */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t('editSubContract.future')} (USD)
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
-                      <input
-                        type="text"
-                        value={currentSubContract?.price_schedule?.[0]?.future_price?.toFixed(2) || '0.00'}
-                        disabled
-                        className="w-full pl-8 pr-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg 
-                                 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 
-                                 font-mono text-right cursor-not-allowed"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Basis Field */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t('editSubContract.basis')} (USD)
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
-                      <input
-                        type="text"
-                        value={currentSubContract?.price_schedule?.[0]?.basis?.toFixed(2) || '0.00'}
-                        disabled
-                        className="w-full pl-8 pr-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg 
-                                 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 
-                                 font-mono text-right cursor-not-allowed"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Price Field (Calculated) */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t('editSubContract.price')} (USD) - Calculated
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
-                      <input
-                        type="text"
-                        value={currentSubContract?.price_schedule?.[0]?.price?.toFixed(2) || '0.00'}
-                        disabled
-                        className="w-full pl-8 pr-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg 
-                                 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 
-                                 font-mono text-right cursor-not-allowed"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Total Price Field */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Total Price (USD)
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">$</span>
-                      <input
-                        type="text"
-                        value={currentSubContract?.total_price?.toLocaleString() || '0'}
-                        disabled
-                        className="w-full pl-8 pr-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg 
-                                 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 
-                                 font-mono text-right cursor-not-allowed font-bold"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Date Field */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Sub-Contract Date
-                    </label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 w-4 h-4" />
-                      <input
-                        type="text"
-                        value={currentSubContract?.sub_contract_date ? new Date(currentSubContract.sub_contract_date).toLocaleDateString() : ''}
-                        disabled
-                        className="w-full pl-10 pr-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg 
-                                 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 
-                                 cursor-not-allowed"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Measurement Unit Field */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {t('editSubContract.measurementUnit')}
-                    </label>
-                    <input
-                      type="text"
-                      value={currentSubContract?.measurement_unit || ''}
-                      disabled
-                      className="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg 
-                               bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 
-                               cursor-not-allowed"
-                    />
-                  </div>
-
-                </div>
-              </CardContent>
-            </Card>
+            {/* Quantity Overview Card - Using same component as EditSubContract in view mode */}
+            <QuantityActualOverview
+              control={control}
+              errors={errors}
+              setValue={setValue}
+              parentContractData={parentContractData}
+              contractData={contractData}
+              measurementUnits={measurementUnits}
+              loadingUnits={loadingUnits}
+              unitsError={unitsError}
+              mode="view"
+              currentSubContract={currentSubContract}
+            />
 
             {/* View Mode Notice */}
             <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
