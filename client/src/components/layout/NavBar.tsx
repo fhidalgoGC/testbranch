@@ -99,9 +99,9 @@ export default function NavBar({ title }: NavBarProps) {
           break;
         case 'sub-contracts':
           label = t('breadcrumbs.subContracts');
-          // Skip sub-contracts si el siguiente es edit/create porque representan el mismo nivel conceptual
+          // Skip sub-contracts si el siguiente es edit/create/view porque representan el mismo nivel conceptual
           if (index < pathSegments.length - 1 && 
-              (pathSegments[index + 1] === 'create' || pathSegments[index + 2] === 'edit')) {
+              (pathSegments[index + 1] === 'create' || pathSegments[index + 2] === 'edit' || pathSegments[index + 2] === 'view')) {
             return;
           }
           break;
