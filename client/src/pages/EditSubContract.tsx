@@ -528,21 +528,7 @@ export default function EditSubContract() {
               >
                 {t('editSubContract.cancel')}
               </Button>
-              
-              {/* Debug Button */}
-              <Button
-                onClick={() => {
-                  const formData = watch();
-                  console.log('🐛 DEBUG - Form State:', formData);
-                  console.log('🐛 DEBUG - Current Sub-Contract:', currentSubContract);
-                  console.log('🐛 DEBUG - Parent Contract Data:', parentContractData);
-                  console.log('🐛 DEBUG - Form Errors:', errors);
-                }}
-                variant="outline"
-                className="w-full py-2 text-sm font-medium border border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-              >
-                🐛 Debug State
-              </Button>
+
             </div>
           </div>
         </div>
