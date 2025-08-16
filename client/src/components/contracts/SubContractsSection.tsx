@@ -218,50 +218,50 @@ export default function SubContractsSection({
         /* Active State - Two Column Layout */
         <div className="flex gap-6 h-[480px]">
           {/* Left Column - Pie Chart */}
-          <div className="h-full w-[250px] flex-shrink-0 flex flex-col border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-900">
-              <h3 className="text-lg font-medium">{t('contractDetail.position')}</h3>
-            </div>
-            <div className="flex items-center justify-center flex-1 p-4 bg-white dark:bg-gray-900">
-              <div className="flex flex-col items-center justify-center space-y-4">
-                {/* Dynamic Pie Chart - Top */}
-                <div className="flex items-center justify-center flex-shrink-0">
-                  <div className="w-32 h-32 relative">
-                    <svg width="128" height="128" className="transform -rotate-90">
-                      {/* Background circle */}
-                      <circle
-                        cx="64"
-                        cy="64"
-                        r="56"
-                        fill="none"
-                        stroke="#e5e7eb"
-                        strokeWidth="8"
-                        className="dark:stroke-gray-700"
-                      />
-                      {/* Dynamic segments */}
-                      {generatePieSegments()}
-                    </svg>
-                    {/* Center text overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
-                        <div className="text-sm font-bold">{chartData.totalPercentage}%</div>
+          <div className="h-full w-[250px] flex-shrink-0 flex flex-col">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 h-full">
+              <h3 className="text-lg font-medium mb-4">{t('contractDetail.position')}</h3>
+              <div className="flex items-center justify-center flex-1">
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  {/* Dynamic Pie Chart - Top */}
+                  <div className="flex items-center justify-center flex-shrink-0">
+                    <div className="w-32 h-32 relative">
+                      <svg width="128" height="128" className="transform -rotate-90">
+                        {/* Background circle */}
+                        <circle
+                          cx="64"
+                          cy="64"
+                          r="56"
+                          fill="none"
+                          stroke="#e5e7eb"
+                          strokeWidth="8"
+                          className="dark:stroke-gray-700"
+                        />
+                        {/* Dynamic segments */}
+                        {generatePieSegments()}
+                      </svg>
+                      {/* Center text overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
+                          <div className="text-sm font-bold">{chartData.totalPercentage}%</div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                {/* Enhanced Legend with percentages */}
-                <div className="flex flex-col space-y-2 items-center max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
-                  {chartData.segments.map((segment) => (
-                    <div key={segment.id} className="flex items-center justify-between text-xs whitespace-nowrap min-w-[180px]">
-                      <div className="flex items-center">
-                        <div className={`w-3 h-3 rounded mr-2 flex-shrink-0 ${segment.color}`}></div>
-                        <span className="text-gray-700 dark:text-gray-300">{segment.contractNumber}</span>
+                  
+                  {/* Enhanced Legend with percentages */}
+                  <div className="flex flex-col space-y-2 items-center max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
+                    {chartData.segments.map((segment) => (
+                      <div key={segment.id} className="flex items-center justify-between text-xs whitespace-nowrap min-w-[180px]">
+                        <div className="flex items-center">
+                          <div className={`w-3 h-3 rounded mr-2 flex-shrink-0 ${segment.color}`}></div>
+                          <span className="text-gray-700 dark:text-gray-300">{segment.contractNumber}</span>
+                        </div>
+                        <span className="text-gray-600 dark:text-gray-400 font-medium">{segment.percentage}%</span>
                       </div>
-                      <span className="text-gray-600 dark:text-gray-400 font-medium">{segment.percentage}%</span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
