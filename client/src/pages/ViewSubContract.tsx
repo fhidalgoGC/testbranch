@@ -10,7 +10,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Calendar, Package, FileText } from 'lucide-react';
+import { ArrowLeft, Calendar, Package, FileText, X, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -18,8 +18,30 @@ import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { authenticatedFetch } from '@/utils/apiInterceptors';
 import { QuantityActualOverview } from '@/components/contracts/QuantityActualOverview';
 
-// Create a simple view schema (no validation needed for view mode)
-const viewSubContractSchema = z.object({
+// View sub-contract form validation schema (simplified for view mode)
+const viewSubContractValidationSchema = () => z.object({
+  // Form display fields
+  contractNumber: z.string(),
+  contractDate: z.string(),
+  customerNumber: z.string(),
+  idContract: z.string(),
+  referenceNumber: z.string(),
+  commodity: z.string(),
+  contact: z.string().optional(),
+  shipmentPeriod: z.string().optional(),
+  
+  // API fields 
+  future: z.number().optional(),
+  basis: z.number(),
+  price: z.number(),
+  totalPrice: z.number(),
+  totalDate: z.string(),
+  quantity: z.number(),
+  measurementUnitId: z.string(),
+});
+
+// Create a base schema for type inference
+const baseSubContractSchema = z.object({
   contractNumber: z.string(),
   contractDate: z.string(),
   customerNumber: z.string(),
@@ -37,7 +59,7 @@ const viewSubContractSchema = z.object({
   measurementUnitId: z.string(),
 });
 
-type ViewSubContractFormData = z.infer<typeof viewSubContractSchema>;
+type SubContractFormData = z.infer<typeof baseSubContractSchema>;
 
 interface ContractData {
   contractNumber: string;
@@ -86,7 +108,7 @@ export default function ViewSubContract() {
   const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
   const contractsData = contractsState.contractsData || [];
   
-  // Obtener el estado del contrato principal para visualizar sub-contrato
+  // Obtener el estado del contrato principal para editar sub-contrato (usar el mismo que edit)
   const editSubContractState = useSelector((state: any) => state.pageState.editSubContract[contractId!]);
   const parentContractData = editSubContractState?.parentContractData;
   const subContractsData = editSubContractState?.subContractsData || [];
@@ -123,9 +145,9 @@ export default function ViewSubContract() {
   // Available inventory calculation
   const availableInventory = parentContractData?.inventory?.open || 0;
 
-  // React Hook Form setup for read-only mode
-  const form = useForm<ViewSubContractFormData>({
-    resolver: zodResolver(viewSubContractSchema),
+  // React Hook Form setup - same as EditSubContract but in view mode
+  const form = useForm<SubContractFormData>({
+    resolver: zodResolver(viewSubContractValidationSchema()),
     defaultValues: {
       contractNumber: '',
       contractDate: '',
@@ -145,68 +167,90 @@ export default function ViewSubContract() {
     }
   });
 
-  const { control, setValue, formState: { errors } } = form;
+  const { control, setValue, reset, handleSubmit, formState: { errors } } = form;
 
-  // Navigate to parent contract detail
-  const handleBackToContract = () => {
-    handleNavigateToPage('contractDetail', contractId);
-    setLocation(`/purchase-contracts/${contractId}`);
-  };
-
-  // Load parent contract data and current sub-contract data when component mounts
+  // Load data from Redux state exactly like EditSubContract does
   useEffect(() => {
-    if (contractId && subContractId) {
-      console.log('🔍 VIEW SUB-CONTRACT: Loading contract and sub-contract data', { contractId, subContractId });
+    if (currentSubContract && parentContractData && contractsData.length > 0) {
+      console.log('🔍 VIEW SUB-CONTRACT: Loading data from Redux state');
+      console.log('Current sub-contract:', currentSubContract);
+      console.log('Parent contract data:', parentContractData);
       
       // Find parent contract data from Redux state
-      const foundContract = contractsData.find((contract: any) => contract._id === contractId);
+      const parentContract = contractsData.find((contract: any) => contract._id === contractId);
       
-      if (foundContract) {
-        console.log('🔍 Parent contract found in Redux:', foundContract);
+      if (parentContract) {
+        console.log('🔍 Parent contract found in Redux:', parentContract);
         
-        // Set contract data for display
-        const newContractData = {
-          contractNumber: foundContract.folio || '',
-          contractDate: foundContract.contract_date ? new Date(foundContract.contract_date).toLocaleDateString() : '',
-          customerNumber: foundContract.participants?.find((p: any) => p.role === 'buyer')?.name || '',
-          idContract: foundContract.folio || '',
-          referenceNumber: foundContract.reference_number || 'N/A',
-          commodity: foundContract.commodity?.name || '',
-          quantityUnits: foundContract.quantity || 0,
-          price: foundContract.price_schedule?.[0]?.price || 0,
-          basis: foundContract.price_schedule?.[0]?.basis || 0,
-          future: foundContract.price_schedule?.[0]?.future_price || 0,
-          contact: foundContract.participants?.find((p: any) => p.role === 'seller')?.name || '',
-          shipmentPeriod: 'N/A'
-        };
+        // Set contract data for display (same logic as EditSubContract)
+        setContractData({
+          contractNumber: parentContract.folio || '',
+          contractDate: parentContract.contract_date ? new Date(parentContract.contract_date).toLocaleDateString() : '',
+          customerNumber: parentContract.participants?.find((p: any) => p.role === 'seller')?.name || 'N/A',
+          idContract: parentContract.folio || '',
+          referenceNumber: parentContract.reference_number || 'N/A',
+          commodity: parentContract.commodity?.name || '',
+          quantityUnits: parentContract.quantity || 0,
+          price: parentContract.price_schedule?.[0]?.price || 0,
+          basis: parentContract.price_schedule?.[0]?.basis || 0,
+          future: parentContract.price_schedule?.[0]?.future_price || 0,
+          contact: '',
+          shipmentPeriod: ''
+        });
         
-        setContractData(newContractData);
+        // Set form values with current sub-contract data (same logic as EditSubContract)
+        const subContractDate = currentSubContract.sub_contract_date 
+          ? new Date(currentSubContract.sub_contract_date).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0];
         
-        // Set form values for contract data
-        setValue('contractNumber', newContractData.contractNumber);
-        setValue('contractDate', newContractData.contractDate);
-        setValue('customerNumber', newContractData.customerNumber);
-        setValue('idContract', newContractData.idContract);
-        setValue('referenceNumber', newContractData.referenceNumber);
-        setValue('commodity', newContractData.commodity);
-        setValue('contact', newContractData.contact);
-        setValue('shipmentPeriod', newContractData.shipmentPeriod);
-      }
-      
-      // Load and set sub-contract data if available
-      if (currentSubContract) {
-        const priceSchedule = currentSubContract.price_schedule?.[0] || {};
-        setValue('future', priceSchedule.future_price || 0);
-        setValue('basis', priceSchedule.basis || 0);
-        setValue('price', priceSchedule.price || 0);
-        setValue('totalPrice', currentSubContract.total_price || 0);
-        setValue('quantity', currentSubContract.quantity || 0);
-        setValue('measurementUnitId', currentSubContract.measurement_unit_id || '');
-        setValue('totalDate', currentSubContract.sub_contract_date ? new Date(currentSubContract.sub_contract_date).toISOString().split('T')[0] : '');
+        reset({
+          contractNumber: parentContract.folio || '',
+          contractDate: parentContract.contract_date ? new Date(parentContract.contract_date).toLocaleDateString() : '',
+          customerNumber: parentContract.participants?.find((p: any) => p.role === 'seller')?.name || 'N/A',
+          idContract: parentContract.folio || '',
+          referenceNumber: parentContract.reference_number || 'N/A',
+          commodity: parentContract.commodity?.name || '',
+          contact: '',
+          shipmentPeriod: '',
+          future: currentSubContract.price_schedule?.[0]?.future_price || 0,
+          basis: currentSubContract.price_schedule?.[0]?.basis || 0,
+          price: currentSubContract.price_schedule?.[0]?.price || 0,
+          totalPrice: currentSubContract.total_price || 0,
+          totalDate: subContractDate,
+          quantity: currentSubContract.quantity || 0,
+          measurementUnitId: currentSubContract.measurement_unit || 'bu60'
+        });
+        
+        console.log('📝 Form initialized with sub-contract data (VIEW MODE):', {
+          subContractId: currentSubContract._id,
+          quantity: currentSubContract.quantity,
+          future: currentSubContract.price_schedule?.[0]?.future_price,
+          basis: currentSubContract.price_schedule?.[0]?.basis,
+          price: currentSubContract.price_schedule?.[0]?.price,
+          totalPrice: currentSubContract.total_price,
+          totalDate: subContractDate,
+          measurementUnit: currentSubContract.measurement_unit
+        });
       }
     }
-  }, [contractId, subContractId, contractsData, currentSubContract, setValue]);
-
+  }, [currentSubContract, parentContractData, contractsData, contractId, reset]);
+  
+  // Helper function to format quantity (same as EditSubContract)
+  const formatQuantity = (value: number) => {
+    return formatNumber({
+      minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
+      maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
+      value: value,
+      formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
+      roundMode: NUMBER_FORMAT_CONFIG.roundMode
+    });
+  };
+  
+  // Handle cancel - go back to contract detail
+  const handleCancel = () => {
+    setLocation(`/purchase-contracts/${contractId}`);
+  };
+  
   if (!currentSubContract) {
     return (
       <DashboardLayout title={t('viewSubContract.viewSubContract')}>
@@ -215,7 +259,7 @@ export default function ViewSubContract() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               {t('viewSubContract.subContractNotFound')}
             </h1>
-            <Button onClick={handleBackToContract}>
+            <Button onClick={handleCancel}>
               {t('viewSubContract.backToContract')}
             </Button>
           </div>
@@ -223,12 +267,12 @@ export default function ViewSubContract() {
       </DashboardLayout>
     );
   }
-
+  
   return (
     <DashboardLayout title={t('viewSubContract.viewSubContract')}>
       <div className="container mx-auto px-4 py-6 max-w-7xl">
 
-        {/* Main Form */}
+        {/* Main Form - Exact same structure as EditSubContract */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Contract Details */}
           <div className="space-y-6">
@@ -315,9 +359,16 @@ export default function ViewSubContract() {
           {/* Right Column - Quantity Overview */}
           <div className="space-y-6">
             
-            {/* Quantity Overview Card - Using reusable component in view mode */}
+            {/* Quantity Overview Card - Using same component but in view mode */}
             <QuantityActualOverview
-              parentQuantity={contractData.quantityUnits}
+              control={control}
+              errors={errors}
+              setValue={setValue}
+              parentContractData={parentContractData}
+              contractData={contractData}
+              measurementUnits={measurementUnits}
+              loadingUnits={loadingUnits}
+              unitsError={unitsError}
               mode="view"
             />
 
