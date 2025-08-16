@@ -218,7 +218,7 @@ export default function SubContractsSection({
         /* Active State - Two Column Layout */
         <div className="flex gap-6 h-[480px]">
           {/* Left Column - Pie Chart */}
-          <div className="h-full w-[250px] flex-shrink-0 flex flex-col p-2">
+          <div className="h-full w-[250px] flex-shrink-0 flex flex-col bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-4 h-full">
               <h3 className="text-lg font-medium mb-4">{t('contractDetail.position')}</h3>
               <div className="flex items-center justify-center flex-1">
