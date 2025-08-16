@@ -51,6 +51,9 @@ interface QuantityActualOverviewProps {
   // View mode specific props
   parentQuantity?: number;
   
+  // Current sub-contract data for view/edit modes
+  currentSubContract?: any;
+  
   // Optional customization
   className?: string;
 }
@@ -66,6 +69,7 @@ export function QuantityActualOverview({
   unitsError,
   mode,
   parentQuantity,
+  currentSubContract,
   className = ''
 }: QuantityActualOverviewProps) {
   const { t } = useTranslation();
@@ -159,8 +163,8 @@ export function QuantityActualOverview({
           </Badge>
         </div>
 
-        {/* Future and Basis Fields - only show for create/edit modes */}
-        {mode !== 'view' && (
+        {/* Future and Basis Fields - show for all modes but disable for view */}
+        {(
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               {/* Future Field */}
@@ -181,6 +185,7 @@ export function QuantityActualOverview({
                       placeholder="0.00"
                       className="text-sm"
                       error={!!errors?.future}
+                      disabled={mode === 'view'}
                     />
                   )}
                 />
@@ -202,6 +207,7 @@ export function QuantityActualOverview({
                       type="text"
                       value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       readOnly
+                      disabled
                       className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
                       tabIndex={-1}
                     />
@@ -226,6 +232,7 @@ export function QuantityActualOverview({
                         type="text"
                         value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         readOnly
+                        disabled
                         className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
                         tabIndex={-1}
                       />
@@ -247,6 +254,7 @@ export function QuantityActualOverview({
                       className="text-sm"
                       error={!!errors?.totalDate}
                       minDate={parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date()}
+                      disabled={mode === 'view'}
                     />
                   )}
                 />
@@ -271,6 +279,7 @@ export function QuantityActualOverview({
                       placeholder="0.00"
                       className="text-sm"
                       error={!!errors?.quantity}
+                      disabled={mode === 'view'}
                     />
                   )}
                 />
@@ -289,6 +298,7 @@ export function QuantityActualOverview({
                     <Select 
                       value={field.value} 
                       onValueChange={field.onChange}
+                      disabled={mode === 'view'}
                     >
                       <SelectTrigger className={`text-sm ${errors?.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                         <SelectValue placeholder={t('createSubContract.selectMeasurementUnit')} />
@@ -320,14 +330,7 @@ export function QuantityActualOverview({
           </div>
         )}
         
-        {/* View mode - simple display */}
-        {mode === 'view' && (
-          <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400">
-              {t('createSubContract.viewModeMessage')}
-            </p>
-          </div>
-        )}
+
       </CardContent>
     </Card>
   );

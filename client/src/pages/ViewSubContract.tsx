@@ -107,6 +107,19 @@ export default function ViewSubContract() {
     }
   });
 
+  // Update form values when currentSubContract changes
+  useEffect(() => {
+    if (currentSubContract && setValue) {
+      setValue('quantity', currentSubContract.quantity || 0);
+      setValue('future', currentSubContract.price_schedule?.[0]?.future_price || 0);
+      setValue('basis', currentSubContract.price_schedule?.[0]?.basis || 0);
+      setValue('price', currentSubContract.price_schedule?.[0]?.price || 0);
+      setValue('totalPrice', currentSubContract.total_price || 0);
+      setValue('totalDate', currentSubContract.sub_contract_date ? new Date(currentSubContract.sub_contract_date).toISOString().split('T')[0] : '');
+      setValue('measurementUnitId', currentSubContract.measurement_unit || '');
+    }
+  }, [currentSubContract, setValue]);
+
   // Handle cancel - go back to contract detail
   const handleCancel = () => {
     setLocation(`/purchase-contracts/${contractId}`);
