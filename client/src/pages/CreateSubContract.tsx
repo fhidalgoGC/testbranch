@@ -609,6 +609,7 @@ export default function CreateSubContract() {
             <QuantityActualOverview
               control={control}
               errors={errors}
+              setValue={setValue}
               parentContractData={parentContractData}
               contractData={contractData}
               measurementUnits={measurementUnits}

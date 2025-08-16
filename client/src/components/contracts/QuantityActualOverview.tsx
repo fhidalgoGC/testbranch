@@ -180,7 +180,7 @@ export function QuantityActualOverview({
                 render={({ field }) => (
                   <Input
                     type="text"
-                    value={field.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     readOnly
                     className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
                     tabIndex={-1}
@@ -204,7 +204,7 @@ export function QuantityActualOverview({
                   render={({ field }) => (
                     <Input
                       type="text"
-                      value={field.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      value={(field.value || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       readOnly
                       className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"
                       tabIndex={-1}
