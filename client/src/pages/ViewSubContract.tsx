@@ -277,19 +277,7 @@ export default function ViewSubContract() {
               currentSubContract={currentSubContract}
             />
 
-            {/* View Mode Notice */}
-            <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
-                    {t('common.viewMode')}
-                  </Badge>
-                  <span className="text-sm text-blue-700 dark:text-blue-300">
-                    {t('viewSubContract.viewModeNotice')}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
+
           </div>
         </div>
       </div>
