@@ -87,6 +87,16 @@ export default function NavBar({ title }: NavBarProps) {
             label = 'Editar';
           }
           break;
+        case 'view':
+          if (pathSegments[index - 2] === 'sub-contracts') {
+            label = t('breadcrumbs.viewSubContract');
+            // Para visualización de sub-contratos, el path debe ir al detalle del contrato padre
+            const contractId = pathSegments[1]; // purchase-contracts/[contractId]/sub-contracts/[subContractId]/view
+            path = `/purchase-contracts/${contractId}`;
+          } else {
+            label = 'Ver';
+          }
+          break;
         case 'sub-contracts':
           label = t('breadcrumbs.subContracts');
           // Skip sub-contracts si el siguiente es edit/create porque representan el mismo nivel conceptual
