@@ -2,64 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Calendar, Package, FileText, X, ArrowRight } from 'lucide-react';
-import { Link } from 'wouter';
+import { ArrowLeft, Calendar, Package, FileText } from 'lucide-react';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
-import { formatNumber } from '@/lib/numberFormatter';
-import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
-import { authenticatedFetch } from '@/utils/apiInterceptors';
 import { QuantityActualOverview } from '@/components/contracts/QuantityActualOverview';
-
-// View sub-contract form validation schema (simplified for view mode)
-const viewSubContractValidationSchema = () => z.object({
-  // Form display fields
-  contractNumber: z.string(),
-  contractDate: z.string(),
-  customerNumber: z.string(),
-  idContract: z.string(),
-  referenceNumber: z.string(),
-  commodity: z.string(),
-  contact: z.string().optional(),
-  shipmentPeriod: z.string().optional(),
-  
-  // API fields 
-  future: z.number().optional(),
-  basis: z.number(),
-  price: z.number(),
-  totalPrice: z.number(),
-  totalDate: z.string(),
-  quantity: z.number(),
-  measurementUnitId: z.string(),
-});
-
-// Create a base schema for type inference
-const baseSubContractSchema = z.object({
-  contractNumber: z.string(),
-  contractDate: z.string(),
-  customerNumber: z.string(),
-  idContract: z.string(),
-  referenceNumber: z.string(),
-  commodity: z.string(),
-  contact: z.string().optional(),
-  shipmentPeriod: z.string().optional(),
-  future: z.number().optional(),
-  basis: z.number(),
-  price: z.number(),
-  totalPrice: z.number(),
-  totalDate: z.string(),
-  quantity: z.number(),
-  measurementUnitId: z.string(),
-});
-
-type SubContractFormData = z.infer<typeof baseSubContractSchema>;
 
 interface ContractData {
   contractNumber: string;
@@ -74,24 +24,6 @@ interface ContractData {
   future: number;
   contact: string;
   shipmentPeriod: string;
-}
-
-interface SubContractData {
-  _id: string;
-  folio: string;
-  quantity: number;
-  measurement_unit_id: string;
-  measurement_unit: string;
-  price_schedule: Array<{
-    pricing_type: string;
-    price: number;
-    basis: number;
-    future_price: number;
-    option_month: string;
-    option_year: number;
-  }>;
-  total_price: number;
-  sub_contract_date: string;
 }
 
 export default function ViewSubContract() {
@@ -111,7 +43,6 @@ export default function ViewSubContract() {
   // Obtener el estado del contrato principal para editar sub-contrato (usar el mismo que edit)
   const editSubContractState = useSelector((state: any) => state.pageState.editSubContract[contractId!]);
   const parentContractData = editSubContractState?.parentContractData;
-  const subContractsData = editSubContractState?.subContractsData || [];
   const currentSubContractData = editSubContractState?.currentSubContractData;
   
   // Use the specific sub-contract data from Redux state
@@ -136,45 +67,20 @@ export default function ViewSubContract() {
   });
   
   // Load measurement units
-  const { 
-    data: measurementUnits = [], 
-    isLoading: loadingUnits, 
-    error: unitsError 
-  } = useMeasurementUnits();
+  const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
   
   // Available inventory calculation
   const availableInventory = parentContractData?.inventory?.open || 0;
 
-  // React Hook Form setup - same as EditSubContract but in view mode
-  const form = useForm<SubContractFormData>({
-    resolver: zodResolver(viewSubContractValidationSchema()),
-    defaultValues: {
-      contractNumber: '',
-      contractDate: '',
-      customerNumber: '',
-      idContract: '',
-      referenceNumber: '',
-      commodity: '',
-      contact: '',
-      shipmentPeriod: '',
-      future: 0,
-      basis: 0,
-      price: 0,
-      totalPrice: 0,
-      totalDate: '',
-      quantity: 0,
-      measurementUnitId: '',
-    }
-  });
-
-  const { control, setValue, reset, handleSubmit, formState: { errors } } = form;
+  // Handle cancel - go back to contract detail
+  const handleCancel = () => {
+    setLocation(`/purchase-contracts/${contractId}`);
+  };
 
   // Load data from Redux state exactly like EditSubContract does
   useEffect(() => {
     if (currentSubContract && parentContractData && contractsData.length > 0) {
       console.log('🔍 VIEW SUB-CONTRACT: Loading data from Redux state');
-      console.log('Current sub-contract:', currentSubContract);
-      console.log('Parent contract data:', parentContractData);
       
       // Find parent contract data from Redux state
       const parentContract = contractsData.find((contract: any) => contract._id === contractId);
@@ -197,59 +103,9 @@ export default function ViewSubContract() {
           contact: '',
           shipmentPeriod: ''
         });
-        
-        // Set form values with current sub-contract data (same logic as EditSubContract)
-        const subContractDate = currentSubContract.sub_contract_date 
-          ? new Date(currentSubContract.sub_contract_date).toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0];
-        
-        reset({
-          contractNumber: parentContract.folio || '',
-          contractDate: parentContract.contract_date ? new Date(parentContract.contract_date).toLocaleDateString() : '',
-          customerNumber: parentContract.participants?.find((p: any) => p.role === 'seller')?.name || 'N/A',
-          idContract: parentContract.folio || '',
-          referenceNumber: parentContract.reference_number || 'N/A',
-          commodity: parentContract.commodity?.name || '',
-          contact: '',
-          shipmentPeriod: '',
-          future: currentSubContract.price_schedule?.[0]?.future_price || 0,
-          basis: currentSubContract.price_schedule?.[0]?.basis || 0,
-          price: currentSubContract.price_schedule?.[0]?.price || 0,
-          totalPrice: currentSubContract.total_price || 0,
-          totalDate: subContractDate,
-          quantity: currentSubContract.quantity || 0,
-          measurementUnitId: currentSubContract.measurement_unit || 'bu60'
-        });
-        
-        console.log('📝 Form initialized with sub-contract data (VIEW MODE):', {
-          subContractId: currentSubContract._id,
-          quantity: currentSubContract.quantity,
-          future: currentSubContract.price_schedule?.[0]?.future_price,
-          basis: currentSubContract.price_schedule?.[0]?.basis,
-          price: currentSubContract.price_schedule?.[0]?.price,
-          totalPrice: currentSubContract.total_price,
-          totalDate: subContractDate,
-          measurementUnit: currentSubContract.measurement_unit
-        });
       }
     }
-  }, [currentSubContract, parentContractData, contractsData, contractId, reset]);
-  
-  // Helper function to format quantity (same as EditSubContract)
-  const formatQuantity = (value: number) => {
-    return formatNumber({
-      minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
-      maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
-      value: value,
-      formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
-      roundMode: NUMBER_FORMAT_CONFIG.roundMode
-    });
-  };
-  
-  // Handle cancel - go back to contract detail
-  const handleCancel = () => {
-    setLocation(`/purchase-contracts/${contractId}`);
-  };
+  }, [currentSubContract, parentContractData, contractsData, contractId]);
   
   if (!currentSubContract) {
     return (
@@ -361,14 +217,7 @@ export default function ViewSubContract() {
             
             {/* Quantity Overview Card - Using same component but in view mode */}
             <QuantityActualOverview
-              control={control}
-              errors={errors}
-              setValue={setValue}
-              parentContractData={parentContractData}
-              contractData={contractData}
-              measurementUnits={measurementUnits}
-              loadingUnits={loadingUnits}
-              unitsError={unitsError}
+              parentQuantity={contractData.quantityUnits}
               mode="view"
             />
 
