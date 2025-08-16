@@ -510,6 +510,7 @@ export default function EditSubContract() {
               measurementUnits={measurementUnits}
               loadingUnits={loadingUnits}
               unitsError={unitsError}
+              mode="edit"
             />
 
             {/* Action Buttons */}

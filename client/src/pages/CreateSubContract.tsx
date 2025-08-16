@@ -615,6 +615,7 @@ export default function CreateSubContract() {
               measurementUnits={measurementUnits}
               loadingUnits={loadingUnits}
               unitsError={unitsError}
+              mode="create"
             />
 
             {/* Action Buttons */}

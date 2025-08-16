@@ -45,6 +45,9 @@ interface QuantityActualOverviewProps {
   loadingUnits: boolean;
   unitsError: any;
   
+  // Mode configuration
+  mode: 'create' | 'edit';
+  
   // Optional customization
   className?: string;
 }
@@ -58,6 +61,7 @@ export function QuantityActualOverview({
   measurementUnits,
   loadingUnits,
   unitsError,
+  mode,
   className = ''
 }: QuantityActualOverviewProps) {
   const { t } = useTranslation();
@@ -66,15 +70,15 @@ export function QuantityActualOverview({
   const watchedFuture = useWatch({ control, name: 'future' });
   const watchedBasis = useWatch({ control, name: 'basis' });
 
-  // Calculate price whenever future or basis changes
+  // Calculate price whenever future or basis changes (works in both create and edit modes)
   useEffect(() => {
     const future = watchedFuture || 0;
     const basis = watchedBasis || 0;
     const calculatedPrice = future + basis;
     
     setValue('price', calculatedPrice);
-    console.log('💰 Price calculated:', { future, basis, calculatedPrice });
-  }, [watchedFuture, watchedBasis, setValue]);
+    console.log(`💰 Price calculated (${mode} mode):`, { future, basis, calculatedPrice });
+  }, [watchedFuture, watchedBasis, setValue, mode]);
 
   return (
     <Card className={`bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-xl border-0 ring-1 ring-gray-200/50 dark:ring-gray-700/50 ${className}`}>
