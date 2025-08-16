@@ -178,7 +178,7 @@ export function QuantityActualOverview({
                   render={({ field }) => (
                     <FormattedNumberInput
                       value={field.value || ''}
-                      onChange={mode === 'view' ? undefined : (value) => {
+                      onChange={mode === 'view' ? () => {} : (value) => {
                         // Convert empty string to 0 for calculations
                         field.onChange(value === '' ? 0 : value);
                       }}
@@ -250,7 +250,7 @@ export function QuantityActualOverview({
                   render={({ field }) => (
                     <DatePicker
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={mode === 'view' ? () => {} : field.onChange}
                       placeholder={t('createSubContract.selectDate')}
                       className="text-sm"
                       error={!!errors?.totalDate}
@@ -276,7 +276,7 @@ export function QuantityActualOverview({
                   render={({ field }) => (
                     <FormattedNumberInput
                       value={field.value}
-                      onChange={mode === 'view' ? undefined : field.onChange}
+                      onChange={mode === 'view' ? () => {} : field.onChange}
                       placeholder="0.00"
                       className="text-sm"
                       error={!!errors?.quantity}
@@ -299,7 +299,7 @@ export function QuantityActualOverview({
                   render={({ field }) => (
                     <Select 
                       value={field.value} 
-                      onValueChange={field.onChange}
+                      onValueChange={mode === 'view' ? () => {} : field.onChange}
                       disabled={mode === 'view'}
                     >
                       <SelectTrigger className={`text-sm ${errors?.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
