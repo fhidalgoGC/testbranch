@@ -476,50 +476,7 @@ export default function CreateSubContract() {
     <DashboardLayout title={t('createSubContract.title')}>
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link href={`/purchase-contracts/${contractId}`}>
-              <Button variant="ghost" size="sm" className="p-2">
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                {t('createSubContract.title')}
-              </h1>
-            </div>
-          </div>
-          
-          {/* Debug Button */}
-          <Button 
-            onClick={() => {
-              console.log('=== DEBUG STATE - CREATE SUB CONTRACT ===');
-              console.log('🔍 Parent Contract Data:', parentContractData);
-              console.log('📋 Sub-contracts Data:', subContractsData);
-              console.log('🧾 Contract Data (mapped):', contractData);
-              console.log('📊 Create Sub Contract State:', createSubContractState);
-              console.log('🔑 Sub-contract Key:', subContractKey);
-              console.log('🔐 Loading Key:', loadingSubContractKey);
-              console.log('📝 Redux Form Data:', formState.formData);
-              console.log('📝 Current Form Values:', { 
-                future: futureValue, 
-                basis: basisValue, 
-                quantity: quantityValue, 
-                totalPrice: totalPriceValue,
-                measurementUnit: measurementUnitValue,
-                date: totalDateValue
-              });
-              console.log('❌ Form Validation Errors:', errors);
-              console.log('📊 Open Inventory Limit:', openInventory);
-              console.log('=== END DEBUG ===');
-            }}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white"
-            size="sm"
-          >
-            {t('createSubContract.debugState')}
-          </Button>
-        </div>
+
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
           
