@@ -533,6 +533,11 @@ export default function PurchaseContractDetail() {
       console.log('🔍 Sub-contratos disponibles:', subContractsData.map(sc => ({ _id: sc._id, id: sc.id, folio: sc.folio })));
       return;
     }
+    
+    console.log('🔍 DEBUG subContract encontrado:', subContract);
+    console.log('🔍 DEBUG subContract.quantity:', subContract.quantity);
+    console.log('🔍 DEBUG subContract.price_schedule:', subContract.price_schedule);
+    console.log('🔍 DEBUG subContract.commodity:', subContract.commodity);
 
     // Crear el JSON para impresión usando SOLO datos del sub-contrato
     const printData = {
@@ -633,7 +638,7 @@ export default function PurchaseContractDetail() {
         ownerName: '',
         
         typeContract: 'Sub-Contract',
-        quantityUnits: `${formatNumber(subContract.quantity || 0)} ${currentContractData?.commodity?.name || ''}`,
+        quantityUnits: `${formatNumber(subContract.quantity || 0)} ${subContract.commodity?.name || currentContractData?.commodity?.name || ''}`,
         contractPrice: `$ ${formatNumber(subContract.price_schedule?.[0]?.price || 0)}`,
         contractBasis: `$ ${formatNumber(subContract.price_schedule?.[0]?.basis || 0)}`,
         contractFuture: `$ ${formatNumber(subContract.price_schedule?.[0]?.future_price || 0)}`,
