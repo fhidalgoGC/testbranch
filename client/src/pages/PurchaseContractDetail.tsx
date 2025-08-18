@@ -638,10 +638,10 @@ export default function PurchaseContractDetail() {
         ownerName: '',
         
         typeContract: 'Sub-Contract',
-        quantityUnits: `${formatNumber(subContract.quantity || 0)} ${subContract.commodity?.name || currentContractData?.commodity?.name || ''}`,
-        contractPrice: `$ ${formatNumber(subContract.price_schedule?.[0]?.price || 0)}`,
-        contractBasis: `$ ${formatNumber(subContract.price_schedule?.[0]?.basis || 0)}`,
-        contractFuture: `$ ${formatNumber(subContract.price_schedule?.[0]?.future_price || 0)}`,
+        quantityUnits: `${formatNumber(subContract.quantity)} ${currentContractData?.commodity?.name || ''}`,
+        contractPrice: `$ ${formatNumber(subContract.price_schedule[0].price)}`,
+        contractBasis: `$ ${formatNumber(subContract.price_schedule[0].basis)}`,
+        contractFuture: `$ ${formatNumber(subContract.price_schedule[0].future_price)}`,
         
         sellerName: '',
         buyerName: '',
