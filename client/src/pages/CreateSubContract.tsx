@@ -581,7 +581,7 @@ export default function CreateSubContract() {
                 onClick={handleCreateSubContract}
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                Crear Sub - Contrato
+                {t('createSubContract.createSubContract')}
               </Button>
               <Button
                 onClick={handleCancel}

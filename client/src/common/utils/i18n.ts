@@ -28,7 +28,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'es', // Force Spanish
+    lng: initialLanguage, // Use saved/detected language
     fallbackLng: 'es',
     debug: false,
     keySeparator: '.', // Enable nested key resolution
@@ -40,8 +40,5 @@ i18n
     returnNull: false,
     returnEmptyString: false,
   });
-
-// Save Spanish to localStorage
-localStorage.setItem('language', 'es');
 
 export default i18n;

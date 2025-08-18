@@ -100,7 +100,7 @@ export function QuantityActualOverview({
       <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 rounded-t-lg">
         <CardTitle className="flex items-center space-x-2 text-lg">
           <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          <span>Resumen de Cantidad Actual</span>
+          <span>{t('createSubContract.quantityActualOverview')}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -148,7 +148,7 @@ export function QuantityActualOverview({
               );
             })()}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="text-xs text-rose-500 dark:text-rose-400">Abierto</span>
+              <span className="text-xs text-rose-500 dark:text-rose-400">{t('createSubContract.open')}</span>
               <span className="text-sm font-bold text-rose-500 dark:text-rose-400">
                 {(parentContractData?.inventory?.open || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
@@ -170,7 +170,7 @@ export function QuantityActualOverview({
               {/* Future Field */}
               <div>
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                  Futuro
+                  {t('createSubContract.future')}
                 </label>
                 <Controller
                   name="future"
@@ -207,7 +207,7 @@ export function QuantityActualOverview({
               {/* Basis Field (Read-only) */}
               <div>
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                  Basis
+                  {t('createSubContract.basis')}
                 </label>
                 <Controller
                   name="basis"
@@ -228,11 +228,11 @@ export function QuantityActualOverview({
 
             {/* Total Section */}
             <div className="mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Total</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('createSubContract.total')}</h3>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                    Precio
+                    {t('createSubContract.priceLabel')}
                   </label>
                   <Controller
                     name="price"
@@ -251,7 +251,7 @@ export function QuantityActualOverview({
                 </div>
                 <div>
                 <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                  Fecha <span className="text-red-500">*</span>
+                  {t('createSubContract.date')} <span className="text-red-500">*</span>
                 </label>
                 <Controller
                   name="totalDate"
@@ -270,7 +270,7 @@ export function QuantityActualOverview({
                       <DatePicker
                         value={field.value}
                         onChange={field.onChange}
-                        placeholder="Seleccionar fecha"
+                        placeholder={t('createSubContract.selectDate')}
                         className="text-sm"
                         error={!!errors?.totalDate}
                         minDate={parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date()}
@@ -287,7 +287,7 @@ export function QuantityActualOverview({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                  Cantidad <span className="text-red-500">*</span>
+                  {t('createSubContract.quantity')} <span className="text-red-500">*</span>
                 </label>
                 <Controller
                   name="quantity"
@@ -319,7 +319,7 @@ export function QuantityActualOverview({
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">
-                  Unidad de Medida <span className="text-red-500">*</span>
+                  {t('createSubContract.measurementUnit')} <span className="text-red-500">*</span>
                 </label>
                 <Controller
                   name="measurementUnitId"
@@ -340,15 +340,15 @@ export function QuantityActualOverview({
                         onValueChange={field.onChange}
                       >
                         <SelectTrigger className={`text-sm ${errors?.measurementUnitId ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
-                          <SelectValue placeholder="Seleccionar unidad de medida" />
+                          <SelectValue placeholder={t('createSubContract.selectMeasurementUnit')} />
                         </SelectTrigger>
                         <SelectContent>
                           {loadingUnits ? (
-                            <SelectItem value="loading" disabled>Cargando unidades...</SelectItem>
+                            <SelectItem value="loading" disabled>{t('createSubContract.loadingUnits')}</SelectItem>
                           ) : unitsError ? (
-                            <SelectItem value="error" disabled>Error cargando unidades</SelectItem>
+                            <SelectItem value="error" disabled>{t('createSubContract.errorLoadingUnits')}</SelectItem>
                           ) : measurementUnits && measurementUnits.length === 0 ? (
-                            <SelectItem value="empty" disabled>No hay unidades disponibles</SelectItem>
+                            <SelectItem value="empty" disabled>{t('createSubContract.noUnitsAvailable')}</SelectItem>
                           ) : (
                             measurementUnits?.map((unit) => (
                               <SelectItem key={unit.key} value={unit.key}>
