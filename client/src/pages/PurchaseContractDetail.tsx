@@ -787,29 +787,29 @@ export default function PurchaseContractDetail() {
 
         typeContract: "Sub-Contract",
         quantityUnits: `${formatNumber({
-          minDecimals: 0,
-          maxDecimals: 2, 
+          minDecimals: environment.NUMBER_MIN_DECIMALS,
+          maxDecimals: environment.NUMBER_MAX_DECIMALS, 
           value: subContract.quantity,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
           roundMode: environment.NUMBER_ROUND_MODE
         })} ${currentContractData?.commodity?.name || ""}`,
         contractPrice: `$ ${formatNumber({
-          minDecimals: 2,
-          maxDecimals: 2,
+          minDecimals: environment.NUMBER_MIN_DECIMALS,
+          maxDecimals: environment.NUMBER_MAX_DECIMALS,
           value: subContract.price_schedule[0].price,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
           roundMode: environment.NUMBER_ROUND_MODE
         })}`,
         contractBasis: `$ ${formatNumber({
-          minDecimals: 2,
-          maxDecimals: 2,
+          minDecimals: environment.NUMBER_MIN_DECIMALS,
+          maxDecimals: environment.NUMBER_MAX_DECIMALS,
           value: subContract.price_schedule[0].basis,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
           roundMode: environment.NUMBER_ROUND_MODE
         })}`,
         contractFuture: `$ ${formatNumber({
-          minDecimals: 2,
-          maxDecimals: 2,
+          minDecimals: environment.NUMBER_MIN_DECIMALS,
+          maxDecimals: environment.NUMBER_MAX_DECIMALS,
           value: subContract.price_schedule[0].future_price,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
           roundMode: environment.NUMBER_ROUND_MODE
