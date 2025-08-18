@@ -538,6 +538,14 @@ export default function PurchaseContractDetail() {
     console.log('🔍 DEBUG subContract.quantity:', subContract.quantity);
     console.log('🔍 DEBUG subContract.price_schedule:', subContract.price_schedule);
     console.log('🔍 DEBUG subContract.commodity:', subContract.commodity);
+    
+    // DEBUG: Verificar los valores que se van a usar en el mapping
+    console.log('🔍 Valores para mapping:');
+    console.log('  - quantity:', subContract.quantity);
+    console.log('  - price:', subContract.price_schedule[0].price);
+    console.log('  - basis:', subContract.price_schedule[0].basis);
+    console.log('  - future_price:', subContract.price_schedule[0].future_price);
+    console.log('  - commodity name:', currentContractData?.commodity?.name);
 
     // Crear el JSON para impresión usando SOLO datos del sub-contrato
     const printData = {
@@ -667,6 +675,12 @@ export default function PurchaseContractDetail() {
       postaction_s3_bucket: 'string'
     };
 
+    console.log('🔍 DEBUG valores finales mapeados:');
+    console.log('  - quantityUnits:', printData.data.quantityUnits);
+    console.log('  - contractPrice:', printData.data.contractPrice);
+    console.log('  - contractBasis:', printData.data.contractBasis);
+    console.log('  - contractFuture:', printData.data.contractFuture);
+    
     console.log('🖨️ PRINT DATA JSON:', JSON.stringify(printData, null, 2));
     console.log('🖨️ Sub-contrato a imprimir:', subContract);
   };
