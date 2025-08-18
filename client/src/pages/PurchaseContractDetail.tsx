@@ -788,31 +788,31 @@ export default function PurchaseContractDetail() {
         typeContract: "Sub-Contract",
         quantityUnits: `${formatNumber({
           minDecimals: environment.NUMBER_MIN_DECIMALS,
-          maxDecimals: environment.NUMBER_MAX_DECIMALS, 
+          maxDecimals: environment.NUMBER_MAX_DECIMALS,
           value: subContract.quantity,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
-          roundMode: environment.NUMBER_ROUND_MODE
+          roundMode: environment.NUMBER_ROUND_MODE,
         })} ${currentContractData?.commodity?.name || ""}`,
         contractPrice: `$ ${formatNumber({
           minDecimals: environment.NUMBER_MIN_DECIMALS,
           maxDecimals: environment.NUMBER_MAX_DECIMALS,
           value: subContract.price_schedule[0].price,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
-          roundMode: environment.NUMBER_ROUND_MODE
+          roundMode: environment.NUMBER_ROUND_MODE,
         })}`,
         contractBasis: `$ ${formatNumber({
           minDecimals: environment.NUMBER_MIN_DECIMALS,
           maxDecimals: environment.NUMBER_MAX_DECIMALS,
           value: subContract.price_schedule[0].basis,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
-          roundMode: environment.NUMBER_ROUND_MODE
+          roundMode: environment.NUMBER_ROUND_MODE,
         })}`,
         contractFuture: `$ ${formatNumber({
           minDecimals: environment.NUMBER_MIN_DECIMALS,
           maxDecimals: environment.NUMBER_MAX_DECIMALS,
           value: subContract.price_schedule[0].future_price,
           formatPattern: environment.NUMBER_FORMAT_PATTERN,
-          roundMode: environment.NUMBER_ROUND_MODE
+          roundMode: environment.NUMBER_ROUND_MODE,
         })}`,
 
         sellerName: "",
@@ -1468,13 +1468,15 @@ export default function PurchaseContractDetail() {
                             maxDecimals: 0,
                             formatPattern: "0,000.00",
                             roundMode: "truncate",
-                          })} ${currentContractData?.measurement_unit || "N/A"} | ${t("max")}: ${formatNumber({
+                          })} ${currentContractData?.measurement_unit || "N/A"} | ${t("max")}: ${formatNumber(
+                            {
                               value: maxValue,
                               minDecimals: 0,
                               maxDecimals: 0,
                               formatPattern: "0,000.00",
                               roundMode: "truncate",
-                            })} ${currentContractData?.measurement_unit || "N/A"}`;
+                            },
+                          )} ${currentContractData?.measurement_unit || "N/A"}`;
                         })()}
                       </span>
                     </div>
