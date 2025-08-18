@@ -629,7 +629,6 @@ export default function PurchaseContractDetail() {
     const printData = {
       data: {
         path: `/api/v1/contracts/sp-contracts/${contractId}`,
-        data: baseContractData,
         
         // Todos los campos adicionales en el nivel raíz del objeto data
         ...baseContractData,
