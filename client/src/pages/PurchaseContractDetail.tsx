@@ -472,11 +472,31 @@ export default function PurchaseContractDetail() {
     try {
       console.log('✅ Settling sub-contract:', selectedSubContractForSettle.id);
       
-      // TODO: Implementar endpoint para liquidar sub-contrato
-      // await settleSubContract(selectedSubContractForSettle.id);
+      // Llamar al endpoint para liquidar sub-contrato
+      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/settled/${selectedSubContractForSettle.id}`;
       
-      // Simular API call por ahora
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authenticatedFetch(url, {
+        method: 'PATCH',
+        customHeaders: {
+          'pk-organization': localStorage.getItem('partition_key') || '',
+          'bt-organization': localStorage.getItem('partition_key') || '',
+          'bt-uid': localStorage.getItem('partition_key') || '',
+          'organization_id': localStorage.getItem('partition_key') || '',
+          'priority': 'u=1, i',
+          'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"macOS"'
+        },
+        body: JSON.stringify({
+          created_by_name: localStorage.getItem('user_name') || 'Unknown User',
+          created_by_id: localStorage.getItem('user_id') || ''
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
       console.log('✅ Sub-contract settled successfully');
       
       // Calculate elapsed time and ensure minimum duration of 0.3 seconds
