@@ -515,8 +515,5 @@
   },
   "common": {
     "viewMode": "Modo Vista"
-  },
-  "createSubContract": {
-    "viewModeMessage": "Estás viendo la creación de un nuevo sub-contrato. El formulario será pre-llenado con valores existentes."
   }
 }

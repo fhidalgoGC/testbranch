@@ -507,8 +507,5 @@
   },
   "common": {
     "viewMode": "View Mode"
-  },
-  "createSubContract": {
-    "viewModeMessage": "You are viewing the creation of a new sub-contract. Form will be pre-filled with existing values."
   }
 }

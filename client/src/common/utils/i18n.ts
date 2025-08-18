@@ -31,14 +31,20 @@ i18n
     lng: initialLanguage, // Use saved/detected language
     fallbackLng: 'es',
     debug: false,
-    keySeparator: '.', // Enable nested key resolution
-    nsSeparator: false, // Disable namespace separator
+    keySeparator: '.',
+    nsSeparator: false,
     interpolation: {
       escapeValue: false,
     },
-    // Enable partial returns to prevent key returns
     returnNull: false,
     returnEmptyString: false,
+    returnObjects: false,
+    joinArrays: false,
+    saveMissing: false,
+    parseMissingKeyHandler: (key: string) => {
+      console.log('🔑 Missing i18n key:', key);
+      return key;
+    }
   });
 
 export default i18n;
