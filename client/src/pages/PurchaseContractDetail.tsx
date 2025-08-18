@@ -668,9 +668,9 @@ export default function PurchaseContractDetail() {
         
         typeContract: currentContractData?.type === 'purchase' ? 'Purchase' : 'Sale',
         quantityUnits: `${formatNumber(currentContractData?.quantity || 0)} ${currentContractData?.commodity?.name || ''}`,
-        contractPrice: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.price || 0, 2, 2)}`,
-        contractBasis: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.basis || 0, 2, 2)}`,
-        contractFuture: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.future_price || 0, 2, 2)}`,
+        contractPrice: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.price || 0)}`,
+        contractBasis: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.basis || 0)}`,
+        contractFuture: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.future_price || 0)}`,
         
         sellerName: currentContractData?.participants?.find((p: any) => p.role === 'seller')?.name || '',
         buyerName: currentContractData?.participants?.find((p: any) => p.role === 'buyer')?.name || '',
