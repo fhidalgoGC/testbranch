@@ -526,10 +526,11 @@ export default function PurchaseContractDetail() {
   const handlePrintSubContract = (subContractId: string) => {
     console.log('🖨️ Print sub-contract:', subContractId);
     
-    // Encontrar el sub-contrato específico
-    const subContract = subContractsData.find(sc => sc.id === subContractId);
+    // Encontrar el sub-contrato específico - usar _id que es el campo correcto en la data de la API
+    const subContract = subContractsData.find(sc => sc._id === subContractId || sc.id === subContractId);
     if (!subContract) {
       console.error('❌ Sub-contrato no encontrado:', subContractId);
+      console.log('🔍 Sub-contratos disponibles:', subContractsData.map(sc => ({ _id: sc._id, id: sc.id, folio: sc.folio })));
       return;
     }
 
