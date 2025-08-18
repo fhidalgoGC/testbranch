@@ -473,7 +473,7 @@ export default function CreateSubContract() {
   }, [futureValue, basisValue, setValue]);
 
   return (
-    <DashboardLayout title={t('createSubContract.title')}>
+    <DashboardLayout title="Crear Sub-Contrato">
       <div className="max-w-7xl mx-auto p-6 space-y-8">
         
 
@@ -488,29 +488,29 @@ export default function CreateSubContract() {
               <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 rounded-t-lg">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  <span>{t('createSubContract.purchasePriceContract')}</span>
+                  <span>Contrato de Precio de Compra</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.idContract')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">ID Contrato</span>
                     <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono">
                       #{contractData.idContract}
                     </Badge>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.contractDate')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Fecha del Contrato</span>
                     <span className="text-sm font-medium">{contractData.contractDate}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {parentContractData?.type === 'purchase' ? t('createSubContract.seller') : t('createSubContract.buyer')}
+                      {parentContractData?.type === 'purchase' ? 'Vendedor' : 'Comprador'}
                     </span>
                     <span className="text-sm font-medium">{contractData.customerNumber}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.referenceNumber')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Número de Referencia</span>
                     <span className="text-sm font-medium">{contractData.referenceNumber}</span>
                   </div>
                 </div>
@@ -522,32 +522,32 @@ export default function CreateSubContract() {
               <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 rounded-t-lg">
                 <CardTitle className="flex items-center space-x-2 text-lg">
                   <Package className="w-5 h-5 text-green-600 dark:text-green-400" />
-                  <span>{t('createSubContract.generalInformation')}</span>
+                  <span>Información General</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
 
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.quantityUnits')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Cantidad / Unidades</span>
                     <span className="text-sm font-bold font-mono text-amber-500 dark:text-amber-400">
                       {(parentContractData?.quantity || contractData.quantityUnits).toLocaleString()} {parentContractData?.measurement_unit || 'bushel'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.price')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Precio</span>
                     <span className="text-sm font-bold font-mono text-blue-600 dark:text-blue-400">
                       $ {(parentContractData?.price_schedule?.[0]?.price ?? 0).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.basis')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Basis</span>
                     <span className="text-sm font-bold font-mono text-purple-600 dark:text-purple-400">
                       $ {(parentContractData?.price_schedule?.[0]?.basis ?? 0).toFixed(2)} {parentContractData?.price_schedule?.[0]?.option_month || 'september'}{parentContractData?.price_schedule?.[0]?.option_year || '2025'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">{t('createSubContract.future')}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Futuro</span>
                     <span className="text-sm font-bold font-mono text-orange-600 dark:text-orange-400">
                       $ {(parentContractData?.price_schedule?.[0]?.future_price ?? 0).toFixed(2)}
                     </span>
@@ -581,14 +581,14 @@ export default function CreateSubContract() {
                 onClick={handleCreateSubContract}
                 className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                {t('createSubContract.createSubContract')}
+                Crear Sub - Contrato
               </Button>
               <Button
                 onClick={handleCancel}
                 variant="outline"
                 className="w-full py-3 text-base font-medium border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
-                {t('createSubContract.cancel')}
+                {t('cancel')}
               </Button>
             </div>
           </div>
@@ -600,10 +600,10 @@ export default function CreateSubContract() {
         <DialogContent className="max-w-xl mx-auto p-0 overflow-hidden">
           <DialogHeader className="bg-white dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
             <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {t('createSubContract.confirmModal.title')}
+              Crear Sub-Contrato
             </DialogTitle>
             <DialogDescription className="text-xs text-gray-600 dark:text-gray-400">
-              {t('createSubContract.confirmModal.description')}
+              Revisa y confirma los detalles del sub-contrato antes de crear
             </DialogDescription>
           </DialogHeader>
           
@@ -611,19 +611,19 @@ export default function CreateSubContract() {
             {/* Partial Pricing Summary Card */}
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-2 space-y-2">
               <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                {t('createSubContract.confirmModal.partialPricingSummary')}
+                Resumen de Precios Parciales
               </h3>
               
               <div className="space-y-1">
                 <div className="flex justify-between items-center text-xs">
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.quantitySubContract')}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Cantidad Sub-Contrato:</span>
                     <div className="text-blue-600 dark:text-blue-400 font-semibold">
                       {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.openContract')}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Contrato Abierto:</span>
                     <div className="text-gray-900 dark:text-gray-100 font-semibold">
                       {formatQuantity(parentContractData?.inventory?.open)} {parentContractData?.measurement_unit || 'bu60'}
                     </div>
@@ -647,13 +647,13 @@ export default function CreateSubContract() {
               {/* Contract Changes Card */}
               <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2 space-y-1">
                 <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                  {t('createSubContract.confirmModal.contractChanges')}
+                  Cambios del Contrato
                 </h3>
                 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.idContract')}</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.quantity')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">ID Contrato:</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Cantidad</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -666,7 +666,7 @@ export default function CreateSubContract() {
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.balance')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Balance</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -681,15 +681,15 @@ export default function CreateSubContract() {
               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-2 space-y-1">
                 <div className="flex justify-between items-center">
                   <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                    {t('createSubContract.confirmModal.newSubContract')}
+                    Nuevo Sub Contrato
                   </h3>
                   <div className="text-sm">→</div>
                 </div>
                 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.idContract')}</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.quantity')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">ID Contrato:</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Cantidad</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -702,7 +702,7 @@ export default function CreateSubContract() {
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.balance')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Balance</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -715,8 +715,8 @@ export default function CreateSubContract() {
                   <div className="border-t border-gray-200 dark:border-gray-600 my-1"></div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.basis')}</span>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.futures')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Basis</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Futuros</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -729,7 +729,7 @@ export default function CreateSubContract() {
                   </div>
                   
                   <div className="flex justify-between items-center pt-1">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">{t('createSubContract.confirmModal.price')}</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400">Precio</span>
                   </div>
                   
                   <div className="flex justify-between items-center">
@@ -751,7 +751,7 @@ export default function CreateSubContract() {
                 className="flex-1 h-8 text-xs border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                 disabled={isSubmittingSubContract}
               >
-                {t('createSubContract.confirmModal.cancel')}
+                {t('cancel')}
               </Button>
               <Button
                 onClick={handleConfirmSubmission}
@@ -761,10 +761,10 @@ export default function CreateSubContract() {
                 {isSubmittingSubContract ? (
                   <div className="flex items-center space-x-1">
                     <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>{t('createSubContract.confirmModal.creating')}</span>
+                    <span>Creando...</span>
                   </div>
                 ) : (
-                  t('createSubContract.confirmModal.create')
+                  'Crear Sub-Contrato'
                 )}
               </Button>
             </div>

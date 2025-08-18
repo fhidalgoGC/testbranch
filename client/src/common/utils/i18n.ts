@@ -18,8 +18,8 @@ const getSavedLanguage = () => {
   if (savedLang && ['en', 'es'].includes(savedLang)) {
     return savedLang;
   }
-  const browserLang = navigator.language.split('-')[0];
-  return ['en', 'es'].includes(browserLang) ? browserLang : 'es';
+  // Force Spanish as default instead of browser detection
+  return 'es';
 };
 
 const initialLanguage = getSavedLanguage();
@@ -28,17 +28,20 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: initialLanguage,
+    lng: 'es', // Force Spanish
     fallbackLng: 'es',
     debug: false,
-    keySeparator: '.',
-    nsSeparator: false,
+    keySeparator: '.', // Enable nested key resolution
+    nsSeparator: false, // Disable namespace separator
     interpolation: {
       escapeValue: false,
     },
+    // Enable partial returns to prevent key returns
+    returnNull: false,
+    returnEmptyString: false,
   });
 
-// Save initial language to localStorage
-localStorage.setItem('language', initialLanguage);
+// Save Spanish to localStorage
+localStorage.setItem('language', 'es');
 
 export default i18n;
