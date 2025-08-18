@@ -828,7 +828,7 @@ export default function PurchaseContractDetail() {
       template_id: environment.TEMPLATE_ID,
       export_type: "json",
       expiration: 60,
-      output_file: subContract.folio || "SUB-CONTRACT",
+      output_file: `${subContract.folio || "SUB-CONTRACT"}.pdf`,
       is_cmyk: false,
       image_resample_res: 600,
       direct_download: 1,
