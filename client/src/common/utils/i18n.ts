@@ -30,6 +30,9 @@ i18n
     resources,
     lng: initialLanguage,
     fallbackLng: 'es',
+    debug: false,
+    keySeparator: '.',
+    nsSeparator: false,
     interpolation: {
       escapeValue: false,
     },
