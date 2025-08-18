@@ -521,6 +521,182 @@ export default function PurchaseContractDetail() {
     }
   };
 
+  // Función para manejar impresión de sub-contrato
+  const handlePrintSubContract = (subContractId: string) => {
+    console.log('🖨️ Print sub-contract:', subContractId);
+    
+    // Encontrar el sub-contrato específico
+    const subContract = subContractsData.find(sc => sc.id === subContractId);
+    if (!subContract) {
+      console.error('❌ Sub-contrato no encontrado:', subContractId);
+      return;
+    }
+
+    // Crear el JSON para impresión basado en la estructura proporcionada
+    const printData = {
+      data: {
+        path: `/api/v1/contracts/sp-contracts/${contractId}`,
+        data: {
+          id: currentContractData?._id || contractId,
+          _partitionKey: currentContractData?._partitionKey || localStorage.getItem('partition_key') || '',
+          active: currentContractData?.active ?? true,
+          created_by: currentContractData?.created_by || localStorage.getItem('user_id') || '',
+          created_at: currentContractData?.created_at || new Date().toISOString(),
+          folio: currentContractData?.folio || '',
+          type: currentContractData?.type || 'purchase',
+          sub_type: currentContractData?.sub_type || 'imported',
+          commodity: {
+            commodity_id: currentContractData?.commodity?.commodity_id || '',
+            name: currentContractData?.commodity?.name || ''
+          },
+          characteristics: {
+            configuration_id: currentContractData?.characteristics?.configuration_id || '',
+            configuration_name: currentContractData?.characteristics?.configuration_name || ''
+          },
+          grade: currentContractData?.grade || 2,
+          participants: currentContractData?.participants?.map((p: any) => ({
+            people_id: p.people_id,
+            name: p.name,
+            role: p.role
+          })) || [],
+          price_schedule: currentContractData?.price_schedule?.map((ps: any) => ({
+            pricing_type: ps.pricing_type,
+            price: ps.price || 0,
+            basis: ps.basis || 0,
+            basis_operation: ps.basis_operation || 'add',
+            future_price: ps.future_price || 0,
+            option_month: ps.option_month || '',
+            option_year: ps.option_year || new Date().getFullYear(),
+            payment_currency: ps.payment_currency || 'usd',
+            exchange: ps.exchange || ''
+          })) || [],
+          logistic_schedule: currentContractData?.logistic_schedule?.map((ls: any) => ({
+            logistic_payment_responsability: ls.logistic_payment_responsability,
+            logistic_coordination_responsability: ls.logistic_coordination_responsability,
+            freight_cost: {
+              type: ls.freight_cost?.type || 'variable',
+              min: ls.freight_cost?.min || 0,
+              max: ls.freight_cost?.max || 0,
+              cost: ls.freight_cost?.cost || 0
+            },
+            freight_cost_measurement_unit_id: ls.freight_cost_measurement_unit_id || '',
+            freight_cost_measurement_unit: ls.freight_cost_measurement_unit || '',
+            payment_currency: ls.payment_currency || 'usd'
+          })) || [],
+          inventory: {
+            total: currentContractData?.inventory?.total || 0,
+            open: currentContractData?.inventory?.open || 0,
+            fixed: currentContractData?.inventory?.fixed || 0,
+            unsettled: currentContractData?.inventory?.unsettled || 0,
+            settled: currentContractData?.inventory?.settled || 0,
+            reserved: currentContractData?.inventory?.reserved || 0
+          },
+          inventory_value: {
+            total: currentContractData?.inventory_value?.total || 0,
+            open: currentContractData?.inventory_value?.open || 0,
+            fixed: currentContractData?.inventory_value?.fixed || 0,
+            unsettled: currentContractData?.inventory_value?.unsettled || 0,
+            settled: currentContractData?.inventory_value?.settled || 0
+          },
+          quantity: currentContractData?.quantity || 0,
+          reference_number: currentContractData?.reference_number || 'NA',
+          measurement_unit_id: currentContractData?.measurement_unit_id || '',
+          measurement_unit: currentContractData?.measurement_unit || '',
+          shipping_start_date: currentContractData?.shipping_start_date || new Date().toISOString(),
+          shipping_end_date: currentContractData?.shipping_end_date || new Date().toISOString(),
+          application_priority: currentContractData?.application_priority || 1,
+          delivered: currentContractData?.delivered || 'In Store',
+          transport: currentContractData?.transport || 'Barge',
+          weights: currentContractData?.weights || 'submitCc',
+          inspections: currentContractData?.inspections || 'origin',
+          proteins: currentContractData?.proteins || 'submitCc',
+          purchase_orders: currentContractData?.purchase_orders || [],
+          thresholds: {
+            min_thresholds_percentage: currentContractData?.thresholds?.min_thresholds_percentage || 0,
+            min_thresholds_weight: currentContractData?.thresholds?.min_thresholds_weight || 0,
+            max_thresholds_percentage: currentContractData?.thresholds?.max_thresholds_percentage || 0,
+            max_thresholds_weight: currentContractData?.thresholds?.max_thresholds_weight || 0
+          },
+          status: currentContractData?.status || 'in-progress',
+          contract_date: currentContractData?.contract_date || new Date().toISOString(),
+          extras: currentContractData?.extras || [],
+          externals: currentContractData?.externals || [],
+          schedule: currentContractData?.schedule || [],
+          sub_contracts: currentContractData?.sub_contracts || [],
+          notes: currentContractData?.notes || [],
+          remarks: currentContractData?.remarks || [],
+          updated_at: currentContractData?.updated_at || new Date().toISOString(),
+          
+          // Campos calculados adicionales
+          contractDate: currentContractData?.contract_date ? 
+            new Date(currentContractData.contract_date).toLocaleDateString('en-US') : 
+            new Date().toLocaleDateString('en-US'),
+          contractNumber: currentContractData?.reference_number || '-',
+          fob: '-',
+          contact: '-',
+          instructions: '-',
+          instructionsPdf: '-',
+          shipmentPeriod: '-',
+          paymentTerms: '-',
+          paymentTermsPdf: '-',
+          routing: '-',
+          premDisc: '-',
+          premDiscPdf: '-',
+          referenceNumber: currentContractData?.reference_number || 'NA',
+          quantityNumber: currentContractData?.quantity || 0,
+          pricingType: currentContractData?.price_schedule?.[0]?.pricing_type || 'basis',
+          pricingColorType: currentContractData?.price_schedule?.[0]?.pricing_type === 'fixed' ? '#66b3ff' : '#c8bdec',
+          isFixed: currentContractData?.price_schedule?.[0]?.pricing_type === 'fixed',
+          isBasis: currentContractData?.price_schedule?.[0]?.pricing_type === 'basis',
+          
+          // Información del seller/buyer
+          customerId: currentContractData?.participants?.find((p: any) => p.role === 'seller')?.people_id || '',
+          customerNumber: currentContractData?.participants?.find((p: any) => p.role === 'seller')?.people_id?.slice(-6) || '',
+          customerName: currentContractData?.participants?.find((p: any) => p.role === 'seller')?.name || '',
+          customerAddress: 'null', // Se obtendría de la API de direcciones
+          customerPhone: '+1 423423423423', // Placeholder
+          ownerId: currentContractData?.participants?.find((p: any) => p.role === 'buyer')?.people_id || '',
+          ownerNumber: currentContractData?.participants?.find((p: any) => p.role === 'buyer')?.people_id?.slice(-6) || '',
+          ownerName: currentContractData?.participants?.find((p: any) => p.role === 'buyer')?.name || '',
+          
+          typeContract: currentContractData?.type === 'purchase' ? 'Purchase' : 'Sale',
+          quantityUnits: `${formatNumber(currentContractData?.quantity || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
+          contractPrice: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.price || 0)}`,
+          contractBasis: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.basis || 0)}`,
+          contractFuture: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.future_price || 0)}`,
+          
+          // Overview totals
+          contractOverviewTotal: `${formatNumber(currentContractData?.inventory?.total || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
+          contractOverviewDelivered: `${formatNumber(currentContractData?.inventory?.fixed || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
+          contractOverviewOpen: `${formatNumber(currentContractData?.inventory?.open || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
+          contractOverviewTotalSettled: `${formatNumber(currentContractData?.inventory?.settled || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
+          contractOverviewTotalUnSettled: `${formatNumber(currentContractData?.inventory?.unsettled || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
+          
+          // Payment totals
+          contractPaymentTotal: `$ ${formatNumber(currentContractData?.inventory_value?.total || 0)}`,
+          contractPaymentSettled: `$ ${formatNumber(currentContractData?.inventory_value?.settled || 0)}`,
+          contractFixedSettled: `$ ${formatNumber(currentContractData?.inventory_value?.fixed || 0)}`,
+          overviewAllSettled: `$ ${currentContractData?.inventory?.total || 0}`,
+          
+          // Percentages
+          percentageDelivered: currentContractData?.inventory?.total ? 
+            (currentContractData.inventory.fixed || 0) / currentContractData.inventory.total : 0,
+          percentageSettled: currentContractData?.inventory?.total ? 
+            (currentContractData.inventory.settled || 0) / currentContractData.inventory.total : 0,
+          percentageFixed: currentContractData?.inventory?.total ? 
+            (currentContractData.inventory.fixed || 0) / currentContractData.inventory.total : 0,
+          
+          sellerName: currentContractData?.participants?.find((p: any) => p.role === 'seller')?.name || '',
+          buyerName: currentContractData?.participants?.find((p: any) => p.role === 'buyer')?.name || '',
+          companyName: 'Mi centro contratos'
+        }
+      }
+    };
+
+    console.log('🖨️ PRINT DATA JSON:', JSON.stringify(printData, null, 2));
+    console.log('🖨️ Sub-contrato a imprimir:', subContract);
+  };
+
   // Función para cargar sub-contratos usando el interceptor addJwtPk
   const loadSubContracts = async (contractId: string) => {
     try {
@@ -1282,7 +1458,7 @@ export default function PurchaseContractDetail() {
                 handleNavigateToPage('viewSubContract', id);
                 setLocation(`/purchase-contracts/${contractId}/sub-contracts/${id}/view`);
               }}
-              onPrintSubContract={(id) => console.log('Print sub-contract:', id)}
+              onPrintSubContract={handlePrintSubContract}
               onEditSubContract={(id) => {
                 console.log('Edit sub-contract:', id);
                 
