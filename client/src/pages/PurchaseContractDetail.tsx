@@ -1468,15 +1468,13 @@ export default function PurchaseContractDetail() {
                             maxDecimals: 0,
                             formatPattern: "0,000.00",
                             roundMode: "truncate",
-                          })} ${currentContractData?.measurement_unit || "N/A"} | ${t("max")}: ${formatNumber(
-                            {
+                          })} ${currentContractData?.measurement_unit || "N/A"} | ${t("max")}: ${formatNumber({
                               value: maxValue,
                               minDecimals: 0,
                               maxDecimals: 0,
                               formatPattern: "0,000.00",
                               roundMode: "truncate",
-                            },
-                          )} ${currentContractData?.measurement_unit || "N/A"}`;
+                            })} ${currentContractData?.measurement_unit || "N/A"}`;
                         })()}
                       </span>
                     </div>
