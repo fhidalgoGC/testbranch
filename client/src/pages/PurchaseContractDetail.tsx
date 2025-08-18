@@ -671,27 +671,6 @@ export default function PurchaseContractDetail() {
         contractBasis: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.basis || 0)}`,
         contractFuture: `$ ${formatNumber(currentContractData?.price_schedule?.[0]?.future_price || 0)}`,
         
-        // Overview totals
-        contractOverviewTotal: `${formatNumber(currentContractData?.inventory?.total || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
-        contractOverviewDelivered: `${formatNumber(currentContractData?.inventory?.fixed || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
-        contractOverviewOpen: `${formatNumber(currentContractData?.inventory?.open || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
-        contractOverviewTotalSettled: `${formatNumber(currentContractData?.inventory?.settled || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
-        contractOverviewTotalUnSettled: `${formatNumber(currentContractData?.inventory?.unsettled || 0)} ${currentContractData?.measurement_unit || 'bu60'}`,
-        
-        // Payment totals
-        contractPaymentTotal: `$ ${formatNumber(currentContractData?.inventory_value?.total || 0)}`,
-        contractPaymentSettled: `$ ${formatNumber(currentContractData?.inventory_value?.settled || 0)}`,
-        contractFixedSettled: `$ ${formatNumber(currentContractData?.inventory_value?.fixed || 0)}`,
-        overviewAllSettled: `$ ${currentContractData?.inventory?.total || 0}`,
-        
-        // Percentages
-        percentageDelivered: currentContractData?.inventory?.total ? 
-          (currentContractData.inventory.fixed || 0) / currentContractData.inventory.total : 0,
-        percentageSettled: currentContractData?.inventory?.total ? 
-          (currentContractData.inventory.settled || 0) / currentContractData.inventory.total : 0,
-        percentageFixed: currentContractData?.inventory?.total ? 
-          (currentContractData.inventory.fixed || 0) / currentContractData.inventory.total : 0,
-        
         sellerName: currentContractData?.participants?.find((p: any) => p.role === 'seller')?.name || '',
         buyerName: currentContractData?.participants?.find((p: any) => p.role === 'buyer')?.name || '',
         companyName: 'Mi centro contratos',
