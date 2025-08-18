@@ -697,7 +697,7 @@ export default function PurchaseContractDetail() {
         folio: subContract.folio || "",
         contract_id: subContract.contract_id || "",
         contract_folio: subContract.contract_folio || "",
-        type: "sub-contract",
+        type: currentContractData?.type || "purchase",
         sub_type: "",
 
         // Solo commodity name del contrato principal para el display
