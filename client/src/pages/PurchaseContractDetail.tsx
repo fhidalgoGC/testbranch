@@ -534,6 +534,138 @@ export default function PurchaseContractDetail() {
       return;
     }
 
+    // Crear el JSON para impresión usando SOLO datos del sub-contrato
+    const printData = {
+      data: {
+        path: `/api/v1/contracts/sp-contracts/${contractId}`,
+        
+        // Datos básicos del sub-contrato
+        id: subContract._id || '',
+        _partitionKey: subContract._partitionKey || '',
+        active: true,
+        created_by: subContract.created_by_name || '',
+        created_at: subContract.created_at || '',
+        folio: subContract.folio || '',
+        contract_id: subContract.contract_id || '',
+        contract_folio: subContract.contract_folio || '',
+        type: 'sub-contract',
+        sub_type: '',
+        
+        // Solo commodity name del contrato principal para el display
+        commodity: {
+          commodity_id: currentContractData?.commodity?.commodity_id || '',
+          name: currentContractData?.commodity?.name || ''
+        },
+        
+        // Campos vacíos que no están en el sub-contrato
+        characteristics: { configuration_id: '', configuration_name: '' },
+        grade: 0,
+        participants: [],
+        
+        // Price schedule del sub-contrato
+        price_schedule: subContract.price_schedule || [],
+        
+        // Campos vacíos
+        logistic_schedule: [],
+        inventory: subContract.inventory || {},
+        inventory_value: subContract.inventory_value || {},
+        
+        // Datos específicos del sub-contrato
+        quantity: subContract.quantity || 0,
+        measurement_unit_id: subContract.measurement_unit_id || '',
+        measurement_unit: subContract.measurement_unit || '',
+        total_price: subContract.total_price || 0,
+        thresholds: subContract.thresholds || {},
+        status: subContract.status || '',
+        sub_contract_date: subContract.sub_contract_date || '',
+        purchase_orders: subContract.purchase_orders || [],
+        
+        // Campos vacíos adicionales
+        reference_number: '',
+        shipping_start_date: '',
+        shipping_end_date: '',
+        location_id: '',
+        location_name: '',
+        application_priority: 0,
+        delivered: '',
+        transport: '',
+        weights: '',
+        inspections: '',
+        proteins: '',
+        contract_date: '',
+        extras: [],
+        externals: [],
+        schedule: [],
+        sub_contracts: [],
+        notes: [],
+        remarks: [],
+        updated_at: '',
+        
+        // Campos calculados para display
+        contractDate: subContract.sub_contract_date ? 
+          new Date(subContract.sub_contract_date).toLocaleDateString('en-US') : '',
+        contractNumber: '-',
+        fob: '-',
+        contact: '-',
+        instructions: '-',
+        instructionsPdf: '-',
+        shipmentPeriod: '-',
+        paymentTerms: '-',
+        paymentTermsPdf: '-',
+        routing: '-',
+        premDisc: '-',
+        premDiscPdf: '-',
+        referenceNumber: '',
+        quantityNumber: subContract.quantity || 0,
+        pricingType: subContract.price_schedule?.[0]?.pricing_type || 'basis',
+        pricingColorType: subContract.price_schedule?.[0]?.pricing_type === 'fixed' ? '#66b3ff' : '#c8bdec',
+        isFixed: subContract.price_schedule?.[0]?.pricing_type === 'fixed',
+        isBasis: subContract.price_schedule?.[0]?.pricing_type === 'basis',
+        
+        // Información del seller/buyer (vacía para sub-contratos)
+        customerId: '',
+        customerNumber: '',
+        customerName: '',
+        customerAddress: '',
+        customerPhone: '',
+        ownerId: '',
+        ownerNumber: '',
+        ownerName: '',
+        
+        typeContract: 'Sub-Contract',
+        quantityUnits: `${formatNumber(subContract.quantity || 0)} ${currentContractData?.commodity?.name || ''}`,
+        contractPrice: `$ ${formatNumber(subContract.price_schedule?.[0]?.price || 0)}`,
+        contractBasis: `$ ${formatNumber(subContract.price_schedule?.[0]?.basis || 0)}`,
+        contractFuture: `$ ${formatNumber(subContract.price_schedule?.[0]?.future_price || 0)}`,
+        
+        sellerName: '',
+        buyerName: '',
+        companyName: 'Mi centro contratos',
+        companyAddress: 'Antigua Carretera México-Cuautla 17, Cuautla, Morelos, United Mexican States, 62748',
+        companyPhone: '7354691326',
+        subContractFolio: subContract.folio || '',
+        printDate: new Date().toLocaleDateString('en-GB')
+      },
+      load_data_from: null,
+      template_id: environment.TEMPLATE_ID,
+      export_type: 'json',
+      expiration: 60,
+      output_file: subContract.folio || 'SUB-CONTRACT',
+      is_cmyk: false,
+      image_resample_res: 600,
+      direct_download: 1,
+      cloud_storage: 1,
+      pdf_standard: 'string',
+      password_protected: false,
+      password: 'string',
+      postaction_s3_filekey: 'string',
+      postaction_s3_bucket: 'string'
+    };
+
+    console.log('🖨️ PRINT DATA JSON:', JSON.stringify(printData, null, 2));
+    console.log('🖨️ Sub-contrato a imprimir:', subContract);
+  };
+
     // Crear datos base del contrato
     const baseContractData = {
       id: currentContractData?._id || contractId,
