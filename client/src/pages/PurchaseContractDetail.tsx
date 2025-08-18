@@ -558,7 +558,7 @@ export default function PurchaseContractDetail() {
         name: p.name,
         role: p.role
       })) || [],
-      price_schedule: currentContractData?.price_schedule?.map((ps: any) => ({
+      price_schedule: subContract?.price_schedule?.map((ps: any) => ({
         pricing_type: ps.pricing_type,
         price: ps.price || 0,
         basis: ps.basis || 0,
@@ -652,10 +652,10 @@ export default function PurchaseContractDetail() {
         premDiscPdf: '-',
         referenceNumber: currentContractData?.reference_number || 'NA',
         quantityNumber: currentContractData?.quantity || 0,
-        pricingType: currentContractData?.price_schedule?.[0]?.pricing_type || 'basis',
-        pricingColorType: currentContractData?.price_schedule?.[0]?.pricing_type === 'fixed' ? '#66b3ff' : '#c8bdec',
-        isFixed: currentContractData?.price_schedule?.[0]?.pricing_type === 'fixed',
-        isBasis: currentContractData?.price_schedule?.[0]?.pricing_type === 'basis',
+        pricingType: subContract?.price_schedule?.[0]?.pricing_type || 'basis',
+        pricingColorType: subContract?.price_schedule?.[0]?.pricing_type === 'fixed' ? '#66b3ff' : '#c8bdec',
+        isFixed: subContract?.price_schedule?.[0]?.pricing_type === 'fixed',
+        isBasis: subContract?.price_schedule?.[0]?.pricing_type === 'basis',
         
         // Información del seller/buyer
         customerId: currentContractData?.participants?.find((p: any) => p.role === 'seller')?.people_id || '',
