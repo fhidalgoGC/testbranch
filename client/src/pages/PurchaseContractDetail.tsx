@@ -16,6 +16,7 @@ import { ArrowLeft, Edit, Trash2, Eye, Printer, Plus, Check, RefreshCw } from 'l
 import { Link } from 'wouter';
 import { PurchaseContract } from '@/types/purchaseContract.types';
 import { formatNumber } from '@/lib/numberFormatter';
+import { environment } from '@/environment';
 import SubContractsSection from '@/components/contracts/SubContractsSection';
 import { SubContract, FieldConfig, ProgressBarConfig } from '@/components/contracts/SubContractCard';
 import { authenticatedFetch, hasAuthTokens } from '@/utils/apiInterceptors';
@@ -680,10 +681,10 @@ export default function PurchaseContractDetail() {
         printDate: new Date().toLocaleDateString('en-GB') // DD/MM/YYYY format
       },
       load_data_from: null,
-      template_id: '5e177b2393797a28',
+      template_id: environment.TEMPLATE_ID,
       export_type: 'json',
       expiration: 60,
-      output_file: `SUBCONTRACT-${subContract?.contractNumber || subContract?.folio || 'CONTRACT'}.pdf`,
+      output_file: subContract?.contractNumber || subContract?.folio || 'CONTRACT',
       is_cmyk: false,
       image_resample_res: 600,
       direct_download: 1,

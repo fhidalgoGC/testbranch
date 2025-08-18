@@ -2,7 +2,8 @@ export const environment = {
   API_LIMIT: 100,
   CRM_BASE_URL: 'https://crm-develop.grainchain.io/api/v1',
   UNIT_CONVERSIONS_ENDPOINT: '/unit-conversions/units',
-  defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || 'USD'
+  defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || 'USD',
+  TEMPLATE_ID: import.meta.env.VITE_TEMPLATE_ID || '5e177b2393797a28'
 };
 
 export const APP_CONFIG = environment;
