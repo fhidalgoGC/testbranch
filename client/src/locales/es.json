@@ -463,6 +463,13 @@
     "deleteButton": "Eliminar Sub-Contrato",
     "deleting": "Eliminando..."
   },
+  "settleSubContract": {
+    "title": "Liquidar Sub-Contrato",
+    "description": "¿Deseas liquidar el sub-contrato",
+    "confirmButton": "Sí, liquidar",
+    "cancel": "Cancelar",
+    "settling": "Liquidando..."
+  },
   "editSubContract": {
     "editSubContract": "Editar Sub-Contrato",
     "editingSubContract": "Editando sub-contrato",

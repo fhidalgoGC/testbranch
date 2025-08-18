@@ -456,6 +456,13 @@
     "deleteButton": "Delete Sub-Contract",
     "deleting": "Deleting..."
   },
+  "settleSubContract": {
+    "title": "Settled Sub-Contract",
+    "description": "Do you want to settled the sub-contract",
+    "confirmButton": "Yes, settled it",
+    "cancel": "Cancel",
+    "settling": "Settling..."
+  },
   "editSubContract": {
     "editSubContract": "Edit Sub-Contract",
     "editingSubContract": "Editing sub-contract",

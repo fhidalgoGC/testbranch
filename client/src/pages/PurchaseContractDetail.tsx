@@ -88,6 +88,11 @@ export default function PurchaseContractDetail() {
   const [showDeleteSubContractModal, setShowDeleteSubContractModal] = useState<boolean>(false);
   const [deletingSubContract, setDeletingSubContract] = useState<boolean>(false);
   const [selectedSubContractForDelete, setSelectedSubContractForDelete] = useState<any>(null);
+
+  // Sub-contract settle modal states
+  const [showSettleSubContractModal, setShowSettleSubContractModal] = useState<boolean>(false);
+  const [settlingSubContract, setSettlingSubContract] = useState<boolean>(false);
+  const [selectedSubContractForSettle, setSelectedSubContractForSettle] = useState<any>(null);
   
 
   
@@ -445,6 +450,54 @@ export default function PurchaseContractDetail() {
     if (subContract) {
       setSelectedSubContractForDelete(subContract);
       setShowDeleteSubContractModal(true);
+    }
+  };
+
+  // Función para abrir modal de confirmación de liquidación de sub-contrato
+  const openSettleSubContractModal = (subContractId: string) => {
+    const subContract = subContractsData.find(sc => sc.id === subContractId);
+    if (subContract) {
+      setSelectedSubContractForSettle(subContract);
+      setShowSettleSubContractModal(true);
+    }
+  };
+
+  // Función para manejar liquidación de sub-contrato
+  const handleSettleSubContract = async () => {
+    if (!selectedSubContractForSettle) return;
+    
+    setSettlingSubContract(true);
+    const startTime = Date.now();
+    
+    try {
+      console.log('✅ Settling sub-contract:', selectedSubContractForSettle.id);
+      
+      // TODO: Implementar endpoint para liquidar sub-contrato
+      // await settleSubContract(selectedSubContractForSettle.id);
+      
+      // Simular API call por ahora
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('✅ Sub-contract settled successfully');
+      
+      // Calculate elapsed time and ensure minimum duration of 0.3 seconds
+      const elapsedTime = Date.now() - startTime;
+      const minimumDuration = 300; // 0.3 seconds in milliseconds
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+      
+      // Wait for remaining time if API was faster than minimum duration
+      await new Promise(resolve => setTimeout(resolve, remainingTime));
+      
+      // Close modal and refresh data
+      setShowSettleSubContractModal(false);
+      setSelectedSubContractForSettle(null);
+      
+      // Usar la misma función de refresh que el botón actualizar
+      await handleFullRefresh();
+      
+    } catch (error) {
+      console.error('❌ Error settling sub-contract:', error);
+    } finally {
+      setSettlingSubContract(false);
     }
   };
 
@@ -1235,7 +1288,7 @@ export default function PurchaseContractDetail() {
                 }
               }}
               onDeleteSubContract={openDeleteSubContractModal}
-              onSettleSubContract={(id) => console.log('Settle sub-contract:', id)}
+              onSettleSubContract={openSettleSubContractModal}
             />
           </div>
         )}
@@ -1387,6 +1440,49 @@ export default function PurchaseContractDetail() {
                 <>
                   <Trash2 className="w-4 h-4 mr-2" />
                   {t('deleteSubContract.deleteButton')}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Settle Sub-Contract Confirmation Modal */}
+      <Dialog open={showSettleSubContractModal} onOpenChange={setShowSettleSubContractModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-green-600">
+              <Check className="w-5 h-5" />
+              <span>{t('settleSubContract.title')}</span>
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
+              {t('settleSubContract.description')} #{selectedSubContractForSettle?.contractNumber || 'N/A'}?
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowSettleSubContractModal(false)}
+              disabled={settlingSubContract}
+              className="flex-1"
+            >
+              {t('settleSubContract.cancel')}
+            </Button>
+            <Button
+              onClick={handleSettleSubContract}
+              disabled={settlingSubContract}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              {settlingSubContract ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  {t('settleSubContract.settling')}
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  {t('settleSubContract.confirmButton')}
                 </>
               )}
             </Button>
