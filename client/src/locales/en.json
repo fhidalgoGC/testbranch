@@ -240,6 +240,7 @@
   "customer": "Seller",
   "reserve": "Reserve",
   "purchaseContractsList": "Purchase Contracts List",
+  "saleContractsList": "Sale Contracts List",
   "validDate": "Please enter a valid date",
   "invalidFormat": "Invalid format",
   "selectOption": "Please select an option",
