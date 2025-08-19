@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Eye, Printer, Edit, Trash2, Check } from "lucide-react";
+import { Eye, Printer, Edit, Trash2, Check, Loader2 } from "lucide-react";
 // Placeholder for number formatting - will use real formatNumber when available
 const formatNumber = (value: number | undefined | null) => {
   if (value === undefined || value === null || isNaN(value)) {
@@ -67,6 +67,7 @@ interface SubContractCardProps {
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onSettle?: (id: string) => void;
+  isPrinting?: boolean; // Indica si este sub-contrato se está imprimiendo
 }
 
 export default function SubContractCard({
@@ -78,6 +79,7 @@ export default function SubContractCard({
   onEdit,
   onDelete,
   onSettle,
+  isPrinting = false,
 }: SubContractCardProps) {
   const { t } = useTranslation();
 
@@ -257,8 +259,13 @@ export default function SubContractCard({
                     size="sm"
                     className="h-8 w-8 p-0 bg-gray-500 hover:bg-gray-600 text-white"
                     onClick={() => onPrint?.(subContract.id)}
+                    disabled={isPrinting}
                   >
-                    <Printer className="h-4 w-4" />
+                    {isPrinting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Printer className="h-4 w-4" />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>

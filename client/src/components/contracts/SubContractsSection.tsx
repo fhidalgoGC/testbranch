@@ -18,6 +18,7 @@ interface SubContractsSectionProps {
   onEditSubContract?: (id: string) => void;
   onDeleteSubContract?: (id: string) => void;
   onSettleSubContract?: (id: string) => void;
+  printingSubContractId?: string | null; // ID del sub-contrato que se está imprimiendo
 }
 
 export default function SubContractsSection({ 
@@ -33,7 +34,8 @@ export default function SubContractsSection({
   onPrintSubContract,
   onEditSubContract,
   onDeleteSubContract,
-  onSettleSubContract
+  onSettleSubContract,
+  printingSubContractId
 }: SubContractsSectionProps) {
   const { t } = useTranslation();
 
@@ -282,6 +284,7 @@ export default function SubContractsSection({
                   onEdit={onEditSubContract}
                   onDelete={onDeleteSubContract}
                   onSettle={onSettleSubContract}
+                  isPrinting={printingSubContractId === subContract.id}
                 />
               ))}
             </div>

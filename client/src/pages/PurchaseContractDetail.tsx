@@ -139,6 +139,9 @@ export default function PurchaseContractDetail() {
   const [selectedSubContractForSettle, setSelectedSubContractForSettle] =
     useState<any>(null);
 
+  // Print loading state
+  const [printingSubContractId, setPrintingSubContractId] = useState<string | null>(null);
+
   // Función para cargar la dirección del participante usando el interceptor addJwtPk
   const loadParticipantAddress = async (participantId: string) => {
     try {
@@ -646,6 +649,9 @@ export default function PurchaseContractDetail() {
   // Función para manejar impresión de sub-contrato
   const handlePrintSubContract = (subContractId: string) => {
     console.log("🖨️ Print sub-contract:", subContractId);
+    
+    // Set loading state
+    setPrintingSubContractId(subContractId);
 
     // Encontrar el sub-contrato específico - usar _id que es el campo correcto en la data de la API
     const subContract = subContractsData.find(
@@ -912,6 +918,9 @@ export default function PurchaseContractDetail() {
     } catch (error) {
       console.error("❌ Error al generar/descargar PDF:", error);
       alert("Error al generar el PDF. Por favor verifica tu conexión e inténtalo de nuevo.");
+    } finally {
+      // Clear loading state
+      setPrintingSubContractId(null);
     }
   };
 
@@ -1871,6 +1880,7 @@ export default function PurchaseContractDetail() {
                 );
               }}
               onPrintSubContract={handlePrintSubContract}
+              printingSubContractId={printingSubContractId}
               onEditSubContract={(id) => {
                 console.log("Edit sub-contract:", id);
 
