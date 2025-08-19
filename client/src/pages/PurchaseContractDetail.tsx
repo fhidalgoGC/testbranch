@@ -646,6 +646,164 @@ export default function PurchaseContractDetail() {
     }
   };
 
+  // Función para mapear datos del contrato padre a JSON para imprimir
+  const mapContractDataForPrint = (contractData: any) => {
+    const seller = contractData?.participants?.find((p: any) => p.role === "seller");
+    const buyer = contractData?.participants?.find((p: any) => p.role === "buyer");
+    const priceSchedule = contractData?.price_schedule?.[0] || {};
+    const logisticSchedule = contractData?.logistic_schedule?.[0] || {};
+    const inventory = contractData?.inventory || {};
+    const inventoryValue = contractData?.inventory_value || {};
+    const thresholds = contractData?.thresholds || {};
+
+    // Format numbers for display
+    const formatNumber = (num: number, decimals: number = 2) => {
+      if (isNaN(num) || num === null || num === undefined) return "0.00";
+      return num.toLocaleString('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    };
+
+    // Format currency
+    const formatCurrency = (num: number) => {
+      if (isNaN(num) || num === null || num === undefined) return "$ 0.00";
+      return `$ ${formatNumber(num, 2)}`;
+    };
+
+    // Format date
+    const formatDate = (dateStr: string) => {
+      if (!dateStr) return "-";
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', {
+        month: 'numeric',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    };
+
+    const printData = {
+      data: {
+        path: `/api/v1/contracts/sp-contracts/${contractData?.id || contractData?._id}`,
+        id: contractData?.id || contractData?._id,
+        _partitionKey: contractData?._partitionKey,
+        active: contractData?.active ?? true,
+        created_by: contractData?.created_by,
+        created_at: contractData?.created_at,
+        folio: contractData?.folio,
+        type: contractData?.type,
+        sub_type: contractData?.sub_type,
+        commodity: {
+          commodity_id: contractData?.commodity?.commodity_id,
+          name: contractData?.commodity?.name
+        },
+        grade: contractData?.grade,
+        participants: contractData?.participants || [],
+        price_schedule: contractData?.price_schedule || [],
+        logistic_schedule: contractData?.logistic_schedule || [],
+        inventory: inventory,
+        inventory_value: inventoryValue,
+        quantity: contractData?.quantity,
+        reference_number: contractData?.reference_number || "NA",
+        measurement_unit_id: contractData?.measurement_unit_id,
+        measurement_unit: contractData?.measurement_unit,
+        shipping_start_date: contractData?.shipping_start_date,
+        shipping_end_date: contractData?.shipping_end_date,
+        application_priority: contractData?.application_priority || 5,
+        delivered: contractData?.delivered || "FOB",
+        transport: contractData?.transport || "Truck",
+        weights: contractData?.weights || "origin",
+        inspections: contractData?.inspections || "origin",
+        proteins: contractData?.proteins || "origin",
+        thresholds: thresholds,
+        status: contractData?.status,
+        payment_terms: contractData?.payment_terms || "Net 30",
+        assesment: contractData?.assesment ?? false,
+        contract_date: contractData?.contract_date,
+        contractDate: formatDate(contractData?.contract_date),
+        contractNumber: "-",
+        fob: "-",
+        contact: "-",
+        instructions: "-",
+        instructionsPdf: "-",
+        shipmentPeriod: "-",
+        paymentTerms: "-",
+        paymentTermsPdf: "-",
+        routing: "-",
+        premDisc: "-",
+        premDiscPdf: "-",
+        referenceNumber: contractData?.reference_number || "NA",
+        quantityNumber: contractData?.quantity || 0,
+        pricingType: priceSchedule?.pricing_type === "fixed" ? "Fixed" : "Basis",
+        pricingColorType: priceSchedule?.pricing_type === "fixed" ? "#b8ebf3" : "#e8d4f1",
+        isFixed: priceSchedule?.pricing_type === "fixed",
+        isBasis: priceSchedule?.pricing_type === "basis",
+        customerId: seller?.people_id,
+        customerNumber: seller?.people_id?.slice(-6) || "-",
+        customerName: seller?.name || "-",
+        customerAddress: "-",
+        customerPhone: "-",
+        ownerId: buyer?.people_id,
+        ownerNumber: buyer?.people_id?.slice(-6) || "-",
+        ownerName: buyer?.name || "-",
+        typeContract: contractData?.type === "purchase" ? "Purchase" : "Sale",
+        quantityUnits: `${formatNumber(contractData?.quantity || 0)} ${contractData?.measurement_unit || ""}`,
+        contractPrice: formatCurrency(priceSchedule?.price || 0),
+        contractBasis: formatCurrency(priceSchedule?.basis || 0),
+        contractFuture: formatCurrency(priceSchedule?.future_price || 0),
+        contractOverviewTotal: `${formatNumber(inventory?.total || 0)} ${contractData?.measurement_unit || ""}`,
+        contractOverviewDelivered: `${formatNumber(inventory?.fixed || 0)} ${contractData?.measurement_unit || ""}`,
+        contractOverviewOpen: `${formatNumber(inventory?.open || 0)} ${contractData?.measurement_unit || ""}`,
+        contractOverviewTotalSettled: `${formatNumber(inventory?.settled || 0)} ${contractData?.measurement_unit || ""}`,
+        contractOverviewTotalUnSettled: `${formatNumber(inventory?.unsettled || 0)} ${contractData?.measurement_unit || ""}`,
+        contractPaymentTotal: formatCurrency(inventoryValue?.total || 0),
+        contractPaymentSettled: formatCurrency(inventoryValue?.settled || 0),
+        contractFixedSettled: formatCurrency(inventoryValue?.fixed || 0),
+        overviewAllSettled: formatCurrency(inventory?.settled || 0),
+        percentageDelivered: inventory?.total > 0 ? inventory?.fixed / inventory?.total : 0,
+        percentageSettled: inventory?.total > 0 ? inventory?.settled / inventory?.total : 0,
+        percentageFixed: inventory?.total > 0 ? inventory?.fixed / inventory?.total : 0,
+        sellerName: seller?.name || "-",
+        buyerName: buyer?.name || "-",
+        companyName: "Mi centro contratos",
+        companyAddress: "Antigua Carretera México-Cuautla 17, Cuautla, Morelos, United Mexican States, 62748",
+        companyPhone: "7354691326",
+        printDate: new Date().toLocaleDateString('en-GB')
+      },
+      load_data_from: null,
+      template_id: environment.TEMPLATE_ID,
+      export_type: "json",
+      expiration: 60,
+      output_file: `CONTRACT-${contractData?.folio || 'CONTRACT'}.pdf`,
+      is_cmyk: false,
+      image_resample_res: 600,
+      direct_download: 1,
+      cloud_storage: 1,
+      pdf_standard: "string",
+      password_protected: false,
+      password: "string",
+      postaction_s3_filekey: "string",
+      postaction_s3_bucket: "string"
+    };
+
+    return printData;
+  };
+
+  // Función para manejar impresión del contrato padre
+  const handlePrintContract = () => {
+    console.log("🖨️ Print contract:", currentContractData?.folio);
+    
+    if (!currentContractData) {
+      console.error("❌ No contract data available for printing");
+      return;
+    }
+
+    // Mapear datos del contrato a formato JSON para imprimir
+    const printData = mapContractDataForPrint(currentContractData);
+    
+    console.log("📄 Mapped contract data for printing:", JSON.stringify(printData, null, 2));
+  };
+
   // Función para manejar liquidación de contrato principal
   const handleSettleContract = async () => {
     if (!currentContractData) return;
@@ -1402,6 +1560,7 @@ export default function PurchaseContractDetail() {
                     <TooltipTrigger asChild>
                       <Button
                         size="sm"
+                        onClick={handlePrintContract}
                         className="h-8 w-8 p-0 bg-gray-500 hover:bg-gray-600 text-white"
                       >
                         <Printer className="w-4 h-4" />
