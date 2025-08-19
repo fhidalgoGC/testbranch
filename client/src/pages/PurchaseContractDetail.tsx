@@ -623,12 +623,6 @@ export default function PurchaseContractDetail() {
 
       if (response.ok) {
         console.log("✅ Contrato padre liquidado exitosamente");
-        
-        // Cerrar modal
-        setShowSettleContractModal(false);
-        
-        // Recargar datos del contrato
-        await handleFullRefresh();
       } else {
         console.error("❌ Error al liquidar contrato padre:", response.statusText);
       }
@@ -641,6 +635,10 @@ export default function PurchaseContractDetail() {
       if (elapsed < minTime) {
         await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
       }
+      
+      // Cerrar modal y refrescar SIEMPRE (exitoso o error)
+      setShowSettleContractModal(false);
+      await handleFullRefresh();
       
       setSettlingContract(false);
     }
@@ -683,13 +681,6 @@ export default function PurchaseContractDetail() {
       }
 
       console.log("✅ Sub-contract settled successfully");
-
-      // Close modal and refresh data
-      setShowSettleSubContractModal(false);
-      setSelectedSubContractForSettle(null);
-
-      // Usar la misma función de refresh que el botón actualizar
-      await handleFullRefresh();
     } catch (error) {
       console.error("❌ Error settling sub-contract:", error);
     } finally {
@@ -699,6 +690,11 @@ export default function PurchaseContractDetail() {
       if (elapsed < minTime) {
         await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
       }
+      
+      // Cerrar modal y refrescar SIEMPRE (exitoso o error)
+      setShowSettleSubContractModal(false);
+      setSelectedSubContractForSettle(null);
+      await handleFullRefresh();
       
       setSettlingSubContract(false);
     }
