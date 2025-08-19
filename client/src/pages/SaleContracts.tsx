@@ -442,9 +442,12 @@ export default function SaleContracts() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {t('saleContractsList')}
           </h1>
-          <Link href="/create-purchase-contract">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-              <Plus className="w-4 h-4 mr-2" />
+          <Link href="/purchase-contracts/create" className="inline-block">
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+              size="lg"
+            >
+              <Plus className="w-4 h-4" />
               {t('createSaleContract')}
             </Button>
           </Link>
