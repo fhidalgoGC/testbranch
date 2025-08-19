@@ -765,9 +765,9 @@ export default function PurchaseContractDetail() {
         percentageFixed: inventory?.total > 0 ? inventory?.fixed / inventory?.total : 0,
         sellerName: seller?.name || "-",
         buyerName: buyer?.name || "-",
-        companyName: localStorage.getItem('company_business_name') || "Mi centro contratos",
-        companyAddress: localStorage.getItem('company_address_line') || "Antigua Carretera México-Cuautla 17, Cuautla, Morelos, United Mexican States, 62748",
-        companyPhone: `${localStorage.getItem('company_calling_code') || '+52'}${localStorage.getItem('company_phone_number') || '7354691326'}`,
+        companyName: localStorage.getItem('company_business_name') || "",
+        companyAddress: localStorage.getItem('company_address_line') || "",
+        companyPhone: localStorage.getItem('company_calling_code') && localStorage.getItem('company_phone_number') ? `${localStorage.getItem('company_calling_code')}${localStorage.getItem('company_phone_number')}` : '',
         printDate: new Date().toLocaleDateString('en-GB')
       },
       load_data_from: null,
