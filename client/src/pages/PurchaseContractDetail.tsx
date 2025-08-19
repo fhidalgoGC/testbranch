@@ -709,7 +709,7 @@ export default function PurchaseContractDetail() {
         measurement_unit: contractData?.measurement_unit,
         shipping_start_date: contractData?.shipping_start_date,
         shipping_end_date: contractData?.shipping_end_date,
-        application_priority: contractData?.application_priority || 5,
+        application_priority: contractData?.application_priority,
         delivered: contractData?.delivered || "FOB",
         transport: contractData?.transport || "Truck",
         weights: contractData?.weights || "origin",
