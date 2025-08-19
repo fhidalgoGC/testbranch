@@ -646,6 +646,49 @@ export default function PurchaseContractDetail() {
     }
   };
 
+  // Función para manejar liquidación de contrato principal
+  const handleSettleContract = async () => {
+    if (!currentContractData) return;
+
+    try {
+      console.log("✅ Settling contract:", currentContractData.id || currentContractData._id);
+
+      // Llamar al endpoint para liquidar contrato principal
+      const contractId = currentContractData.id || currentContractData._id;
+      const url = `https://trm-develop.grainchain.io/api/v1/contracts/purchase-contracts/settled/${contractId}`;
+
+      const response = await authenticatedFetch(url, {
+        method: "PATCH",
+        customHeaders: {
+          "pk-organization": localStorage.getItem("partition_key") || "",
+          "bt-organization": localStorage.getItem("partition_key") || "",
+          "bt-uid": localStorage.getItem("partition_key") || "",
+          organization_id: localStorage.getItem("partition_key") || "",
+          priority: "u=1, i",
+          "sec-ch-ua":
+            '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": '"macOS"',
+        },
+        body: JSON.stringify({
+          created_by_name: localStorage.getItem("user_name") || "Unknown User",
+          created_by_id: localStorage.getItem("user_id") || "",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      console.log("✅ Contract settled successfully");
+
+      // Refresh data
+      await handleFullRefresh();
+    } catch (error) {
+      console.error("❌ Error settling contract:", error);
+    }
+  };
+
   // Función para manejar impresión de sub-contrato
   const handlePrintSubContract = (subContractId: string) => {
     console.log("🖨️ Print sub-contract:", subContractId);
@@ -1387,7 +1430,28 @@ export default function PurchaseContractDetail() {
                   </Tooltip>
                 </TooltipProvider>
 
-                {/* 4. Edit Button - solo visible cuando status es 'created' */}
+                {/* 4. Settled Button - solo visible cuando pricing_type es 'fixed' y status es 'in-progress' */}
+                {currentContractData?.price_schedule?.[0]?.pricing_type === "fixed" && 
+                 currentContractData?.status === "in-progress" && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          onClick={() => handleSettleContract()}
+                          className="h-8 w-8 p-0 bg-purple-500 hover:bg-purple-600 text-white"
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Settle contract</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+
+                {/* 5. Edit Button - solo visible cuando status es 'created' */}
                 {currentContractData?.status === "created" && (
                   <TooltipProvider>
                     <Tooltip>
@@ -1406,7 +1470,7 @@ export default function PurchaseContractDetail() {
                   </TooltipProvider>
                 )}
 
-                {/* 5. Delete Button - solo visible cuando status es 'created' */}
+                {/* 6. Delete Button - solo visible cuando status es 'created' */}
                 {currentContractData?.status === "created" && (
                   <TooltipProvider>
                     <Tooltip>
