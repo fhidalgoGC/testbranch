@@ -42,6 +42,7 @@ import {
   RefreshCw,
   Loader2,
   X,
+  Lock,
 } from "lucide-react";
 import { Link } from "wouter";
 import { PurchaseContract } from "@/types/purchaseContract.types";
@@ -1676,7 +1677,7 @@ export default function PurchaseContractDetail() {
                           onClick={openSettleContractModal}
                           className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white"
                         >
-                          <Check className="w-4 h-4" />
+                          <Lock className="w-4 h-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -2403,7 +2404,7 @@ export default function PurchaseContractDetail() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2 text-green-600">
-              <Check className="w-5 h-5" />
+              <Lock className="w-5 h-5" />
               <span>{t("settleSubContract.title")}</span>
             </DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-400">
@@ -2433,7 +2434,7 @@ export default function PurchaseContractDetail() {
                 </>
               ) : (
                 <>
-                  <Check className="w-4 h-4 mr-2" />
+                  <Lock className="w-4 h-4 mr-2" />
                   {t("settleSubContract.confirmButton")}
                 </>
               )}
@@ -2450,7 +2451,7 @@ export default function PurchaseContractDetail() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2 text-green-600">
-              <Check className="w-5 h-5" />
+              <Lock className="w-5 h-5" />
               <span>{t("settleContract.title")}</span>
             </DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-400">
@@ -2480,7 +2481,7 @@ export default function PurchaseContractDetail() {
                 </>
               ) : (
                 <>
-                  <Check className="mr-2 h-4 w-4" />
+                  <Lock className="mr-2 h-4 w-4" />
                   {t("settleContract.confirm")}
                 </>
               )}
