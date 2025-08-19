@@ -1673,7 +1673,7 @@ export default function PurchaseContractDetail() {
                       <TooltipTrigger asChild>
                         <Button
                           size="sm"
-                          onClick={() => handleSettleContract()}
+                          onClick={openSettleContractModal}
                           className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white"
                         >
                           <Check className="w-4 h-4" />
