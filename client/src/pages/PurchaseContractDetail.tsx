@@ -40,6 +40,7 @@ import {
   Plus,
   Check,
   RefreshCw,
+  Loader2,
 } from "lucide-react";
 import { Link } from "wouter";
 import { PurchaseContract } from "@/types/purchaseContract.types";
@@ -1687,31 +1688,6 @@ export default function PurchaseContractDetail() {
                   </TooltipProvider>
                 )}
 
-                {/* Botón de Settle - solo visible para contratos de tipo fixed con status in-progress */}
-                {currentContractData?.status === "in-progress" && 
-                 currentContractData?.price_schedule?.[0]?.pricing_type === "fixed" && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          size="sm"
-                          onClick={openSettleContractModal}
-                          disabled={settlingContract}
-                          className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {settlingContract ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          ) : (
-                            <Check className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{t("settle")}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
               </div>
             </div>
           </div>
