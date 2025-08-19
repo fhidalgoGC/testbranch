@@ -94,6 +94,7 @@ interface FetchContractsParams {
     partitionKey: string;
     idToken: string;
   };
+  contractType?: 'purchase' | 'sale';
 }
 
 // Mapeo de campos de la UI a campos de la API para ordenamiento
@@ -110,7 +111,7 @@ const sortFieldMapping: Record<string, string> = {
 };
 
 export const fetchContractsData = async (params: FetchContractsParams) => {
-  const { page, limit, search, filters, sort, commodities, authData } = params;
+  const { page, limit, search, filters, sort, commodities, authData, contractType = 'purchase' } = params;
   const { partitionKey, idToken } = authData;
 
   try {
@@ -126,7 +127,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
 
     // Construir filtros para la API usando $and structure
     const andConditions: any[] = [
-      { type: 'purchase' }
+      { type: contractType }
     ];
     
     console.log('🔍 SERVICIO - Filtros recibidos:', filters);
