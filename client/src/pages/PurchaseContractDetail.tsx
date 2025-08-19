@@ -699,30 +699,35 @@ export default function PurchaseContractDetail() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      if (response.ok) {
+        console.log("✅ Sub-contract settled successfully");
+        
+        // Solo cerrar modal y refrescar si es exitoso
+        setShowSettleSubContractModal(false);
+        setSelectedSubContractForSettle(null);
+        await handleFullRefresh();
+      } else {
+        console.error("❌ Error al liquidar sub-contrato:", response.statusText);
+        
+        // Manejar error del API
+        let errorText = "";
+        try {
+          const errorData = await response.json();
+          errorText = errorData.messages?.value || t("settleContract.error.serverError");
+        } catch {
+          errorText = response.status === 500 ? t("settleContract.error.serverError") : t("settleContract.error.serverError");
+        }
+        
+        setErrorMessage(errorText);
+        setShowErrorModal(true);
+        setShowSettleSubContractModal(false);
+        setSelectedSubContractForSettle(null);
       }
-
-      console.log("✅ Sub-contract settled successfully");
-      
-      // Solo cerrar modal y refrescar si es exitoso
-      setShowSettleSubContractModal(false);
-      setSelectedSubContractForSettle(null);
-      await handleFullRefresh();
     } catch (error: any) {
       console.error("❌ Error settling sub-contract:", error);
       
-      // Manejar error del API
-      let errorText = "";
-      if (error.message && error.message.includes("Error ")) {
-        // Es un error HTTP, intentar extraer el mensaje del response
-        errorText = t("settleContract.error.serverError");
-      } else {
-        // Error de conexión o código
-        errorText = t("settleContract.error.serverError");
-      }
-      
-      setErrorMessage(errorText);
+      // Error de conexión o código
+      setErrorMessage(t("settleContract.error.serverError"));
       setShowErrorModal(true);
       setShowSettleSubContractModal(false);
       setSelectedSubContractForSettle(null);
