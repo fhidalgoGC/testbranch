@@ -139,6 +139,12 @@ export default function PurchaseContractDetail() {
   const [selectedSubContractForSettle, setSelectedSubContractForSettle] =
     useState<any>(null);
 
+  // Parent contract settle modal states
+  const [showSettleContractModal, setShowSettleContractModal] =
+    useState<boolean>(false);
+  const [settlingContract, setSettlingContract] =
+    useState<boolean>(false);
+
   // Print loading state
   const [printingSubContractId, setPrintingSubContractId] = useState<string | null>(null);
   const [printingContractId, setPrintingContractId] = useState<string | null>(null);
@@ -588,6 +594,57 @@ export default function PurchaseContractDetail() {
     }
   };
 
+  // Función para abrir modal de confirmación de liquidación de contrato padre
+  const openSettleContractModal = () => {
+    setShowSettleContractModal(true);
+  };
+
+  // Función para manejar liquidación de contrato padre
+  const handleSettleContract = async () => {
+    if (!currentContractData) return;
+
+    setSettlingContract(true);
+    const startTime = Date.now();
+
+    try {
+      const contractId = currentContractData.id || currentContractData._id;
+      console.log("✅ Settling parent contract:", contractId);
+
+      // Llamar al endpoint para liquidar contrato padre
+      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/settled/${contractId}`;
+
+      const response = await authenticatedFetch(url, {
+        method: "PATCH",
+        customHeaders: {
+          "pk-organization": localStorage.getItem("partition_key") || "",
+        },
+      });
+
+      if (response.ok) {
+        console.log("✅ Contrato padre liquidado exitosamente");
+        
+        // Cerrar modal
+        setShowSettleContractModal(false);
+        
+        // Mostrar loading mientras se actualiza
+        const elapsed = Date.now() - startTime;
+        const minTime = 800;
+        if (elapsed < minTime) {
+          await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
+        }
+        
+        // Recargar datos del contrato
+        await handleFullRefresh();
+      } else {
+        console.error("❌ Error al liquidar contrato padre:", response.statusText);
+      }
+    } catch (error) {
+      console.error("❌ Error al liquidar contrato padre:", error);
+    } finally {
+      setSettlingContract(false);
+    }
+  };
+
   // Función para manejar liquidación de sub-contrato
   const handleSettleSubContract = async () => {
     if (!selectedSubContractForSettle) return;
@@ -821,48 +878,6 @@ export default function PurchaseContractDetail() {
     }
   };
 
-  // Función para manejar liquidación de contrato principal
-  const handleSettleContract = async () => {
-    if (!currentContractData) return;
-
-    try {
-      console.log("✅ Settling contract:", currentContractData.id || currentContractData._id);
-
-      // Llamar al endpoint para liquidar contrato principal
-      const contractId = currentContractData.id || currentContractData._id;
-      const url = `https://trm-develop.grainchain.io/api/v1/contracts/purchase-contracts/settled/${contractId}`;
-
-      const response = await authenticatedFetch(url, {
-        method: "PATCH",
-        customHeaders: {
-          "pk-organization": localStorage.getItem("partition_key") || "",
-          "bt-organization": localStorage.getItem("partition_key") || "",
-          "bt-uid": localStorage.getItem("partition_key") || "",
-          organization_id: localStorage.getItem("partition_key") || "",
-          priority: "u=1, i",
-          "sec-ch-ua":
-            '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": '"macOS"',
-        },
-        body: JSON.stringify({
-          created_by_name: localStorage.getItem("user_name") || "Unknown User",
-          created_by_id: localStorage.getItem("user_id") || "",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
-      console.log("✅ Contract settled successfully");
-
-      // Refresh data
-      await handleFullRefresh();
-    } catch (error) {
-      console.error("❌ Error settling contract:", error);
-    }
-  };
 
   // Función para manejar impresión de sub-contrato
   const handlePrintSubContract = (subContractId: string) => {
@@ -1671,6 +1686,32 @@ export default function PurchaseContractDetail() {
                     </Tooltip>
                   </TooltipProvider>
                 )}
+
+                {/* Botón de Settle - solo visible para contratos de tipo fixed con status in-progress */}
+                {currentContractData?.status === "in-progress" && 
+                 currentContractData?.price_schedule?.[0]?.pricing_type === "fixed" && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          onClick={openSettleContractModal}
+                          disabled={settlingContract}
+                          className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {settlingContract ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <Check className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t("settle")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
             </div>
           </div>
@@ -2380,6 +2421,53 @@ export default function PurchaseContractDetail() {
                 <>
                   <Check className="w-4 h-4 mr-2" />
                   {t("settleSubContract.confirmButton")}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Settle Parent Contract Confirmation Modal */}
+      <Dialog
+        open={showSettleContractModal}
+        onOpenChange={setShowSettleContractModal}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-green-600">
+              <Check className="w-5 h-5" />
+              <span>{t("settleContract.title")}</span>
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
+              {t("settleContract.description")} #
+              {currentContractData?.folio || "N/A"}?
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowSettleContractModal(false)}
+              disabled={settlingContract}
+              className="flex-1"
+            >
+              {t("settleContract.cancel")}
+            </Button>
+            <Button
+              onClick={handleSettleContract}
+              disabled={settlingContract}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+            >
+              {settlingContract ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("settleContract.settling")}
+                </>
+              ) : (
+                <>
+                  <Check className="mr-2 h-4 w-4" />
+                  {t("settleContract.confirm")}
                 </>
               )}
             </Button>
