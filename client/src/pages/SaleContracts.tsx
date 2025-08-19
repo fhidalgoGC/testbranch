@@ -153,7 +153,7 @@ export default function SaleContracts() {
 
       // Construir filtro
       const filter: any = {
-        type: "sale"
+        type: "purchase"
       };
 
       // Agregar filtro de commodity si está seleccionado
@@ -344,8 +344,7 @@ export default function SaleContracts() {
         authData: {
           partitionKey: partitionKey || '',
           idToken: idToken || ''
-        },
-        contractType: 'sale'
+        }
       });
 
       // Calcular tiempo transcurrido
