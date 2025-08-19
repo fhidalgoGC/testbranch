@@ -91,11 +91,30 @@ export const useAuth = () => {
             if (organizationData.data && organizationData.data.length > 0) {
               const firstOrg = organizationData.data[0];
               if (firstOrg.extras && Array.isArray(firstOrg.extras)) {
-                const representativeExtra = firstOrg.extras.find(extra => extra.key === 'representativePeople_id');
+                const representativeExtra = firstOrg.extras.find((extra: any) => extra.key === 'representativePeople_id');
                 if (representativeExtra && representativeExtra.values && representativeExtra.values.length > 0) {
                   representativePeopleId = representativeExtra.values[0].value;
                   localStorage.setItem('representative_people_id', representativePeopleId);
                 }
+              }
+              
+              // Store organization information in localStorage with company_ prefix
+              if (firstOrg.business_name) {
+                localStorage.setItem('company_business_name', firstOrg.business_name);
+              }
+              if (firstOrg.business_type) {
+                localStorage.setItem('company_business_type', firstOrg.business_type);
+              }
+              if (firstOrg.phones && firstOrg.phones.length > 0) {
+                if (firstOrg.phones[0].calling_code) {
+                  localStorage.setItem('company_calling_code', firstOrg.phones[0].calling_code);
+                }
+                if (firstOrg.phones[0].phone_number) {
+                  localStorage.setItem('company_phone_number', firstOrg.phones[0].phone_number);
+                }
+              }
+              if (firstOrg.addresses && firstOrg.addresses.length > 0 && firstOrg.addresses[0].line) {
+                localStorage.setItem('company_address_line', firstOrg.addresses[0].line);
               }
             }
             
@@ -201,6 +220,13 @@ export const useAuth = () => {
     localStorage.removeItem('representative_people_email');
     localStorage.removeItem('representative_people_calling_code');
     localStorage.removeItem('representative_people_phone_number');
+    
+    // Clear company data from localStorage
+    localStorage.removeItem('company_business_name');
+    localStorage.removeItem('company_business_type');
+    localStorage.removeItem('company_calling_code');
+    localStorage.removeItem('company_phone_number');
+    localStorage.removeItem('company_address_line');
     
     // Update Redux state
     dispatch(logoutAction());
