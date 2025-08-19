@@ -869,7 +869,7 @@ export default function PurchaseContractDetail() {
     try {
       console.log("📄 Iniciando generación de PDF...");
       
-      const response = await fetch('https://api.craftmypdf.com/v1/create', {
+      const response = await fetch(`${environment.CRAFTMYPDF_BASE_URL}/create`, {
         method: 'POST',
         headers: {
           'accept': '*/*',
