@@ -141,6 +141,7 @@ export default function PurchaseContractDetail() {
 
   // Print loading state
   const [printingSubContractId, setPrintingSubContractId] = useState<string | null>(null);
+  const [printingContractId, setPrintingContractId] = useState<string | null>(null);
 
   // Función para cargar la dirección del participante usando el interceptor addJwtPk
   const loadParticipantAddress = async (participantId: string) => {
@@ -790,7 +791,7 @@ export default function PurchaseContractDetail() {
   };
 
   // Función para manejar impresión del contrato padre
-  const handlePrintContract = () => {
+  const handlePrintContract = async () => {
     console.log("🖨️ Print contract:", currentContractData?.folio);
     
     if (!currentContractData) {
@@ -798,10 +799,26 @@ export default function PurchaseContractDetail() {
       return;
     }
 
-    // Mapear datos del contrato a formato JSON para imprimir
-    const printData = mapContractDataForPrint(currentContractData);
+    const contractId = currentContractData?.id || currentContractData?._id;
     
-    console.log("📄 Mapped contract data for printing:", JSON.stringify(printData, null, 2));
+    // Set loading state
+    setPrintingContractId(contractId);
+
+    try {
+      // Mapear datos del contrato a formato JSON para imprimir
+      const printData = mapContractDataForPrint(currentContractData);
+      
+      console.log("📄 Mapped contract data for printing:", JSON.stringify(printData, null, 2));
+      
+      // Generar y descargar PDF
+      const fileName = `${currentContractData.folio}.pdf`;
+      await generateAndDownloadPDF(printData, fileName);
+    } catch (error) {
+      console.error("❌ Error generating PDF:", error);
+    } finally {
+      // Clear loading state
+      setPrintingContractId(null);
+    }
   };
 
   // Función para manejar liquidación de contrato principal
@@ -1561,9 +1578,14 @@ export default function PurchaseContractDetail() {
                       <Button
                         size="sm"
                         onClick={handlePrintContract}
-                        className="h-8 w-8 p-0 bg-gray-500 hover:bg-gray-600 text-white"
+                        disabled={printingContractId === currentContractData?.id || currentContractData?._id}
+                        className="h-8 w-8 p-0 bg-gray-500 hover:bg-gray-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Printer className="w-4 h-4" />
+                        {printingContractId === (currentContractData?.id || currentContractData?._id) ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        ) : (
+                          <Printer className="w-4 h-4" />
+                        )}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
