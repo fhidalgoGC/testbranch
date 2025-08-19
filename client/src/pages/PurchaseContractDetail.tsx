@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useLocation } from "wouter";
 import {
@@ -150,30 +150,6 @@ export default function PurchaseContractDetail() {
   // Error modal states
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-
-  // Temporary refs for measuring card dimensions
-  const leftCardRef = useRef<HTMLDivElement>(null);
-  const rightCardRef = useRef<HTMLDivElement>(null);
-  const [leftCardSize, setLeftCardSize] = useState({ width: 0, height: 0 });
-  const [rightCardSize, setRightCardSize] = useState({ width: 0, height: 0 });
-
-  // Measure card dimensions
-  useEffect(() => {
-    const measureCards = () => {
-      if (leftCardRef.current) {
-        const rect = leftCardRef.current.getBoundingClientRect();
-        setLeftCardSize({ width: Math.round(rect.width), height: Math.round(rect.height) });
-      }
-      if (rightCardRef.current) {
-        const rect = rightCardRef.current.getBoundingClientRect();
-        setRightCardSize({ width: Math.round(rect.width), height: Math.round(rect.height) });
-      }
-    };
-
-    measureCards();
-    window.addEventListener('resize', measureCards);
-    return () => window.removeEventListener('resize', measureCards);
-  }, [currentContractData]);
 
   // Print loading state
   const [printingSubContractId, setPrintingSubContractId] = useState<string | null>(null);
@@ -1790,7 +1766,7 @@ export default function PurchaseContractDetail() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-2 gap-6 h-[320px]">
           {/* Left Column - Tabs within Card */}
-          <Card ref={leftCardRef} className="flex flex-col h-full">
+          <Card className="flex flex-col h-full">
             <CardHeader className="pb-2">
               <Tabs
                 value={activeTab}
@@ -2006,13 +1982,9 @@ export default function PurchaseContractDetail() {
               </Tabs>
             </CardHeader>
           </Card>
-          {/* Temporary size display for left card */}
-          <div className="text-xs text-gray-500 font-mono bg-yellow-100 p-2 rounded mt-2">
-            📐 Left Card Size: {leftCardSize.width}px × {leftCardSize.height}px
-          </div>
 
           {/* Right Column - Quantity Overview */}
-          <Card ref={rightCardRef} className="h-full">
+          <Card className="h-full">
             <CardHeader>
               <CardTitle className="text-xl font-semibold">
                 {t("contractDetail.quantityOverview")}
@@ -2170,10 +2142,6 @@ export default function PurchaseContractDetail() {
               })()}
             </CardContent>
           </Card>
-          {/* Temporary size display for right card */}
-          <div className="text-xs text-gray-500 font-mono bg-yellow-100 p-2 rounded mt-2">
-            📐 Right Card Size: {rightCardSize.width}px × {rightCardSize.height}px
-          </div>
         </div>
 
         {/* Sub-contracts Section - Solo para contratos con pricing_type "basis" */}
