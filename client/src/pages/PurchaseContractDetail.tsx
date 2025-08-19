@@ -1578,7 +1578,7 @@ export default function PurchaseContractDetail() {
                       <Button
                         size="sm"
                         onClick={handlePrintContract}
-                        disabled={printingContractId === currentContractData?.id || currentContractData?._id}
+                        disabled={printingContractId === (currentContractData?.id || currentContractData?._id)}
                         className="h-8 w-8 p-0 bg-gray-500 hover:bg-gray-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {printingContractId === (currentContractData?.id || currentContractData?._id) ? (
