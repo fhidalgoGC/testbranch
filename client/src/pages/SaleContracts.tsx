@@ -258,7 +258,7 @@ export default function SaleContracts() {
           commodity: contract.commodity,
           participants: contract.participants,
           characteristics: contract.characteristics,
-          type: contract.type as "purchase",
+          type: contract.type as "sale",
           sub_type: contract.sub_type as
             | "direct"
             | "imported"
