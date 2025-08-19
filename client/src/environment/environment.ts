@@ -4,6 +4,7 @@ export const environment = {
   UNIT_CONVERSIONS_ENDPOINT: '/unit-conversions/units',
   defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || 'USD',
   TEMPLATE_ID: import.meta.env.VITE_TEMPLATE_ID || '5e177b2393797a28',
+  CRAFTMYPDF_API_KEY: import.meta.env.VITE_CRAFTMYPDF_API_KEY || '3364MTI3MTk6MTI3NzI6TDMwNjZMaG9odGhNMFg1bA=',
   NUMBER_FORMAT_PATTERN: "0,000.00" as const,
   NUMBER_ROUND_MODE: "truncate" as const,
   NUMBER_MIN_DECIMALS: 2,

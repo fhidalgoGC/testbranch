@@ -885,7 +885,7 @@ export default function PurchaseContractDetail() {
           'sec-fetch-mode': 'cors',
           'sec-fetch-site': 'cross-site',
           'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
-          'x-api-key': '3364MTI3MTk6MTI3NzI6TDMwNjZMaG9odGhNMFg1bA='
+          'x-api-key': environment.CRAFTMYPDF_API_KEY
         },
         body: JSON.stringify(printData)
       });
