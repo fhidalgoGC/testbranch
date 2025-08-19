@@ -1439,7 +1439,7 @@ export default function PurchaseContractDetail() {
                         <Button
                           size="sm"
                           onClick={() => handleSettleContract()}
-                          className="h-8 w-8 p-0 bg-purple-500 hover:bg-purple-600 text-white"
+                          className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white"
                         >
                           <Check className="w-4 h-4" />
                         </Button>
