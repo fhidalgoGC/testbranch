@@ -399,6 +399,7 @@ export default function SaleContracts() {
         sort: params.sort,
         filters,
         commodities,
+        contractType: 'sale',
         authData: {
           partitionKey: partitionKey || "",
           idToken: idToken || "",
