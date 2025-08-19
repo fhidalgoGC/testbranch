@@ -684,14 +684,6 @@ export default function PurchaseContractDetail() {
 
       console.log("✅ Sub-contract settled successfully");
 
-      // Calculate elapsed time and ensure minimum duration of 0.3 seconds
-      const elapsedTime = Date.now() - startTime;
-      const minimumDuration = 300; // 0.3 seconds in milliseconds
-      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
-
-      // Wait for remaining time if API was faster than minimum duration
-      await new Promise((resolve) => setTimeout(resolve, remainingTime));
-
       // Close modal and refresh data
       setShowSettleSubContractModal(false);
       setSelectedSubContractForSettle(null);
@@ -701,6 +693,13 @@ export default function PurchaseContractDetail() {
     } catch (error) {
       console.error("❌ Error settling sub-contract:", error);
     } finally {
+      // Asegurar tiempo mínimo de loading (300ms) sin importar el resultado
+      const elapsed = Date.now() - startTime;
+      const minTime = 300;
+      if (elapsed < minTime) {
+        await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
+      }
+      
       setSettlingSubContract(false);
     }
   };
