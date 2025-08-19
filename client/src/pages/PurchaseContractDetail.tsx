@@ -721,7 +721,7 @@ export default function PurchaseContractDetail() {
         assesment: contractData?.assesment ?? false,
         contract_date: contractData?.contract_date,
         contractDate: formatDate(contractData?.contract_date),
-        contractNumber: "-",
+        contractNumber: contractData?.reference_number || "NA",
         fob: "-",
         contact: "-",
         instructions: "-",
