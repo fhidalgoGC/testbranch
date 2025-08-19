@@ -131,6 +131,18 @@
   "role": "Rol",
   "priceContract": "Contrato de Precio",
   "priceSchedule": "Cronograma de Precios",
+  "settleContract": {
+    "title": "Liquidar Contrato",
+    "description": "¿Está seguro que desea liquidar este contrato? Esta acción no se puede deshacer.",
+    "cancel": "Cancelar",
+    "confirm": "Liquidar",
+    "settling": "Liquidando...",
+    "error": {
+      "title": "Error de Liquidación",
+      "serverError": "No se pudo liquidar el contrato debido a problemas del servidor. Intente nuevamente más tarde.",
+      "close": "Cerrar"
+    }
+  },
   "addPriceSchedule": "Agregar Cronograma de Precio",
   "pricingType": "Tipo",
   "selectPricingType": "Seleccionar tipo de precio",

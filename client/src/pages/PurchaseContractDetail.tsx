@@ -41,6 +41,7 @@ import {
   Check,
   RefreshCw,
   Loader2,
+  X,
 } from "lucide-react";
 import { Link } from "wouter";
 import { PurchaseContract } from "@/types/purchaseContract.types";
@@ -145,6 +146,10 @@ export default function PurchaseContractDetail() {
     useState<boolean>(false);
   const [settlingContract, setSettlingContract] =
     useState<boolean>(false);
+
+  // Error modal states
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Print loading state
   const [printingSubContractId, setPrintingSubContractId] = useState<string | null>(null);
@@ -623,11 +628,33 @@ export default function PurchaseContractDetail() {
 
       if (response.ok) {
         console.log("✅ Contrato padre liquidado exitosamente");
+        
+        // Solo cerrar modal y refrescar si es exitoso
+        setShowSettleContractModal(false);
+        await handleFullRefresh();
       } else {
         console.error("❌ Error al liquidar contrato padre:", response.statusText);
+        
+        // Manejar error del API
+        let errorText = "";
+        try {
+          const errorData = await response.json();
+          errorText = errorData.messages?.value || t("settleContract.error.serverError");
+        } catch {
+          errorText = response.status === 500 ? t("settleContract.error.serverError") : t("settleContract.error.serverError");
+        }
+        
+        setErrorMessage(errorText);
+        setShowErrorModal(true);
+        setShowSettleContractModal(false);
       }
     } catch (error) {
       console.error("❌ Error al liquidar contrato padre:", error);
+      
+      // Error de conexión o código
+      setErrorMessage(t("settleContract.error.serverError"));
+      setShowErrorModal(true);
+      setShowSettleContractModal(false);
     } finally {
       // Asegurar tiempo mínimo de loading (300ms) sin importar el resultado
       const elapsed = Date.now() - startTime;
@@ -635,10 +662,6 @@ export default function PurchaseContractDetail() {
       if (elapsed < minTime) {
         await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
       }
-      
-      // Cerrar modal y refrescar SIEMPRE (exitoso o error)
-      setShowSettleContractModal(false);
-      await handleFullRefresh();
       
       setSettlingContract(false);
     }
@@ -681,8 +704,28 @@ export default function PurchaseContractDetail() {
       }
 
       console.log("✅ Sub-contract settled successfully");
-    } catch (error) {
+      
+      // Solo cerrar modal y refrescar si es exitoso
+      setShowSettleSubContractModal(false);
+      setSelectedSubContractForSettle(null);
+      await handleFullRefresh();
+    } catch (error: any) {
       console.error("❌ Error settling sub-contract:", error);
+      
+      // Manejar error del API
+      let errorText = "";
+      if (error.message && error.message.includes("Error ")) {
+        // Es un error HTTP, intentar extraer el mensaje del response
+        errorText = t("settleContract.error.serverError");
+      } else {
+        // Error de conexión o código
+        errorText = t("settleContract.error.serverError");
+      }
+      
+      setErrorMessage(errorText);
+      setShowErrorModal(true);
+      setShowSettleSubContractModal(false);
+      setSelectedSubContractForSettle(null);
     } finally {
       // Asegurar tiempo mínimo de loading (300ms) sin importar el resultado
       const elapsed = Date.now() - startTime;
@@ -690,11 +733,6 @@ export default function PurchaseContractDetail() {
       if (elapsed < minTime) {
         await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
       }
-      
-      // Cerrar modal y refrescar SIEMPRE (exitoso o error)
-      setShowSettleSubContractModal(false);
-      setSelectedSubContractForSettle(null);
-      await handleFullRefresh();
       
       setSettlingSubContract(false);
     }
@@ -2441,6 +2479,31 @@ export default function PurchaseContractDetail() {
                   {t("settleContract.confirm")}
                 </>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Modal */}
+      <Dialog open={showErrorModal} onOpenChange={setShowErrorModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2 text-red-600">
+              <X className="w-5 h-5" />
+              <span>{t("settleContract.error.title")}</span>
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
+              {errorMessage}
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowErrorModal(false)}
+              className="flex-1"
+            >
+              {t("settleContract.error.close")}
             </Button>
           </DialogFooter>
         </DialogContent>

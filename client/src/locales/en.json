@@ -131,6 +131,18 @@
   "role": "Role",
   "priceContract": "Price Contract",
   "priceSchedule": "Price Schedule",
+  "settleContract": {
+    "title": "Settle Contract",
+    "description": "Are you sure you want to settle this contract? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Settle",
+    "settling": "Settling...",
+    "error": {
+      "title": "Settlement Error",
+      "serverError": "Could not settle the contract due to server problems. Please try again later.",
+      "close": "Close"
+    }
+  },
   "addPriceSchedule": "Add Price Schedule",
   "pricingType": "Type",
   "selectPricingType": "Select pricing type",
