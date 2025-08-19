@@ -627,13 +627,6 @@ export default function PurchaseContractDetail() {
         // Cerrar modal
         setShowSettleContractModal(false);
         
-        // Mostrar loading mientras se actualiza
-        const elapsed = Date.now() - startTime;
-        const minTime = 800;
-        if (elapsed < minTime) {
-          await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
-        }
-        
         // Recargar datos del contrato
         await handleFullRefresh();
       } else {
@@ -642,6 +635,13 @@ export default function PurchaseContractDetail() {
     } catch (error) {
       console.error("❌ Error al liquidar contrato padre:", error);
     } finally {
+      // Asegurar tiempo mínimo de loading (300ms) sin importar el resultado
+      const elapsed = Date.now() - startTime;
+      const minTime = 300;
+      if (elapsed < minTime) {
+        await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
+      }
+      
       setSettlingContract(false);
     }
   };
