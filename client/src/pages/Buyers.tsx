@@ -113,6 +113,7 @@ export default function Buyers() {
           onSortChange={handleSortChange}
           onSearchChange={handleSearchChange}
           onAddNew={handleAddBuyer}
+          getItemId={(buyer) => buyer._id}
         />
       </div>
     </DashboardLayout>
