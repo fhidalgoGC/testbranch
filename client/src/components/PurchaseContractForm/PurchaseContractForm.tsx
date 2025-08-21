@@ -7,6 +7,7 @@ import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
 import { LogisticSection } from './sections/LogisticSection';
+import { AdjustmentsSection } from './sections/AdjustmentsSection';
 import { ShipmentSection } from './sections/ShipmentSection';
 import { RemarksSection } from './sections/RemarksSection';
 
@@ -80,10 +81,13 @@ export function PurchaseContractForm() {
               updateLogisticSchedule={updateLogisticSchedule}
             />
 
-            {/* Section 4: Shipment & Delivery */}
+            {/* Section 4: Contract Adjustments */}
+            <AdjustmentsSection />
+
+            {/* Section 5: Shipment & Delivery */}
             <ShipmentSection />
 
-            {/* Section 5: Remarks & Observation */}
+            {/* Section 6: Remarks & Observation */}
             <RemarksSection
               addRemark={addRemark}
               removeRemark={removeRemark}
