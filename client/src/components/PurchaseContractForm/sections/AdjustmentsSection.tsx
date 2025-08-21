@@ -63,10 +63,7 @@ export function AdjustmentsSection() {
       titleKey: 'adjustment',
       sortable: true,
       render: (item: Adjustment) => (
-        <div>
-          <div className="font-medium text-gray-900 dark:text-white">{item.name}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400">{item.description}</div>
-        </div>
+        <div className="font-medium text-gray-900 dark:text-white">{item.name}</div>
       )
     }
   ];
@@ -147,6 +144,8 @@ export function AdjustmentsSection() {
               getItemId={(item: Adjustment) => item.id}
               showCreateButton={false}
               showFilters={false}
+              totalElements={selectedAdjustments.length}
+              totalPages={Math.ceil(selectedAdjustments.length / 5)}
             />
           )}
         </div>
