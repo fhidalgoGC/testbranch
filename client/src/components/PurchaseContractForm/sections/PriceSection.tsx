@@ -43,22 +43,22 @@ export function PriceSection({
   const currentSchedule = priceSchedule[0] || {};
 
   // Watch para los cálculos automáticos basados en state
-  const watchedPrice = watch('price_schedule.0.price');
   const watchedBasis = watch('price_schedule.0.basis');
+  const watchedFuture = watch('price_schedule.0.future_price');
   const watchedPricingType = watch('price_schedule.0.pricing_type');
 
-  // Cálculos automáticos: future = price - basis
+  // Cálculos automáticos: price = basis + future
   React.useEffect(() => {
-    if (watchedPricingType === 'fixed' && watchedPrice !== undefined && watchedBasis !== undefined) {
-      const calculatedFuture = watchedPrice - watchedBasis;
+    if (watchedPricingType === 'fixed' && watchedBasis !== undefined && watchedFuture !== undefined) {
+      const calculatedPrice = watchedBasis + watchedFuture;
       
       // Solo actualizar si el valor calculado es diferente al actual
-      const currentFuture = watch('price_schedule.0.future_price');
-      if (currentFuture !== calculatedFuture) {
-        setValue('price_schedule.0.future_price', calculatedFuture, { shouldValidate: false });
+      const currentPrice = watch('price_schedule.0.price');
+      if (currentPrice !== calculatedPrice) {
+        setValue('price_schedule.0.price', calculatedPrice, { shouldValidate: false });
       }
     }
-  }, [watchedPrice, watchedBasis, watchedPricingType, setValue, watch]);
+  }, [watchedBasis, watchedFuture, watchedPricingType, setValue, watch]);
 
 
 
