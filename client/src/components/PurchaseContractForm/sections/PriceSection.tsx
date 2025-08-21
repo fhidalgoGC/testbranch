@@ -665,7 +665,7 @@ export function PriceSection({
                 onValueChange={(value) => {
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
-                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'usd' | 'mxn' };
+                  updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value as 'USD' | 'MXN' };
                   setValue('price_schedule', updatedSchedule);
                   clearErrors('price_schedule.0.payment_currency');
                 }}
