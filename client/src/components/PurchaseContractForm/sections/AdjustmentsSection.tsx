@@ -30,6 +30,8 @@ export function AdjustmentsSection() {
   const { t } = useTranslation();
   const [selectedAdjustments, setSelectedAdjustments] = useState<Adjustment[]>([]);
   const [selectedValue, setSelectedValue] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
 
   // Calcular ajustes disponibles (que no están ya seleccionados)
   const availableAdjustments = useMemo(() => {
@@ -37,6 +39,16 @@ export function AdjustmentsSection() {
       !selectedAdjustments.some(selected => selected.id === adj.id)
     );
   }, [selectedAdjustments]);
+
+  // Calcular datos paginados
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return selectedAdjustments.slice(startIndex, endIndex);
+  }, [selectedAdjustments, currentPage, pageSize]);
+
+  // Calcular total de páginas
+  const totalPages = Math.ceil(selectedAdjustments.length / pageSize);
 
   // Manejar selección del dropdown
   const handleAddAdjustment = (adjustmentId: string) => {
@@ -51,9 +63,23 @@ export function AdjustmentsSection() {
 
   // Manejar eliminación de la tabla
   const handleRemoveAdjustment = (adjustment: Adjustment) => {
-    setSelectedAdjustments(prev => 
-      prev.filter(adj => adj.id !== adjustment.id)
-    );
+    setSelectedAdjustments(prev => {
+      const newData = prev.filter(adj => adj.id !== adjustment.id);
+      
+      // Si eliminamos el último elemento de la página actual y no es la primera página
+      // regresar a la página anterior
+      const newTotalPages = Math.ceil(newData.length / pageSize);
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(newTotalPages);
+      }
+      
+      return newData;
+    });
+  };
+
+  // Manejar cambio de página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   // Configuración de columnas para GenericTable (StandardTable)
@@ -136,7 +162,7 @@ export function AdjustmentsSection() {
             </div>
           ) : (
             <GenericTable
-              data={selectedAdjustments}
+              data={paginatedData}
               columns={columns}
               showActionColumn={true}
               actionMenuItems={actionMenuItems}
@@ -145,7 +171,8 @@ export function AdjustmentsSection() {
               showCreateButton={false}
               showFilters={false}
               totalElements={selectedAdjustments.length}
-              totalPages={Math.ceil(selectedAdjustments.length / 5)}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
             />
           )}
         </div>
