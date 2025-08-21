@@ -47,19 +47,7 @@ export function PriceSection({
   const watchedFuture = watch('price_schedule.0.future_price');
   const watchedPricingType = watch('price_schedule.0.pricing_type');
 
-  // Validación: Cuando basis es negativo, future <= |basis|
-  React.useEffect(() => {
-    if (watchedPricingType === 'fixed' && watchedBasis !== undefined && watchedFuture !== undefined) {
-      // Validar regla: si basis es negativo, future debe ser <= |basis|
-      if (watchedBasis < 0 && watchedFuture > Math.abs(watchedBasis)) {
-        // Ajustar future para que cumpla la regla
-        setValue('price_schedule.0.future_price', Math.abs(watchedBasis), { shouldValidate: false });
-        return;
-      }
-    }
-  }, [watchedBasis, watchedFuture, watchedPricingType, setValue]);
-
-  // Cálculos automáticos: price = basis + future
+  // Cálculos automáticos: price = basis + future (donde basis incluye el signo del botón +/-)
   React.useEffect(() => {
     if (watchedPricingType === 'fixed' && watchedBasis !== undefined && watchedFuture !== undefined) {
       const calculatedPrice = watchedBasis + watchedFuture;
