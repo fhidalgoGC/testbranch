@@ -56,11 +56,11 @@ export function AdjustmentsSection() {
     );
   };
 
-  // Configuración de columnas para GenericTable
+  // Configuración de columnas para GenericTable (StandardTable)
   const columns = [
     {
       key: 'name',
-      titleKey: 'Ajuste',
+      titleKey: 'adjustment',
       sortable: true,
       render: (item: Adjustment) => (
         <div>
@@ -71,7 +71,7 @@ export function AdjustmentsSection() {
     }
   ];
 
-  // Configuración de acciones para StandardTable
+  // Configuración de acciones para GenericTable (StandardTable)
   const actionMenuItems = [
     {
       key: 'delete',
