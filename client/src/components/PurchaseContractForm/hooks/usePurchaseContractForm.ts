@@ -33,8 +33,8 @@ export function usePurchaseContractForm() {
       measurement_unit_id: '',
       measurement_unit: '',
       contract_date: new Date().toISOString().split('T')[0],
-      min_thresholds_percentage: 10,
-      max_thresholds_percentage: 10,
+      min_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MIN,
+      max_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MAX,
       seller: '',
       participants: [],
       price_schedule: [{
