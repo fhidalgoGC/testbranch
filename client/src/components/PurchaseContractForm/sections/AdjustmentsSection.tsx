@@ -109,14 +109,14 @@ export function AdjustmentsSection() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
           <Settings className="w-5 h-5" />
-          Ajustes de Contrato
+          {t('contractAdjustments')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Select para agregar ajustes */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-gray-900 dark:text-white">
-            Agregar Ajuste
+            {t('addAdjustment')}
           </Label>
           <Select
             value={selectedValue}
@@ -126,12 +126,12 @@ export function AdjustmentsSection() {
             }}
           >
             <SelectTrigger className="h-10 border-gray-300 focus:border-green-500">
-              <SelectValue placeholder="Seleccionar ajuste para agregar..." />
+              <SelectValue placeholder={t('selectAdjustmentPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
               {availableAdjustments.length === 0 ? (
                 <SelectItem value="no-options" disabled>
-                  No hay ajustes disponibles
+                  {t('noAdjustmentsAvailable', 'No hay ajustes disponibles')}
                 </SelectItem>
               ) : (
                 availableAdjustments.map((adjustment) => (
@@ -147,17 +147,17 @@ export function AdjustmentsSection() {
         {/* Tabla de ajustes seleccionados */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-gray-900 dark:text-white">
-            Ajustes Aplicados ({selectedAdjustments.length})
+            {t('appliedAdjustments')} ({selectedAdjustments.length})
           </Label>
           
           {selectedAdjustments.length === 0 ? (
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-8 text-center">
               <Settings className="w-12 h-12 mx-auto mb-3 text-gray-400" />
               <p className="text-gray-500 dark:text-gray-400">
-                No hay ajustes aplicados al contrato
+                {t('noAdjustmentsApplied', 'No hay ajustes aplicados al contrato')}
               </p>
               <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                Selecciona un ajuste del dropdown para agregarlo
+                {t('selectAdjustmentPlaceholder')}
               </p>
             </div>
           ) : (
