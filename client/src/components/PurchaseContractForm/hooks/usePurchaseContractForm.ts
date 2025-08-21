@@ -36,6 +36,8 @@ export function usePurchaseContractForm() {
       min_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MIN,
       max_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MAX,
       seller: '',
+      contact_vendor: '',
+      trader: '',
       participants: [],
       price_schedule: [{
         pricing_type: 'fixed',

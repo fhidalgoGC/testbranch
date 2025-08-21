@@ -151,6 +151,8 @@ export interface PurchaseContractFormData {
   
   // Seller
   seller: string;
+  contact_vendor: string;
+  trader: string;
   
   // Remarks Section
   remarks: string[];

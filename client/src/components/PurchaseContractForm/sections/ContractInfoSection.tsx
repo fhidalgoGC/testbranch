@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DatePicker } from '@/components/ui/datepicker';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
+import { ContactVendorSelectionModal } from '../modals/ContactVendorSelectionModal';
+import { TraderSelectionModal } from '../modals/TraderSelectionModal';
 import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
 import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { formatNumber } from '@/lib/numberFormatter';
@@ -325,7 +327,54 @@ export function ContractInfoSection() {
             </div>
           </div>
 
-          {/* Row 4: Reference Other Contract */}
+          {/* Row 4: Contact Vendor and Trader */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Contact Vendor <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <ContactVendorSelectionModal
+                selectedContactVendor={watch('contact_vendor')}
+                onSelect={(vendor) => {
+                  setValue('contact_vendor', vendor.id);
+                  clearErrors('contact_vendor');
+                  console.log('Contact Vendor selected:', vendor);
+                }}
+                error={!!errors.contact_vendor}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-900 dark:text-white">
+                Trader <span className="text-red-500">{t('requiredField')}</span>
+              </Label>
+              <TraderSelectionModal
+                selectedTrader={watch('trader')}
+                onSelect={(trader) => {
+                  setValue('trader', trader.id);
+                  clearErrors('trader');
+                  console.log('Trader selected:', trader);
+                }}
+                error={!!errors.trader}
+              />
+            </div>
+          </div>
+          
+          {/* Row 4 Errors */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
+            <div>
+              {errors.contact_vendor && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.contact_vendor.message}</p>
+              )}
+            </div>
+            <div>
+              {errors.trader && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.trader.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Row 5: Reference Other Contract */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="reference_number" className="text-sm font-medium text-gray-900 dark:text-white">
@@ -343,7 +392,7 @@ export function ContractInfoSection() {
             <div></div>
           </div>
           
-          {/* Row 4 Errors */}
+          {/* Row 5 Errors */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
             <div>
               {errors.reference_number && (

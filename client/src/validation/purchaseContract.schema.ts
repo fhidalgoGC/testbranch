@@ -23,6 +23,8 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
     min_thresholds_percentage: z.number({ required_error: t('fieldRequired') }).min(0, t('positiveNumber')).max(100, t('positiveNumber')),
     max_thresholds_percentage: z.number({ required_error: t('fieldRequired') }).min(0, t('positiveNumber')).max(100, t('positiveNumber')),
     seller: z.string().min(1, t('selectOption')),
+    contact_vendor: z.string().min(1, t('selectOption')),
+    trader: z.string().min(1, t('selectOption')),
 
     // Participants validation - minimum 2, must include 1 buyer and 1 seller
     participants: z
