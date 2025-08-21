@@ -9,7 +9,9 @@ export const environment = {
   NUMBER_FORMAT_PATTERN: "0,000.00" as const,
   NUMBER_ROUND_MODE: "truncate" as const,
   NUMBER_MIN_DECIMALS: 2,
-  NUMBER_MAX_DECIMALS: 4
+  NUMBER_MAX_DECIMALS: 4,
+  PRICE_THRESHOLD_MIN: Number(import.meta.env.VITE_PRICE_THRESHOLD_MIN) || 0,
+  PRICE_THRESHOLD_MAX: Number(import.meta.env.VITE_PRICE_THRESHOLD_MAX) || 0
 };
 
 export const APP_CONFIG = environment;
