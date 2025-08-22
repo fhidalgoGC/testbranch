@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, DollarSign, X } from 'lucide-react';
-import type { PurchaseContractFormData, PriceSchedule } from '@/types/purchaseContract.types';
+import type { PurchaseSaleContractFormData, PriceSchedule } from '@/types/purchaseSaleContract.types';
 import { APP_CONFIG, CURRENCY_OPTIONS, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { formatNumber } from '@/lib/numberFormatter';
 
@@ -37,7 +37,7 @@ export function PriceSection({
   updatePriceSchedule 
 }: PriceSectionProps) {
   const { t } = useTranslation();
-  const { formState: { errors }, watch, setValue, control, clearErrors } = useFormContext<PurchaseContractFormData>();
+  const { formState: { errors }, watch, setValue, control, clearErrors } = useFormContext<PurchaseSaleContractFormData>();
   
   const priceSchedule = watch('price_schedule') || [];
   const currentSchedule = priceSchedule[0] || {};

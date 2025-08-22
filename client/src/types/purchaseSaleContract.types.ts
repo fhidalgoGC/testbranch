@@ -1,4 +1,4 @@
-// Purchase Contract Types based on JSON structure
+// Purchase and Sale Contract Types based on JSON structure
 
 export interface Commodity {
   commodity_id: string;
@@ -68,14 +68,14 @@ export interface Thresholds {
   max_thresholds_weight: number;
 }
 
-export interface PurchaseContract {
+export interface PurchaseSaleContract {
   _id?: string;
   _partitionKey?: string;
   active?: boolean;
   created_by?: string;
   created_at?: string;
   folio?: string;
-  type: 'purchase';
+  type: 'purchase' | 'sale';
   sub_type: 'direct' | 'imported' | 'importedFreight';
   commodity: Commodity;
   characteristics: Characteristics;
@@ -110,10 +110,10 @@ export interface PurchaseContract {
 }
 
 // Form data interface for react-hook-form
-export interface PurchaseContractFormData {
+export interface PurchaseSaleContractFormData {
   // Contract Info Section
   folio: string;
-  type: 'purchase';
+  type: 'purchase' | 'sale';
   sub_type: 'direct' | 'imported' | 'importedFreight';
   commodity_id: string;
   commodity_name: string;
@@ -157,3 +157,7 @@ export interface PurchaseContractFormData {
   // Remarks Section
   remarks: string[];
 }
+
+// Backward compatibility aliases
+export type PurchaseContract = PurchaseSaleContract;
+export type PurchaseContractFormData = PurchaseSaleContractFormData;

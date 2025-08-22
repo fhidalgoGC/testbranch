@@ -1,4 +1,4 @@
-import { PurchaseContract } from '@/types/purchaseContract.types';
+import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 
 // Interface para la respuesta de contratos basada en la respuesta real de la API
 interface ContractResponse {
@@ -119,7 +119,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     if (!partitionKey || !idToken) {
       console.error('Missing authentication data');
       return {
-        data: [] as PurchaseContract[],
+        data: [] as PurchaseSaleContract[],
         total: 0,
         totalPages: 0
       };
@@ -246,7 +246,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     }
 
     // Mapear los datos de la API real a nuestro formato
-    const mappedContracts: PurchaseContract[] = data.data.map(contract => ({
+    const mappedContracts: PurchaseSaleContract[] = data.data.map(contract => ({
       _id: contract._id,
       folio: contract.folio,
       reference_number: contract.reference_number || 'N/A',
@@ -307,7 +307,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
   } catch (error) {
     console.error('Error fetching contracts:', error);
     return {
-      data: [] as PurchaseContract[],
+      data: [] as PurchaseSaleContract[],
       total: 0,
       totalPages: 0
     };

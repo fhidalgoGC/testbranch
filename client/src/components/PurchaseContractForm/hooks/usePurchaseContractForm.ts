@@ -3,14 +3,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
-import type { PurchaseContractFormData, PurchaseContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseContract.types';
+import type { PurchaseSaleContractFormData, PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
 import { APP_CONFIG } from '@/environment/environment';
 
 interface UsePurchaseContractFormOptions {
-  initialData?: Partial<PurchaseContract>;
+  initialData?: Partial<PurchaseSaleContract>;
   contractType?: 'purchase' | 'sale';
   mode?: 'create' | 'edit' | 'view';
-  onFormChange?: (data: Partial<PurchaseContract>) => void;
+  onFormChange?: (data: Partial<PurchaseSaleContract>) => void;
   onSuccess?: () => void;
 }
 
@@ -103,7 +103,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     return mergeData(baseDefaults, initialData);
   }, [initialData]);
   
-  const form = useForm<PurchaseContractFormData>({
+  const form = useForm<PurchaseSaleContractFormData>({
     resolver,
     mode: 'onSubmit', // Initial validation only on submit
     reValidateMode: 'onChange', // Re-validate on change after first submit
@@ -117,7 +117,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     const subscription = form.watch((value) => {
       // Debounce para evitar demasiadas actualizaciones
       const timeoutId = setTimeout(() => {
-        onFormChange(value as Partial<PurchaseContract>);
+        onFormChange(value as Partial<PurchaseSaleContract>);
       }, 500); // 500ms de debounce
 
       return () => clearTimeout(timeoutId);
@@ -314,7 +314,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   };
 
   // Generate final JSON
-  const generateContractJSON = (formData: PurchaseContractFormData): PurchaseContract => {
+  const generateContractJSON = (formData: PurchaseSaleContractFormData): PurchaseSaleContract => {
     const partitionKey = localStorage.getItem('partition_key') || '';
     const userId = localStorage.getItem('user_id') || '';
     
@@ -436,7 +436,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     // Calculate inventory values (simplified calculation)
     const totalValue = quantity > 0 && price > 0 ? quantity * price : 0;
 
-    const contractJSON: PurchaseContract = {
+    const contractJSON: PurchaseSaleContract = {
       _partitionKey: partitionKey,
       active: true,
       created_by: userId,
@@ -492,7 +492,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     return cleanedJSON;
   };
 
-  const onSubmit = async (data: PurchaseContractFormData) => {
+  const onSubmit = async (data: PurchaseSaleContractFormData) => {
     try {
       setIsSubmitting(true);
       console.log('Form validation passed');
@@ -501,7 +501,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       console.log('✨ Generated Contract JSON (After Cleaning):', JSON.stringify(contractJSON, null, 2));
       
       // Here you would typically send the JSON to your API
-      // await createPurchaseContract(contractJSON);
+      // await createPurchaseSaleContract(contractJSON);
       
       alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
       

@@ -14,7 +14,7 @@ import {
   FilterOption,
   DataFetchFunction,
 } from "@/components/general/StandardTable";
-import { PurchaseContract } from "@/types/purchaseContract.types";
+import { PurchaseSaleContract } from "@/types/purchaseSaleContract.types";
 import { formatNumber } from "@/lib/numberFormatter";
 import { fetchContractsData } from "@/services/contractsService";
 import {
@@ -57,7 +57,7 @@ export default function SaleContracts() {
   // Estado principal organizado como JSON
   const [pageStateData, setPageStateData] = useState<{
     selectedFilters: Record<string, any>;
-    contracts: PurchaseContract[];
+    contracts: PurchaseSaleContract[];
   }>(() => {
     // Inicializar filtros con valores por defecto o desde el estado persistido
     const defaultFilters = { pricingType: ["all"], commodity: ["all"] };
@@ -88,7 +88,7 @@ export default function SaleContracts() {
 
   // Estado para guardar los datos de la tabla que vienen del API (mantenido para compatibilidad)
   const [tableData, setTableData] = useState<{
-    contracts: PurchaseContract[];
+    contracts: PurchaseSaleContract[];
     totalElements: number;
     currentPage: number;
     filters: any;
@@ -256,7 +256,7 @@ export default function SaleContracts() {
       console.log("Contracts response:", data);
 
       // Mapear los datos de la API real a nuestro formato
-      const mappedContracts: PurchaseContract[] = data.data.map(
+      const mappedContracts: PurchaseSaleContract[] = data.data.map(
         (contract: any) => ({
           id: contract._id || contract.id,
           folio: contract.folio,
@@ -375,7 +375,7 @@ export default function SaleContracts() {
   }, [selectedFilters, commodities.length]); // Trigger when filters or commodities change
 
   // Función de fetch de datos usando el servicio externo
-  const handleFetchContractsData: DataFetchFunction<PurchaseContract> = async (
+  const handleFetchContractsData: DataFetchFunction<PurchaseSaleContract> = async (
     params,
   ) => {
     // Iniciar loading y tiempo de control
@@ -469,7 +469,7 @@ export default function SaleContracts() {
 
       // Retornar datos vacíos en caso de error
       return {
-        data: [] as PurchaseContract[],
+        data: [] as PurchaseSaleContract[],
         total: 0,
         totalPages: 0,
       };
@@ -552,7 +552,7 @@ export default function SaleContracts() {
   };
 
   // Definir las columnas de la tabla
-  const columns: TableColumn<PurchaseContract>[] = [
+  const columns: TableColumn<PurchaseSaleContract>[] = [
     {
       key: "pricingIndicator",
       titleKey: "", // Sin título para esta columna
@@ -886,7 +886,7 @@ export default function SaleContracts() {
           totalElements={tableData.totalElements}
           totalPages={Math.ceil(tableData.totalElements / tableParams.limit)} // Calculate total pages
           loading={contractsLoading}
-          getItemId={(item: PurchaseContract) => item._id} // Use _id field for unique identification
+          getItemId={(item: PurchaseSaleContract) => item._id} // Use _id field for unique identification
           showFilters={false} // Filters are handled by parent component
           sortFieldMapping={{
             // UI field -> API field mapping
@@ -945,7 +945,7 @@ export default function SaleContracts() {
             {
               key: "view",
               labelKey: "view",
-              action: (contract: PurchaseContract) => {
+              action: (contract: PurchaseSaleContract) => {
                 console.log("Ver contrato:", contract._id);
                 handleNavigateToPage("contractDetail", contract._id);
                 setLocation(`/purchase-contracts/${contract._id}`);
@@ -954,7 +954,7 @@ export default function SaleContracts() {
             {
               key: "edit",
               labelKey: "edit",
-              action: (contract: PurchaseContract) => {
+              action: (contract: PurchaseSaleContract) => {
                 console.log("Editar contrato:", contract._id);
                 // Implementar navegación a editar
               },
@@ -962,7 +962,7 @@ export default function SaleContracts() {
             {
               key: "duplicate",
               labelKey: "duplicate",
-              action: (contract: PurchaseContract) => {
+              action: (contract: PurchaseSaleContract) => {
                 console.log("Duplicar contrato:", contract._id);
                 // Implementar duplicación
               },
@@ -970,7 +970,7 @@ export default function SaleContracts() {
             {
               key: "delete",
               labelKey: "delete",
-              action: (contract: PurchaseContract) => {
+              action: (contract: PurchaseSaleContract) => {
                 console.log("Eliminar contrato:", contract._id);
                 // Implementar eliminación
               },
