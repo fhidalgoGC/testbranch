@@ -12,7 +12,7 @@ export const environment = {
     "3364MTI3MTk6MTI3NzI6TDMwNjZMaG9odGhNMFg1bA=",
   NUMBER_FORMAT_PATTERN: "0,000.00" as const,
   NUMBER_ROUND_MODE: "truncate" as const,
-  NUMBER_LOCATE: Number(import.meta.env.VITE_NUMBER_LOCATE) || 'en-US',
+  NUMBER_LOCATE: import.meta.env.VITE_NUMBER_LOCATE || 'en-US',
   NUMBER_MIN_DECIMALS: Number(import.meta.env.VITE_NUMBER_MIN_DECIMALS) || 2,
   NUMBER_MAX_DECIMALS: Number(import.meta.env.VITE_NUMBER_MAX_DECIMALS) || 4,
   PRICE_THRESHOLD_MIN: Number(import.meta.env.VITE_PRICE_THRESHOLD_MIN) || 0,
