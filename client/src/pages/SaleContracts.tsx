@@ -796,7 +796,7 @@ export default function SaleContracts() {
             >
               Debug Page State
             </Button>
-            <Link href="/purchase-contracts/create" className="inline-block">
+            <Link href="/sale-contracts/create" className="inline-block">
               <Button
                 className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
                 size="lg"
