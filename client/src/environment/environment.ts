@@ -11,7 +11,8 @@ export const environment = {
   NUMBER_MIN_DECIMALS: 2,
   NUMBER_MAX_DECIMALS: 4,
   PRICE_THRESHOLD_MIN: Number(import.meta.env.VITE_PRICE_THRESHOLD_MIN) || 0,
-  PRICE_THRESHOLD_MAX: Number(import.meta.env.VITE_PRICE_THRESHOLD_MAX) || 0
+  PRICE_THRESHOLD_MAX: Number(import.meta.env.VITE_PRICE_THRESHOLD_MAX) || 0,
+  SHOW_THRESHOLDS: import.meta.env.VITE_SHOW_THRESHOLDS === 'true' || false
 };
 
 export const APP_CONFIG = environment;

@@ -15,6 +15,7 @@ import { formatNumber } from '@/lib/numberFormatter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { useCommodities } from '@/hooks/useCommodities';
 import { useCharacteristicsConfigurations } from '@/hooks/useCharacteristicsConfigurations';
+import { APP_CONFIG } from '@/environment/environment';
 
 // Fake sellers data for display
 const FAKE_SELLERS = [
@@ -549,6 +550,7 @@ export function ContractInfoSection() {
             </div>
 
             {/* Second row: Min and Max Thresholds */}
+            {APP_CONFIG.SHOW_THRESHOLDS && (
             <div className="space-y-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Min Threshold */}
@@ -782,6 +784,7 @@ export function ContractInfoSection() {
                 </div>
               </div>
             </div>
+            )}
           </div>
         </div>
       </CardContent>
