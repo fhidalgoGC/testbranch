@@ -6,37 +6,40 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GenericTable } from '@/components/general/StandardTable';
 import { Settings, Trash2 } from 'lucide-react';
-import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
+import type { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 
 // Datos fake de ajustes disponibles
 const FAKE_ADJUSTMENTS = [
-  { id: '1', name: 'Ajuste por Calidad', description: 'Ajuste basado en calidad del grano' },
-  { id: '2', name: 'Ajuste por Humedad', description: 'Ajuste por niveles de humedad' },
-  { id: '3', name: 'Ajuste por Impurezas', description: 'Ajuste por nivel de impurezas' },
-  { id: '4', name: 'Ajuste por Proteína', description: 'Ajuste por contenido proteico' },
-  { id: '5', name: 'Ajuste por Peso Específico', description: 'Ajuste por peso específico del grano' },
-  { id: '6', name: 'Ajuste Temporal', description: 'Ajuste por fecha de entrega' },
-  { id: '7', name: 'Ajuste por Volumen', description: 'Ajuste por cantidad total' },
-  { id: '8', name: 'Ajuste por Transporte', description: 'Ajuste por costos de transporte' }
+  { _id: '1', name: 'Ajuste por Calidad', description: 'Ajuste basado en calidad del grano' },
+  { _id: '2', name: 'Ajuste por Humedad', description: 'Ajuste por niveles de humedad' },
+  { _id: '3', name: 'Ajuste por Impurezas', description: 'Ajuste por nivel de impurezas' },
+  { _id: '4', name: 'Ajuste por Proteína', description: 'Ajuste por contenido proteico' },
+  { _id: '5', name: 'Ajuste por Peso Específico', description: 'Ajuste por peso específico del grano' },
+  { _id: '6', name: 'Ajuste Temporal', description: 'Ajuste por fecha de entrega' },
+  { _id: '7', name: 'Ajuste por Volumen', description: 'Ajuste por cantidad total' },
+  { _id: '8', name: 'Ajuste por Transporte', description: 'Ajuste por costos de transporte' }
 ];
 
 interface Adjustment {
-  id: string;
+  _id: string;
   name: string;
   description: string;
 }
 
 export function AdjustmentsSection() {
   const { t } = useTranslation();
-  const [selectedAdjustments, setSelectedAdjustments] = useState<Adjustment[]>([]);
+  const { watch, setValue } = useFormContext<PurchaseSaleContract>();
   const [selectedValue, setSelectedValue] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 3;
 
+  // Obtener ajustes del formulario
+  const selectedAdjustments = watch('adjustments') || [];
+
   // Calcular ajustes disponibles (que no están ya seleccionados)
   const availableAdjustments = useMemo(() => {
     return FAKE_ADJUSTMENTS.filter(adj => 
-      !selectedAdjustments.some(selected => selected.id === adj.id)
+      !selectedAdjustments.some(selected => selected._id === adj._id)
     );
   }, [selectedAdjustments]);
 
@@ -54,27 +57,34 @@ export function AdjustmentsSection() {
   const handleAddAdjustment = (adjustmentId: string) => {
     if (!adjustmentId) return;
     
-    const adjustment = FAKE_ADJUSTMENTS.find(adj => adj.id === adjustmentId);
+    const adjustment = FAKE_ADJUSTMENTS.find(adj => adj._id === adjustmentId);
     if (adjustment) {
-      setSelectedAdjustments(prev => [...prev, adjustment]);
+      // Agregar solo _id y name como requiere el tipo
+      const newAdjustment = {
+        _id: adjustment._id,
+        name: adjustment.name
+      };
+      
+      // Verificar que no existe (prevenir duplicados)
+      if (!selectedAdjustments.some(selected => selected._id === adjustment._id)) {
+        setValue('adjustments', [...selectedAdjustments, newAdjustment]);
+      }
       setSelectedValue(''); // Limpiar selección
     }
   };
 
   // Manejar eliminación de la tabla
-  const handleRemoveAdjustment = (adjustment: Adjustment) => {
-    setSelectedAdjustments(prev => {
-      const newData = prev.filter(adj => adj.id !== adjustment.id);
-      
-      // Si eliminamos el último elemento de la página actual y no es la primera página
-      // regresar a la página anterior
-      const newTotalPages = Math.ceil(newData.length / pageSize);
-      if (currentPage > newTotalPages && newTotalPages > 0) {
-        setCurrentPage(newTotalPages);
-      }
-      
-      return newData;
-    });
+  const handleRemoveAdjustment = (adjustment: { _id: string; name: string }) => {
+    const newData = selectedAdjustments.filter(adj => adj._id !== adjustment._id);
+    
+    // Si eliminamos el último elemento de la página actual y no es la primera página
+    // regresar a la página anterior
+    const newTotalPages = Math.ceil(newData.length / pageSize);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
+    }
+    
+    setValue('adjustments', newData);
   };
 
   // Manejar cambio de página
@@ -88,7 +98,7 @@ export function AdjustmentsSection() {
       key: 'name',
       titleKey: 'adjustment',
       sortable: true,
-      render: (item: Adjustment) => (
+      render: (item: { _id: string; name: string }) => (
         <div className="font-medium text-gray-900 dark:text-white">{item.name}</div>
       )
     }
@@ -99,7 +109,7 @@ export function AdjustmentsSection() {
     {
       key: 'delete',
       labelKey: 'delete',
-      action: (item: Adjustment) => handleRemoveAdjustment(item),
+      action: (item: { _id: string; name: string }) => handleRemoveAdjustment(item),
       className: 'text-red-600 dark:text-red-400'
     }
   ];
@@ -135,7 +145,7 @@ export function AdjustmentsSection() {
                 </SelectItem>
               ) : (
                 availableAdjustments.map((adjustment) => (
-                  <SelectItem key={adjustment.id} value={adjustment.id}>
+                  <SelectItem key={adjustment._id} value={adjustment._id}>
                     {adjustment.name}
                   </SelectItem>
                 ))
@@ -168,7 +178,7 @@ export function AdjustmentsSection() {
               actionMenuItems={actionMenuItems}
               actionColumnTitleKey="actions"
               showActionIcons={true}
-              getItemId={(item: Adjustment) => item.id}
+              getItemId={(item: { _id: string; name: string }) => item._id}
               showCreateButton={false}
               showFilters={false}
               totalElements={selectedAdjustments.length}
