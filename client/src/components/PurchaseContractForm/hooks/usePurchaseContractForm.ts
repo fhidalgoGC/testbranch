@@ -6,7 +6,16 @@ import { createPurchaseContractSchema } from '@/validation/purchaseContract.sche
 import type { PurchaseContractFormData, PurchaseContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseContract.types';
 import { APP_CONFIG } from '@/environment/environment';
 
-export function usePurchaseContractForm() {
+interface UsePurchaseContractFormOptions {
+  initialData?: Partial<PurchaseContract>;
+  contractType?: 'purchase' | 'sale';
+  mode?: 'create' | 'edit' | 'view';
+  onFormChange?: (data: Partial<PurchaseContract>) => void;
+  onSuccess?: () => void;
+}
+
+export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
+  const { initialData = {}, contractType = 'purchase', mode = 'create', onFormChange, onSuccess } = options;
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -15,11 +24,9 @@ export function usePurchaseContractForm() {
     return zodResolver(createPurchaseContractSchema(t));
   }, [t]);
 
-  const form = useForm<PurchaseContractFormData>({
-    resolver,
-    mode: 'onSubmit', // Initial validation only on submit
-    reValidateMode: 'onChange', // Re-validate on change after first submit
-    defaultValues: {
+  // Merge default values with initial data
+  const defaultValues = useMemo(() => {
+    const baseDefaults = {
       folio: '',
       type: 'purchase',
       sub_type: '' as any,
@@ -72,8 +79,46 @@ export function usePurchaseContractForm() {
       inspections: '',
       proteins: '',
       remarks: [],
-    },
+    };
+    
+    // Deep merge initial data with defaults, giving priority to initialData
+    const mergeData = (defaults: any, data: any): any => {
+      const result = { ...defaults };
+      
+      Object.keys(data).forEach(key => {
+        if (data[key] !== null && data[key] !== undefined) {
+          if (Array.isArray(data[key])) {
+            result[key] = data[key];
+          } else if (typeof data[key] === 'object' && !Array.isArray(data[key])) {
+            result[key] = mergeData(result[key] || {}, data[key]);
+          } else {
+            result[key] = data[key];
+          }
+        }
+      });
+      
+      return result;
+    };
+    
+    return mergeData(baseDefaults, initialData);
+  }, [initialData]);
+  
+  const form = useForm<PurchaseContractFormData>({
+    resolver,
+    mode: 'onSubmit', // Initial validation only on submit
+    reValidateMode: 'onChange', // Re-validate on change after first submit
+    defaultValues,
   });
+
+  // Watch form values for auto-save functionality
+  const formValues = form.watch();
+  
+  useEffect(() => {
+    // Llamar onFormChange cuando los valores cambien (solo para modo create)
+    if (onFormChange && mode === 'create') {
+      onFormChange(formValues as Partial<PurchaseContract>);
+    }
+  }, [formValues, onFormChange, mode]);
 
   // Update validation messages when language changes
   useEffect(() => {
@@ -453,6 +498,11 @@ export function usePurchaseContractForm() {
       // await createPurchaseContract(contractJSON);
       
       alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
+      
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (error) {
       console.error('Error creating contract:', error);
       alert('Error al crear el contrato');

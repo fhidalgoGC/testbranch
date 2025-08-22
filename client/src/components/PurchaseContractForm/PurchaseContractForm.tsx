@@ -1,9 +1,13 @@
 import React from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
+import { RootState } from '@/app/store';
+import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { PurchaseContract } from '@/types/purchaseContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
 import { LogisticSection } from './sections/LogisticSection';
@@ -15,6 +19,7 @@ export interface PurchaseContractFormProps {
   contractType: 'purchase' | 'sale';
   mode: 'create' | 'edit' | 'view';
   contractId?: string; // Para modo edit/view
+  initialContract?: Partial<PurchaseContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -23,9 +28,44 @@ export function PurchaseContractForm({
   contractType,
   mode,
   contractId,
+  initialContract,
   onSuccess,
   onCancel: onCancelProp
 }: PurchaseContractFormProps) {
+  const dispatch = useDispatch();
+  
+  // Obtener draft del estado global (solo para modo create)
+  const draft = useSelector((state: RootState) => 
+    contractType === 'purchase' ? state.contractDrafts.purchaseDraft : state.contractDrafts.saleDraft
+  );
+  
+  // Determinar datos iniciales según el modo
+  const getInitialData = () => {
+    if (mode === 'create') {
+      // Para crear: usar draft del estado global o initialContract como fallback
+      return draft || initialContract || {};
+    } else {
+      // Para edit/view: usar initialContract (viene de API)
+      return initialContract || {};
+    }
+  };
+  
+  // Manejar success personalizado
+  const handleSuccess = () => {
+    // Limpiar draft si es modo create y el submit fue exitoso
+    if (mode === 'create') {
+      if (contractType === 'purchase') {
+        dispatch(clearPurchaseDraft());
+      } else {
+        dispatch(clearSaleDraft());
+      }
+    }
+    
+    if (onSuccess) {
+      onSuccess();
+    }
+  };
+  
   const { t } = useTranslation();
   const {
     form,
@@ -49,7 +89,22 @@ export function PurchaseContractForm({
     addRemark,
     removeRemark,
     updateRemark,
-  } = usePurchaseContractForm();
+  } = usePurchaseContractForm({
+    initialData: getInitialData(),
+    contractType,
+    mode,
+    onFormChange: (data) => {
+      // Solo auto-guardar en modo create
+      if (mode === 'create') {
+        if (contractType === 'purchase') {
+          dispatch(updatePurchaseDraft(data));
+        } else {
+          dispatch(updateSaleDraft(data));
+        }
+      }
+    },
+    onSuccess: handleSuccess,
+  });
 
   // Generar títulos dinámicamente
   const getTitle = () => {
@@ -73,6 +128,15 @@ export function PurchaseContractForm({
 
   // Manejar cancel personalizado
   const handleCancel = () => {
+    // Limpiar draft si es modo create
+    if (mode === 'create') {
+      if (contractType === 'purchase') {
+        dispatch(clearPurchaseDraft());
+      } else {
+        dispatch(clearSaleDraft());
+      }
+    }
+    
     if (onCancelProp) {
       onCancelProp();
     } else {
