@@ -101,6 +101,7 @@
   "firstName": "Nombre",
   "lastName": "Apellido",
   "createPurchaseContract": "Crear Contrato de Compra",
+  "createSaleContract": "Crear Contrato de Venta",
   "createPurchaseContractDescription": "Complete la información para crear un nuevo contrato de compra",
   "contractInfo": "Información del Contrato",
   "folio": "Folio",
