@@ -280,10 +280,10 @@ export function GenericTable<T = any>({
         ? actionMenuItems.filter(item => item.showAsIcon !== false && (item.icon || getDefaultIcon(item.key)))
         : [];
       
-      // Filtrar acciones que se mostrarán en el menú (todas menos las que son solo iconos)
-      const menuActions = actionMenuItems.filter(item => 
-        !showActionIcons || !item.showAsIcon || (showActionIcons && iconActions.length === 0)
-      );
+      // Si hay iconos disponibles y showActionIcons está activo, NO mostrar menú
+      // Si no hay iconos O showActionIcons está desactivo, mostrar todas las acciones en el menú
+      const hasIcons = showActionIcons && iconActions.length > 0;
+      const menuActions = hasIcons ? [] : actionMenuItems;
 
       cols.push({
         key: 'actions',
