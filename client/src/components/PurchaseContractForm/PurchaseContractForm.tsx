@@ -12,16 +12,16 @@ import { ShipmentSection } from './sections/ShipmentSection';
 import { RemarksSection } from './sections/RemarksSection';
 
 export interface PurchaseContractFormProps {
-  contractType?: 'purchase' | 'sale';
-  mode?: 'create' | 'edit' | 'view';
+  contractType: 'purchase' | 'sale';
+  mode: 'create' | 'edit' | 'view';
   contractId?: string; // Para modo edit/view
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
 export function PurchaseContractForm({ 
-  contractType = 'purchase',
-  mode = 'create',
+  contractType,
+  mode,
   contractId,
   onSuccess,
   onCancel: onCancelProp

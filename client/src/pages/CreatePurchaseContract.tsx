@@ -8,7 +8,10 @@ export default function CreatePurchaseContract() {
   
   return (
     <DashboardLayout title={t('createPurchaseContract')}>
-      <PurchaseContractForm />
+      <PurchaseContractForm 
+        contractType="purchase" 
+        mode="create" 
+      />
     </DashboardLayout>
   );
 }
