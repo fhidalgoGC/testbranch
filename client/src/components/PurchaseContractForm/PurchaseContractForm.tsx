@@ -152,21 +152,34 @@ export function PurchaseContractForm({
           {getTitle()}
         </h1>
         {mode !== 'view' && (
-          <button
-            type="button"
-            onClick={() => {
-              const formValues = form.getValues();
-              
-              // Use the same function as Submit to generate the exact final JSON
-              const finalJSON = generateContractJSON(formValues);
-              
-              console.log('🔍 DEBUG: Final JSON (same as Submit):', JSON.stringify(finalJSON, null, 2));
-              console.log('📋 DEBUG: Final JSON Object:', finalJSON);
-            }}
-            className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
-          >
-            🔍 Debug JSON
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const formValues = form.getValues();
+                
+                // Use the same function as Submit to generate the exact final JSON
+                const finalJSON = generateContractJSON(formValues);
+                
+                console.log('🔍 DEBUG: Final JSON (same as Submit):', JSON.stringify(finalJSON, null, 2));
+                console.log('📋 DEBUG: Final JSON Object:', finalJSON);
+              }}
+              className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
+            >
+              🔍 Debug JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const formValues = form.getValues();
+                console.log('📄 FORM STATE (Raw):', JSON.stringify(formValues, null, 2));
+                console.log('📊 FORM STATE Object:', formValues);
+              }}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
+            >
+              📄 Form State
+            </button>
+          </div>
         )}
       </div>
 
