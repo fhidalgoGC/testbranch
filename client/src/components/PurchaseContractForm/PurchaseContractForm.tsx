@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
@@ -93,7 +93,7 @@ export function PurchaseContractForm({
     initialData: getInitialData(),
     contractType,
     mode,
-    onFormChange: (data) => {
+    onFormChange: React.useCallback((data: Partial<PurchaseContract>) => {
       // Solo auto-guardar en modo create
       if (mode === 'create') {
         if (contractType === 'purchase') {
@@ -102,7 +102,7 @@ export function PurchaseContractForm({
           dispatch(updateSaleDraft(data));
         }
       }
-    },
+    }, [mode, contractType, dispatch]),
     onSuccess: handleSuccess,
   });
 

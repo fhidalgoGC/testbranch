@@ -110,15 +110,21 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     defaultValues,
   });
 
-  // Watch form values for auto-save functionality
-  const formValues = form.watch();
-  
+  // Auto-save functionality con debounce para evitar bucles infinitos
   useEffect(() => {
-    // Llamar onFormChange cuando los valores cambien (solo para modo create)
-    if (onFormChange && mode === 'create') {
-      onFormChange(formValues as Partial<PurchaseContract>);
-    }
-  }, [formValues, onFormChange, mode]);
+    if (!onFormChange || mode !== 'create') return;
+
+    const subscription = form.watch((value) => {
+      // Debounce para evitar demasiadas actualizaciones
+      const timeoutId = setTimeout(() => {
+        onFormChange(value as Partial<PurchaseContract>);
+      }, 500); // 500ms de debounce
+
+      return () => clearTimeout(timeoutId);
+    });
+
+    return subscription.unsubscribe;
+  }, [form, onFormChange, mode]);
 
   // Update validation messages when language changes
   useEffect(() => {
