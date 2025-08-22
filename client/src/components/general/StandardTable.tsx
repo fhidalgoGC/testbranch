@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { MoreHorizontal, Plus, Trash2, Edit, Eye } from 'lucide-react';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { DataTable, Column, TableData } from '@/components/ui/data-table';
@@ -40,6 +40,8 @@ export interface ActionMenuItem {
   labelKey: string; // Clave para i18n
   action: (item: any) => void;
   className?: string;
+  icon?: React.ReactNode; // Icono opcional para mostrar como botón individual
+  showAsIcon?: boolean; // Si se debe mostrar como icono además del menú
 }
 
 export interface DataFetchFunction<T = any> {
@@ -85,6 +87,7 @@ export interface GenericTableProps<T = any> {
   showActionColumn?: boolean;
   actionMenuItems?: ActionMenuItem[];
   actionColumnTitleKey?: string;
+  showActionIcons?: boolean; // Nueva prop para mostrar iconos individuales
   
   // Callbacks for controlled mode
   onPageChange?: (page: number) => void;
@@ -156,6 +159,7 @@ export function GenericTable<T = any>({
   showActionColumn = true,
   actionMenuItems = [],
   actionColumnTitleKey = 'actions',
+  showActionIcons = false,
   onPageChange,
   onPageSizeChange,
   onSearchChange,
@@ -254,36 +258,85 @@ export function GenericTable<T = any>({
 
     // Agregar columna de acciones si está habilitada
     if (showActionColumn && actionMenuItems.length > 0) {
+      // Función para obtener el icono predeterminado según la acción
+      const getDefaultIcon = (key: string) => {
+        switch (key) {
+          case 'delete':
+          case 'eliminar':
+            return <Trash2 className="w-4 h-4" />;
+          case 'edit':
+          case 'editar':
+            return <Edit className="w-4 h-4" />;
+          case 'view':
+          case 'ver':
+            return <Eye className="w-4 h-4" />;
+          default:
+            return null;
+        }
+      };
+
+      // Filtrar acciones que se mostrarán como iconos
+      const iconActions = showActionIcons 
+        ? actionMenuItems.filter(item => item.showAsIcon !== false && (item.icon || getDefaultIcon(item.key)))
+        : [];
+      
+      // Filtrar acciones que se mostrarán en el menú (todas menos las que son solo iconos)
+      const menuActions = actionMenuItems.filter(item => 
+        !showActionIcons || !item.showAsIcon || (showActionIcons && iconActions.length === 0)
+      );
+
       cols.push({
         key: 'actions',
         title: t(actionColumnTitleKey || 'actions'),
         render: (item: T) => (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {actionMenuItems.map((menuItem) => (
-                <DropdownMenuItem 
-                  key={menuItem.key}
+          <div className="flex items-center gap-1">
+            {/* Iconos individuales */}
+            {showActionIcons && iconActions.map((menuItem) => {
+              const icon = menuItem.icon || getDefaultIcon(menuItem.key);
+              return (
+                <Button
+                  key={`icon-${menuItem.key}`}
+                  variant="ghost"
+                  size="sm"
+                  className={`h-8 w-8 p-0 ${menuItem.className || ''}`}
                   onClick={() => menuItem.action(item)}
-                  className={menuItem.className}
+                  title={t(menuItem.labelKey)} // Tooltip con el nombre de la acción
                 >
-                  {t(menuItem.labelKey)}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  {icon}
+                </Button>
+              );
+            })}
+            
+            {/* Menú desplegable (si hay acciones restantes o no se muestran iconos) */}
+            {menuActions.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {menuActions.map((menuItem) => (
+                    <DropdownMenuItem 
+                      key={menuItem.key}
+                      onClick={() => menuItem.action(item)}
+                      className={menuItem.className}
+                    >
+                      {t(menuItem.labelKey)}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         ),
         sortable: false,
-        width: '80px'
+        width: showActionIcons ? '120px' : '80px' // Más ancho si hay iconos
       });
     }
 
     return cols;
-  }, [columns, t, showActionColumn, actionMenuItems, actionColumnTitleKey]);
+  }, [columns, t, showActionColumn, actionMenuItems, actionColumnTitleKey, showActionIcons]);
 
   // Determinar qué datos usar (externos o internos)
   const currentData = data || internalData;
@@ -496,7 +549,7 @@ export function GenericTable<T = any>({
           setPageSize(size);
           onPageSizeChange?.(size); // Call parent callback
         }}
-        onSortChange={(keyOrSort, direction) => {
+        onSortChange={(keyOrSort: string | { key: string; direction: 'asc' | 'desc' }, direction?: 'asc' | 'desc') => {
           // Handle both formats: object {key, direction} and separate parameters (key, direction)
           let sortKey: string;
           let sortDirection: 'asc' | 'desc';

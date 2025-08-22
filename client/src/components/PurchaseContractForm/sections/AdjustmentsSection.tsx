@@ -167,6 +167,7 @@ export function AdjustmentsSection() {
               showActionColumn={true}
               actionMenuItems={actionMenuItems}
               actionColumnTitleKey="actions"
+              showActionIcons={true}
               getItemId={(item: Adjustment) => item.id}
               showCreateButton={false}
               showFilters={false}
