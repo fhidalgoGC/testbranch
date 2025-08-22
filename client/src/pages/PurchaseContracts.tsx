@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useContractsPageState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useCommodities } from '@/hooks/useCommodities';
@@ -19,8 +20,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { MoreHorizontal, Plus, Edit } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
+import { RootState } from '@/app/store';
 
 
 
@@ -28,6 +30,10 @@ export default function PurchaseContracts() {
   const { t } = useTranslation();
   const [location, setLocation] = useLocation();
   const { commodities, loading: commoditiesLoading, error: commoditiesError } = useCommodities();
+  
+  // Obtener el estado del draft de purchase para mostrar indicador
+  const purchaseDraft = useSelector((state: RootState) => state.contractDrafts.purchaseDraft);
+  const hasDraftData = purchaseDraft && Object.keys(purchaseDraft).length > 0;
   
   // Hook para persistir estado de la página
   const { pageState, updateState } = useContractsPageState('purchaseContracts');
@@ -690,11 +696,17 @@ export default function PurchaseContracts() {
             </Button>
             <Link href="/purchase-contracts/create" className="inline-block">
               <Button 
-                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                className={`${hasDraftData 
+                  ? 'bg-yellow-500 hover:bg-yellow-600 border-2 border-yellow-300' 
+                  : 'bg-green-600 hover:bg-green-700'
+                } text-white flex items-center gap-2 relative`}
                 size="lg"
               >
-                <Plus className="w-4 h-4" />
-                {t('createContract')}
+                {hasDraftData && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-white animate-pulse" />
+                )}
+                {hasDraftData ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                {hasDraftData ? t('continueDraft') : t('createContract')}
               </Button>
             </Link>
           </div>

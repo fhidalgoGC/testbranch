@@ -102,6 +102,7 @@
   "lastName": "Last Name",
   "createPurchaseContract": "Create Purchase Contract",
   "createSaleContract": "Create Sale Contract",
+  "continueDraft": "Continue Draft",
   "createPurchaseContractDescription": "Complete the information to create a new purchase contract",
   "contractInfo": "Contract Info",
   "folio": "Folio",
