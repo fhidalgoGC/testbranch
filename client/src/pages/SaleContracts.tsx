@@ -804,17 +804,14 @@ export default function SaleContracts() {
             </Button>
             <Link href="/sale-contracts/create" className="inline-block">
               <Button
-                className={`${hasDraftData 
-                  ? 'bg-yellow-500 hover:bg-yellow-600 border-2 border-yellow-300' 
-                  : 'bg-green-600 hover:bg-green-700'
-                } text-white flex items-center gap-2 relative`}
+                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
                 size="lg"
               >
                 {hasDraftData && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-white animate-pulse" />
                 )}
-                {hasDraftData ? <Edit className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                {hasDraftData ? t('continueDraft') : t('createContract')}
+                <Plus className="w-4 h-4" />
+                {t('createContract')}
               </Button>
             </Link>
           </div>
