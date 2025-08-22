@@ -79,6 +79,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       inspections: '',
       proteins: '',
       remarks: [],
+      adjustments: [],
     };
     
     // Deep merge initial data with defaults, giving priority to initialData
@@ -478,6 +479,9 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       contract_date: new Date(formData.contract_date).toISOString(),
       notes: [],
       remarks: formData.remarks.filter(remark => remark.trim() !== ''),
+      ...(formData.adjustments && formData.adjustments.length > 0 && { 
+        adjustments: formData.adjustments 
+      }),
     };
 
     // Debug: Log before cleaning
