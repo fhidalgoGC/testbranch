@@ -11,7 +11,21 @@ import { AdjustmentsSection } from './sections/AdjustmentsSection';
 import { ShipmentSection } from './sections/ShipmentSection';
 import { RemarksSection } from './sections/RemarksSection';
 
-export function PurchaseContractForm() {
+export interface PurchaseContractFormProps {
+  contractType?: 'purchase' | 'sale';
+  mode?: 'create' | 'edit' | 'view';
+  contractId?: string; // Para modo edit/view
+  onSuccess?: () => void;
+  onCancel?: () => void;
+}
+
+export function PurchaseContractForm({ 
+  contractType = 'purchase',
+  mode = 'create',
+  contractId,
+  onSuccess,
+  onCancel: onCancelProp
+}: PurchaseContractFormProps) {
   const { t } = useTranslation();
   const {
     form,
@@ -37,28 +51,59 @@ export function PurchaseContractForm() {
     updateRemark,
   } = usePurchaseContractForm();
 
+  // Generar títulos dinámicamente
+  const getTitle = () => {
+    if (mode === 'create') {
+      return contractType === 'purchase' ? t('createPurchaseContract') : t('createSaleContract');
+    } else if (mode === 'edit') {
+      return contractType === 'purchase' ? t('editPurchaseContract') : t('editSaleContract');
+    } else {
+      return contractType === 'purchase' ? t('viewPurchaseContract') : t('viewSaleContract');
+    }
+  };
+
+  // Generar texto del botón dinámicamente
+  const getButtonText = () => {
+    if (mode === 'create') {
+      return contractType === 'purchase' ? t('createContract') : t('createSaleContract');
+    } else {
+      return t('saveChanges');
+    }
+  };
+
+  // Manejar cancel personalizado
+  const handleCancel = () => {
+    if (onCancelProp) {
+      onCancelProp();
+    } else {
+      onCancel();
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-8 p-6">
       {/* Header with title and debug button */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {t('createContract')}
+          {getTitle()}
         </h1>
-        <button
-          type="button"
-          onClick={() => {
-            const formValues = form.getValues();
-            
-            // Use the same function as Submit to generate the exact final JSON
-            const finalJSON = generateContractJSON(formValues);
-            
-            console.log('🔍 DEBUG: Final JSON (same as Submit):', JSON.stringify(finalJSON, null, 2));
-            console.log('📋 DEBUG: Final JSON Object:', finalJSON);
-          }}
-          className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
-        >
-          🔍 Debug JSON
-        </button>
+        {mode !== 'view' && (
+          <button
+            type="button"
+            onClick={() => {
+              const formValues = form.getValues();
+              
+              // Use the same function as Submit to generate the exact final JSON
+              const finalJSON = generateContractJSON(formValues);
+              
+              console.log('🔍 DEBUG: Final JSON (same as Submit):', JSON.stringify(finalJSON, null, 2));
+              console.log('📋 DEBUG: Final JSON Object:', finalJSON);
+            }}
+            className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
+          >
+            🔍 Debug JSON
+          </button>
+        )}
       </div>
 
       <FormProvider {...form}>
@@ -96,32 +141,34 @@ export function PurchaseContractForm() {
             />
 
             {/* Form Actions */}
-            <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
-                className="px-8"
-              >
-                {t('cancel')}
-              </Button>
-              
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-8 bg-green-600 hover:bg-green-700 text-white"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t('createContract')}...
-                  </>
-                ) : (
-                  t('createContract')
-                )}
-              </Button>
-            </div>
+            {mode !== 'view' && (
+              <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isSubmitting}
+                  className="px-8"
+                >
+                  {t('cancel')}
+                </Button>
+                
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-8 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {getButtonText()}...
+                    </>
+                  ) : (
+                    getButtonText()
+                  )}
+                </Button>
+              </div>
+            )}
         </form>
       </FormProvider>
     </div>
