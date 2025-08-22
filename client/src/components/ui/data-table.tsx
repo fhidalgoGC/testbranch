@@ -45,9 +45,11 @@ export interface DataTableProps<T> {
   onSelectionChange?: (selectedIds: string[]) => void;
   selectable?: boolean;
   getItemId: (item: T) => string;
+  // Row spacing
+  rowSpacing?: 'compact' | 'normal' | 'relaxed'; // compact=py-1, normal=py-2, relaxed=py-3
 }
 
-const pageSizeOptions = [5, 10, 20, 50];
+const pageSizeOptions = [3,5, 10, 20, 50];
 
 export function DataTable<T>({
   columns,
@@ -68,6 +70,7 @@ export function DataTable<T>({
   onSelectionChange,
   selectable = false,
   getItemId,
+  rowSpacing = 'compact',
 }: DataTableProps<T>) {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState(searchValue);
@@ -180,7 +183,10 @@ export function DataTable<T>({
                   <th
                     key={column.key}
                     className={cn(
-                      "px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider",
+                      "px-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider",
+                      rowSpacing === 'compact' && 'py-2',
+                      rowSpacing === 'normal' && 'py-2.5',
+                      rowSpacing === 'relaxed' && 'py-3',
                       column.sortable && "cursor-pointer hover:bg-gray-100/80 dark:hover:bg-gray-700/80 transition-colors duration-100"
                     )}
                     style={column.width ? { width: column.width } : undefined}
@@ -222,7 +228,12 @@ export function DataTable<T>({
                     {columns.map((column) => (
                       <td 
                         key={column.key} 
-                        className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
+                        className={cn(
+                          "px-4 text-sm text-gray-900 dark:text-gray-100",
+                          rowSpacing === 'compact' && 'py-1',
+                          rowSpacing === 'normal' && 'py-1.5',
+                          rowSpacing === 'relaxed' && 'py-3'
+                        )}
                         style={column.width ? { width: column.width } : undefined}
                       >
                         {column.render ? column.render(item) : String((item as any)[column.key] || '-')}

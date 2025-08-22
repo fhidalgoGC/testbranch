@@ -31,7 +31,7 @@ export function AdjustmentsSection() {
   const [selectedAdjustments, setSelectedAdjustments] = useState<Adjustment[]>([]);
   const [selectedValue, setSelectedValue] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const pageSize = 3;
 
   // Calcular ajustes disponibles (que no están ya seleccionados)
   const availableAdjustments = useMemo(() => {

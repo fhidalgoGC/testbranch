@@ -98,6 +98,8 @@ export interface GenericTableProps<T = any> {
   // Field mapping for sorting (UI field key to API field key)
   sortFieldMapping?: Record<string, string>;
   
+  // Row spacing
+  rowSpacing?: 'compact' | 'normal' | 'relaxed'; // compact=py-1, normal=py-2, relaxed=py-3
 
 }
 
@@ -165,6 +167,7 @@ export function GenericTable<T = any>({
   onSearchChange,
   onSortChange,
   sortFieldMapping = {},
+  rowSpacing = 'compact',
 }: GenericTableProps<T>) {
   const { t } = useTranslation();
   
@@ -587,6 +590,7 @@ export function GenericTable<T = any>({
         searchValue={searchValue}
         loading={currentLoading}
         getItemId={getItemId}
+        rowSpacing={rowSpacing}
       />
     </div>
   );
