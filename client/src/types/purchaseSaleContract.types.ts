@@ -126,6 +126,12 @@ export interface PurchaseSaleContract {
   seller?: string;
   contact_vendor?: string;
   trader?: string;
+  
+  // Adjustments - array of selected adjustments, no duplicates allowed
+  adjustments?: Array<{
+    _id: string;
+    name: string;
+  }>;
 }
 
 
