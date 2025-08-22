@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, MessageSquare, Search } from 'lucide-react';
-import type { PurchaseSaleContractFormData } from '@/types/purchaseSaleContract.types';
+import type { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { AddRemarkModal } from '../modals/AddRemarkModal';
 import { RemarkListModal } from '../modals/RemarkListModal';
 
@@ -24,7 +24,7 @@ export function RemarksSection({
   addComment 
 }: RemarksSectionProps) {
   const { t } = useTranslation();
-  const { watch, setValue, control } = useFormContext<PurchaseSaleContractFormData>();
+  const { watch, setValue, control } = useFormContext<PurchaseSaleContract>();
   const [isRemarkModalOpen, setIsRemarkModalOpen] = useState(false);
   const [isRemarkListModalOpen, setIsRemarkListModalOpen] = useState(false);
   const [selectedRemarkType, setSelectedRemarkType] = useState<string>('');

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Truck } from 'lucide-react';
-import type { PurchaseSaleContractFormData, LogisticSchedule } from '@/types/purchaseSaleContract.types';
+import type { PurchaseSaleContract, LogisticSchedule } from '@/types/purchaseSaleContract.types';
 import { APP_CONFIG, CURRENCY_OPTIONS, NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { formatNumber } from '@/lib/numberFormatter';
 import { FormattedNumberInput } from '../components/FormattedNumberInput';
@@ -35,7 +35,7 @@ export function LogisticSection({
 }: LogisticSectionProps) {
   const { t } = useTranslation();
   const { data: measurementUnits = [], isLoading: loadingUnits } = useMeasurementUnits();
-  const { formState: { errors }, watch, setValue, control, clearErrors } = useFormContext<PurchaseSaleContractFormData>();
+  const { formState: { errors }, watch, setValue, control, clearErrors } = useFormContext<PurchaseSaleContract>();
   
   const logisticSchedule = watch('logistic_schedule') || [];
   const currentSchedule = logisticSchedule[0] || {};

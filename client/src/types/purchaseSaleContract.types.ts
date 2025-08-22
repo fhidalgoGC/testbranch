@@ -77,8 +77,17 @@ export interface PurchaseSaleContract {
   folio?: string;
   type: 'purchase' | 'sale';
   sub_type: 'direct' | 'imported' | 'importedFreight';
-  commodity: Commodity;
-  characteristics: Characteristics;
+  
+  // Commodity fields - can be object or individual fields
+  commodity?: Commodity;
+  commodity_id?: string;
+  commodity_name?: string;
+  
+  // Characteristics fields - can be object or individual fields
+  characteristics?: Characteristics;
+  characteristics_configuration_id?: string;
+  characteristics_configuration_name?: string;
+  
   grade: number;
   participants: Participant[];
   price_schedule: PriceSchedule[];
@@ -98,7 +107,12 @@ export interface PurchaseSaleContract {
   inspections: string;
   proteins: string;
   purchase_orders?: any[];
-  thresholds: Thresholds;
+  
+  // Thresholds - can be object or individual fields
+  thresholds?: Thresholds;
+  min_thresholds_percentage?: number;
+  max_thresholds_percentage?: number;
+  
   status?: string;
   contract_date: string;
   extras?: any[];
@@ -107,57 +121,14 @@ export interface PurchaseSaleContract {
   sub_contracts?: any[];
   notes?: any[];
   remarks?: string[];
+  
+  // Form-specific fields
+  seller?: string;
+  contact_vendor?: string;
+  trader?: string;
 }
 
-// Form data interface for react-hook-form
-export interface PurchaseSaleContractFormData {
-  // Contract Info Section
-  folio: string;
-  type: 'purchase' | 'sale';
-  sub_type: 'direct' | 'imported' | 'importedFreight';
-  commodity_id: string;
-  commodity_name: string;
-  characteristics_configuration_id: string;
-  characteristics_configuration_name: string;
-  grade: number;
-  quantity: number;
-  reference_number: string;
-  measurement_unit_id: string;
-  measurement_unit: string;
-  contract_date: string;
-  
-  // Participants
-  participants: Participant[];
-  
-  // Price Section
-  price_schedule: PriceSchedule[];
-  
-  // Logistic Section
-  logistic_schedule: LogisticSchedule[];
-  
-  // Shipment Section
-  shipping_start_date: string;
-  shipping_end_date: string;
-  application_priority: number;
-  delivered: string;
-  transport: string;
-  weights: string;
-  inspections: string;
-  proteins: string;
-  
-  // Thresholds
-  min_thresholds_percentage: number;
-  max_thresholds_percentage: number;
-  
-  // Seller
-  seller: string;
-  contact_vendor: string;
-  trader: string;
-  
-  // Remarks Section
-  remarks: string[];
-}
 
 // Backward compatibility aliases
 export type PurchaseContract = PurchaseSaleContract;
-export type PurchaseContractFormData = PurchaseSaleContractFormData;
+export type PurchaseContractFormData = PurchaseSaleContract;

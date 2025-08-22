@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Package } from 'lucide-react';
 import { DatePicker } from '@/components/ui/datepicker';
-import type { PurchaseSaleContractFormData } from '@/types/purchaseSaleContract.types';
+import type { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 
 // Standardized data structure for inspections, proteins, and weights fields
 const INSPECTION_PROTEINS_WEIGHTS_OPTIONS = [
@@ -49,7 +49,7 @@ const DELIVERED_OPTIONS = [
 
 export function ShipmentSection() {
   const { t } = useTranslation();
-  const { register, formState: { errors }, watch, setValue, setError, clearErrors, control } = useFormContext<PurchaseSaleContractFormData>();
+  const { register, formState: { errors }, watch, setValue, setError, clearErrors, control } = useFormContext<PurchaseSaleContract>();
   const [dateValidationError, setDateValidationError] = useState<string>('');
 
   // Date validation logic

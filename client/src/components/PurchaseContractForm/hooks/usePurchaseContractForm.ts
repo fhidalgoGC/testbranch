@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
-import type { PurchaseSaleContractFormData, PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
+import type { PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
 import { APP_CONFIG } from '@/environment/environment';
 
 interface UsePurchaseContractFormOptions {
@@ -103,7 +103,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     return mergeData(baseDefaults, initialData);
   }, [initialData]);
   
-  const form = useForm<PurchaseSaleContractFormData>({
+  const form = useForm<PurchaseSaleContract>({
     resolver,
     mode: 'onSubmit', // Initial validation only on submit
     reValidateMode: 'onChange', // Re-validate on change after first submit
@@ -314,7 +314,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   };
 
   // Generate final JSON
-  const generateContractJSON = (formData: PurchaseSaleContractFormData): PurchaseSaleContract => {
+  const generateContractJSON = (formData: PurchaseSaleContract): PurchaseSaleContract => {
     const partitionKey = localStorage.getItem('partition_key') || '';
     const userId = localStorage.getItem('user_id') || '';
     
@@ -492,7 +492,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     return cleanedJSON;
   };
 
-  const onSubmit = async (data: PurchaseSaleContractFormData) => {
+  const onSubmit = async (data: PurchaseSaleContract) => {
     try {
       setIsSubmitting(true);
       console.log('Form validation passed');
