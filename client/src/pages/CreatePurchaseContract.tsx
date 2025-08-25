@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'wouter';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Button } from '@/components/ui/button';
 import { PurchaseContractForm } from '@/components/PurchaseContractForm/PurchaseContractForm';
 import { RootState } from '@/app/store';
 import { generateContractId } from '@/services/contractsService';
@@ -63,6 +64,21 @@ export default function CreatePurchaseContract() {
 
   return (
     <DashboardLayout title={t('createPurchaseContract')}>
+      <div className="mb-4">
+        <Button
+          onClick={() => {
+            console.log('🔍 === DEBUG PURCHASE DRAFT STATE ===');
+            console.log('purchaseDraft:', purchaseDraft);
+            console.log('contractId:', contractId);
+            console.log('purchaseDraft keys:', purchaseDraft ? Object.keys(purchaseDraft) : 'null');
+            console.log('localStorage contractDrafts:', JSON.parse(localStorage.getItem('contractDrafts') || '{}'));
+            console.log('================================');
+          }}
+          className="bg-orange-100 border-orange-300 text-orange-700 hover:bg-orange-200 flex items-center gap-2"
+        >
+          🔍 Debug Purchase Draft
+        </Button>
+      </div>
       <PurchaseContractForm 
         contractType="purchase" 
         mode="create" 
