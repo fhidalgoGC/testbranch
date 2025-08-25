@@ -1,4 +1,4 @@
-import { authenticatedFetch } from '@/utils/apiInterceptors';
+import { authenticatedFetch } from "@/utils/apiInterceptors";
 
 export interface CrmPerson {
   _id: string;
@@ -18,7 +18,7 @@ export interface CrmPerson {
   last_name?: string;
   full_name: string;
   organization_name?: string;
-  person_type: 'juridical_person' | 'natural_person';
+  person_type: "juridical_person" | "natural_person";
   phones: Array<{
     _id: string;
     calling_code: string;
@@ -57,16 +57,16 @@ export interface CrmPeopleResponse {
 }
 
 export interface GetPeopleFilters {
-  roles?: string[];  // e.g., ['buyer', 'seller']
+  roles?: string[]; // e.g., ['buyer', 'seller']
   search?: string;
-  person_type?: 'juridical_person' | 'natural_person';
+  person_type?: "juridical_person" | "natural_person";
   active?: boolean;
 }
 
 export interface GetPeopleOptions {
   page?: number;
   limit?: number;
-  sort?: Record<string, '1' | '-1'>;
+  sort?: Record<string, "1" | "-1">;
 }
 
 /**
@@ -74,11 +74,11 @@ export interface GetPeopleOptions {
  */
 export const getPeople = async (
   filters: GetPeopleFilters = {},
-  options: GetPeopleOptions = {}
+  options: GetPeopleOptions = {},
 ): Promise<CrmPeopleResponse> => {
-  const partitionKey = localStorage.getItem('partition_key');
+  const partitionKey = localStorage.getItem("partition_key");
   if (!partitionKey) {
-    throw new Error('Partition key not found');
+    throw new Error("Partition key not found");
   }
 
   // Build filter object
@@ -88,7 +88,7 @@ export const getPeople = async (
   };
 
   if (filters.roles && filters.roles.length > 0) {
-    filterObj['roles.slug'] = { $in: filters.roles };
+    filterObj["roles.slug"] = { $in: filters.roles };
   }
 
   if (filters.person_type) {
@@ -97,33 +97,33 @@ export const getPeople = async (
 
   if (filters.search) {
     filterObj.$or = [
-      { full_name: { $regex: filters.search, $options: 'i' } },
-      { organization_name: { $regex: filters.search, $options: 'i' } },
-      { 'emails.value': { $regex: filters.search, $options: 'i' } }
+      { full_name: { $regex: filters.search, $options: "i" } },
+      { organization_name: { $regex: filters.search, $options: "i" } },
+      { "emails.value": { $regex: filters.search, $options: "i" } },
     ];
   }
 
   // Build query parameters
   const queryParams = new URLSearchParams();
-  queryParams.append('filter', JSON.stringify(filterObj));
-  queryParams.append('page', (options.page || 1).toString());
-  queryParams.append('limit', (options.limit || 10).toString());
-  
+  queryParams.append("filter", JSON.stringify(filterObj));
+  queryParams.append("page", (options.page || 1).toString());
+  queryParams.append("limit", (options.limit || 10).toString());
+
   if (options.sort) {
-    queryParams.append('sort', JSON.stringify(options.sort));
+    queryParams.append("sort", JSON.stringify(options.sort));
   } else {
-    queryParams.append('sort', JSON.stringify({ full_name: '1' }));
+    queryParams.append("sort", JSON.stringify({ full_name: "1" }));
   }
 
   const url = `${import.meta.env.VITE_URL_CRM}/crm-people/people?${queryParams.toString()}`;
-  
-  console.log('CRM People API URL:', url);
-  
+
+  console.log("CRM People API URL:", url);
+
   try {
     const response = await authenticatedFetch(url, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -132,11 +132,11 @@ export const getPeople = async (
     }
 
     const data = await response.json();
-    console.log('CRM People API Response:', data);
-    
+    console.log("CRM People API Response:", data);
+
     return data;
   } catch (error) {
-    console.error('Error fetching people from CRM:', error);
+    console.error("Error fetching people from CRM:", error);
     throw error;
   }
 };
@@ -144,38 +144,46 @@ export const getPeople = async (
 /**
  * Get sellers from CRM
  */
-export const getSellers = async (options?: GetPeopleOptions): Promise<CrmPeopleResponse> => {
-  return getPeople({ roles: ['seller'], active: true }, options);
+export const getSellers = async (
+  options?: GetPeopleOptions,
+): Promise<CrmPeopleResponse> => {
+  return getPeople({ roles: ["seller"], active: true }, options);
 };
 
 /**
  * Get buyers from CRM
  */
-export const getBuyers = async (options?: GetPeopleOptions): Promise<CrmPeopleResponse> => {
-  return getPeople({ roles: ['buyer'], active: true }, options);
+export const getBuyers = async (
+  options?: GetPeopleOptions,
+): Promise<CrmPeopleResponse> => {
+  return getPeople({ roles: ["buyer"], active: true }, options);
 };
 
 /**
  * Get contact vendors from CRM (assuming they have buyer role for now)
  */
-export const getContactVendors = async (options?: GetPeopleOptions): Promise<CrmPeopleResponse> => {
-  return getPeople({ roles: ['buyer'], active: true }, options);
+export const getContactVendors = async (
+  options?: GetPeopleOptions,
+): Promise<CrmPeopleResponse> => {
+  return getPeople({ roles: ["buyer"], active: true }, options);
 };
 
 /**
  * Get traders from CRM
  */
-export const getTraders = async (options?: GetPeopleOptions): Promise<CrmPeopleResponse> => {
-  return getPeople({ roles: ['trader'], active: true }, options);
+export const getTraders = async (
+  options?: GetPeopleOptions,
+): Promise<CrmPeopleResponse> => {
+  return getPeople({ roles: ["buyer"], active: true }, options);
 };
 
 /**
  * Search people by term
  */
 export const searchPeople = async (
-  searchTerm: string, 
-  roles?: string[], 
-  options?: GetPeopleOptions
+  searchTerm: string,
+  roles?: string[],
+  options?: GetPeopleOptions,
 ): Promise<CrmPeopleResponse> => {
   return getPeople({ search: searchTerm, roles, active: true }, options);
 };

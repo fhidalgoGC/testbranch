@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, User, Building2, Phone, Mail, MapPin, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { getPeople, type CrmPeopleResponse } from '@/services/crm-people.service';
+import { getTraders, type CrmPeopleResponse } from '@/services/crm-people.service';
 
 interface Trader {
   _id: string;
@@ -44,18 +44,11 @@ export const TraderSelectionModal: React.FC<TraderSelectionModalProps> = ({
       setLoading(true);
       console.log(`🚀 TraderModal: Loading traders - Page ${page}, Reset: ${reset}`);
 
-      const response: CrmPeopleResponse = await getPeople(
-        {
-          roles: ['trader'], // Look for people with trader role
-          search: searchTerm.trim() || undefined,
-          active: true
-        },
-        {
-          page,
-          limit: 5,
-          sort: { full_name: '1' }
-        }
-      );
+      const response: CrmPeopleResponse = await getTraders({
+        page,
+        limit: 5,
+        sort: { full_name: '1' }
+      });
 
       const newTraders = response.data || [];
       const totalPages = response._meta?.total_pages || response._meta?.totalPages || 1;
