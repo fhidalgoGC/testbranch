@@ -105,11 +105,12 @@ export function PurchaseContractForm({
     updateRemark,
   } = hookResult;
   
-  // 1. INITIAL DRAFT DETECTION - Only on first mount
+  // 1. INITIAL DRAFT DETECTION - Only when draft data changes
+  const initialData = React.useMemo(() => getInitialData(), [draft, initialContract, mode]);
+  
   useEffect(() => {
     if (mode !== 'create') return;
 
-    const initialData = getInitialData();
     const hasInitialDraft = Object.keys(initialData).some(key => {
       const value = (initialData as any)[key];
       return value !== null && value !== undefined && value !== '' && 
@@ -117,13 +118,13 @@ export function PurchaseContractForm({
     });
     
     if (hasInitialDraft) {
-      console.log('🎯 COMPONENTE: Draft inicial detectado al montar, activando flag');
-      // SOLO notificar a página (activar flag) - NO actualizar Redux ya que viene de Redux
+      console.log('🎯 COMPONENTE: Draft inicial detectado, activando flag', initialData);
+      // SOLO notificar a página (activar flag) - Redux ya tiene los datos
       if (onFormChange) {
         onFormChange(initialData);
       }
     }
-  }, []); // EMPTY dependency array - only on first mount
+  }, [initialData, mode, onFormChange]); // Depend on memoized initial data
 
   // 2. WATCH USER CHANGES - Only real user interactions  
   useEffect(() => {
