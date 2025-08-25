@@ -130,19 +130,28 @@ export function PurchaseContractForm({
 
   // Manejar cancel personalizado
   const handleCancel = () => {
-    // Limpiar draft si es modo create
-    if (mode === 'create') {
-      if (contractType === 'purchase') {
-        dispatch(clearPurchaseDraft());
-      } else {
-        dispatch(clearSaleDraft());
+    try {
+      // Limpiar draft si es modo create (validar que existe antes de limpiar)
+      if (mode === 'create') {
+        if (contractType === 'purchase' && draft) {
+          dispatch(clearPurchaseDraft());
+        } else if (contractType === 'sale' && draft) {
+          dispatch(clearSaleDraft());
+        }
       }
+      
+      // Llamar onCancel del hook para limpiar formulario (solo si está disponible)
+      try {
+        onCancel();
+      } catch (error) {
+        console.warn('Form already reset:', error);
+      }
+      
+    } catch (error) {
+      console.warn('Error during cleanup:', error);
     }
     
-    // Llamar onCancel del hook para limpiar formulario
-    onCancel();
-    
-    // Si hay callback personalizado, llamarlo
+    // SIEMPRE redirigir, sin importar si hubo errores en la limpieza
     if (onCancelProp) {
       onCancelProp();
     } else {
