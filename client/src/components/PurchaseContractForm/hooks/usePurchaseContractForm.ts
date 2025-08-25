@@ -432,8 +432,8 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     const quantity = formData.quantity || 0;
     const price = formData.price_schedule[0]?.price || 0;
     
-    const minThresholdWeight = quantity > 0 ? quantity - (quantity * (formData.min_thresholds_percentage || 0) / 100) : 0;
-    const maxThresholdWeight = quantity > 0 ? quantity + (quantity * (formData.max_thresholds_percentage || 0) / 100) : 0;
+    const minThresholdWeight = quantity > 0 ? quantity - (quantity * (formData.thresholds?.min_thresholds_percentage || 0) / 100) : 0;
+    const maxThresholdWeight = quantity > 0 ? quantity + (quantity * (formData.thresholds?.max_thresholds_percentage || 0) / 100) : 0;
 
     // Calculate inventory values (simplified calculation)
     const totalValue = quantity > 0 && price > 0 ? quantity * price : 0;
@@ -471,9 +471,9 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       inspections: formData.inspections,
       proteins: formData.proteins,
       thresholds: {
-        min_thresholds_percentage: formData.min_thresholds_percentage,
+        min_thresholds_percentage: formData.thresholds?.min_thresholds_percentage || 0,
         min_thresholds_weight: minThresholdWeight,
-        max_thresholds_percentage: formData.max_thresholds_percentage,
+        max_thresholds_percentage: formData.thresholds?.max_thresholds_percentage || 0,
         max_thresholds_weight: maxThresholdWeight,
       },
       status: 'created',

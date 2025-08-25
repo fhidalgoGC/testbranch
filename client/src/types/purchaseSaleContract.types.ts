@@ -108,10 +108,8 @@ export interface PurchaseSaleContract {
   proteins: string;
   purchase_orders?: any[];
   
-  // Thresholds - can be object or individual fields
+  // Thresholds - object format only
   thresholds?: Thresholds;
-  min_thresholds_percentage?: number;
-  max_thresholds_percentage?: number;
   
   status?: string;
   contract_date: string;
