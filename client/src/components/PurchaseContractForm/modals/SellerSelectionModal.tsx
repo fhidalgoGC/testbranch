@@ -27,9 +27,13 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // Load sellers when modal opens
+  // Load sellers when modal opens - always fresh data
   useEffect(() => {
-    if (isOpen && sellers.length === 0) {
+    if (isOpen) {
+      // Reset state and load fresh data every time modal opens
+      setCurrentPage(1);
+      setHasMore(true);
+      setSearchTerm('');
       loadSellers(1, true);
     }
   }, [isOpen]);

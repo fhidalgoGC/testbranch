@@ -27,9 +27,13 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // Load vendors when modal opens
+  // Load vendors when modal opens - always fresh data
   useEffect(() => {
-    if (isOpen && vendors.length === 0) {
+    if (isOpen) {
+      // Reset state and load fresh data every time modal opens
+      setCurrentPage(1);
+      setHasMore(true);
+      setSearchTerm('');
       loadVendors(1, true);
     }
   }, [isOpen]);
