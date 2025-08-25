@@ -10,12 +10,11 @@ interface UsePurchaseContractFormOptions {
   initialData?: Partial<PurchaseSaleContract>;
   contractType?: 'purchase' | 'sale';
   mode?: 'create' | 'edit' | 'view';
-  onFormChange?: (data: Partial<PurchaseSaleContract>) => void;
   onSuccess?: () => void;
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
-  const { initialData = {}, contractType = 'purchase', mode = 'create', onFormChange, onSuccess } = options;
+  const { initialData = {}, contractType = 'purchase', mode = 'create', onSuccess } = options;
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,21 +110,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     defaultValues,
   });
 
-  // Auto-save functionality con debounce para evitar bucles infinitos
-  useEffect(() => {
-    if (!onFormChange || mode !== 'create') return;
-
-    const subscription = form.watch((value) => {
-      // Debounce para evitar demasiadas actualizaciones
-      const timeoutId = setTimeout(() => {
-        onFormChange(value as Partial<PurchaseSaleContract>);
-      }, 500); // 500ms de debounce
-
-      return () => clearTimeout(timeoutId);
-    });
-
-    return subscription.unsubscribe;
-  }, [form, onFormChange, mode]);
+  // Auto-save removido - no más drafts
 
   // Update validation messages when language changes
   useEffect(() => {
