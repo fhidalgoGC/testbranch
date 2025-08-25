@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { RootState } from '@/app/store';
 import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
-import { PurchaseContract } from '@/types/purchaseContract.types';
+import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
 import { LogisticSection } from './sections/LogisticSection';
@@ -20,7 +20,7 @@ export interface PurchaseContractFormProps {
   contractType: 'purchase' | 'sale';
   mode: 'create' | 'edit' | 'view';
   contractId?: string; // Para modo edit/view y create (generated ID)
-  initialContract?: Partial<PurchaseContract>; // Datos iniciales del contrato
+  initialContract?: Partial<PurchaseSaleContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
 }
