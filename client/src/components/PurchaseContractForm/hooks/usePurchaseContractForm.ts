@@ -114,72 +114,8 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   // Auto-save removido - no más drafts
 
   // Auto-update participants when seller or contact vendor changes
-  useEffect(() => {
-    const currentParticipants = form.getValues('participants') || [];
-    let updatedParticipants = [...currentParticipants];
-    let hasChanges = false;
-
-    // Process seller
-    const seller = form.getValues('seller');
-    if (seller && FAKE_SELLERS) {
-      const selectedSeller = FAKE_SELLERS.find(s => s.id === seller);
-      if (selectedSeller) {
-        const existingSellerIndex = updatedParticipants.findIndex(p => p.role === 'seller');
-        const sellerParticipant = {
-          people_id: selectedSeller.id,
-          name: selectedSeller.name,
-          role: 'seller' as const
-        };
-
-        if (existingSellerIndex >= 0) {
-          updatedParticipants[existingSellerIndex] = sellerParticipant;
-        } else {
-          updatedParticipants.push(sellerParticipant);
-        }
-        hasChanges = true;
-      }
-    } else {
-      // Remove seller if no longer selected
-      const sellerIndex = updatedParticipants.findIndex(p => p.role === 'seller');
-      if (sellerIndex >= 0) {
-        updatedParticipants.splice(sellerIndex, 1);
-        hasChanges = true;
-      }
-    }
-
-    // Process contact vendor as buyer
-    const contactVendor = form.getValues('contact_vendor');
-    if (contactVendor && FAKE_CONTACT_VENDORS) {
-      const selectedVendor = FAKE_CONTACT_VENDORS.find(v => v.id === contactVendor);
-      if (selectedVendor) {
-        const existingBuyerIndex = updatedParticipants.findIndex(p => p.role === 'buyer');
-        const buyerParticipant = {
-          people_id: selectedVendor.id,
-          name: selectedVendor.name,
-          role: 'buyer' as const
-        };
-
-        if (existingBuyerIndex >= 0) {
-          updatedParticipants[existingBuyerIndex] = buyerParticipant;
-        } else {
-          updatedParticipants.push(buyerParticipant);
-        }
-        hasChanges = true;
-      }
-    } else {
-      // Remove buyer if no longer selected
-      const buyerIndex = updatedParticipants.findIndex(p => p.role === 'buyer');
-      if (buyerIndex >= 0) {
-        updatedParticipants.splice(buyerIndex, 1);
-        hasChanges = true;
-      }
-    }
-
-    if (hasChanges) {
-      console.log('👥 Auto-updating participants:', updatedParticipants);
-      form.setValue('participants', updatedParticipants);
-    }
-  }, [form.watch('seller'), form.watch('contact_vendor')]);
+  // Note: Using simplified approach - we'll let the form handle participant validation
+  // and add participants during submit processing instead of real-time updates
 
   // Update validation messages when language changes
   useEffect(() => {
@@ -561,8 +497,27 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       const processedData = { ...data };
       let processedParticipants = [...(data.participants || [])];
       
+      // Define fake sellers data (same as in ContractInfoSection)
+      const FAKE_SELLERS = [
+        { id: '1', name: 'Juan Carlos Rodríguez', company: 'Agricola San Miguel' },
+        { id: '2', name: 'María Elena Vásquez', type: 'individual' },
+        { id: '3', name: 'Roberto Fernández', company: 'Granos del Norte SA' },
+        { id: '4', name: 'Ana Patricia Morales', company: 'Cooperativa El Campo' },
+        { id: '5', name: 'Carlos David Herrera', type: 'individual' },
+        { id: '6', name: 'Luisa Fernanda García', company: 'Agroexportadora del Bajío' }
+      ];
+
+      const FAKE_CONTACT_VENDORS = [
+        { id: '1', name: 'José Luis Martínez', company: 'Comercial Agropecuaria' },
+        { id: '2', name: 'Carmen Ruiz González', type: 'individual' },
+        { id: '3', name: 'Miguel Ángel Pérez', company: 'Distribuidora del Valle SA' },
+        { id: '4', name: 'Sofía Elena Torres', company: 'Granos y Cereales del Norte' },
+        { id: '5', name: 'Fernando García López', type: 'individual' },
+        { id: '6', name: 'Patricia Moreno Silva', company: 'Comercializadora Agrícola del Centro' }
+      ];
+      
       // Add seller as participant if selected
-      if (data.seller && FAKE_SELLERS) {
+      if (data.seller) {
         const selectedSeller = FAKE_SELLERS.find(seller => seller.id === data.seller);
         if (selectedSeller) {
           const sellerParticipant = {
@@ -580,7 +535,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       }
       
       // Add contact vendor as buyer if selected (assuming contact vendor is the buyer)
-      if (data.contact_vendor && FAKE_CONTACT_VENDORS) {
+      if (data.contact_vendor) {
         const selectedVendor = FAKE_CONTACT_VENDORS.find(vendor => vendor.id === data.contact_vendor);
         if (selectedVendor) {
           const buyerParticipant = {

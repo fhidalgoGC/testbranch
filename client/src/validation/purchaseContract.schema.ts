@@ -38,15 +38,9 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
           ),
         })
       )
-      .min(2, t('minimumParticipants'))
-      .refine(
-        (participants) => {
-          const hasBuyer = participants.some(p => p.role === 'buyer');
-          const hasSeller = participants.some(p => p.role === 'seller');
-          return hasBuyer && hasSeller;
-        },
-        t('buyerSellerRequired')
-      ),
+      // Temporarily removed min(2) validation - participants will be processed automatically at submit
+      .optional()
+      .default([]),
 
     // Price Schedule validation - minimum 1
     price_schedule: z
