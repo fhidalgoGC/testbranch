@@ -38,6 +38,11 @@ export interface CrmPerson {
 export interface CrmPeopleResponse {
   data: CrmPerson[];
   _meta: {
+    page_size: number;
+    page_number: number;
+    total_elements: number;
+    total_pages: number;
+    // Legacy fields for compatibility
     totalCount: number;
     page: number;
     limit: number;

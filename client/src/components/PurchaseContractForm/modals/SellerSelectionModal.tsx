@@ -68,8 +68,9 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
       }
       // Note: loading state is already set in useEffect for reset case
 
-      const response = await getSellers({ page, limit: 20 });
+      const response = await getSellers({ page, limit: 5 });
       console.log(`✅ SellerModal: Loaded ${response.data.length} sellers`);
+      console.log(`📊 SellerModal: Pagination - Page ${response._meta.page_number}/${response._meta.total_pages}, Total: ${response._meta.total_elements}`);
       
       if (reset) {
         setSellers(response.data);
@@ -77,9 +78,9 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
         setSellers(prev => [...prev, ...response.data]);
       }
       
-      // Check if there are more pages
-      setHasMore(page < response._meta.totalPages);
-      setCurrentPage(page);
+      // Check if there are more pages using the correct pagination structure
+      setHasMore(response._meta.page_number < response._meta.total_pages);
+      setCurrentPage(response._meta.page_number);
       
     } catch (error) {
       console.error('❌ SellerModal: Error fetching sellers:', error);

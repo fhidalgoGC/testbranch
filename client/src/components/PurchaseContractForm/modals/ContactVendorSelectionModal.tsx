@@ -68,8 +68,9 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
       }
       // Note: loading state is already set in useEffect for reset case
 
-      const response = await getContactVendors({ page, limit: 20 });
+      const response = await getContactVendors({ page, limit: 5 });
       console.log(`✅ ContactVendorModal: Loaded ${response.data.length} contact vendors`);
+      console.log(`📊 ContactVendorModal: Pagination - Page ${response._meta.page_number}/${response._meta.total_pages}, Total: ${response._meta.total_elements}`);
       
       if (reset) {
         setVendors(response.data);
@@ -77,9 +78,9 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
         setVendors(prev => [...prev, ...response.data]);
       }
       
-      // Check if there are more pages
-      setHasMore(page < response._meta.totalPages);
-      setCurrentPage(page);
+      // Check if there are more pages using the correct pagination structure
+      setHasMore(response._meta.page_number < response._meta.total_pages);
+      setCurrentPage(response._meta.page_number);
       
     } catch (error) {
       console.error('❌ ContactVendorModal: Error fetching vendors:', error);
