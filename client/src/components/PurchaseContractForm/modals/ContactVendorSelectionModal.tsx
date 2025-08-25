@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { GenericTable, type TableColumn } from '@/components/general/StandardTable';
+import { Input } from '@/components/ui/input';
 import { getContactVendors, type CrmPerson } from '@/services/crm-people.service';
-import { User, Building2, Phone, Mail, MapPin } from 'lucide-react';
+import { User, Building2, Search, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface ContactVendorSelectionModalProps {
@@ -22,142 +22,52 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
   const [isOpen, setIsOpen] = useState(false);
   const [vendors, setVendors] = useState<CrmPerson[]>([]);
   const [loading, setLoading] = useState(false);
-  const [totalElements, setTotalElements] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  
-  // Define table columns
-  const columns: TableColumn<CrmPerson>[] = [
-    {
-      key: 'full_name',
-      titleKey: 'name',
-      sortable: true,
-      width: '30%',
-      render: (person: CrmPerson) => (
-        <div className="flex items-center space-x-3">
-          <div className="flex-shrink-0">
-            {person.person_type === 'juridical_person' ? (
-              <Building2 className="h-8 w-8 text-blue-500" />
-            ) : (
-              <User className="h-8 w-8 text-green-500" />
-            )}
-          </div>
-          <div>
-            <div className="font-medium text-gray-900 dark:text-gray-100">
-              {person.full_name || `${person.first_name || ''} ${person.last_name || ''}`.trim()}
-            </div>
-            {person.organization_name && (
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {person.organization_name}
-              </div>
-            )}
-          </div>
-        </div>
-      )
-    },
-    {
-      key: 'person_type',
-      titleKey: 'type',
-      width: '15%',
-      render: (person: CrmPerson) => (
-        <Badge variant={person.person_type === 'juridical_person' ? 'default' : 'secondary'}>
-          {person.person_type === 'juridical_person' ? t('company') : t('individual')}
-        </Badge>
-      )
-    },
-    {
-      key: 'emails',
-      titleKey: 'email',
-      width: '25%',
-      render: (person: CrmPerson) => {
-        const primaryEmail = person.emails?.find(e => e.type === 'principal')?.value;
-        return primaryEmail ? (
-          <div className="flex items-center space-x-2">
-            <Mail className="h-4 w-4 text-gray-400" />
-            <span className="text-sm">{primaryEmail}</span>
-          </div>
-        ) : (
-          <span className="text-sm text-gray-400">{t('noEmail')}</span>
-        );
-      }
-    },
-    {
-      key: 'phones',
-      titleKey: 'phone',
-      width: '20%',
-      render: (person: CrmPerson) => {
-        const primaryPhone = person.phones?.find(p => p.type === 'principal');
-        return primaryPhone ? (
-          <div className="flex items-center space-x-2">
-            <Phone className="h-4 w-4 text-gray-400" />
-            <span className="text-sm">{primaryPhone.calling_code} {primaryPhone.phone_number}</span>
-          </div>
-        ) : (
-          <span className="text-sm text-gray-400">{t('noPhone')}</span>
-        );
-      }
-    }
-  ];
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Define action items
-  const actionItems = [
-    {
-      key: 'select',
-      labelKey: 'select',
-      action: (person: CrmPerson) => {
-        onSelect({
-          id: person._id,
-          name: person.full_name || `${person.first_name || ''} ${person.last_name || ''}`.trim(),
-          ...person
-        });
-        setIsOpen(false);
-      },
-      className: 'text-blue-600 hover:text-blue-900'
+  // Load vendors when modal opens
+  useEffect(() => {
+    if (isOpen && vendors.length === 0) {
+      loadVendors();
     }
-  ];
+  }, [isOpen]);
 
-  // Fetch vendors function
-  const fetchVendors = async (params: {
-    page: number;
-    pageSize: number;
-    search?: string;
-  }) => {
+  const loadVendors = async () => {
     try {
       setLoading(true);
-      const response = await getContactVendors({
-        page: params.page,
-        limit: params.pageSize
-      });
-      
+      const response = await getContactVendors({ page: 1, limit: 50 });
       setVendors(response.data);
-      setTotalElements(response._meta.totalCount);
-      setTotalPages(response._meta.totalPages);
-      
-      return {
-        data: response.data,
-        total: response._meta.totalCount,
-        totalPages: response._meta.totalPages
-      };
     } catch (error) {
       console.error('Error fetching contact vendors:', error);
       setVendors([]);
-      setTotalElements(0);
-      setTotalPages(0);
-      return {
-        data: [],
-        total: 0,
-        totalPages: 0
-      };
     } finally {
       setLoading(false);
     }
   };
 
-  // Load vendors when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      fetchVendors({ page: 1, pageSize: 10 });
-    }
-  }, [isOpen]);
+  // Filter vendors based on search term
+  const filteredVendors = useMemo(() => {
+    if (!searchTerm.trim()) return vendors;
+    
+    const search = searchTerm.toLowerCase();
+    return vendors.filter(vendor => {
+      const fullName = vendor.full_name?.toLowerCase() || '';
+      const orgName = vendor.organization_name?.toLowerCase() || '';
+      const email = vendor.emails?.find(e => e.type === 'principal')?.value?.toLowerCase() || '';
+      
+      return fullName.includes(search) || 
+             orgName.includes(search) || 
+             email.includes(search);
+    });
+  }, [vendors, searchTerm]);
+
+  const handleSelectVendor = (vendor: CrmPerson) => {
+    onSelect({
+      id: vendor._id,
+      name: vendor.full_name || `${vendor.first_name || ''} ${vendor.last_name || ''}`.trim(),
+      ...vendor
+    });
+    setIsOpen(false);
+  };
 
   const selectedVendorData = vendors.find(vendor => vendor._id === selectedContactVendor);
 
@@ -201,7 +111,7 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
             </div>
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-7xl max-h-[90vh]">
+        <DialogContent className="sm:max-w-4xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
               <User className="h-5 w-5" />
@@ -210,21 +120,86 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
           </DialogHeader>
           
           <div className="space-y-4">
-            <GenericTable
-              columns={columns}
-              fetchData={fetchVendors}
-              data={vendors}
-              loading={loading}
-              totalElements={totalElements}
-              totalPages={totalPages}
-              getItemId={(item) => item._id}
-              showCreateButton={false}
-              showFilters={false}
-              actionMenuItems={actionItems}
-              showActionColumn={true}
-              showActionIcons={false}
-              rowSpacing="normal"
-            />
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Buscar contact vendors..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Loading */}
+            {loading && (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                <p className="mt-2">Cargando contact vendors...</p>
+              </div>
+            )}
+
+            {/* Results */}
+            {!loading && (
+              <div className="max-h-96 overflow-y-auto">
+                {filteredVendors.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <User className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No se encontraron contact vendors</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {filteredVendors.map((vendor) => {
+                      const primaryEmail = vendor.emails?.find(e => e.type === 'principal')?.value;
+                      const isSelected = vendor._id === selectedContactVendor;
+                      
+                      return (
+                        <div
+                          key={vendor._id}
+                          className={`p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                            isSelected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700'
+                          }`}
+                          onClick={() => handleSelectVendor(vendor)}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="flex-shrink-0">
+                              {vendor.person_type === 'juridical_person' ? (
+                                <Building2 className="h-8 w-8 text-blue-500" />
+                              ) : (
+                                <User className="h-8 w-8 text-green-500" />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center space-x-2 mb-1">
+                                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                                  {vendor.full_name || `${vendor.first_name || ''} ${vendor.last_name || ''}`.trim()}
+                                </h3>
+                                <Badge variant={vendor.person_type === 'juridical_person' ? 'default' : 'secondary'}>
+                                  {vendor.person_type === 'juridical_person' ? 'Empresa' : 'Individual'}
+                                </Badge>
+                              </div>
+                              
+                              {vendor.organization_name && (
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                  {vendor.organization_name}
+                                </p>
+                              )}
+                              
+                              {primaryEmail && (
+                                <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                                  <Mail className="h-4 w-4" />
+                                  <span>{primaryEmail}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
