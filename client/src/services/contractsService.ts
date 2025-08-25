@@ -207,7 +207,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     
     console.log('🌐 SERVICIO - URL con parámetros:', queryParams.toString());
     
-    const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${queryParams.toString()}`;
+    const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts?${queryParams.toString()}`;
     console.log('📡 SERVICIO - URL completa:', url);
 
     // Headers de la petición
@@ -324,7 +324,7 @@ export const deleteSubContract = async (subContractId: string): Promise<boolean>
     // Usar authenticatedFetch del interceptor
     const { authenticatedFetch } = await import('@/utils/apiInterceptors');
     
-    const response = await authenticatedFetch(`https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${subContractId}`, {
+    const response = await authenticatedFetch(`${environment.TRM_BASE_URL}/contracts/sp-sub-contracts/${subContractId}`, {
       method: 'DELETE',
       customHeaders: {
         '_partitionkey': localStorage.getItem('partition_key') || '',
