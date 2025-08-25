@@ -106,7 +106,8 @@ export function PurchaseContractForm({
           dispatch(updateSaleDraft(data));
         }
         
-        // Llamar callback del padre si se proporciona (para que la página maneje el flag)
+        // IMPORTANTE: Llamar callback del padre para activar flag
+        console.log('🔄 Componente: Llamando onFormChange del padre...', { hasCallback: !!onFormChange });
         if (onFormChange) {
           onFormChange(data);
         }

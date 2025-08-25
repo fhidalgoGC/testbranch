@@ -88,6 +88,7 @@ export default function CreateSaleContract() {
         onCancel={handleCancel}
         onFormChange={(data) => {
           // Activar flag cuando se empiece a llenar el formulario desde la PÁGINA
+          console.log('🔥 PÁGINA: onFormChange recibido', { data: !!data });
           console.log('🔥 PÁGINA: Activando hasDraftSaleContract = true por cambio en form');
           dispatch(setHasDraftSaleContract(true));
         }}
