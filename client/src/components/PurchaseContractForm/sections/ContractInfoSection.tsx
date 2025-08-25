@@ -355,18 +355,18 @@ export function ContractInfoSection() {
                   setValue('contact_vendor', vendor.id);
                   setValue('contact_vendor_name', vendor.name); // Store name for display
                   
-                  // Add to participants array with buyer role (contact vendor = buyer)
+                  // Add to participants array with contactVendor role
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'buyer'); // Remove existing buyer
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'contactVendor'); // Remove existing contactVendor
                   updatedParticipants.push({
                     people_id: vendor.id,
                     name: vendor.name,
-                    role: 'buyer' as const
+                    role: 'contactVendor' as const
                   });
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('contact_vendor');
-                  console.log('Contact Vendor selected and added to participants as buyer:', vendor);
+                  console.log('Contact Vendor selected and added to participants as contactVendor:', vendor);
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.contact_vendor}
@@ -379,10 +379,24 @@ export function ContractInfoSection() {
               </Label>
               <TraderSelectionModal
                 selectedTrader={watch('trader')}
+                selectedTraderName={watch('trader_name')} // Pass stored name for display
                 onSelect={(trader) => {
                   setValue('trader', trader.id);
+                  setValue('trader_name', trader.name); // Store name for display
+                  
+                  // Add to participants array with trader role
+                  const currentParticipants = watch('participants') || [];
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'trader'); // Remove existing trader
+                  updatedParticipants.push({
+                    people_id: trader.id,
+                    name: trader.name,
+                    role: 'trader' as const
+                  });
+                  setValue('participants', updatedParticipants);
+                  
                   clearErrors('trader');
-                  console.log('Trader selected:', trader);
+                  console.log('Trader selected and added to participants:', trader);
+                  console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.trader}
               />

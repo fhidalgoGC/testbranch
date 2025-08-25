@@ -13,7 +13,7 @@ export interface Characteristics {
 export interface Participant {
   people_id: string;
   name: string;
-  role: 'buyer' | 'seller';
+  role: 'buyer' | 'seller' | 'trader' | 'contactVendor';
 }
 
 export interface PriceSchedule {
