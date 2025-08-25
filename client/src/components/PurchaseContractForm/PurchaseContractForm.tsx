@@ -152,15 +152,16 @@ export function PurchaseContractForm({
     }
     
     // SIEMPRE redirigir, sin importar si hubo errores en la limpieza
+    // Ejecutar callback personalizado si existe
     if (onCancelProp) {
       onCancelProp();
+    }
+    
+    // SIEMPRE navegar al listado correspondiente (sin importar si hay callback)
+    if (contractType === 'purchase') {
+      setLocation('/purchase-contracts');
     } else {
-      // Navegar al listado correspondiente
-      if (contractType === 'purchase') {
-        setLocation('/purchase-contracts');
-      } else {
-        setLocation('/sale-contracts');
-      }
+      setLocation('/sale-contracts');
     }
   };
 
