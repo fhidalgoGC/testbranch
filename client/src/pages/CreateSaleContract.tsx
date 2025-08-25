@@ -10,8 +10,7 @@ export default function CreateSaleContract() {
   const { t } = useTranslation();
   const [contractId, setContractId] = useState<string | undefined>();
   
-  // Obtener los drafts del estado global
-  const purchaseDraft = useSelector((state: RootState) => state.contractDrafts.purchaseDraft);
+  // Obtener el draft de sale del estado global
   const saleDraft = useSelector((state: RootState) => state.contractDrafts.saleDraft);
   
   // Función para generar nuevo contrato
@@ -38,13 +37,13 @@ export default function CreateSaleContract() {
     }
   };
   
-  // Efecto para generar contractId solo si no hay drafts
+  // Efecto para generar contractId solo si no hay draft de sale
   useEffect(() => {
-    // Solo generar ID si no hay ningún draft cargado (ni purchase ni sale)
-    if (!purchaseDraft && !saleDraft && !contractId) {
+    // Solo generar ID si no hay draft de sale cargado
+    if (!saleDraft && !contractId) {
       generateContractId();
     }
-  }, [purchaseDraft, saleDraft, contractId]);
+  }, [saleDraft, contractId]);
 
   return (
     <DashboardLayout title={t("createSaleContract")}>
