@@ -34,36 +34,29 @@ export default function CreateSaleContract() {
     }
   }, [saleDraft, contractId]);
 
-  // Función para manejar cancelación completa
-  const handleCancel = () => {
-    console.log('🧹 CreateSaleContract: FORZANDO desmontaje del componente');
-    
-    // 1. INMEDIATAMENTE navegar para desmontar componente
-    setLocation('/sale-contracts');
-    
-    // 2. Limpiar estados DESPUÉS del desmontaje (usando setTimeout)
-    setTimeout(() => {
-      console.log('🧹 Limpiando estados después del desmontaje...');
+  // Hook de desmontaje - se ejecuta SOLO al desmontar (sin dependencias para evitar proxy revoked)
+  useEffect(() => {
+    return () => {
+      console.log('🧹 CreateSaleContract: Ejecutando cleanup final de desmontaje');
       
-      // Limpiar contractId local
-      setContractId(undefined);
-      
-      // Limpiar draft
-      if (saleDraft) {
-        console.log('🧹 Limpiando sale draft - ANTES:', saleDraft);
-        dispatch(clearSaleDraft());
-        console.log('🧹 Draft limpiado');
-      }
-      
-      // Limpiar page state
+      // Usar dispatch directamente para limpiar todos los drafts
+      dispatch(clearSaleDraft());
       if (contractId) {
-        console.log('🧹 Limpiando page state para contractId:', contractId);
         dispatch(clearContractDetailState(contractId));
         dispatch(clearCreateSubContractState(contractId));
       }
       
-      console.log('✅ CreateSaleContract: Limpieza completa finalizada');
-    }, 100); // Pequeño delay para asegurar desmontaje
+      console.log('✅ CreateSaleContract: Cleanup final completado');
+    };
+  }, []); // Array vacío para que solo se ejecute al desmontar
+
+  // Función para manejar cancelación - solo navegar (cleanup automático por useEffect)
+  const handleCancel = () => {
+    console.log('🧹 CreateSaleContract: Navegando para desmontar componente');
+    console.log('🧹 El cleanup se ejecutará automáticamente por useEffect');
+    
+    // Solo navegar - el cleanup se ejecuta automáticamente
+    setLocation('/sale-contracts');
   };
 
   return (
