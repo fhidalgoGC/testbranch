@@ -36,32 +36,34 @@ export default function CreatePurchaseContract() {
   
   // Función para manejar cancelación completa
   const handleCancel = () => {
-    console.log('🧹 CreatePurchaseContract: Iniciando limpieza completa...');
+    console.log('🧹 CreatePurchaseContract: FORZANDO desmontaje del componente');
     
-    // 1. Limpiar contractId local
-    setContractId(undefined);
-    
-    // 2. Limpiar draft
-    if (purchaseDraft) {
-      console.log('🧹 Limpiando purchase draft - ANTES:', purchaseDraft);
-      dispatch(clearPurchaseDraft());
-      console.log('🧹 Dispatch clearPurchaseDraft ejecutado');
-    } else {
-      console.log('🧹 No hay purchase draft para limpiar');
-    }
-    
-    // 3. Limpiar page state
-    if (contractId) {
-      console.log('🧹 Limpiando page state para contractId:', contractId);
-      dispatch(clearContractDetailState(contractId));
-      dispatch(clearCreateSubContractState(contractId));
-    }
-    
-    // 4. Navegar con wouter (solo)
-    console.log('🔄 Navegando a purchase-contracts');
+    // 1. INMEDIATAMENTE navegar para desmontar componente
     setLocation('/purchase-contracts');
     
-    console.log('✅ CreatePurchaseContract: Limpieza completa finalizada');
+    // 2. Limpiar estados DESPUÉS del desmontaje (usando setTimeout)
+    setTimeout(() => {
+      console.log('🧹 Limpiando estados después del desmontaje...');
+      
+      // Limpiar contractId local
+      setContractId(undefined);
+      
+      // Limpiar draft
+      if (purchaseDraft) {
+        console.log('🧹 Limpiando purchase draft - ANTES:', purchaseDraft);
+        dispatch(clearPurchaseDraft());
+        console.log('🧹 Draft limpiado');
+      }
+      
+      // Limpiar page state
+      if (contractId) {
+        console.log('🧹 Limpiando page state para contractId:', contractId);
+        dispatch(clearContractDetailState(contractId));
+        dispatch(clearCreateSubContractState(contractId));
+      }
+      
+      console.log('✅ CreatePurchaseContract: Limpieza completa finalizada');
+    }, 100); // Pequeño delay para asegurar desmontaje
   };
 
   return (

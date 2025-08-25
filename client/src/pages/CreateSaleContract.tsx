@@ -36,29 +36,34 @@ export default function CreateSaleContract() {
 
   // Función para manejar cancelación completa
   const handleCancel = () => {
-    console.log('🧹 CreateSaleContract: Iniciando limpieza completa...');
+    console.log('🧹 CreateSaleContract: FORZANDO desmontaje del componente');
     
-    // 1. Limpiar contractId local
-    setContractId(undefined);
-    
-    // 2. Limpiar draft
-    if (saleDraft) {
-      console.log('🧹 Limpiando sale draft');
-      dispatch(clearSaleDraft());
-    }
-    
-    // 3. Limpiar page state
-    if (contractId) {
-      console.log('🧹 Limpiando page state para contractId:', contractId);
-      dispatch(clearContractDetailState(contractId));
-      dispatch(clearCreateSubContractState(contractId));
-    }
-    
-    // 4. Navegar con wouter (solo)
-    console.log('🔄 Navegando a sale-contracts');
+    // 1. INMEDIATAMENTE navegar para desmontar componente
     setLocation('/sale-contracts');
     
-    console.log('✅ CreateSaleContract: Limpieza completa finalizada');
+    // 2. Limpiar estados DESPUÉS del desmontaje (usando setTimeout)
+    setTimeout(() => {
+      console.log('🧹 Limpiando estados después del desmontaje...');
+      
+      // Limpiar contractId local
+      setContractId(undefined);
+      
+      // Limpiar draft
+      if (saleDraft) {
+        console.log('🧹 Limpiando sale draft - ANTES:', saleDraft);
+        dispatch(clearSaleDraft());
+        console.log('🧹 Draft limpiado');
+      }
+      
+      // Limpiar page state
+      if (contractId) {
+        console.log('🧹 Limpiando page state para contractId:', contractId);
+        dispatch(clearContractDetailState(contractId));
+        dispatch(clearCreateSubContractState(contractId));
+      }
+      
+      console.log('✅ CreateSaleContract: Limpieza completa finalizada');
+    }, 100); // Pequeño delay para asegurar desmontaje
   };
 
   return (
