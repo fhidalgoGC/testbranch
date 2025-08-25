@@ -308,8 +308,20 @@ export function ContractInfoSection() {
                 onSelect={(seller) => {
                   setValue('seller', seller.id);
                   setValue('seller_name', seller.name); // Store name for display
+                  
+                  // Add to participants array with seller role
+                  const currentParticipants = watch('participants') || [];
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'seller'); // Remove existing seller
+                  updatedParticipants.push({
+                    people_id: seller.id,
+                    name: seller.name,
+                    role: 'seller' as const
+                  });
+                  setValue('participants', updatedParticipants);
+                  
                   clearErrors('seller');
-                  console.log('Seller selected:', seller);
+                  console.log('Seller selected and added to participants:', seller);
+                  console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.seller}
               />
@@ -342,8 +354,20 @@ export function ContractInfoSection() {
                 onSelect={(vendor) => {
                   setValue('contact_vendor', vendor.id);
                   setValue('contact_vendor_name', vendor.name); // Store name for display
+                  
+                  // Add to participants array with buyer role (contact vendor = buyer)
+                  const currentParticipants = watch('participants') || [];
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'buyer'); // Remove existing buyer
+                  updatedParticipants.push({
+                    people_id: vendor.id,
+                    name: vendor.name,
+                    role: 'buyer' as const
+                  });
+                  setValue('participants', updatedParticipants);
+                  
                   clearErrors('contact_vendor');
-                  console.log('Contact Vendor selected:', vendor);
+                  console.log('Contact Vendor selected and added to participants as buyer:', vendor);
+                  console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.contact_vendor}
               />
