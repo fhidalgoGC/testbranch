@@ -1,4 +1,6 @@
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
+import { authenticatedFetch } from '@/utils/apiInterceptors';
+import { environment } from '@/environment/environment';
 
 // Interface para la respuesta de contratos basada en la respuesta real de la API
 interface ContractResponse {
@@ -351,5 +353,30 @@ export const deleteSubContract = async (subContractId: string): Promise<boolean>
   } catch (error) {
     console.error('❌ Error eliminando sub-contrato:', error);
     throw error;
+  }
+};
+
+// Service function to generate a new contract ID
+export const generateContractId = async (): Promise<string | null> => {
+  try {
+    console.log('🆔 Generating new contract ID...');
+    const response = await authenticatedFetch(`${environment.TRM_BASE_URL}/contracts/sp-contracts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: ''
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('✅ Contract ID generated:', data.key);
+    return data.key;
+  } catch (error) {
+    console.error('❌ Error generating contract ID:', error);
+    return null;
   }
 };
