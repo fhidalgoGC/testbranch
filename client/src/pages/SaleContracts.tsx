@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
-import { useSelector } from 'react-redux';
 import {
   useContractsPageState,
   usePageTracking,
@@ -26,7 +25,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Plus, Edit } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { RootState } from '@/app/store';
 
 export default function SaleContracts() {
   const { t } = useTranslation();
@@ -37,9 +35,8 @@ export default function SaleContracts() {
     error: commoditiesError,
   } = useCommodities();
   
-  // Obtener el estado del draft de sale para mostrar indicador
-  const saleDraft = useSelector((state: RootState) => state.contractDrafts.saleDraft);
-  const hasDraftData = saleDraft && Object.keys(saleDraft).length > 0;
+  // Draft system removido - no más indicadores de draft  
+  const hasDraftData = false;
 
   // Hook para persistir estado de la página
   const { pageState, updateState } = useContractsPageState("purchaseContracts");

@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useContractsPageState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useCommodities } from '@/hooks/useCommodities';
@@ -22,7 +21,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, Plus, Edit } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
-import { RootState } from '@/app/store';
 
 
 
@@ -31,9 +29,8 @@ export default function PurchaseContracts() {
   const [location, setLocation] = useLocation();
   const { commodities, loading: commoditiesLoading, error: commoditiesError } = useCommodities();
   
-  // Obtener el estado del draft de purchase para mostrar indicador
-  const purchaseDraft = useSelector((state: RootState) => state.contractDrafts.purchaseDraft);
-  const hasDraftData = purchaseDraft && Object.keys(purchaseDraft).length > 0;
+  // Draft system removido - no más indicadores de draft
+  const hasDraftData = false;
   
   // Hook para persistir estado de la página
   const { pageState, updateState } = useContractsPageState('purchaseContracts');
