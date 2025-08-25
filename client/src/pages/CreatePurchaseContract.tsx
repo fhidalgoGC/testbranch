@@ -94,9 +94,7 @@ export default function CreatePurchaseContract() {
         contractId={contractId}
         onCancel={handleCancel}
         onFormChange={(data) => {
-          // Activar flag cuando se empiece a llenar el formulario desde la PÁGINA
-          console.log('🔥 PÁGINA: Activando hasDraftPurchaseContract = true por cambio en form');
-          dispatch(setHasDraftPurchaseContract(true));
+          
         }}
       />
     </DashboardLayout>

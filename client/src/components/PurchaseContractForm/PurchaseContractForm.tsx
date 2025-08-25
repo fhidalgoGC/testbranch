@@ -137,6 +137,9 @@ export function PurchaseContractForm({
   // Manejar cancel - solo limpiar state del componente
   const handleCancel = () => {
     console.log('🧹 PurchaseContractForm: Limpiando form state');
+
+    // Ejecutar callback del padre (delegará resto de responsabilidades)
+    
     
     try {
       // Solo limpiar el estado del formulario
@@ -144,11 +147,13 @@ export function PurchaseContractForm({
     } catch (error) {
       console.warn('Form already reset:', error);
     }
-    
-    // Ejecutar callback del padre (delegará resto de responsabilidades)
+
     if (onCancelProp) {
       onCancelProp();
     }
+    
+    
+    
   };
 
   return (
