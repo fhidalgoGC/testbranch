@@ -30,11 +30,22 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
   // Load vendors when modal opens - always fresh data
   useEffect(() => {
     if (isOpen) {
-      // Reset state and load fresh data every time modal opens
+      console.log('🔄 ContactVendorModal: Modal opened, loading fresh data...');
+      // Reset state immediately when modal opens
+      setLoading(true);
+      setVendors([]);
       setCurrentPage(1);
       setHasMore(true);
       setSearchTerm('');
+      setLoadingMore(false);
+      
+      // Load fresh data
       loadVendors(1, true);
+    } else {
+      // Reset everything when modal closes
+      setVendors([]);
+      setLoading(false);
+      setLoadingMore(false);
     }
   }, [isOpen]);
 
@@ -50,14 +61,15 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
 
   const loadVendors = async (page: number = 1, reset: boolean = false) => {
     try {
-      if (reset) {
-        setLoading(true);
-        setVendors([]);
-      } else {
+      console.log(`🚀 ContactVendorModal: Loading vendors - Page ${page}, Reset: ${reset}`);
+      
+      if (!reset) {
         setLoadingMore(true);
       }
+      // Note: loading state is already set in useEffect for reset case
 
       const response = await getContactVendors({ page, limit: 20 });
+      console.log(`✅ ContactVendorModal: Loaded ${response.data.length} contact vendors`);
       
       if (reset) {
         setVendors(response.data);
@@ -70,7 +82,7 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
       setCurrentPage(page);
       
     } catch (error) {
-      console.error('Error fetching contact vendors:', error);
+      console.error('❌ ContactVendorModal: Error fetching vendors:', error);
       if (reset) {
         setVendors([]);
       }
@@ -179,9 +191,10 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
 
             {/* Loading */}
             {loading && (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                <p className="mt-2">Cargando contact vendors...</p>
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-lg font-medium">Cargando contact vendors...</p>
+                <p className="mt-2 text-sm text-gray-500">Obteniendo datos del CRM</p>
               </div>
             )}
 

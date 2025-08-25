@@ -30,11 +30,22 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
   // Load sellers when modal opens - always fresh data
   useEffect(() => {
     if (isOpen) {
-      // Reset state and load fresh data every time modal opens
+      console.log('🔄 SellerModal: Modal opened, loading fresh data...');
+      // Reset state immediately when modal opens
+      setLoading(true);
+      setSellers([]);
       setCurrentPage(1);
       setHasMore(true);
       setSearchTerm('');
+      setLoadingMore(false);
+      
+      // Load fresh data
       loadSellers(1, true);
+    } else {
+      // Reset everything when modal closes
+      setSellers([]);
+      setLoading(false);
+      setLoadingMore(false);
     }
   }, [isOpen]);
 
@@ -50,14 +61,15 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
 
   const loadSellers = async (page: number = 1, reset: boolean = false) => {
     try {
-      if (reset) {
-        setLoading(true);
-        setSellers([]);
-      } else {
+      console.log(`🚀 SellerModal: Loading sellers - Page ${page}, Reset: ${reset}`);
+      
+      if (!reset) {
         setLoadingMore(true);
       }
+      // Note: loading state is already set in useEffect for reset case
 
       const response = await getSellers({ page, limit: 20 });
+      console.log(`✅ SellerModal: Loaded ${response.data.length} sellers`);
       
       if (reset) {
         setSellers(response.data);
@@ -70,7 +82,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
       setCurrentPage(page);
       
     } catch (error) {
-      console.error('Error fetching sellers:', error);
+      console.error('❌ SellerModal: Error fetching sellers:', error);
       if (reset) {
         setSellers([]);
       }
@@ -179,9 +191,10 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
 
             {/* Loading */}
             {loading && (
-              <div className="text-center py-8">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                <p className="mt-2">Cargando vendedores...</p>
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-lg font-medium">Cargando vendedores...</p>
+                <p className="mt-2 text-sm text-gray-500">Obteniendo datos del CRM</p>
               </div>
             )}
 
