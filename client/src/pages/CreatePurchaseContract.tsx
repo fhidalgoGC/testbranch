@@ -90,6 +90,7 @@ export default function CreatePurchaseContract() {
         </Button>
       </div>
       <PurchaseContractForm 
+        key={`purchase-form-${contractId || 'new'}-${Date.now()}`}
         contractType="purchase" 
         mode="create" 
         initialContract={purchaseDraft || undefined}

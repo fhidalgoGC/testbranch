@@ -70,8 +70,32 @@ export function PurchaseContractForm({
   
   const { t } = useTranslation();
   
-  // Crear el callback de onFormChange usando un ref para evitar dependencia circular
-  const [isComponentResetting, setIsComponentResetting] = useState(false);
+  // Primero declarar el hook para obtener isResetting
+  const hookResult = usePurchaseContractForm({
+    initialData: getInitialData(),
+    contractType,
+    mode,
+    onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
+      // Solo auto-guardar en modo create
+      if (mode === 'create') {
+        console.log('🔄 onFormChange triggered:', { contractType, hasData: !!data });
+        
+        if (contractType === 'purchase') {
+          dispatch(updatePurchaseDraft(data));
+        } else {
+          dispatch(updateSaleDraft(data));
+        }
+        
+        // Siempre activar flag - el hook manejará el bloqueo durante reset
+        if (onFormChange) {
+          console.log('🔄 Componente: Llamando onFormChange del padre...');
+          onFormChange(data);
+        }
+      }
+    }, [mode, contractType, dispatch, onFormChange]),
+    onSuccess: handleSuccess,
+    onCancel: onCancelProp,
+  });
   
   const {
     form,
@@ -96,37 +120,8 @@ export function PurchaseContractForm({
     addRemark,
     removeRemark,
     updateRemark,
-  } = usePurchaseContractForm({
-    initialData: getInitialData(),
-    contractType,
-    mode,
-    onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
-      // Solo auto-guardar en modo create
-      if (mode === 'create') {
-        console.log('🔄 onFormChange triggered:', { contractType, hasData: !!data, isComponentResetting });
-        
-        if (contractType === 'purchase') {
-          dispatch(updatePurchaseDraft(data));
-        } else {
-          dispatch(updateSaleDraft(data));
-        }
-        
-        // IMPORTANTE: Solo activar flag si NO estamos en proceso de reset
-        if (!isComponentResetting && onFormChange) {
-          console.log('🔄 Componente: Llamando onFormChange del padre (NO resetting)...');
-          onFormChange(data);
-        } else if (isComponentResetting) {
-          console.log('🚫 Componente: Bloqueado onFormChange porque estamos resetting');
-        }
-      }
-    }, [mode, contractType, dispatch, onFormChange, isComponentResetting]),
-    onSuccess: handleSuccess,
-  });
+  } = hookResult;
   
-  // Sincronizar el estado local con el del hook
-  useEffect(() => {
-    setIsComponentResetting(isResetting);
-  }, [isResetting]);
 
   // Generar títulos dinámicamente
   const getTitle = () => {
@@ -148,53 +143,12 @@ export function PurchaseContractForm({
     }
   };
 
-  // Estado para detectar transición del reset
-  const [wasResetting, setWasResetting] = useState(false);
-
-  // Detectar cuando el reset terminó completamente
+  // Detectar desmontaje del componente
   useEffect(() => {
-    console.log('🔄 useEffect reset detector:', { wasResetting, isResetting, hasOnCancelProp: !!onCancelProp });
-    
-    if (wasResetting && !isResetting) {
-      // ✅ Transición: de "resetting" a "no resetting" = TERMINÓ
-      console.log('🎉 Componente: Form reset completado determinísticamente');
-      setWasResetting(false);
-      
-      // Solo ahora ejecutar el callback del padre
-      if (onCancelProp) {
-        console.log('🚀 Componente: Ejecutando onCancelProp después de reset completo');
-        onCancelProp();
-      } else {
-        console.log('⚠️ Componente: onCancelProp no disponible');
-      }
-    }
-    
-    if (isResetting && !wasResetting) {
-      console.log('🕐 Componente: Detectado inicio de reset');
-      setWasResetting(true);
-    }
-  }, [isResetting, wasResetting, onCancelProp]);
-
-  // Manejar cancel - iniciar reset y esperar que termine
-  const handleCancel = () => {
-    console.log('🧹 PurchaseContractForm: Iniciando secuencia de cancel');
-    console.log('🧹 PurchaseContractForm: onCancelProp disponible?', !!onCancelProp);
-    
-    try {
-      // Iniciar el reset del formulario (esto activará isResetting)
-      onCancel();
-      
-      // NO ejecutar onCancelProp aquí - se ejecutará en el useEffect cuando termine
-      console.log('🕐 PurchaseContractForm: Reset iniciado, esperando confirmación...');
-    } catch (error) {
-      console.warn('Form already reset:', error);
-      // En caso de error, ejecutar callback inmediatamente
-      console.log('❌ PurchaseContractForm: Error en reset, ejecutando onCancelProp inmediatamente');
-      if (onCancelProp) {
-        //onCancelProp();
-      }
-    }
-  };
+    return () => {
+      console.log('🔥 Componente: Desmontándose - flujo de cancel completado');
+    };
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 p-6">
@@ -276,8 +230,8 @@ export function PurchaseContractForm({
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    console.log('🔴 BOTÓN CANCEL CLICKEADO - Iniciando handleCancel');
-                    handleCancel();
+                    console.log('🔴 BOTÓN CANCEL CLICKEADO - Usando onCancel del hook');
+                    onCancel();
                   }}
                   disabled={isSubmitting}
                   className="px-8"

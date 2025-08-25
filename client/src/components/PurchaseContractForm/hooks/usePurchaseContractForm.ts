@@ -14,14 +14,22 @@ interface UsePurchaseContractFormOptions {
   mode?: 'create' | 'edit' | 'view';
   onFormChange?: (data: Partial<PurchaseSaleContract>) => void;
   onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
-  const { initialData = {}, contractType = 'purchase', mode = 'create', onFormChange, onSuccess } = options;
+  const { initialData = {}, contractType = 'purchase', mode = 'create', onFormChange, onSuccess, onCancel: onCancelProp } = options;
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+
+  // Detectar desmontaje del componente
+  useEffect(() => {
+    return () => {
+      console.log('🔥 Hook: Componente desmontándose - limpieza automática');
+    };
+  }, []);
 
   // Create reactive resolver that updates when language changes
   const resolver = useMemo(() => {
@@ -547,60 +555,22 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   };
 
   const onCancel = () => {
-    console.log('🧹 Hook: Iniciando reset del formulario...');
-    setIsResetting(true); // Indicar que empezamos el reset
+    console.log('🧹 Hook: Cancel iniciado - componente se desmontará tras navegación');
     
-    // Reset form to default values without specifying arrays to avoid extensibility errors
-    form.reset();
+    // Como el componente se desmonta tras navegación, no necesitamos reset complejo
+    // Solo marcar que estamos cancelando y ejecutar el callback inmediatamente
+    setIsResetting(true);
     
-    // Clear arrays manually by setting them to new arrays
-    form.setValue('participants', []);
-    form.setValue('price_schedule', []);
-    form.setValue('logistic_schedule', []);
-    form.setValue('adjustments', []);
-    form.setValue('remarks', []);
+    console.log('🧹 Hook: Ejecutando callback de página inmediatamente...');
     
-    console.log('🧹 Hook: Reset ejecutado, esperando confirmación...');
+    // Ejecutar callback de la página en el siguiente tick
+    setTimeout(() => {
+      if (onCancelProp) {
+        onCancelProp();
+      }
+    }, 0);
   };
 
-  // Detectar cuando el reset terminó completamente usando subscription segura
-  useEffect(() => {
-    if (!isResetting) return;
-
-    console.log('🔍 Hook: Iniciando verificación de reset...');
-
-    // Usar setTimeout para permitir que React Hook Form complete el reset
-    const checkReset = () => {
-      try {
-        const currentValues = form.getValues();
-        const hasDefaultValues = checkIfFormHasDefaultValues(currentValues);
-        
-        console.log('🔍 Hook: Verificando si reset terminó...', { 
-          hasDefaultValues, 
-          sampleValues: {
-            commodity_id: currentValues.commodity_id,
-            quantity: currentValues.quantity,
-            participantsLength: currentValues.participants?.length
-          }
-        });
-        
-        if (hasDefaultValues) {
-          console.log('✅ Hook: Reset completado determinísticamente');
-          setIsResetting(false);
-        } else {
-          // Si no está listo, intentar de nuevo en el siguiente tick
-          setTimeout(checkReset, 0);
-        }
-      } catch (error) {
-        console.warn('Error verificando reset:', error);
-        // En caso de error, asumir que el reset terminó
-        setIsResetting(false);
-      }
-    };
-
-    // Iniciar la verificación
-    setTimeout(checkReset, 0);
-  }, [isResetting]); // Solo depende de isResetting
 
   return {
     form,
