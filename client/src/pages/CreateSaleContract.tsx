@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation } from 'wouter';
-import { useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { PurchaseContractForm } from "@/components/PurchaseContractForm/PurchaseContractForm";
 import { RootState } from '@/app/store';
@@ -14,7 +13,6 @@ export default function CreateSaleContract() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [, setLocation] = useLocation();
-  const { handleNavigateToPage } = useNavigationHandler();
   const [contractId, setContractId] = useState<string | undefined>();
   
   // Obtener el draft de sale del estado global
@@ -56,9 +54,8 @@ export default function CreateSaleContract() {
       dispatch(clearCreateSubContractState(contractId));
     }
     
-    // 4. Navegar con wouter
+    // 4. Navegar con wouter (solo)
     console.log('🔄 Navegando a sale-contracts');
-    handleNavigateToPage('sale-contracts');
     setLocation('/sale-contracts');
     
     console.log('✅ CreateSaleContract: Limpieza completa finalizada');
