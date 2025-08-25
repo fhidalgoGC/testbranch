@@ -22,25 +22,67 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [sellers, setSellers] = useState<CrmPerson[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   // Load sellers when modal opens
   useEffect(() => {
     if (isOpen && sellers.length === 0) {
-      loadSellers();
+      loadSellers(1, true);
     }
   }, [isOpen]);
 
-  const loadSellers = async () => {
+  // Reset search
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      // When searching, reset pagination and load first page
+      setCurrentPage(1);
+      setHasMore(true);
+      loadSellers(1, true);
+    }
+  }, [searchTerm]);
+
+  const loadSellers = async (page: number = 1, reset: boolean = false) => {
     try {
-      setLoading(true);
-      const response = await getSellers({ page: 1, limit: 50 });
-      setSellers(response.data);
+      if (reset) {
+        setLoading(true);
+        setSellers([]);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const response = await getSellers({ page, limit: 20 });
+      
+      if (reset) {
+        setSellers(response.data);
+      } else {
+        setSellers(prev => [...prev, ...response.data]);
+      }
+      
+      // Check if there are more pages
+      setHasMore(page < response._meta.totalPages);
+      setCurrentPage(page);
+      
     } catch (error) {
       console.error('Error fetching sellers:', error);
-      setSellers([]);
+      if (reset) {
+        setSellers([]);
+      }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  // Infinite scroll handler
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    
+    // When user scrolls to bottom and there are more items to load
+    if (scrollHeight - scrollTop === clientHeight && hasMore && !loadingMore && !loading) {
+      loadSellers(currentPage + 1, false);
     }
   };
 
@@ -141,7 +183,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
 
             {/* Results */}
             {!loading && (
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-96 overflow-y-auto" onScroll={handleScroll}>
                 {filteredSellers.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <User className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -196,6 +238,21 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
                         </div>
                       );
                     })}
+                    
+                    {/* Loading more indicator */}
+                    {loadingMore && (
+                      <div className="text-center py-4">
+                        <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                        <p className="mt-2 text-sm text-gray-500">Cargando más...</p>
+                      </div>
+                    )}
+                    
+                    {/* End of results indicator */}
+                    {!hasMore && sellers.length > 0 && (
+                      <div className="text-center py-4 text-sm text-gray-500">
+                        No hay más resultados
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

@@ -22,25 +22,67 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
   const [isOpen, setIsOpen] = useState(false);
   const [vendors, setVendors] = useState<CrmPerson[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   // Load vendors when modal opens
   useEffect(() => {
     if (isOpen && vendors.length === 0) {
-      loadVendors();
+      loadVendors(1, true);
     }
   }, [isOpen]);
 
-  const loadVendors = async () => {
+  // Reset search
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      // When searching, reset pagination and load first page
+      setCurrentPage(1);
+      setHasMore(true);
+      loadVendors(1, true);
+    }
+  }, [searchTerm]);
+
+  const loadVendors = async (page: number = 1, reset: boolean = false) => {
     try {
-      setLoading(true);
-      const response = await getContactVendors({ page: 1, limit: 50 });
-      setVendors(response.data);
+      if (reset) {
+        setLoading(true);
+        setVendors([]);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const response = await getContactVendors({ page, limit: 20 });
+      
+      if (reset) {
+        setVendors(response.data);
+      } else {
+        setVendors(prev => [...prev, ...response.data]);
+      }
+      
+      // Check if there are more pages
+      setHasMore(page < response._meta.totalPages);
+      setCurrentPage(page);
+      
     } catch (error) {
       console.error('Error fetching contact vendors:', error);
-      setVendors([]);
+      if (reset) {
+        setVendors([]);
+      }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  // Infinite scroll handler
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    
+    // When user scrolls to bottom and there are more items to load
+    if (scrollHeight - scrollTop === clientHeight && hasMore && !loadingMore && !loading) {
+      loadVendors(currentPage + 1, false);
     }
   };
 
@@ -141,7 +183,7 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
 
             {/* Results */}
             {!loading && (
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-96 overflow-y-auto" onScroll={handleScroll}>
                 {filteredVendors.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <User className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -196,6 +238,21 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
                         </div>
                       );
                     })}
+                    
+                    {/* Loading more indicator */}
+                    {loadingMore && (
+                      <div className="text-center py-4">
+                        <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                        <p className="mt-2 text-sm text-gray-500">Cargando más...</p>
+                      </div>
+                    )}
+                    
+                    {/* End of results indicator */}
+                    {!hasMore && vendors.length > 0 && (
+                      <div className="text-center py-4 text-sm text-gray-500">
+                        No hay más resultados
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
