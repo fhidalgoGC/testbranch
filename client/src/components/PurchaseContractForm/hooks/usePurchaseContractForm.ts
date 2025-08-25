@@ -123,17 +123,19 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     defaultValues,
   });
 
-  // Auto-save functionality con debounce para evitar bucles infinitos
+  // FIXED: Hook-level auto-save with loop prevention
   useEffect(() => {
     if (!onFormChange || mode !== 'create') return;
 
-    const subscription = form.watch((value) => {
-      // Debounce para evitar demasiadas actualizaciones
-      const timeoutId = setTimeout(() => {
-        onFormChange(value as Partial<PurchaseSaleContract>);
-      }, 500); // 500ms de debounce
-
-      return () => clearTimeout(timeoutId);
+    const subscription = form.watch((value, { name, type }) => {
+      // Solo disparar onChange cuando hay cambios reales (no cargas iniciales)
+      if (name && type === 'change') {
+        const timeoutId = setTimeout(() => {
+          console.log('🎯 Hook form.watch - campo cambiado:', name);
+          onFormChange(value as Partial<PurchaseSaleContract>);
+        }, 300); // Debounce más corto
+        return () => clearTimeout(timeoutId);
+      }
     });
 
     return subscription.unsubscribe;

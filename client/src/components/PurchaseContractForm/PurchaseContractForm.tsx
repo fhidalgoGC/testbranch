@@ -76,19 +76,19 @@ export function PurchaseContractForm({
     contractType,
     mode,
     onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
-      // Solo auto-guardar en modo create
+      // Hook maneja: form.watch → dispatch Redux + llamada a página
       if (mode === 'create') {
-        console.log('🔄 onFormChange triggered:', { contractType, hasData: !!data });
+        console.log('🎯 COMPONENTE: Pasando callback al hook para Redux+Página');
         
+        // Actualizar Redux
         if (contractType === 'purchase') {
           dispatch(updatePurchaseDraft(data));
         } else {
           dispatch(updateSaleDraft(data));
         }
         
-        // Siempre activar flag - el hook manejará el bloqueo durante reset
+        // Notificar a página (activar flag)
         if (onFormChange) {
-          console.log('🔄 Componente: Llamando onFormChange del padre...');
           onFormChange(data);
         }
       }
