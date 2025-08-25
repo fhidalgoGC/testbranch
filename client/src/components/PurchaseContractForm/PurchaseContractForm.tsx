@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { RootState } from '@/app/store';
 import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { clearContractDetailState, clearCreateSubContractState } from '@/store/slices/pageStateSlice';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
@@ -132,18 +133,30 @@ export function PurchaseContractForm({
 
   // Manejar cancel personalizado
   const handleCancel = () => {
+    console.log('🧹 INICIANDO LIMPIEZA COMPLETA...');
+    
     try {
-      // Limpiar draft si es modo create (validar que existe antes de limpiar)
+      // 1. Limpiar draft si es modo create (validar que existe antes de limpiar)
       if (mode === 'create') {
         if (contractType === 'purchase' && draft) {
+          console.log('🧹 Limpiando purchase draft');
           dispatch(clearPurchaseDraft());
         } else if (contractType === 'sale' && draft) {
+          console.log('🧹 Limpiando sale draft');
           dispatch(clearSaleDraft());
         }
       }
       
-      // Llamar onCancel del hook para limpiar formulario (solo si está disponible)
+      // 2. Limpiar page state relacionado con contratos
+      if (contractId) {
+        console.log('🧹 Limpiando page state para contractId:', contractId);
+        dispatch(clearContractDetailState(contractId));
+        dispatch(clearCreateSubContractState(contractId));
+      }
+      
+      // 3. Llamar onCancel del hook para limpiar formulario
       try {
+        console.log('🧹 Limpiando form state');
         onCancel();
       } catch (error) {
         console.warn('Form already reset:', error);
@@ -153,13 +166,13 @@ export function PurchaseContractForm({
       console.warn('Error during cleanup:', error);
     }
     
-    // SIEMPRE redirigir, sin importar si hubo errores en la limpieza
-    // Ejecutar callback personalizado si existe
+    // 4. SIEMPRE ejecutar callback personalizado (limpiar contractId del estado padre)
     if (onCancelProp) {
+      console.log('🧹 Ejecutando callback personalizado (limpiar contractId)');
       onCancelProp();
     }
     
-    // SIEMPRE navegar al listado correspondiente (sin importar si hay callback)
+    // 5. SIEMPRE navegar al listado correspondiente
     if (contractType === 'purchase') {
       console.log('🔄 Navegando a purchase-contracts');
       handleNavigateToPage('purchase-contracts');
@@ -169,6 +182,8 @@ export function PurchaseContractForm({
       handleNavigateToPage('sale-contracts');
       setLocation('/sale-contracts');
     }
+    
+    console.log('✅ LIMPIEZA COMPLETA FINALIZADA');
   };
 
   return (
