@@ -694,6 +694,25 @@ export default function PurchaseContracts() {
             >
               Debug Page State
             </Button>
+            <Button
+              onClick={() => {
+                console.log('🔍 === DEBUG DRAFT STATE ===');
+                console.log('purchaseDraft:', purchaseDraft);
+                console.log('hasDraftData:', hasDraftData);
+                console.log('purchaseDraft keys:', purchaseDraft ? Object.keys(purchaseDraft) : 'null');
+                console.log('localStorage contractDrafts:', JSON.parse(localStorage.getItem('contractDrafts') || '{}'));
+                console.log('================================');
+                
+                // También mostrar en alert para el usuario
+                const draftInfo = purchaseDraft ? 
+                  `Draft existe: ${Object.keys(purchaseDraft).length} campos\n${JSON.stringify(purchaseDraft, null, 2)}` : 
+                  'No hay draft';
+                alert(`DRAFT DEBUG:\n${draftInfo}`);
+              }}
+              className="bg-orange-100 border-orange-300 text-orange-700 hover:bg-orange-200 flex items-center gap-2"
+            >
+              🔍 Debug Draft
+            </Button>
             <Link href="/purchase-contracts/create" className="inline-block">
               <Button 
                 className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
