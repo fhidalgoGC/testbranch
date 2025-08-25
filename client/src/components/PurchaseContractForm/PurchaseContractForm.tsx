@@ -275,7 +275,10 @@ export function PurchaseContractForm({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={handleCancel}
+                  onClick={() => {
+                    console.log('🔴 BOTÓN CANCEL CLICKEADO - Iniciando handleCancel');
+                    handleCancel();
+                  }}
                   disabled={isSubmitting}
                   className="px-8"
                 >
