@@ -69,6 +69,10 @@ export function PurchaseContractForm({
   };
   
   const { t } = useTranslation();
+  
+  // Crear el callback de onFormChange usando un ref para evitar dependencia circular
+  const [isComponentResetting, setIsComponentResetting] = useState(false);
+  
   const {
     form,
     isSubmitting,
@@ -99,22 +103,30 @@ export function PurchaseContractForm({
     onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
       // Solo auto-guardar en modo create
       if (mode === 'create') {
-        console.log('🔄 onFormChange triggered:', { contractType, hasData: !!data });
+        console.log('🔄 onFormChange triggered:', { contractType, hasData: !!data, isComponentResetting });
+        
         if (contractType === 'purchase') {
           dispatch(updatePurchaseDraft(data));
         } else {
           dispatch(updateSaleDraft(data));
         }
         
-        // IMPORTANTE: Llamar callback del padre para activar flag
-        console.log('🔄 Componente: Llamando onFormChange del padre...', { hasCallback: !!onFormChange });
-        if (onFormChange) {
+        // IMPORTANTE: Solo activar flag si NO estamos en proceso de reset
+        if (!isComponentResetting && onFormChange) {
+          console.log('🔄 Componente: Llamando onFormChange del padre (NO resetting)...');
           onFormChange(data);
+        } else if (isComponentResetting) {
+          console.log('🚫 Componente: Bloqueado onFormChange porque estamos resetting');
         }
       }
-    }, [mode, contractType, dispatch, onFormChange]),
+    }, [mode, contractType, dispatch, onFormChange, isComponentResetting]),
     onSuccess: handleSuccess,
   });
+  
+  // Sincronizar el estado local con el del hook
+  useEffect(() => {
+    setIsComponentResetting(isResetting);
+  }, [isResetting]);
 
   // Generar títulos dinámicamente
   const getTitle = () => {
