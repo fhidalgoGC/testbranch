@@ -487,6 +487,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       setIsSubmitting(true);
       console.log('🚀 HOOK onSubmit called - Form validation passed');
       console.log('📊 onSubmitContract function available:', !!onSubmitContract);
+      console.log('📋 Form data received:', data);
       
       const contractJSON = generateContractJSON(data);
       console.log('✨ Generated Contract JSON (After Cleaning):', JSON.stringify(contractJSON, null, 2));

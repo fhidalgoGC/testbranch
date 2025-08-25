@@ -156,6 +156,8 @@ export function PurchaseContractForm({
       <FormProvider {...form}>
         <form onSubmit={(e) => {
           console.log('📝 FORM submit event triggered');
+          console.log('🔍 Form errors:', form.formState.errors);
+          console.log('🔍 Form is valid:', form.formState.isValid);
           onSubmit(e);
         }} className="space-y-8">
             
