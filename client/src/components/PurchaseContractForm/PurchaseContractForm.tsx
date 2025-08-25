@@ -15,6 +15,7 @@ import { AdjustmentsSection } from './sections/AdjustmentsSection';
 import { ShipmentSection } from './sections/ShipmentSection';
 import { RemarksSection } from './sections/RemarksSection';
 import { useLocation } from 'wouter';
+import { useNavigationHandler } from '@/hooks/usePageState';
 
 export interface PurchaseContractFormProps {
   contractType: 'purchase' | 'sale';
@@ -35,6 +36,7 @@ export function PurchaseContractForm({
 }: PurchaseContractFormProps) {
   const dispatch = useDispatch();
   const [, setLocation] = useLocation();
+  const { handleNavigateToPage } = useNavigationHandler();
   
   // Obtener draft del estado global (solo para modo create)
   const draft = useSelector((state: RootState) => 
@@ -159,8 +161,12 @@ export function PurchaseContractForm({
     
     // SIEMPRE navegar al listado correspondiente (sin importar si hay callback)
     if (contractType === 'purchase') {
+      console.log('🔄 Navegando a purchase-contracts');
+      handleNavigateToPage('purchase-contracts');
       setLocation('/purchase-contracts');
     } else {
+      console.log('🔄 Navegando a sale-contracts');
+      handleNavigateToPage('sale-contracts');
       setLocation('/sale-contracts');
     }
   };
