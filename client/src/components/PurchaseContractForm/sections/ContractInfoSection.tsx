@@ -309,18 +309,26 @@ export function ContractInfoSection() {
                   setValue('seller', seller.id);
                   setValue('seller_name', seller.name); // Store name for display
                   
-                  // Add to participants array with seller role
+                  // Add to participants array with purchase role (since we're in purchase contract)
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'seller'); // Remove existing seller
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'purchase'); // Remove existing purchase participant
+                  
+                  // Get representative info from localStorage
+                  const representativePeopleId = localStorage.getItem('representative_people_id');
+                  const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
+                  
                   updatedParticipants.push({
                     people_id: seller.id,
                     name: seller.name,
-                    role: 'seller' as const
+                    role: 'purchase' as const,
+                    representative_people_id: representativePeopleId || undefined,
+                    representative_people_full_name: representativePeopleFullName || undefined
                   });
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('seller');
-                  console.log('Seller selected and added to participants:', seller);
+                  console.log('Seller selected and added to participants with purchase role:', seller);
+                  console.log('Representative info added:', { representativePeopleId, representativePeopleFullName });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.seller}
@@ -355,18 +363,26 @@ export function ContractInfoSection() {
                   setValue('contact_vendor', vendor.id);
                   setValue('contact_vendor_name', vendor.name); // Store name for display
                   
-                  // Add to participants array with contactVendor role
+                  // Add to participants array with purchase role (contact vendor also gets purchase role)
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'contactVendor'); // Remove existing contactVendor
+                  const updatedParticipants = currentParticipants.filter(p => p.people_id !== vendor.id); // Remove existing entry for this person
+                  
+                  // Get representative info from localStorage
+                  const representativePeopleId = localStorage.getItem('representative_people_id');
+                  const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
+                  
                   updatedParticipants.push({
                     people_id: vendor.id,
                     name: vendor.name,
-                    role: 'contactVendor' as const
+                    role: 'purchase' as const,
+                    representative_people_id: representativePeopleId || undefined,
+                    representative_people_full_name: representativePeopleFullName || undefined
                   });
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('contact_vendor');
-                  console.log('Contact Vendor selected and added to participants as contactVendor:', vendor);
+                  console.log('Contact Vendor selected and added to participants with purchase role:', vendor);
+                  console.log('Representative info added:', { representativePeopleId, representativePeopleFullName });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.contact_vendor}
@@ -384,18 +400,26 @@ export function ContractInfoSection() {
                   setValue('trader', trader.id);
                   setValue('trader_name', trader.name); // Store name for display
                   
-                  // Add to participants array with trader role
+                  // Add to participants array with purchase role (trader also gets purchase role)
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'trader'); // Remove existing trader
+                  const updatedParticipants = currentParticipants.filter(p => p.people_id !== trader.id); // Remove existing entry for this person
+                  
+                  // Get representative info from localStorage
+                  const representativePeopleId = localStorage.getItem('representative_people_id');
+                  const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
+                  
                   updatedParticipants.push({
                     people_id: trader.id,
                     name: trader.name,
-                    role: 'trader' as const
+                    role: 'purchase' as const,
+                    representative_people_id: representativePeopleId || undefined,
+                    representative_people_full_name: representativePeopleFullName || undefined
                   });
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('trader');
-                  console.log('Trader selected and added to participants:', trader);
+                  console.log('Trader selected and added to participants with purchase role:', trader);
+                  console.log('Representative info added:', { representativePeopleId, representativePeopleFullName });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.trader}
