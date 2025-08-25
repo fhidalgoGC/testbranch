@@ -70,29 +70,12 @@ export function PurchaseContractForm({
   
   const { t } = useTranslation();
   
-  // Primero declarar el hook para obtener isResetting
+  // Primero declarar el hook (sin onFormChange - manejado abajo)
   const hookResult = usePurchaseContractForm({
     initialData: getInitialData(),
     contractType,
     mode,
-    onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
-      // Hook maneja: form.watch → dispatch Redux + llamada a página
-      if (mode === 'create') {
-        console.log('🎯 COMPONENTE: Pasando callback al hook para Redux+Página');
-        
-        // Actualizar Redux
-        if (contractType === 'purchase') {
-          dispatch(updatePurchaseDraft(data));
-        } else {
-          dispatch(updateSaleDraft(data));
-        }
-        
-        // Notificar a página (activar flag)
-        if (onFormChange) {
-          onFormChange(data);
-        }
-      }
-    }, [mode, contractType, dispatch, onFormChange]),
+    onFormChange: undefined, // Disabled - handled below
     onSuccess: handleSuccess,
     onCancel: onCancelProp,
   });
@@ -122,6 +105,53 @@ export function PurchaseContractForm({
     updateRemark,
   } = hookResult;
   
+  // Handle form watching and draft detection directly in component 
+  useEffect(() => {
+    if (mode !== 'create') return;
+
+    // 1. Initial draft detection
+    const currentValues = form.getValues();
+    const hasInitialDraft = Object.keys(currentValues).some(key => {
+      const value = (currentValues as any)[key];
+      return value !== null && value !== undefined && value !== '' && 
+             !(Array.isArray(value) && value.length === 0);
+    });
+    
+    if (hasInitialDraft) {
+      console.log('🎯 COMPONENTE: Detectado draft inicial, activando flag');
+      // Update Redux
+      if (contractType === 'purchase') {
+        dispatch(updatePurchaseDraft(currentValues));
+      } else {
+        dispatch(updateSaleDraft(currentValues));
+      }
+      // Notify page (activate flag)
+      if (onFormChange) {
+        onFormChange(currentValues);
+      }
+    }
+
+    // 2. Watch for subsequent changes  
+    const subscription = form.watch((value, { name, type }) => {
+      if (name && type === 'change') {
+        console.log('🎯 COMPONENTE form.watch - campo cambiado:', name);
+        
+        // Update Redux
+        if (contractType === 'purchase') {
+          dispatch(updatePurchaseDraft(value));
+        } else {
+          dispatch(updateSaleDraft(value));
+        }
+        
+        // Notify page (activate flag)
+        if (onFormChange) {
+          onFormChange(value);
+        }
+      }
+    });
+
+    return subscription.unsubscribe;
+  }, [form, mode, contractType, dispatch, onFormChange]);
 
   // Generar títulos dinámicamente
   const getTitle = () => {

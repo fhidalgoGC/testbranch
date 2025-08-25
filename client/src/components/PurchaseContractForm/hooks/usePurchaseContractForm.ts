@@ -123,36 +123,8 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     defaultValues,
   });
 
-  // FIXED: Hook-level auto-save with loop prevention + initial draft detection
-  useEffect(() => {
-    if (!onFormChange || mode !== 'create') return;
-
-    // 1. Detectar draft inicial inmediatamente
-    const currentValues = form.getValues();
-    const hasInitialDraft = Object.keys(currentValues).some(key => {
-      const value = currentValues[key];
-      return value !== null && value !== undefined && value !== '' && 
-             !(Array.isArray(value) && value.length === 0);
-    });
-    
-    if (hasInitialDraft) {
-      console.log('🎯 Hook: Detectado draft inicial, activando flag');
-      onFormChange(currentValues as Partial<PurchaseSaleContract>);
-    }
-
-    // 2. Watch para cambios posteriores (prevenir loops)
-    const subscription = form.watch((value, { name, type }) => {
-      if (name && type === 'change') {
-        const timeoutId = setTimeout(() => {
-          console.log('🎯 Hook form.watch - campo cambiado:', name);
-          onFormChange(value as Partial<PurchaseSaleContract>);
-        }, 300);
-        return () => clearTimeout(timeoutId);
-      }
-    });
-
-    return subscription.unsubscribe;
-  }, [form, onFormChange, mode]);
+  // DISABLED: No hook-level auto-save - everything handled in component
+  // This prevents infinite loops caused by double onFormChange callbacks
 
   // Update validation messages when language changes
   useEffect(() => {
