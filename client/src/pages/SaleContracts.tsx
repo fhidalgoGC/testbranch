@@ -42,16 +42,16 @@ export default function SaleContracts() {
   const hasDraftData = useSelector((state: RootState) => state.contractDrafts.hasDraftSaleContract);
 
   // Hook para persistir estado de la página
-  const { pageState, updateState } = useContractsPageState("purchaseContracts");
+  const { pageState, updateState } = useContractsPageState("saleContracts");
   const { handleNavigateToPage } = useNavigationHandler();
-  usePageTracking("/purchase-contracts");
+  usePageTracking("/sale-contracts");
 
   // Notificar navegación al cargar la página
   useEffect(() => {
     console.log(
-      "🔄 PURCHASE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
+      "🔄 SALE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
     );
-    handleNavigateToPage("purchaseContracts");
+    handleNavigateToPage("saleContracts");
   }, []);
 
   // Estado principal organizado como JSON

@@ -38,28 +38,37 @@ export default function CreateSaleContract() {
 
   // Función para manejar cancelación completa
   const handleCancel = () => {
+    console.log('🎯 === PÁGINA HANDLECANCEL LLAMADO ===');
     console.log('🧹 CreateSaleContract: Iniciando limpieza completa...');
+    console.log('🔍 Estado ANTES de limpiar - hasDraftSaleContract:', hasDraftSaleContract);
     
     // 1. Limpiar contractId local
     setContractId(undefined);
     
-    // 2. Limpiar draft y desactivar flag
-    console.log('🧹 Limpiando sale draft y desactivando flag');
-    dispatch(clearSaleDraft()); // Esto ya pone hasDraftSaleContract = false
-    dispatch(setHasDraftSaleContract(false)); // Double check
+    // 2. Limpiar draft (esto ya desactiva el flag automáticamente)
+    console.log('🧹 Ejecutando clearSaleDraft...');
+    dispatch(clearSaleDraft()); 
     
-    // 3. Limpiar page state
+    // 3. Verificar si el flag se desactivó
+    setTimeout(() => {
+      const newState = JSON.parse(localStorage.getItem('contractDrafts') || '{}');
+      console.log('🔍 Estado DESPUÉS de limpiar - localStorage:', newState);
+      console.log('🔍 hasDraftSaleContract después de clearSaleDraft:', newState.hasDraftSaleContract);
+    }, 100);
+    
+    // 4. Limpiar page state
     if (contractId) {
       console.log('🧹 Limpiando page state para contractId:', contractId);
       dispatch(clearContractDetailState(contractId));
       dispatch(clearCreateSubContractState(contractId));
     }
     
-    // 4. Navegar con wouter (solo)
+    // 5. Navegar con wouter (solo)
     console.log('🔄 Navegando a sale-contracts');
     setLocation('/sale-contracts');
     
     console.log('✅ CreateSaleContract: Limpieza completa finalizada');
+    console.log('🎯 === FIN PÁGINA HANDLECANCEL ===');
   };
 
   return (
@@ -81,6 +90,7 @@ export default function CreateSaleContract() {
         </Button>
       </div>
       <PurchaseContractForm 
+        key={`sale-form-${contractId || 'new'}-${Date.now()}`}
         contractType="sale" 
         mode="create" 
         initialContract={saleDraft || undefined}
