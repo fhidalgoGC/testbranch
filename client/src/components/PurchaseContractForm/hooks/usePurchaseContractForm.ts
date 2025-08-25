@@ -417,6 +417,30 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       }
     }
     
+    // Add representative as buyer for purchase contracts
+    if (formData.type === 'purchase') {
+      const representativePeopleId = localStorage.getItem('representative_people_id');
+      const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
+      
+      if (representativePeopleId && representativePeopleFullName) {
+        // Check if representative is not already in participants
+        const existingRepresentative = processedParticipants.find(p => p.people_id === representativePeopleId);
+        
+        if (!existingRepresentative) {
+          processedParticipants.push({
+            people_id: representativePeopleId,
+            name: representativePeopleFullName,
+            role: 'buyer' as const
+          });
+          console.log('✅ Representative added as buyer for purchase contract:', { representativePeopleId, representativePeopleFullName });
+        } else {
+          console.log('ℹ️ Representative already exists in participants, skipping.');
+        }
+      } else {
+        console.log('⚠️ No representative info found in localStorage for purchase contract.');
+      }
+    }
+    
     // Calculate thresholds weights based on quantity and percentages (handle null/undefined)
     const quantity = formData.quantity || 0;
     const price = formData.price_schedule[0]?.price || 0;
