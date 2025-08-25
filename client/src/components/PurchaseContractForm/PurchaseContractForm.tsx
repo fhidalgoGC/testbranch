@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { RootState } from '@/app/store';
-import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft, setHasDraftPurchaseContract, setHasDraftSaleContract } from '@/features/contractDrafts/contractDraftsSlice';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
@@ -98,8 +98,12 @@ export function PurchaseContractForm({
       if (mode === 'create') {
         if (contractType === 'purchase') {
           dispatch(updatePurchaseDraft(data));
+          // Activar flag cuando se empiece a llenar el formulario
+          dispatch(setHasDraftPurchaseContract(true));
         } else {
           dispatch(updateSaleDraft(data));
+          // Activar flag cuando se empiece a llenar el formulario
+          dispatch(setHasDraftSaleContract(true));
         }
       }
     }, [mode, contractType, dispatch]),

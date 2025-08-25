@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { PurchaseContractForm } from '@/components/PurchaseContractForm/PurchaseContractForm';
 import { RootState } from '@/app/store';
 import { generateContractId } from '@/services/contractsService';
-import { clearPurchaseDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { clearPurchaseDraft, setHasDraftPurchaseContract } from '@/features/contractDrafts/contractDraftsSlice';
 import { clearContractDetailState, clearCreateSubContractState } from '@/store/slices/pageStateSlice';
 
 export default function CreatePurchaseContract() {
@@ -18,6 +18,7 @@ export default function CreatePurchaseContract() {
   
   // Obtener el draft de purchase del estado global
   const purchaseDraft = useSelector((state: RootState) => state.contractDrafts.purchaseDraft);
+  const hasDraftPurchaseContract = useSelector((state: RootState) => state.contractDrafts.hasDraftPurchaseContract);
   
   // Función para generar nuevo contrato usando el servicio
   const handleGenerateContractId = async () => {
@@ -42,11 +43,10 @@ export default function CreatePurchaseContract() {
     // 1. Limpiar contractId local
     setContractId(undefined);
     
-    // 2. Limpiar draft
-    if (purchaseDraft) {
-      console.log('🧹 Limpiando purchase draft');
-      dispatch(clearPurchaseDraft());
-    }
+    // 2. Limpiar draft y desactivar flag
+    console.log('🧹 Limpiando purchase draft y desactivando flag');
+    dispatch(clearPurchaseDraft()); // Esto ya pone hasDraftPurchaseContract = false
+    dispatch(setHasDraftPurchaseContract(false)); // Double check
     
     // 3. Limpiar page state
     if (contractId) {
@@ -69,6 +69,7 @@ export default function CreatePurchaseContract() {
           onClick={() => {
             console.log('🔍 === DEBUG PURCHASE DRAFT STATE ===');
             console.log('purchaseDraft:', purchaseDraft);
+            console.log('hasDraftPurchaseContract:', hasDraftPurchaseContract);
             console.log('contractId:', contractId);
             console.log('purchaseDraft keys:', purchaseDraft ? Object.keys(purchaseDraft) : 'null');
             console.log('localStorage contractDrafts:', JSON.parse(localStorage.getItem('contractDrafts') || '{}'));

@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { setHasDraftPurchaseContract, setHasDraftSaleContract } from '@/features/contractDrafts/contractDraftsSlice';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
 import type { PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
 import { APP_CONFIG } from '@/environment/environment';
@@ -17,6 +19,7 @@ interface UsePurchaseContractFormOptions {
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
   const { initialData = {}, contractType = 'purchase', mode = 'create', onFormChange, onSuccess } = options;
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Create reactive resolver that updates when language changes
@@ -470,15 +473,15 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       inspections: formData.inspections,
       proteins: formData.proteins,
       thresholds: {
-        min_thresholds_percentage: formData.min_thresholds_percentage,
+        min_thresholds_percentage: formData.min_thresholds_percentage || 0,
         min_thresholds_weight: minThresholdWeight,
-        max_thresholds_percentage: formData.max_thresholds_percentage,
+        max_thresholds_percentage: formData.max_thresholds_percentage || 0,
         max_thresholds_weight: maxThresholdWeight,
       },
       status: 'created',
       contract_date: new Date(formData.contract_date).toISOString(),
       notes: [],
-      remarks: formData.remarks.filter(remark => remark.trim() !== ''),
+      remarks: formData.remarks ? formData.remarks.filter(remark => remark.trim() !== '') : [],
       ...(formData.adjustments && formData.adjustments.length > 0 && { 
         adjustments: formData.adjustments 
       }),
@@ -508,6 +511,13 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       // await createPurchaseSaleContract(contractJSON);
       
       alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
+      
+      // Desactivar flag de draft después de submit exitoso
+      if (contractType === 'purchase') {
+        dispatch(setHasDraftPurchaseContract(false));
+      } else if (contractType === 'sale') {
+        dispatch(setHasDraftSaleContract(false));
+      }
       
       // Call success callback if provided
       if (onSuccess) {

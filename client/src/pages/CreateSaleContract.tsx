@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { PurchaseContractForm } from "@/components/PurchaseContractForm/PurchaseContractForm";
 import { RootState } from '@/app/store';
 import { generateContractId } from '@/services/contractsService';
-import { clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { clearSaleDraft, setHasDraftSaleContract } from '@/features/contractDrafts/contractDraftsSlice';
 import { clearContractDetailState, clearCreateSubContractState } from '@/store/slices/pageStateSlice';
 
 export default function CreateSaleContract() {
@@ -18,6 +18,7 @@ export default function CreateSaleContract() {
   
   // Obtener el draft de sale del estado global
   const saleDraft = useSelector((state: RootState) => state.contractDrafts.saleDraft);
+  const hasDraftSaleContract = useSelector((state: RootState) => state.contractDrafts.hasDraftSaleContract);
   
   // Función para generar nuevo contrato usando el servicio
   const handleGenerateContractId = async () => {
@@ -42,11 +43,10 @@ export default function CreateSaleContract() {
     // 1. Limpiar contractId local
     setContractId(undefined);
     
-    // 2. Limpiar draft
-    if (saleDraft) {
-      console.log('🧹 Limpiando sale draft');
-      dispatch(clearSaleDraft());
-    }
+    // 2. Limpiar draft y desactivar flag
+    console.log('🧹 Limpiando sale draft y desactivando flag');
+    dispatch(clearSaleDraft()); // Esto ya pone hasDraftSaleContract = false
+    dispatch(setHasDraftSaleContract(false)); // Double check
     
     // 3. Limpiar page state
     if (contractId) {
@@ -69,6 +69,7 @@ export default function CreateSaleContract() {
           onClick={() => {
             console.log('🔍 === DEBUG SALE DRAFT STATE ===');
             console.log('saleDraft:', saleDraft);
+            console.log('hasDraftSaleContract:', hasDraftSaleContract);
             console.log('contractId:', contractId);
             console.log('saleDraft keys:', saleDraft ? Object.keys(saleDraft) : 'null');
             console.log('localStorage contractDrafts:', JSON.parse(localStorage.getItem('contractDrafts') || '{}'));

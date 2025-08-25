@@ -14,6 +14,8 @@ export function loadDraftsFromStorage() {
   return {
     purchaseDraft: null,
     saleDraft: null,
+    hasDraftPurchaseContract: false,
+    hasDraftSaleContract: false,
   };
 }
 
