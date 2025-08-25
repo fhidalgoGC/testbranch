@@ -33,7 +33,27 @@ export default function PurchaseContracts() {
   
   // Obtener el estado del draft de purchase para mostrar indicador
   const purchaseDraft = useSelector((state: RootState) => state.contractDrafts.purchaseDraft);
-  const hasDraftData = purchaseDraft && Object.keys(purchaseDraft).length > 0;
+  
+  // Función para detectar si hay datos realmente significativos en el draft
+  const hasSignificantDraftData = (draft: any): boolean => {
+    if (!draft) return false;
+    
+    // Campos que indican interacción real del usuario
+    const significantFields = [
+      'commodity_id',
+      'quantity', 
+      'seller',
+      'reference_number',
+      'contact_vendor'
+    ];
+    
+    return significantFields.some(field => {
+      const value = draft[field];
+      return value && value !== '' && value !== 0 && value !== undefined;
+    });
+  };
+  
+  const hasDraftData = hasSignificantDraftData(purchaseDraft);
   
   // Hook para persistir estado de la página
   const { pageState, updateState } = useContractsPageState('purchaseContracts');
@@ -702,12 +722,6 @@ export default function PurchaseContracts() {
                 console.log('purchaseDraft keys:', purchaseDraft ? Object.keys(purchaseDraft) : 'null');
                 console.log('localStorage contractDrafts:', JSON.parse(localStorage.getItem('contractDrafts') || '{}'));
                 console.log('================================');
-                
-                // También mostrar en alert para el usuario
-                const draftInfo = purchaseDraft ? 
-                  `Draft existe: ${Object.keys(purchaseDraft).length} campos\n${JSON.stringify(purchaseDraft, null, 2)}` : 
-                  'No hay draft';
-                alert(`DRAFT DEBUG:\n${draftInfo}`);
               }}
               className="bg-orange-100 border-orange-300 text-orange-700 hover:bg-orange-200 flex items-center gap-2"
             >

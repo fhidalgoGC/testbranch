@@ -39,7 +39,27 @@ export default function SaleContracts() {
   
   // Obtener el estado del draft de sale para mostrar indicador
   const saleDraft = useSelector((state: RootState) => state.contractDrafts.saleDraft);
-  const hasDraftData = saleDraft && Object.keys(saleDraft).length > 0;
+  
+  // Función para detectar si hay datos realmente significativos en el draft
+  const hasSignificantDraftData = (draft: any): boolean => {
+    if (!draft) return false;
+    
+    // Campos que indican interacción real del usuario
+    const significantFields = [
+      'commodity_id',
+      'quantity', 
+      'seller',
+      'reference_number',
+      'contact_vendor'
+    ];
+    
+    return significantFields.some(field => {
+      const value = draft[field];
+      return value && value !== '' && value !== 0 && value !== undefined;
+    });
+  };
+  
+  const hasDraftData = hasSignificantDraftData(saleDraft);
 
   // Hook para persistir estado de la página
   const { pageState, updateState } = useContractsPageState("purchaseContracts");

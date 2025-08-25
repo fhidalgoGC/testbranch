@@ -1,4 +1,4 @@
-import { PurchaseContract } from '@/types/purchaseContract.types';
+import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 
 // Función para cargar los drafts desde localStorage al inicializar la store
 export function loadDraftsFromStorage() {
