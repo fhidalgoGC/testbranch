@@ -52,15 +52,7 @@ export function PurchaseContractForm({
   
   // Manejar success personalizado
   const handleSuccess = () => {
-    // Limpiar draft si es modo create y el submit fue exitoso
-    if (mode === 'create') {
-      if (contractType === 'purchase') {
-        dispatch(clearPurchaseDraft());
-      } else {
-        dispatch(clearSaleDraft());
-      }
-    }
-    
+    // La página padre maneja la limpieza del draft
     if (onSuccess) {
       onSuccess();
     }
@@ -93,7 +85,7 @@ export function PurchaseContractForm({
     initialData: getInitialData(),
     contractType,
     mode,
-    onFormChange: React.useCallback((data: Partial<PurchaseContract>) => {
+    onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
       // Solo auto-guardar en modo create
       if (mode === 'create') {
         if (contractType === 'purchase') {
