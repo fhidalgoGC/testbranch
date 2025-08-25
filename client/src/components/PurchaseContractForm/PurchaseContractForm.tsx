@@ -19,6 +19,7 @@ export interface PurchaseContractFormProps {
   initialContract?: Partial<PurchaseSaleContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
+  onSubmitContract?: (data: any) => Promise<void>;
 }
 
 export function PurchaseContractForm({ 
@@ -27,7 +28,8 @@ export function PurchaseContractForm({
   contractId,
   initialContract,
   onSuccess,
-  onCancel: onCancelProp
+  onCancel: onCancelProp,
+  onSubmitContract
 }: PurchaseContractFormProps) {
   // Determinar datos iniciales según el modo
   const getInitialData = () => {
@@ -72,6 +74,7 @@ export function PurchaseContractForm({
     mode,
     // Sin auto-save de drafts
     onSuccess: handleSuccess,
+    onSubmitContract: onSubmitContract,
   });
 
   // Generar títulos dinámicamente

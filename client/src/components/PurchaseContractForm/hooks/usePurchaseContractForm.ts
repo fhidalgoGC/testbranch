@@ -11,10 +11,11 @@ interface UsePurchaseContractFormOptions {
   contractType?: 'purchase' | 'sale';
   mode?: 'create' | 'edit' | 'view';
   onSuccess?: () => void;
+  onSubmitContract?: (data: any) => Promise<void>;
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
-  const { initialData = {}, contractType = 'purchase', mode = 'create', onSuccess } = options;
+  const { initialData = {}, contractType = 'purchase', mode = 'create', onSuccess, onSubmitContract } = options;
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -489,18 +490,20 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       const contractJSON = generateContractJSON(data);
       console.log('✨ Generated Contract JSON (After Cleaning):', JSON.stringify(contractJSON, null, 2));
       
-      // Here you would typically send the JSON to your API
-      // await createPurchaseSaleContract(contractJSON);
-      
-      alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
-      
-      // Call success callback if provided
-      if (onSuccess) {
-        onSuccess();
+      // Call external submit function if provided, otherwise show alert
+      if (onSubmitContract) {
+        await onSubmitContract(contractJSON);
+      } else {
+        alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
+        
+        // Call success callback if provided
+        if (onSuccess) {
+          onSuccess();
+        }
       }
     } catch (error) {
       console.error('Error creating contract:', error);
-      alert('Error al crear el contrato');
+      throw error; // Re-throw to let the page handle the error
     } finally {
       setIsSubmitting(false);
     }

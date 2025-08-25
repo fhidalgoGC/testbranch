@@ -380,3 +380,54 @@ export const generateContractId = async (): Promise<string | null> => {
     return null;
   }
 };
+
+// Service function to submit/update a contract
+export const submitContract = async (contractId: string, contractData: any): Promise<{ success: boolean; error?: string }> => {
+  try {
+    console.log('📝 Submitting contract:', contractId);
+    console.log('📦 Contract data:', JSON.stringify(contractData, null, 2));
+    
+    const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts/${contractId}`;
+    console.log('📡 Submit URL:', url);
+    
+    const response = await authenticatedFetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify(contractData)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Error submitting contract! status: ${response.status}, response: ${errorText}`);
+      
+      // Parse error message from response
+      let errorMessage = `Error ${response.status}`;
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData.message || errorData.error || errorText;
+      } catch {
+        errorMessage = errorText || `Error ${response.status}`;
+      }
+      
+      return {
+        success: false,
+        error: errorMessage
+      };
+    }
+
+    const responseData = await response.json();
+    console.log('✅ Contract submitted successfully:', responseData);
+    
+    return {
+      success: true
+    };
+  } catch (error) {
+    console.error('❌ Error submitting contract:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+};
