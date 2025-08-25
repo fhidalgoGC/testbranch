@@ -105,36 +105,34 @@ export function PurchaseContractForm({
     updateRemark,
   } = hookResult;
   
-  // Handle form watching and draft detection directly in component 
+  // 1. INITIAL DRAFT DETECTION - Only on first mount
   useEffect(() => {
     if (mode !== 'create') return;
 
-    // 1. Initial draft detection
-    const currentValues = form.getValues();
-    const hasInitialDraft = Object.keys(currentValues).some(key => {
-      const value = (currentValues as any)[key];
+    const initialData = getInitialData();
+    const hasInitialDraft = Object.keys(initialData).some(key => {
+      const value = (initialData as any)[key];
       return value !== null && value !== undefined && value !== '' && 
              !(Array.isArray(value) && value.length === 0);
     });
     
     if (hasInitialDraft) {
-      console.log('🎯 COMPONENTE: Detectado draft inicial, activando flag');
-      // Update Redux
-      if (contractType === 'purchase') {
-        dispatch(updatePurchaseDraft(currentValues));
-      } else {
-        dispatch(updateSaleDraft(currentValues));
-      }
-      // Notify page (activate flag)
+      console.log('🎯 COMPONENTE: Draft inicial detectado al montar, activando flag');
+      // SOLO notificar a página (activar flag) - NO actualizar Redux ya que viene de Redux
       if (onFormChange) {
-        onFormChange(currentValues);
+        onFormChange(initialData);
       }
     }
+  }, []); // EMPTY dependency array - only on first mount
 
-    // 2. Watch for subsequent changes  
+  // 2. WATCH USER CHANGES - Only real user interactions  
+  useEffect(() => {
+    if (mode !== 'create') return;
+
     const subscription = form.watch((value, { name, type }) => {
+      // ONLY trigger on real user changes, not form resets or initial renders
       if (name && type === 'change') {
-        console.log('🎯 COMPONENTE form.watch - campo cambiado:', name);
+        console.log('🎯 COMPONENTE form.watch - usuario cambió campo:', name);
         
         // Update Redux
         if (contractType === 'purchase') {
