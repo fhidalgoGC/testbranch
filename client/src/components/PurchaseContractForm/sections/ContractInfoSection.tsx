@@ -304,8 +304,10 @@ export function ContractInfoSection() {
               </Label>
               <SellerSelectionModal
                 selectedSeller={watch('seller')}
+                selectedSellerName={watch('seller_name')} // Pass stored name for display
                 onSelect={(seller) => {
                   setValue('seller', seller.id);
+                  setValue('seller_name', seller.name); // Store name for display
                   clearErrors('seller');
                   console.log('Seller selected:', seller);
                 }}
@@ -336,8 +338,10 @@ export function ContractInfoSection() {
               </Label>
               <ContactVendorSelectionModal
                 selectedContactVendor={watch('contact_vendor')}
+                selectedContactVendorName={watch('contact_vendor_name')} // Pass stored name for display
                 onSelect={(vendor) => {
                   setValue('contact_vendor', vendor.id);
+                  setValue('contact_vendor_name', vendor.name); // Store name for display
                   clearErrors('contact_vendor');
                   console.log('Contact Vendor selected:', vendor);
                 }}

@@ -10,12 +10,14 @@ import { Badge } from '@/components/ui/badge';
 interface ContactVendorSelectionModalProps {
   onSelect: (vendor: { id: string; name: string; [key: string]: any }) => void;
   selectedContactVendor?: string;
+  selectedContactVendorName?: string; // Add name for display
   error?: boolean;
 }
 
 export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalProps> = ({
   onSelect,
   selectedContactVendor,
+  selectedContactVendorName,
   error = false
 }) => {
   const { t } = useTranslation();
@@ -128,7 +130,10 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
     setIsOpen(false);
   };
 
-  const selectedVendorData = vendors.find(vendor => vendor._id === selectedContactVendor);
+  // Use the stored name from form state for display, or find in current data
+  const selectedVendorData = selectedContactVendorName 
+    ? { _id: selectedContactVendor, full_name: selectedContactVendorName }
+    : vendors.find(vendor => vendor._id === selectedContactVendor);
 
   return (
     <div className="space-y-2">

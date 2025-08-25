@@ -124,8 +124,11 @@ export interface PurchaseSaleContract {
   
   // Form-specific fields
   seller?: string;
+  seller_name?: string;
   contact_vendor?: string;
+  contact_vendor_name?: string;
   trader?: string;
+  trader_name?: string;
   
   // Adjustments - array of selected adjustments, no duplicates allowed
   adjustments?: Array<{

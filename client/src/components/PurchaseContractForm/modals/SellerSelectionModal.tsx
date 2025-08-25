@@ -10,12 +10,14 @@ import { Badge } from '@/components/ui/badge';
 interface SellerSelectionModalProps {
   onSelect: (seller: { id: string; name: string; [key: string]: any }) => void;
   selectedSeller?: string;
+  selectedSellerName?: string; // Add name for display
   error?: boolean;
 }
 
 export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
   onSelect,
   selectedSeller,
+  selectedSellerName,
   error = false
 }) => {
   const { t } = useTranslation();
@@ -128,7 +130,10 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
     setIsOpen(false);
   };
 
-  const selectedSellerData = sellers.find(seller => seller._id === selectedSeller);
+  // Use the stored name from form state for display, or find in current data
+  const selectedSellerData = selectedSellerName 
+    ? { _id: selectedSeller, full_name: selectedSellerName } 
+    : sellers.find(seller => seller._id === selectedSeller);
 
   return (
     <div className="space-y-2">
