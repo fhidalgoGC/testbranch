@@ -317,16 +317,16 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   const currentParticipants = watch('participants') || [];
                   const updatedParticipants = currentParticipants.filter(p => p.people_id !== seller.id); // Remove existing entries for this person
                   
-                  // Add selected seller with sale role
+                  // Add selected seller with seller role
                   updatedParticipants.push({
                     people_id: seller.id,
                     name: seller.name,
-                    role: 'sale' as const
+                    role: 'seller' as const
                   });
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('seller');
-                  console.log('Seller selected and added to participants with sale role:', seller);
+                  console.log('Seller selected and added to participants with seller role:', seller);
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.seller}
