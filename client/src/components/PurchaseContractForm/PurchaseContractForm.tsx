@@ -133,11 +133,12 @@ export function PurchaseContractForm({
     console.log('🎯 COMPONENTE: Configurando form.watch para detectar cambios');
     
     const subscription = form.watch((value, { name, type }) => {
-      console.log('🔍 form.watch disparado:', { name, type, hasName: !!name });
+      console.log('🔍 form.watch disparado:', { name, type, hasName: !!name, fieldValue: name ? value[name] : 'no-name' });
       
-      // Trigger on any field change (not just 'change' type)
+      // Trigger on any field change
       if (name) {
-        console.log('🎯 COMPONENTE form.watch - campo cambiado:', name, 'valor:', value[name]);
+        console.log('🎯 COMPONENTE form.watch - campo cambiado:', name, 'nuevo valor:', value[name]);
+        console.log('📋 COMPONENTE form.watch - valor completo del form:', value);
         
         // Update Redux immediately
         if (contractType === 'purchase') {
