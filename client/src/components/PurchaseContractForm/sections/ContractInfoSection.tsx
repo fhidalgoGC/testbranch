@@ -313,34 +313,20 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   setValue('seller', seller.id);
                   setValue('seller_name', seller.name); // Store name for display
                   
-                  // Add to participants array with purchase role (since we're in purchase contract)
+                  // Add to participants array with sale role
                   const currentParticipants = watch('participants') || [];
                   const updatedParticipants = currentParticipants.filter(p => p.people_id !== seller.id); // Remove existing entries for this person
                   
-                  // Get representative info from localStorage
-                  const representativePeopleId = localStorage.getItem('representative_people_id');
-                  const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
-                  
-                  // Add selected seller with seller role
+                  // Add selected seller with sale role
                   updatedParticipants.push({
                     people_id: seller.id,
                     name: seller.name,
-                    role: 'seller' as const
+                    role: 'sale' as const
                   });
-                  
-                  // Add representative as buyer (minimum required role with seller)
-                  if (representativePeopleId && representativePeopleFullName) {
-                    updatedParticipants.push({
-                      people_id: representativePeopleId,
-                      name: representativePeopleFullName,
-                      role: 'buyer' as const
-                    });
-                  }
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('seller');
-                  console.log('Seller selected and added to participants with seller role:', seller);
-                  console.log('Representative added as buyer (required minimum role):', { representativePeopleId, representativePeopleFullName });
+                  console.log('Seller selected and added to participants with sale role:', seller);
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.seller}
@@ -375,13 +361,9 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   setValue('contact_vendor', vendor.id);
                   setValue('contact_vendor_name', vendor.name); // Store name for display
                   
-                  // Add to participants array with purchase role (contact vendor also gets purchase role)
+                  // Add to participants array with contactVendor role
                   const currentParticipants = watch('participants') || [];
                   const updatedParticipants = currentParticipants.filter(p => p.people_id !== vendor.id); // Remove existing entry for this person
-                  
-                  // Get representative info from localStorage
-                  const representativePeopleId = localStorage.getItem('representative_people_id');
-                  const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
                   
                   // Add selected contact vendor with contactVendor role
                   updatedParticipants.push({
@@ -389,20 +371,10 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                     name: vendor.name,
                     role: 'contactVendor' as const
                   });
-                  
-                  // Add representative as buyer if not already exists
-                  if (representativePeopleId && representativePeopleFullName && !updatedParticipants.some(p => p.people_id === representativePeopleId && p.role === 'buyer')) {
-                    updatedParticipants.push({
-                      people_id: representativePeopleId,
-                      name: representativePeopleFullName,
-                      role: 'buyer' as const
-                    });
-                  }
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('contact_vendor');
                   console.log('Contact Vendor selected and added to participants with contactVendor role:', vendor);
-                  console.log('Representative maintained as buyer:', { representativePeopleId, representativePeopleFullName });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.contact_vendor}
@@ -420,13 +392,9 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   setValue('trader', trader.id);
                   setValue('trader_name', trader.name); // Store name for display
                   
-                  // Add to participants array with purchase role (trader also gets purchase role)
+                  // Add to participants array with trader role
                   const currentParticipants = watch('participants') || [];
                   const updatedParticipants = currentParticipants.filter(p => p.people_id !== trader.id); // Remove existing entry for this person
-                  
-                  // Get representative info from localStorage
-                  const representativePeopleId = localStorage.getItem('representative_people_id');
-                  const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
                   
                   // Add selected trader with trader role
                   updatedParticipants.push({
@@ -434,20 +402,10 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                     name: trader.name,
                     role: 'trader' as const
                   });
-                  
-                  // Add representative as buyer if not already exists
-                  if (representativePeopleId && representativePeopleFullName && !updatedParticipants.some(p => p.people_id === representativePeopleId && p.role === 'buyer')) {
-                    updatedParticipants.push({
-                      people_id: representativePeopleId,
-                      name: representativePeopleFullName,
-                      role: 'buyer' as const
-                    });
-                  }
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('trader');
                   console.log('Trader selected and added to participants with trader role:', trader);
-                  console.log('Representative maintained as buyer:', { representativePeopleId, representativePeopleFullName });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.trader}
