@@ -315,7 +315,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   
                   // Add to participants array with sale role
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.people_id !== seller.id); // Remove existing entries for this person
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'seller'); // Remove existing seller
                   
                   // Add selected seller with seller role
                   updatedParticipants.push({
@@ -363,7 +363,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   
                   // Add to participants array with contactVendor role
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.people_id !== vendor.id); // Remove existing entry for this person
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'contactVendor'); // Remove existing contactVendor
                   
                   // Add selected contact vendor with contactVendor role
                   updatedParticipants.push({
@@ -394,7 +394,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   
                   // Add to participants array with trader role
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.people_id !== trader.id); // Remove existing entry for this person
+                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'trader'); // Remove existing trader
                   
                   // Add selected trader with trader role
                   updatedParticipants.push({
