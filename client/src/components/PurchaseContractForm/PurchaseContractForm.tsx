@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { RootState } from '@/app/store';
-import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft, setHasDraftPurchaseContract, setHasDraftSaleContract } from '@/features/contractDrafts/contractDraftsSlice';
+import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
@@ -22,6 +22,7 @@ export interface PurchaseContractFormProps {
   initialContract?: Partial<PurchaseSaleContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
+  onFormChange?: (data: Partial<PurchaseSaleContract>) => void;
 }
 
 export function PurchaseContractForm({ 
@@ -30,7 +31,8 @@ export function PurchaseContractForm({
   contractId,
   initialContract,
   onSuccess,
-  onCancel: onCancelProp
+  onCancel: onCancelProp,
+  onFormChange
 }: PurchaseContractFormProps) {
   const dispatch = useDispatch();
   
@@ -99,17 +101,16 @@ export function PurchaseContractForm({
         console.log('🔄 onFormChange triggered:', { contractType, hasData: !!data });
         if (contractType === 'purchase') {
           dispatch(updatePurchaseDraft(data));
-          // Activar flag cuando se empiece a llenar el formulario
-          console.log('🔥 Activando hasDraftPurchaseContract = true por onFormChange');
-          dispatch(setHasDraftPurchaseContract(true));
         } else {
           dispatch(updateSaleDraft(data));
-          // Activar flag cuando se empiece a llenar el formulario
-          console.log('🔥 Activando hasDraftSaleContract = true por onFormChange');
-          dispatch(setHasDraftSaleContract(true));
+        }
+        
+        // Llamar callback del padre si se proporciona (para que la página maneje el flag)
+        if (onFormChange) {
+          onFormChange(data);
         }
       }
-    }, [mode, contractType, dispatch]),
+    }, [mode, contractType, dispatch, onFormChange]),
     onSuccess: handleSuccess,
   });
 
