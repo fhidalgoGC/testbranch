@@ -247,7 +247,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
               <Select
                 value={watch('characteristics')?.configuration_id || ''}
                 onValueChange={(value) => {
-                  const selectedConfig = characteristicsOptions.find(opt => opt.key === value);
+                  const selectedConfig = characteristicsConfigurations.find(opt => opt.key === value);
                   setValue('characteristics', {
                     configuration_id: value,
                     configuration_name: selectedConfig?.label || ''
