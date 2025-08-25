@@ -121,7 +121,7 @@ export function PurchaseContractForm({
       console.log('🎯 COMPONENTE: Draft inicial detectado, activando flag', initialData);
       // SOLO notificar a página (activar flag) - Redux ya tiene los datos
       if (onFormChange) {
-        onFormChange(initialData);
+        onFormChange(initialData as Partial<PurchaseSaleContract>);
       }
     }
   }, [initialData, mode, onFormChange]); // Depend on memoized initial data
@@ -137,14 +137,14 @@ export function PurchaseContractForm({
         
         // Update Redux
         if (contractType === 'purchase') {
-          dispatch(updatePurchaseDraft(value));
+          dispatch(updatePurchaseDraft(value as Partial<PurchaseSaleContract>));
         } else {
-          dispatch(updateSaleDraft(value));
+          dispatch(updateSaleDraft(value as Partial<PurchaseSaleContract>));
         }
         
         // Notify page (activate flag)
         if (onFormChange) {
-          onFormChange(value);
+          onFormChange(value as Partial<PurchaseSaleContract>);
         }
       }
     });
