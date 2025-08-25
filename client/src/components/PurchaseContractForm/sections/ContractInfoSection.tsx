@@ -17,6 +17,10 @@ import { useCommodities } from '@/hooks/useCommodities';
 import { useCharacteristicsConfigurations } from '@/hooks/useCharacteristicsConfigurations';
 import { APP_CONFIG } from '@/environment/environment';
 
+interface ContractInfoSectionProps {
+  representativeRole?: 'buyer' | 'seller' | 'trader' | 'contactVendor' | 'purchase' | 'sale';
+}
+
 // Fake sellers data for display
 const FAKE_SELLERS = [
   {
@@ -84,7 +88,7 @@ const SUB_TYPE_OPTIONS = [
 
 // Remove static measurement units - now loaded from API
 
-export function ContractInfoSection() {
+export function ContractInfoSection({ representativeRole = 'purchase' }: ContractInfoSectionProps) {
   const { t } = useTranslation();
   const { data: measurementUnits = [], isLoading: loadingUnits } = useMeasurementUnits();
   const { commodities, loading: loadingCommodities, error: commoditiesError } = useCommodities();
@@ -311,24 +315,32 @@ export function ContractInfoSection() {
                   
                   // Add to participants array with purchase role (since we're in purchase contract)
                   const currentParticipants = watch('participants') || [];
-                  const updatedParticipants = currentParticipants.filter(p => p.role !== 'purchase'); // Remove existing purchase participant
+                  const updatedParticipants = currentParticipants.filter(p => p.people_id !== seller.id); // Remove existing entries for this person
                   
                   // Get representative info from localStorage
                   const representativePeopleId = localStorage.getItem('representative_people_id');
                   const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
                   
+                  // Add selected seller
                   updatedParticipants.push({
                     people_id: seller.id,
                     name: seller.name,
-                    role: 'purchase' as const,
-                    representative_people_id: representativePeopleId || undefined,
-                    representative_people_full_name: representativePeopleFullName || undefined
+                    role: 'purchase' as const
                   });
+                  
+                  // Add representative as separate participant if exists
+                  if (representativePeopleId && representativePeopleFullName) {
+                    updatedParticipants.push({
+                      people_id: representativePeopleId,
+                      name: representativePeopleFullName,
+                      role: representativeRole as const
+                    });
+                  }
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('seller');
                   console.log('Seller selected and added to participants with purchase role:', seller);
-                  console.log('Representative info added:', { representativePeopleId, representativePeopleFullName });
+                  console.log('Representative added as separate participant:', { representativePeopleId, representativePeopleFullName, representativeRole });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.seller}
@@ -371,18 +383,26 @@ export function ContractInfoSection() {
                   const representativePeopleId = localStorage.getItem('representative_people_id');
                   const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
                   
+                  // Add selected contact vendor
                   updatedParticipants.push({
                     people_id: vendor.id,
                     name: vendor.name,
-                    role: 'purchase' as const,
-                    representative_people_id: representativePeopleId || undefined,
-                    representative_people_full_name: representativePeopleFullName || undefined
+                    role: 'purchase' as const
                   });
+                  
+                  // Add representative as separate participant if exists
+                  if (representativePeopleId && representativePeopleFullName) {
+                    updatedParticipants.push({
+                      people_id: representativePeopleId,
+                      name: representativePeopleFullName,
+                      role: representativeRole as const
+                    });
+                  }
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('contact_vendor');
                   console.log('Contact Vendor selected and added to participants with purchase role:', vendor);
-                  console.log('Representative info added:', { representativePeopleId, representativePeopleFullName });
+                  console.log('Representative added as separate participant:', { representativePeopleId, representativePeopleFullName, representativeRole });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.contact_vendor}
@@ -408,18 +428,26 @@ export function ContractInfoSection() {
                   const representativePeopleId = localStorage.getItem('representative_people_id');
                   const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
                   
+                  // Add selected trader
                   updatedParticipants.push({
                     people_id: trader.id,
                     name: trader.name,
-                    role: 'purchase' as const,
-                    representative_people_id: representativePeopleId || undefined,
-                    representative_people_full_name: representativePeopleFullName || undefined
+                    role: 'purchase' as const
                   });
+                  
+                  // Add representative as separate participant if exists
+                  if (representativePeopleId && representativePeopleFullName) {
+                    updatedParticipants.push({
+                      people_id: representativePeopleId,
+                      name: representativePeopleFullName,
+                      role: representativeRole as const
+                    });
+                  }
                   setValue('participants', updatedParticipants);
                   
                   clearErrors('trader');
                   console.log('Trader selected and added to participants with purchase role:', trader);
-                  console.log('Representative info added:', { representativePeopleId, representativePeopleFullName });
+                  console.log('Representative added as separate participant:', { representativePeopleId, representativePeopleFullName, representativeRole });
                   console.log('Updated participants:', updatedParticipants);
                 }}
                 error={!!errors.trader}
