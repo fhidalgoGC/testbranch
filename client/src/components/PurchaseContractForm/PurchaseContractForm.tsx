@@ -126,24 +126,31 @@ export function PurchaseContractForm({
     }
   }, [initialData, mode, onFormChange]); // Depend on memoized initial data
 
-  // 2. WATCH USER CHANGES - Only real user interactions  
+  // 2. WATCH USER CHANGES - Simplified approach  
   useEffect(() => {
     if (mode !== 'create') return;
 
+    console.log('🎯 COMPONENTE: Configurando form.watch para detectar cambios');
+    
     const subscription = form.watch((value, { name, type }) => {
-      // ONLY trigger on real user changes, not form resets or initial renders
-      if (name && type === 'change') {
-        console.log('🎯 COMPONENTE form.watch - usuario cambió campo:', name);
+      console.log('🔍 form.watch disparado:', { name, type, hasName: !!name });
+      
+      // Trigger on any field change (not just 'change' type)
+      if (name) {
+        console.log('🎯 COMPONENTE form.watch - campo cambiado:', name, 'valor:', value[name]);
         
-        // Update Redux
+        // Update Redux immediately
         if (contractType === 'purchase') {
+          console.log('📦 Actualizando purchase draft en Redux');
           dispatch(updatePurchaseDraft(value as Partial<PurchaseSaleContract>));
         } else {
+          console.log('📦 Actualizando sale draft en Redux');
           dispatch(updateSaleDraft(value as Partial<PurchaseSaleContract>));
         }
         
         // Notify page (activate flag)
         if (onFormChange) {
+          console.log('🚩 Notificando página para activar flag');
           onFormChange(value as Partial<PurchaseSaleContract>);
         }
       }
