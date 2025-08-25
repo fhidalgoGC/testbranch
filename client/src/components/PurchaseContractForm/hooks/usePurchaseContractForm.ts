@@ -497,60 +497,12 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       const processedData = { ...data };
       let processedParticipants = [...(data.participants || [])];
       
-      // Define fake sellers data (same as in ContractInfoSection)
-      const FAKE_SELLERS = [
-        { id: '1', name: 'Juan Carlos Rodríguez', company: 'Agricola San Miguel' },
-        { id: '2', name: 'María Elena Vásquez', type: 'individual' },
-        { id: '3', name: 'Roberto Fernández', company: 'Granos del Norte SA' },
-        { id: '4', name: 'Ana Patricia Morales', company: 'Cooperativa El Campo' },
-        { id: '5', name: 'Carlos David Herrera', type: 'individual' },
-        { id: '6', name: 'Luisa Fernanda García', company: 'Agroexportadora del Bajío' }
-      ];
-
-      const FAKE_CONTACT_VENDORS = [
-        { id: '1', name: 'José Luis Martínez', company: 'Comercial Agropecuaria' },
-        { id: '2', name: 'Carmen Ruiz González', type: 'individual' },
-        { id: '3', name: 'Miguel Ángel Pérez', company: 'Distribuidora del Valle SA' },
-        { id: '4', name: 'Sofía Elena Torres', company: 'Granos y Cereales del Norte' },
-        { id: '5', name: 'Fernando García López', type: 'individual' },
-        { id: '6', name: 'Patricia Moreno Silva', company: 'Comercializadora Agrícola del Centro' }
-      ];
-      
-      // Add seller as participant if selected
-      if (data.seller) {
-        const selectedSeller = FAKE_SELLERS.find(seller => seller.id === data.seller);
-        if (selectedSeller) {
-          const sellerParticipant = {
-            people_id: selectedSeller.id,
-            name: selectedSeller.name,
-            role: 'seller' as const
-          };
-          
-          // Check if seller already exists, if not add it
-          const existingSeller = processedParticipants.find(p => p.role === 'seller');
-          if (!existingSeller) {
-            processedParticipants.push(sellerParticipant);
-          }
-        }
-      }
-      
-      // Add contact vendor as buyer if selected (assuming contact vendor is the buyer)
-      if (data.contact_vendor) {
-        const selectedVendor = FAKE_CONTACT_VENDORS.find(vendor => vendor.id === data.contact_vendor);
-        if (selectedVendor) {
-          const buyerParticipant = {
-            people_id: selectedVendor.id,
-            name: selectedVendor.name,
-            role: 'buyer' as const
-          };
-          
-          // Check if buyer already exists, if not add it
-          const existingBuyer = processedParticipants.find(p => p.role === 'buyer');
-          if (!existingBuyer) {
-            processedParticipants.push(buyerParticipant);
-          }
-        }
-      }
+      // Participants will be processed by the form submission flow
+      // The real seller/contact vendor data is already available in the form
+      // and will be handled by the generateContractJSON function
+      console.log('📋 Seller ID:', data.seller);
+      console.log('📋 Contact Vendor ID:', data.contact_vendor);
+      console.log('📋 Current participants:', processedParticipants);
       
       processedData.participants = processedParticipants;
       console.log('👥 Processed participants:', processedParticipants);
