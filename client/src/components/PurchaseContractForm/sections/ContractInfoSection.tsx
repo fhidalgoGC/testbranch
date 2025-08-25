@@ -307,13 +307,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <SellerSelectionModal
-                selectedSeller={watch('seller')}
-                selectedSellerName={watch('seller_name')} // Pass stored name for display
                 onSelect={(seller) => {
-                  setValue('seller', seller.id);
-                  setValue('seller_name', seller.name); // Store name for display
-                  
-                  // Add to participants array with sale role
+                  // Add to participants array with seller role
                   const currentParticipants = watch('participants') || [];
                   const updatedParticipants = currentParticipants.filter(p => p.role !== 'seller'); // Remove existing seller
                   
@@ -325,11 +320,9 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   });
                   setValue('participants', updatedParticipants);
                   
-                  clearErrors('seller');
                   console.log('Seller selected and added to participants with seller role:', seller);
                   console.log('Updated participants:', updatedParticipants);
                 }}
-                error={!!errors.seller}
               />
             </div>
           </div>
@@ -342,9 +335,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
               )}
             </div>
             <div>
-              {errors.seller && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.seller.message}</p>
-              )}
+              {/* Seller validation handled by participants array */}
             </div>
           </div>
 
@@ -355,12 +346,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 Contact Vendor <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <ContactVendorSelectionModal
-                selectedContactVendor={watch('contact_vendor')}
-                selectedContactVendorName={watch('contact_vendor_name')} // Pass stored name for display
                 onSelect={(vendor) => {
-                  setValue('contact_vendor', vendor.id);
-                  setValue('contact_vendor_name', vendor.name); // Store name for display
-                  
                   // Add to participants array with contactVendor role
                   const currentParticipants = watch('participants') || [];
                   const updatedParticipants = currentParticipants.filter(p => p.role !== 'contactVendor'); // Remove existing contactVendor
@@ -373,11 +359,9 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   });
                   setValue('participants', updatedParticipants);
                   
-                  clearErrors('contact_vendor');
                   console.log('Contact Vendor selected and added to participants with contactVendor role:', vendor);
                   console.log('Updated participants:', updatedParticipants);
                 }}
-                error={!!errors.contact_vendor}
               />
             </div>
             
@@ -386,12 +370,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 Trader <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <TraderSelectionModal
-                selectedTrader={watch('trader')}
-                selectedTraderName={watch('trader_name')} // Pass stored name for display
                 onSelect={(trader) => {
-                  setValue('trader', trader.id);
-                  setValue('trader_name', trader.name); // Store name for display
-                  
                   // Add to participants array with trader role
                   const currentParticipants = watch('participants') || [];
                   const updatedParticipants = currentParticipants.filter(p => p.role !== 'trader'); // Remove existing trader
@@ -404,11 +383,9 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   });
                   setValue('participants', updatedParticipants);
                   
-                  clearErrors('trader');
                   console.log('Trader selected and added to participants with trader role:', trader);
                   console.log('Updated participants:', updatedParticipants);
                 }}
-                error={!!errors.trader}
               />
             </div>
           </div>
@@ -416,14 +393,10 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
           {/* Row 4 Errors */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
             <div>
-              {errors.contact_vendor && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.contact_vendor.message}</p>
-              )}
+              {/* Contact Vendor validation handled by participants array */}
             </div>
             <div>
-              {errors.trader && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.trader.message}</p>
-              )}
+              {/* Trader validation handled by participants array */}
             </div>
           </div>
 
