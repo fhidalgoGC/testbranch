@@ -43,8 +43,11 @@ export default function CreatePurchaseContract() {
     
     // 2. Limpiar draft
     if (purchaseDraft) {
-      console.log('🧹 Limpiando purchase draft');
+      console.log('🧹 Limpiando purchase draft - ANTES:', purchaseDraft);
       dispatch(clearPurchaseDraft());
+      console.log('🧹 Dispatch clearPurchaseDraft ejecutado');
+    } else {
+      console.log('🧹 No hay purchase draft para limpiar');
     }
     
     // 3. Limpiar page state

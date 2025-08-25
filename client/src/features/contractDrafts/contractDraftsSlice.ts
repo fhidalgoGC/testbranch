@@ -32,10 +32,14 @@ const contractDraftsSlice = createSlice({
       }
     },
     clearPurchaseDraft: (state) => {
+      console.log('🧹 REDUX: clearPurchaseDraft ejecutado - state ANTES:', state.purchaseDraft);
       state.purchaseDraft = null;
+      console.log('🧹 REDUX: purchaseDraft limpiado - state DESPUÉS:', state.purchaseDraft);
+      
       // Persistir en localStorage
       try {
         localStorage.setItem('contractDrafts', JSON.stringify(state));
+        console.log('🧹 REDUX: localStorage actualizado');
       } catch (error) {
         console.error('Error saving contract drafts to localStorage:', error);
       }
