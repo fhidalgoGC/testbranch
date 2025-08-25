@@ -163,6 +163,13 @@ export const getContactVendors = async (options?: GetPeopleOptions): Promise<Crm
 };
 
 /**
+ * Get traders from CRM
+ */
+export const getTraders = async (options?: GetPeopleOptions): Promise<CrmPeopleResponse> => {
+  return getPeople({ roles: ['trader'], active: true }, options);
+};
+
+/**
  * Search people by term
  */
 export const searchPeople = async (

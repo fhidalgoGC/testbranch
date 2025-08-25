@@ -133,7 +133,7 @@ export const TraderSelectionModal: React.FC<TraderSelectionModalProps> = ({
 
   // Use the stored name from form state for display, or find in current data
   const selectedTraderData = selectedTraderName 
-    ? { _id: selectedTrader, full_name: selectedTraderName }
+    ? { _id: selectedTrader, full_name: selectedTraderName, person_type: 'natural_person' as const, organization_name: undefined }
     : traders.find(trader => trader._id === selectedTrader);
 
   return (
