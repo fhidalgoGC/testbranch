@@ -69,6 +69,7 @@ export default function CreatePurchaseContract() {
         contractType="purchase" 
         mode="create" 
         contractId={contractId}
+        representativeRole="buyer"
         onCancel={handleCancel}
         onSubmitContract={handleSubmitContract}
       />

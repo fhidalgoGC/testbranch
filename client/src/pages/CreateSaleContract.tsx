@@ -69,6 +69,7 @@ export default function CreateSaleContract() {
         contractType="sale" 
         mode="create" 
         contractId={contractId}
+        representativeRole="seller"
         onCancel={handleCancel}
         onSubmitContract={handleSubmitContract}
       />

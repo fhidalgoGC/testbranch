@@ -10,12 +10,13 @@ interface UsePurchaseContractFormOptions {
   initialData?: Partial<PurchaseSaleContract>;
   contractType?: 'purchase' | 'sale';
   mode?: 'create' | 'edit' | 'view';
+  representativeRole?: 'buyer' | 'seller' | 'trader' | 'contactVendor' | 'purchase' | 'sale';
   onSuccess?: () => void;
   onSubmitContract?: (data: any) => Promise<void>;
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
-  const { initialData = {}, contractType = 'purchase', mode = 'create', onSuccess, onSubmitContract } = options;
+  const { initialData = {}, contractType = 'purchase', mode = 'create', representativeRole = 'buyer', onSuccess, onSubmitContract } = options;
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -430,9 +431,9 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
           processedParticipants.push({
             people_id: representativePeopleId,
             name: representativePeopleFullName,
-            role: 'buyer' as const
+            role: representativeRole as const
           });
-          console.log('✅ Representative added as buyer for purchase contract:', { representativePeopleId, representativePeopleFullName });
+          console.log(`✅ Representative added with role '${representativeRole}' for ${formData.type} contract:`, { representativePeopleId, representativePeopleFullName, representativeRole });
         } else {
           console.log('ℹ️ Representative already exists in participants, skipping.');
         }

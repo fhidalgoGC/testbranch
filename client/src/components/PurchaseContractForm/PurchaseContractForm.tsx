@@ -16,6 +16,7 @@ export interface PurchaseContractFormProps {
   contractType: 'purchase' | 'sale';
   mode: 'create' | 'edit' | 'view';
   contractId?: string; // Para modo edit/view y create (generated ID)
+  representativeRole?: 'buyer' | 'seller' | 'trader' | 'contactVendor' | 'purchase' | 'sale';
   initialContract?: Partial<PurchaseSaleContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -26,6 +27,7 @@ export function PurchaseContractForm({
   contractType,
   mode,
   contractId,
+  representativeRole = 'buyer',
   initialContract,
   onSuccess,
   onCancel: onCancelProp,
@@ -72,6 +74,7 @@ export function PurchaseContractForm({
     initialData: getInitialData(),
     contractType,
     mode,
+    representativeRole,
     // Sin auto-save de drafts
     onSuccess: handleSuccess,
     onSubmitContract: onSubmitContract,
@@ -162,7 +165,7 @@ export function PurchaseContractForm({
         }} className="space-y-8">
             
             {/* Section 1: Contract Info */}
-            <ContractInfoSection />
+            <ContractInfoSection representativeRole={representativeRole} />
 
             {/* Section 2: Price Contract Per (Bushel 56) */}
             <PriceSection
