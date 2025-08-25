@@ -33,7 +33,7 @@ export default function PurchaseContracts() {
   
   // Obtener el estado del draft de purchase para mostrar indicador
   const purchaseDraft = useSelector((state: RootState) => state.contractDrafts.purchaseDraft);
-  const hasDraftData = useSelector((state: RootState) => state.contractDrafts.hasDraftPurchaseContract);
+  const hasDraftData = purchaseDraft && Object.keys(purchaseDraft).length > 0;
   
   // Hook para persistir estado de la página
   const { pageState, updateState } = useContractsPageState('purchaseContracts');
@@ -693,19 +693,6 @@ export default function PurchaseContracts() {
               className="bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
             >
               Debug Page State
-            </Button>
-            <Button
-              onClick={() => {
-                console.log('🔍 === DEBUG DRAFT STATE ===');
-                console.log('purchaseDraft:', purchaseDraft);
-                console.log('hasDraftPurchaseContract:', hasDraftData);
-                console.log('purchaseDraft keys:', purchaseDraft ? Object.keys(purchaseDraft) : 'null');
-                console.log('localStorage contractDrafts:', JSON.parse(localStorage.getItem('contractDrafts') || '{}'));
-                console.log('================================');
-              }}
-              className="bg-orange-100 border-orange-300 text-orange-700 hover:bg-orange-200 flex items-center gap-2"
-            >
-              🔍 Debug Draft
             </Button>
             <Link href="/purchase-contracts/create" className="inline-block">
               <Button 

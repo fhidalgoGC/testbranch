@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { RootState } from '@/app/store';
-import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { updatePurchaseDraft, updateSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
@@ -22,7 +22,6 @@ export interface PurchaseContractFormProps {
   initialContract?: Partial<PurchaseSaleContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
-  onFormChange?: (data: Partial<PurchaseSaleContract>) => void;
 }
 
 export function PurchaseContractForm({ 
@@ -31,8 +30,7 @@ export function PurchaseContractForm({
   contractId,
   initialContract,
   onSuccess,
-  onCancel: onCancelProp,
-  onFormChange
+  onCancel: onCancelProp
 }: PurchaseContractFormProps) {
   const dispatch = useDispatch();
   
@@ -69,21 +67,9 @@ export function PurchaseContractForm({
   };
   
   const { t } = useTranslation();
-  
-  // Primero declarar el hook (sin onFormChange - manejado abajo)
-  const hookResult = usePurchaseContractForm({
-    initialData: getInitialData(),
-    contractType,
-    mode,
-    onFormChange: undefined, // Disabled - handled below
-    onSuccess: handleSuccess,
-    onCancel: onCancelProp,
-  });
-  
   const {
     form,
     isSubmitting,
-    isResetting, // Estado observable del reset
     onSubmit,
     onCancel,
     generateContractJSON, // Add this for debug button
@@ -103,62 +89,22 @@ export function PurchaseContractForm({
     addRemark,
     removeRemark,
     updateRemark,
-  } = hookResult;
-  
-  // 1. INITIAL DRAFT DETECTION - Only when draft data changes
-  const initialData = React.useMemo(() => getInitialData(), [draft, initialContract, mode]);
-  
-  useEffect(() => {
-    if (mode !== 'create') return;
-
-    const hasInitialDraft = Object.keys(initialData).some(key => {
-      const value = (initialData as any)[key];
-      return value !== null && value !== undefined && value !== '' && 
-             !(Array.isArray(value) && value.length === 0);
-    });
-    
-    if (hasInitialDraft) {
-      console.log('🎯 COMPONENTE: Draft inicial detectado, activando flag', initialData);
-      // SOLO notificar a página (activar flag) - Redux ya tiene los datos
-      if (onFormChange) {
-        onFormChange(initialData as Partial<PurchaseSaleContract>);
-      }
-    }
-  }, [initialData, mode, onFormChange]); // Depend on memoized initial data
-
-  // 2. WATCH USER CHANGES - Simplified approach  
-  useEffect(() => {
-    if (mode !== 'create') return;
-
-    console.log('🎯 COMPONENTE: Configurando form.watch para detectar cambios');
-    
-    const subscription = form.watch((value, { name, type }) => {
-      console.log('🔍 form.watch disparado:', { name, type, hasName: !!name, fieldValue: name ? value[name] : 'no-name' });
-      
-      // Trigger on any field change
-      if (name) {
-        console.log('🎯 COMPONENTE form.watch - campo cambiado:', name, 'nuevo valor:', value[name]);
-        console.log('📋 COMPONENTE form.watch - valor completo del form:', value);
-        
-        // Update Redux immediately
+  } = usePurchaseContractForm({
+    initialData: getInitialData(),
+    contractType,
+    mode,
+    onFormChange: React.useCallback((data: Partial<PurchaseContract>) => {
+      // Solo auto-guardar en modo create
+      if (mode === 'create') {
         if (contractType === 'purchase') {
-          console.log('📦 Actualizando purchase draft en Redux');
-          dispatch(updatePurchaseDraft(value as Partial<PurchaseSaleContract>));
+          dispatch(updatePurchaseDraft(data));
         } else {
-          console.log('📦 Actualizando sale draft en Redux');
-          dispatch(updateSaleDraft(value as Partial<PurchaseSaleContract>));
-        }
-        
-        // Notify page (activate flag)
-        if (onFormChange) {
-          console.log('🚩 Notificando página para activar flag');
-          onFormChange(value as Partial<PurchaseSaleContract>);
+          dispatch(updateSaleDraft(data));
         }
       }
-    });
-
-    return subscription.unsubscribe;
-  }, [form, mode, contractType, dispatch, onFormChange]);
+    }, [mode, contractType, dispatch]),
+    onSuccess: handleSuccess,
+  });
 
   // Generar títulos dinámicamente
   const getTitle = () => {
@@ -180,12 +126,22 @@ export function PurchaseContractForm({
     }
   };
 
-  // Detectar desmontaje del componente
-  useEffect(() => {
-    return () => {
-      console.log('🔥 Componente: Desmontándose - flujo de cancel completado');
-    };
-  }, []);
+  // Manejar cancel - solo limpiar state del componente
+  const handleCancel = () => {
+    console.log('🧹 PurchaseContractForm: Limpiando form state');
+    
+    try {
+      // Solo limpiar el estado del formulario
+      onCancel();
+    } catch (error) {
+      console.warn('Form already reset:', error);
+    }
+    
+    // Ejecutar callback del padre (delegará resto de responsabilidades)
+    if (onCancelProp) {
+      onCancelProp();
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 p-6">
@@ -266,10 +222,7 @@ export function PurchaseContractForm({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => {
-                    console.log('🔴 BOTÓN CANCEL CLICKEADO - Usando onCancel del hook');
-                    onCancel();
-                  }}
+                  onClick={handleCancel}
                   disabled={isSubmitting}
                   className="px-8"
                 >

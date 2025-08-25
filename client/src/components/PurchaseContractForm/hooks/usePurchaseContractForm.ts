@@ -2,8 +2,6 @@ import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { setHasDraftPurchaseContract, setHasDraftSaleContract } from '@/features/contractDrafts/contractDraftsSlice';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
 import type { PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
 import { APP_CONFIG } from '@/environment/environment';
@@ -14,22 +12,12 @@ interface UsePurchaseContractFormOptions {
   mode?: 'create' | 'edit' | 'view';
   onFormChange?: (data: Partial<PurchaseSaleContract>) => void;
   onSuccess?: () => void;
-  onCancel?: () => void;
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
-  const { initialData = {}, contractType = 'purchase', mode = 'create', onFormChange, onSuccess, onCancel: onCancelProp } = options;
+  const { initialData = {}, contractType = 'purchase', mode = 'create', onFormChange, onSuccess } = options;
   const { t } = useTranslation();
-  const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
-
-  // Detectar desmontaje del componente
-  useEffect(() => {
-    return () => {
-      console.log('🔥 Hook: Componente desmontándose - limpieza automática');
-    };
-  }, []);
 
   // Create reactive resolver that updates when language changes
   const resolver = useMemo(() => {
@@ -123,8 +111,21 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     defaultValues,
   });
 
-  // DISABLED: No hook-level auto-save - everything handled in component
-  // This prevents infinite loops caused by double onFormChange callbacks
+  // Auto-save functionality con debounce para evitar bucles infinitos
+  useEffect(() => {
+    if (!onFormChange || mode !== 'create') return;
+
+    const subscription = form.watch((value) => {
+      // Debounce para evitar demasiadas actualizaciones
+      const timeoutId = setTimeout(() => {
+        onFormChange(value as Partial<PurchaseSaleContract>);
+      }, 500); // 500ms de debounce
+
+      return () => clearTimeout(timeoutId);
+    });
+
+    return subscription.unsubscribe;
+  }, [form, onFormChange, mode]);
 
   // Update validation messages when language changes
   useEffect(() => {
@@ -469,15 +470,15 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       inspections: formData.inspections,
       proteins: formData.proteins,
       thresholds: {
-        min_thresholds_percentage: formData.min_thresholds_percentage || 0,
+        min_thresholds_percentage: formData.min_thresholds_percentage,
         min_thresholds_weight: minThresholdWeight,
-        max_thresholds_percentage: formData.max_thresholds_percentage || 0,
+        max_thresholds_percentage: formData.max_thresholds_percentage,
         max_thresholds_weight: maxThresholdWeight,
       },
       status: 'created',
       contract_date: new Date(formData.contract_date).toISOString(),
       notes: [],
-      remarks: formData.remarks ? formData.remarks.filter(remark => remark.trim() !== '') : [],
+      remarks: formData.remarks.filter(remark => remark.trim() !== ''),
       ...(formData.adjustments && formData.adjustments.length > 0 && { 
         adjustments: formData.adjustments 
       }),
@@ -508,13 +509,6 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       
       alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
       
-      // Desactivar flag de draft después de submit exitoso
-      if (contractType === 'purchase') {
-        dispatch(setHasDraftPurchaseContract(false));
-      } else if (contractType === 'sale') {
-        dispatch(setHasDraftSaleContract(false));
-      }
-      
       // Call success callback if provided
       if (onSuccess) {
         onSuccess();
@@ -527,42 +521,21 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     }
   };
 
-  // Función helper para verificar si el formulario está en estado "limpio"
-  const checkIfFormHasDefaultValues = (values: Partial<PurchaseSaleContract>) => {
-    return (
-      (!values.commodity_id || values.commodity_id === '') &&
-      (!values.quantity || values.quantity === 0) &&
-      (!values.seller || values.seller === '') &&
-      (!values.participants || values.participants.length === 0) &&
-      (!values.price_schedule || values.price_schedule.length === 0) &&
-      (!values.logistic_schedule || values.logistic_schedule.length === 0) &&
-      (!values.adjustments || values.adjustments.length === 0) &&
-      (!values.remarks || values.remarks.length === 0)
-    );
-  };
-
   const onCancel = () => {
-    console.log('🧹 Hook: Cancel iniciado - componente se desmontará tras navegación');
+    // Reset form to default values without specifying arrays to avoid extensibility errors
+    form.reset();
     
-    // Como el componente se desmonta tras navegación, no necesitamos reset complejo
-    // Solo marcar que estamos cancelando y ejecutar el callback inmediatamente
-    setIsResetting(true);
-    
-    console.log('🧹 Hook: Ejecutando callback de página inmediatamente...');
-    
-    // Ejecutar callback de la página en el siguiente tick
-    setTimeout(() => {
-      if (onCancelProp) {
-        onCancelProp();
-      }
-    }, 0);
+    // Clear arrays manually by setting them to new arrays
+    form.setValue('participants', []);
+    form.setValue('price_schedule', []);
+    form.setValue('logistic_schedule', []);
+    form.setValue('adjustments', []);
+    form.setValue('remarks', []);
   };
-
 
   return {
     form,
     isSubmitting,
-    isResetting, // Exponer el estado de reset
     onSubmit: form.handleSubmit(onSubmit as any),
     onCancel,
     generateContractJSON, // Export for debug button

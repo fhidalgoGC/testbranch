@@ -39,19 +39,19 @@ export default function SaleContracts() {
   
   // Obtener el estado del draft de sale para mostrar indicador
   const saleDraft = useSelector((state: RootState) => state.contractDrafts.saleDraft);
-  const hasDraftData = useSelector((state: RootState) => state.contractDrafts.hasDraftSaleContract);
+  const hasDraftData = saleDraft && Object.keys(saleDraft).length > 0;
 
   // Hook para persistir estado de la página
-  const { pageState, updateState } = useContractsPageState("saleContracts");
+  const { pageState, updateState } = useContractsPageState("purchaseContracts");
   const { handleNavigateToPage } = useNavigationHandler();
-  usePageTracking("/sale-contracts");
+  usePageTracking("/purchase-contracts");
 
   // Notificar navegación al cargar la página
   useEffect(() => {
     console.log(
-      "🔄 SALE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
+      "🔄 PURCHASE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
     );
-    handleNavigateToPage("saleContracts");
+    handleNavigateToPage("purchaseContracts");
   }, []);
 
   // Estado principal organizado como JSON
