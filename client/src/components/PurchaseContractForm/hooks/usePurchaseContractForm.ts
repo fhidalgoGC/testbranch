@@ -485,15 +485,19 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   const onSubmit = async (data: PurchaseSaleContract) => {
     try {
       setIsSubmitting(true);
-      console.log('Form validation passed');
+      console.log('🚀 HOOK onSubmit called - Form validation passed');
+      console.log('📊 onSubmitContract function available:', !!onSubmitContract);
       
       const contractJSON = generateContractJSON(data);
       console.log('✨ Generated Contract JSON (After Cleaning):', JSON.stringify(contractJSON, null, 2));
       
       // Call external submit function if provided, otherwise show alert
       if (onSubmitContract) {
+        console.log('🌐 Calling external onSubmitContract function...');
         await onSubmitContract(contractJSON);
+        console.log('✅ onSubmitContract completed successfully');
       } else {
+        console.log('⚠️ No onSubmitContract function provided, showing alert');
         alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
         
         // Call success callback if provided

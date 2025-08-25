@@ -154,7 +154,10 @@ export function PurchaseContractForm({
       </div>
 
       <FormProvider {...form}>
-        <form onSubmit={onSubmit} className="space-y-8">
+        <form onSubmit={(e) => {
+          console.log('📝 FORM submit event triggered');
+          onSubmit(e);
+        }} className="space-y-8">
             
             {/* Section 1: Contract Info */}
             <ContractInfoSection />
