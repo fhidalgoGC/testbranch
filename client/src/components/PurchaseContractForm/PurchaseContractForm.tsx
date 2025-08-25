@@ -191,7 +191,7 @@ export function PurchaseContractForm({
       // En caso de error, ejecutar callback inmediatamente
       console.log('❌ PurchaseContractForm: Error en reset, ejecutando onCancelProp inmediatamente');
       if (onCancelProp) {
-        onCancelProp();
+        //onCancelProp();
       }
     }
   };
