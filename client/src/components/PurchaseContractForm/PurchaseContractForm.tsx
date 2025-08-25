@@ -153,6 +153,8 @@ export function PurchaseContractForm({
 
   // Detectar cuando el reset terminó completamente
   useEffect(() => {
+    console.log('🔄 useEffect reset detector:', { wasResetting, isResetting, hasOnCancelProp: !!onCancelProp });
+    
     if (wasResetting && !isResetting) {
       // ✅ Transición: de "resetting" a "no resetting" = TERMINÓ
       console.log('🎉 Componente: Form reset completado determinísticamente');
@@ -162,10 +164,13 @@ export function PurchaseContractForm({
       if (onCancelProp) {
         console.log('🚀 Componente: Ejecutando onCancelProp después de reset completo');
         onCancelProp();
+      } else {
+        console.log('⚠️ Componente: onCancelProp no disponible');
       }
     }
     
     if (isResetting && !wasResetting) {
+      console.log('🕐 Componente: Detectado inicio de reset');
       setWasResetting(true);
     }
   }, [isResetting, wasResetting, onCancelProp]);
@@ -173,6 +178,7 @@ export function PurchaseContractForm({
   // Manejar cancel - iniciar reset y esperar que termine
   const handleCancel = () => {
     console.log('🧹 PurchaseContractForm: Iniciando secuencia de cancel');
+    console.log('🧹 PurchaseContractForm: onCancelProp disponible?', !!onCancelProp);
     
     try {
       // Iniciar el reset del formulario (esto activará isResetting)
@@ -183,6 +189,7 @@ export function PurchaseContractForm({
     } catch (error) {
       console.warn('Form already reset:', error);
       // En caso de error, ejecutar callback inmediatamente
+      console.log('❌ PurchaseContractForm: Error en reset, ejecutando onCancelProp inmediatamente');
       if (onCancelProp) {
         onCancelProp();
       }

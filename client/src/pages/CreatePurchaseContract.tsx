@@ -38,6 +38,7 @@ export default function CreatePurchaseContract() {
   
   // Función para manejar cancelación completa
   const handleCancel = () => {
+    console.log('🎯 === PÁGINA HANDLECANCEL LLAMADO ===');
     console.log('🧹 CreatePurchaseContract: Iniciando limpieza completa...');
     console.log('🔍 Estado ANTES de limpiar - hasDraftPurchaseContract:', hasDraftPurchaseContract);
     
@@ -67,6 +68,7 @@ export default function CreatePurchaseContract() {
     setLocation('/purchase-contracts');
     
     console.log('✅ CreatePurchaseContract: Limpieza completa finalizada');
+    console.log('🎯 === FIN PÁGINA HANDLECANCEL ===');
   };
 
   return (
