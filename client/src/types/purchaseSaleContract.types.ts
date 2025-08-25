@@ -83,10 +83,8 @@ export interface PurchaseSaleContract {
   commodity_id?: string;
   commodity_name?: string;
   
-  // Characteristics fields - can be object or individual fields
+  // Characteristics - object format only
   characteristics?: Characteristics;
-  characteristics_configuration_id?: string;
-  characteristics_configuration_name?: string;
   
   grade: number;
   participants: Participant[];

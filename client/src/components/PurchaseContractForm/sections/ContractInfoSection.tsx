@@ -213,10 +213,10 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   setValue('commodity_id', value);
                   setValue('commodity_name', selectedCommodity?.label || '');
                   // Clear characteristics configuration when commodity changes
-                  setValue('characteristics_configuration_id', '');
+                  setValue('characteristics', { configuration_id: '', configuration_name: '' });
                   clearErrors('commodity_id');
                   clearErrors('commodity_name');
-                  clearErrors('characteristics_configuration_id');
+                  clearErrors('characteristics');
                 }}
               >
                 <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
@@ -245,13 +245,17 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 {t('characteristicsConfiguration')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <Select
-                value={watch('characteristics_configuration_id')}
+                value={watch('characteristics')?.configuration_id || ''}
                 onValueChange={(value) => {
-                  setValue('characteristics_configuration_id', value);
-                  clearErrors('characteristics_configuration_id');
+                  const selectedConfig = characteristicsOptions.find(opt => opt.key === value);
+                  setValue('characteristics', {
+                    configuration_id: value,
+                    configuration_name: selectedConfig?.label || ''
+                  });
+                  clearErrors('characteristics');
                 }}
               >
-                <SelectTrigger className={`h-10 ${errors.characteristics_configuration_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className={`h-10 ${errors.characteristics ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectConfiguration')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,8 +285,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
               )}
             </div>
             <div>
-              {errors.characteristics_configuration_id && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics_configuration_id.message}</p>
+              {errors.characteristics && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.characteristics.message}</p>
               )}
             </div>
           </div>
