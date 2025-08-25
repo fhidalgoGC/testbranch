@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { RootState } from '@/app/store';
-import { updatePurchaseDraft, updateSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
@@ -93,7 +93,7 @@ export function PurchaseContractForm({
     initialData: getInitialData(),
     contractType,
     mode,
-    onFormChange: React.useCallback((data: Partial<PurchaseContract>) => {
+    onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
       // Solo auto-guardar en modo create
       if (mode === 'create') {
         if (contractType === 'purchase') {

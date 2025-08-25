@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PurchaseContract } from '@/types/purchaseContract.types';
+import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { loadDraftsFromStorage } from './contractDraftsUtils';
 
 interface ContractDraftsState {
-  purchaseDraft: Partial<PurchaseContract> | null;
-  saleDraft: Partial<PurchaseContract> | null;
+  purchaseDraft: Partial<PurchaseSaleContract> | null;
+  saleDraft: Partial<PurchaseSaleContract> | null;
 }
 
 const initialState: ContractDraftsState = loadDraftsFromStorage();
@@ -13,7 +13,7 @@ const contractDraftsSlice = createSlice({
   name: 'contractDrafts',
   initialState,
   reducers: {
-    updatePurchaseDraft: (state, action: PayloadAction<Partial<PurchaseContract>>) => {
+    updatePurchaseDraft: (state, action: PayloadAction<Partial<PurchaseSaleContract>>) => {
       state.purchaseDraft = action.payload;
       // Persistir en localStorage
       try {
@@ -22,7 +22,7 @@ const contractDraftsSlice = createSlice({
         console.error('Error saving contract drafts to localStorage:', error);
       }
     },
-    updateSaleDraft: (state, action: PayloadAction<Partial<PurchaseContract>>) => {
+    updateSaleDraft: (state, action: PayloadAction<Partial<PurchaseSaleContract>>) => {
       state.saleDraft = action.payload;
       // Persistir en localStorage
       try {
@@ -32,14 +32,10 @@ const contractDraftsSlice = createSlice({
       }
     },
     clearPurchaseDraft: (state) => {
-      console.log('🧹 REDUX: clearPurchaseDraft ejecutado - state ANTES:', state.purchaseDraft);
       state.purchaseDraft = null;
-      console.log('🧹 REDUX: purchaseDraft limpiado - state DESPUÉS:', state.purchaseDraft);
-      
       // Persistir en localStorage
       try {
         localStorage.setItem('contractDrafts', JSON.stringify(state));
-        console.log('🧹 REDUX: localStorage actualizado');
       } catch (error) {
         console.error('Error saving contract drafts to localStorage:', error);
       }
