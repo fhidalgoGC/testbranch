@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'wouter';
+import { useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { PurchaseContractForm } from '@/components/PurchaseContractForm/PurchaseContractForm';
 import { RootState } from '@/app/store';
 import { generateContractId } from '@/services/contractsService';
+import { clearPurchaseDraft } from '@/features/contractDrafts/contractDraftsSlice';
+import { clearContractDetailState, clearCreateSubContractState } from '@/store/slices/pageStateSlice';
 
 export default function CreatePurchaseContract() {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const [, setLocation] = useLocation();
+  const { handleNavigateToPage } = useNavigationHandler();
   const [contractId, setContractId] = useState<string | undefined>();
   
   // Obtener el draft de purchase del estado global
@@ -29,10 +36,32 @@ export default function CreatePurchaseContract() {
     }
   }, [purchaseDraft, contractId]);
   
-  // Función para manejar cancelación y limpiar contractId
+  // Función para manejar cancelación completa
   const handleCancel = () => {
+    console.log('🧹 CreatePurchaseContract: Iniciando limpieza completa...');
+    
+    // 1. Limpiar contractId local
     setContractId(undefined);
-    // La navegación se maneja en PurchaseContractForm
+    
+    // 2. Limpiar draft
+    if (purchaseDraft) {
+      console.log('🧹 Limpiando purchase draft');
+      dispatch(clearPurchaseDraft());
+    }
+    
+    // 3. Limpiar page state
+    if (contractId) {
+      console.log('🧹 Limpiando page state para contractId:', contractId);
+      dispatch(clearContractDetailState(contractId));
+      dispatch(clearCreateSubContractState(contractId));
+    }
+    
+    // 4. Navegar con wouter
+    console.log('🔄 Navegando a purchase-contracts');
+    handleNavigateToPage('purchase-contracts');
+    setLocation('/purchase-contracts');
+    
+    console.log('✅ CreatePurchaseContract: Limpieza completa finalizada');
   };
 
   return (

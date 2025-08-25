@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { usePurchaseContractForm } from './hooks/usePurchaseContractForm';
 import { RootState } from '@/app/store';
-import { updatePurchaseDraft, updateSaleDraft, clearPurchaseDraft, clearSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
-import { clearContractDetailState, clearCreateSubContractState } from '@/store/slices/pageStateSlice';
+import { updatePurchaseDraft, updateSaleDraft } from '@/features/contractDrafts/contractDraftsSlice';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
 import { ContractInfoSection } from './sections/ContractInfoSection';
 import { PriceSection } from './sections/PriceSection';
@@ -15,8 +14,6 @@ import { LogisticSection } from './sections/LogisticSection';
 import { AdjustmentsSection } from './sections/AdjustmentsSection';
 import { ShipmentSection } from './sections/ShipmentSection';
 import { RemarksSection } from './sections/RemarksSection';
-import { useLocation } from 'wouter';
-import { useNavigationHandler } from '@/hooks/usePageState';
 
 export interface PurchaseContractFormProps {
   contractType: 'purchase' | 'sale';
@@ -36,8 +33,6 @@ export function PurchaseContractForm({
   onCancel: onCancelProp
 }: PurchaseContractFormProps) {
   const dispatch = useDispatch();
-  const [, setLocation] = useLocation();
-  const { handleNavigateToPage } = useNavigationHandler();
   
   // Obtener draft del estado global (solo para modo create)
   const draft = useSelector((state: RootState) => 
@@ -131,59 +126,21 @@ export function PurchaseContractForm({
     }
   };
 
-  // Manejar cancel personalizado
+  // Manejar cancel - solo limpiar state del componente
   const handleCancel = () => {
-    console.log('🧹 INICIANDO LIMPIEZA COMPLETA...');
+    console.log('🧹 PurchaseContractForm: Limpiando form state');
     
     try {
-      // 1. Limpiar draft si es modo create (validar que existe antes de limpiar)
-      if (mode === 'create') {
-        if (contractType === 'purchase' && draft) {
-          console.log('🧹 Limpiando purchase draft');
-          dispatch(clearPurchaseDraft());
-        } else if (contractType === 'sale' && draft) {
-          console.log('🧹 Limpiando sale draft');
-          dispatch(clearSaleDraft());
-        }
-      }
-      
-      // 2. Limpiar page state relacionado con contratos
-      if (contractId) {
-        console.log('🧹 Limpiando page state para contractId:', contractId);
-        dispatch(clearContractDetailState(contractId));
-        dispatch(clearCreateSubContractState(contractId));
-      }
-      
-      // 3. Llamar onCancel del hook para limpiar formulario
-      try {
-        console.log('🧹 Limpiando form state');
-        onCancel();
-      } catch (error) {
-        console.warn('Form already reset:', error);
-      }
-      
+      // Solo limpiar el estado del formulario
+      onCancel();
     } catch (error) {
-      console.warn('Error during cleanup:', error);
+      console.warn('Form already reset:', error);
     }
     
-    // 4. SIEMPRE ejecutar callback personalizado (limpiar contractId del estado padre)
+    // Ejecutar callback del padre (delegará resto de responsabilidades)
     if (onCancelProp) {
-      console.log('🧹 Ejecutando callback personalizado (limpiar contractId)');
       onCancelProp();
     }
-    
-    // 5. SIEMPRE navegar al listado correspondiente
-    if (contractType === 'purchase') {
-      console.log('🔄 Navegando a purchase-contracts');
-      handleNavigateToPage('purchase-contracts');
-      setLocation('/purchase-contracts');
-    } else {
-      console.log('🔄 Navegando a sale-contracts');
-      handleNavigateToPage('sale-contracts');
-      setLocation('/sale-contracts');
-    }
-    
-    console.log('✅ LIMPIEZA COMPLETA FINALIZADA');
   };
 
   return (
