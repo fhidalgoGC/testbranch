@@ -563,27 +563,44 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     console.log('🧹 Hook: Reset ejecutado, esperando confirmación...');
   };
 
-  // Detectar cuando el reset terminó completamente
+  // Detectar cuando el reset terminó completamente usando subscription segura
   useEffect(() => {
-    if (isResetting) {
-      const currentValues = form.getValues();
-      const hasDefaultValues = checkIfFormHasDefaultValues(currentValues);
-      
-      console.log('🔍 Hook: Verificando si reset terminó...', { 
-        hasDefaultValues, 
-        sampleValues: {
-          commodity_id: currentValues.commodity_id,
-          quantity: currentValues.quantity,
-          participantsLength: currentValues.participants?.length
+    if (!isResetting) return;
+
+    console.log('🔍 Hook: Iniciando verificación de reset...');
+
+    // Usar setTimeout para permitir que React Hook Form complete el reset
+    const checkReset = () => {
+      try {
+        const currentValues = form.getValues();
+        const hasDefaultValues = checkIfFormHasDefaultValues(currentValues);
+        
+        console.log('🔍 Hook: Verificando si reset terminó...', { 
+          hasDefaultValues, 
+          sampleValues: {
+            commodity_id: currentValues.commodity_id,
+            quantity: currentValues.quantity,
+            participantsLength: currentValues.participants?.length
+          }
+        });
+        
+        if (hasDefaultValues) {
+          console.log('✅ Hook: Reset completado determinísticamente');
+          setIsResetting(false);
+        } else {
+          // Si no está listo, intentar de nuevo en el siguiente tick
+          setTimeout(checkReset, 0);
         }
-      });
-      
-      if (hasDefaultValues) {
-        console.log('✅ Hook: Reset completado determinísticamente');
+      } catch (error) {
+        console.warn('Error verificando reset:', error);
+        // En caso de error, asumir que el reset terminó
         setIsResetting(false);
       }
-    }
-  }, [isResetting, form.watch()]); // Observa todos los cambios del formulario
+    };
+
+    // Iniciar la verificación
+    setTimeout(checkReset, 0);
+  }, [isResetting]); // Solo depende de isResetting
 
   return {
     form,
