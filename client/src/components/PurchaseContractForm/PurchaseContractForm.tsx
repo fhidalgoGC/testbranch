@@ -96,13 +96,16 @@ export function PurchaseContractForm({
     onFormChange: React.useCallback((data: Partial<PurchaseSaleContract>) => {
       // Solo auto-guardar en modo create
       if (mode === 'create') {
+        console.log('🔄 onFormChange triggered:', { contractType, hasData: !!data });
         if (contractType === 'purchase') {
           dispatch(updatePurchaseDraft(data));
           // Activar flag cuando se empiece a llenar el formulario
+          console.log('🔥 Activando hasDraftPurchaseContract = true por onFormChange');
           dispatch(setHasDraftPurchaseContract(true));
         } else {
           dispatch(updateSaleDraft(data));
           // Activar flag cuando se empiece a llenar el formulario
+          console.log('🔥 Activando hasDraftSaleContract = true por onFormChange');
           dispatch(setHasDraftSaleContract(true));
         }
       }

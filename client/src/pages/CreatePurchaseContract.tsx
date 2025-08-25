@@ -39,23 +39,30 @@ export default function CreatePurchaseContract() {
   // Función para manejar cancelación completa
   const handleCancel = () => {
     console.log('🧹 CreatePurchaseContract: Iniciando limpieza completa...');
+    console.log('🔍 Estado ANTES de limpiar - hasDraftPurchaseContract:', hasDraftPurchaseContract);
     
     // 1. Limpiar contractId local
     setContractId(undefined);
     
-    // 2. Limpiar draft y desactivar flag
-    console.log('🧹 Limpiando purchase draft y desactivando flag');
-    dispatch(clearPurchaseDraft()); // Esto ya pone hasDraftPurchaseContract = false
-    dispatch(setHasDraftPurchaseContract(false)); // Double check
+    // 2. Limpiar draft (esto ya desactiva el flag automáticamente)
+    console.log('🧹 Ejecutando clearPurchaseDraft...');
+    dispatch(clearPurchaseDraft()); 
     
-    // 3. Limpiar page state
+    // 3. Verificar si el flag se desactivó
+    setTimeout(() => {
+      const newState = JSON.parse(localStorage.getItem('contractDrafts') || '{}');
+      console.log('🔍 Estado DESPUÉS de limpiar - localStorage:', newState);
+      console.log('🔍 hasDraftPurchaseContract después de clearPurchaseDraft:', newState.hasDraftPurchaseContract);
+    }, 100);
+    
+    // 4. Limpiar page state
     if (contractId) {
       console.log('🧹 Limpiando page state para contractId:', contractId);
       dispatch(clearContractDetailState(contractId));
       dispatch(clearCreateSubContractState(contractId));
     }
     
-    // 4. Navegar con wouter (solo)
+    // 5. Navegar con wouter (solo)
     console.log('🔄 Navegando a purchase-contracts');
     setLocation('/purchase-contracts');
     
