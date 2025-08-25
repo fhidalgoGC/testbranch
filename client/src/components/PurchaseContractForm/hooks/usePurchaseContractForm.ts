@@ -397,50 +397,36 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       return option ? option.label : '';
     };
     
-    // Process participants - add/replace seller in position 0
-    let processedParticipants = [...formData.participants];
-    if (formData.seller) {
-      const selectedSeller = FAKE_SELLERS.find(seller => seller.id === formData.seller);
-      if (selectedSeller) {
-        const sellerParticipant = {
-          people_id: selectedSeller.id,
-          name: selectedSeller.name,
-          role: 'seller' as const
-        };
-        
-        // Check if position 0 exists and has role 'seller', if so replace it
-        if (processedParticipants.length > 0 && processedParticipants[0].role === 'seller') {
-          processedParticipants[0] = sellerParticipant;
-        } else {
-          // Add seller at position 0
-          processedParticipants.unshift(sellerParticipant);
-        }
+    // Process participants - use existing participants from form selections
+    let processedParticipants = [...(formData.participants || [])];
+    
+    console.log('🔍 Processing participants from form selections:', processedParticipants);
+    
+    // Add representative for all contract types
+    const representativePeopleId = localStorage.getItem('representative_people_id');
+    const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
+    
+    console.log('🔍 Representative info from localStorage:', { representativePeopleId, representativePeopleFullName, representativeRole });
+    
+    if (representativePeopleId && representativePeopleFullName) {
+      // Check if representative is not already in participants
+      const existingRepresentative = processedParticipants.find(p => p.people_id === representativePeopleId);
+      
+      if (!existingRepresentative) {
+        processedParticipants.push({
+          people_id: representativePeopleId,
+          name: representativePeopleFullName,
+          role: representativeRole as const
+        });
+        console.log(`✅ Representative added with role '${representativeRole}' for ${formData.type} contract:`, { representativePeopleId, representativePeopleFullName, representativeRole });
+      } else {
+        console.log('ℹ️ Representative already exists in participants, skipping.');
       }
+    } else {
+      console.log('⚠️ No representative info found in localStorage.');
     }
     
-    // Add representative as buyer for purchase contracts
-    if (formData.type === 'purchase') {
-      const representativePeopleId = localStorage.getItem('representative_people_id');
-      const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
-      
-      if (representativePeopleId && representativePeopleFullName) {
-        // Check if representative is not already in participants
-        const existingRepresentative = processedParticipants.find(p => p.people_id === representativePeopleId);
-        
-        if (!existingRepresentative) {
-          processedParticipants.push({
-            people_id: representativePeopleId,
-            name: representativePeopleFullName,
-            role: representativeRole as const
-          });
-          console.log(`✅ Representative added with role '${representativeRole}' for ${formData.type} contract:`, { representativePeopleId, representativePeopleFullName, representativeRole });
-        } else {
-          console.log('ℹ️ Representative already exists in participants, skipping.');
-        }
-      } else {
-        console.log('⚠️ No representative info found in localStorage for purchase contract.');
-      }
-    }
+    console.log('✅ Final processed participants:', processedParticipants);
     
     // Calculate thresholds weights based on quantity and percentages (handle null/undefined)
     const quantity = formData.quantity || 0;
