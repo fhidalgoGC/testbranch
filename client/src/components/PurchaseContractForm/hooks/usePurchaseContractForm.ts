@@ -21,6 +21,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   // Create reactive resolver that updates when language changes
   const resolver = useMemo(() => {
@@ -531,7 +532,24 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     }
   };
 
+  // Función helper para verificar si el formulario está en estado "limpio"
+  const checkIfFormHasDefaultValues = (values: Partial<PurchaseSaleContract>) => {
+    return (
+      (!values.commodity_id || values.commodity_id === '') &&
+      (!values.quantity || values.quantity === 0) &&
+      (!values.seller || values.seller === '') &&
+      (!values.participants || values.participants.length === 0) &&
+      (!values.price_schedule || values.price_schedule.length === 0) &&
+      (!values.logistic_schedule || values.logistic_schedule.length === 0) &&
+      (!values.adjustments || values.adjustments.length === 0) &&
+      (!values.remarks || values.remarks.length === 0)
+    );
+  };
+
   const onCancel = () => {
+    console.log('🧹 Hook: Iniciando reset del formulario...');
+    setIsResetting(true); // Indicar que empezamos el reset
+    
     // Reset form to default values without specifying arrays to avoid extensibility errors
     form.reset();
     
@@ -541,11 +559,36 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     form.setValue('logistic_schedule', []);
     form.setValue('adjustments', []);
     form.setValue('remarks', []);
+    
+    console.log('🧹 Hook: Reset ejecutado, esperando confirmación...');
   };
+
+  // Detectar cuando el reset terminó completamente
+  useEffect(() => {
+    if (isResetting) {
+      const currentValues = form.getValues();
+      const hasDefaultValues = checkIfFormHasDefaultValues(currentValues);
+      
+      console.log('🔍 Hook: Verificando si reset terminó...', { 
+        hasDefaultValues, 
+        sampleValues: {
+          commodity_id: currentValues.commodity_id,
+          quantity: currentValues.quantity,
+          participantsLength: currentValues.participants?.length
+        }
+      });
+      
+      if (hasDefaultValues) {
+        console.log('✅ Hook: Reset completado determinísticamente');
+        setIsResetting(false);
+      }
+    }
+  }, [isResetting, form.watch()]); // Observa todos los cambios del formulario
 
   return {
     form,
     isSubmitting,
+    isResetting, // Exponer el estado de reset
     onSubmit: form.handleSubmit(onSubmit as any),
     onCancel,
     generateContractJSON, // Export for debug button

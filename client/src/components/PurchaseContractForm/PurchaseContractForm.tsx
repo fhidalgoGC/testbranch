@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
@@ -72,6 +72,7 @@ export function PurchaseContractForm({
   const {
     form,
     isSubmitting,
+    isResetting, // Estado observable del reset
     onSubmit,
     onCancel,
     generateContractJSON, // Add this for debug button
@@ -134,26 +135,45 @@ export function PurchaseContractForm({
     }
   };
 
-  // Manejar cancel - solo limpiar state del componente
-  const handleCancel = () => {
-    console.log('🧹 PurchaseContractForm: Limpiando form state');
+  // Estado para detectar transición del reset
+  const [wasResetting, setWasResetting] = useState(false);
 
-    // Ejecutar callback del padre (delegará resto de responsabilidades)
+  // Detectar cuando el reset terminó completamente
+  useEffect(() => {
+    if (wasResetting && !isResetting) {
+      // ✅ Transición: de "resetting" a "no resetting" = TERMINÓ
+      console.log('🎉 Componente: Form reset completado determinísticamente');
+      setWasResetting(false);
+      
+      // Solo ahora ejecutar el callback del padre
+      if (onCancelProp) {
+        console.log('🚀 Componente: Ejecutando onCancelProp después de reset completo');
+        onCancelProp();
+      }
+    }
     
+    if (isResetting && !wasResetting) {
+      setWasResetting(true);
+    }
+  }, [isResetting, wasResetting, onCancelProp]);
+
+  // Manejar cancel - iniciar reset y esperar que termine
+  const handleCancel = () => {
+    console.log('🧹 PurchaseContractForm: Iniciando secuencia de cancel');
     
     try {
-      // Solo limpiar el estado del formulario
+      // Iniciar el reset del formulario (esto activará isResetting)
       onCancel();
+      
+      // NO ejecutar onCancelProp aquí - se ejecutará en el useEffect cuando termine
+      console.log('🕐 PurchaseContractForm: Reset iniciado, esperando confirmación...');
     } catch (error) {
       console.warn('Form already reset:', error);
+      // En caso de error, ejecutar callback inmediatamente
+      if (onCancelProp) {
+        onCancelProp();
+      }
     }
-
-    if (onCancelProp) {
-      onCancelProp();
-    }
-    
-    
-    
   };
 
   return (
