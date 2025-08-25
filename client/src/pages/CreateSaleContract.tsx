@@ -29,6 +29,12 @@ export default function CreateSaleContract() {
     }
   }, [saleDraft, contractId]);
 
+  // Función para manejar cancelación y limpiar contractId
+  const handleCancel = () => {
+    setContractId(undefined);
+    // La navegación se maneja en PurchaseContractForm
+  };
+
   return (
     <DashboardLayout title={t("createSaleContract")}>
       <PurchaseContractForm 
@@ -36,6 +42,7 @@ export default function CreateSaleContract() {
         mode="create" 
         initialContract={saleDraft || undefined}
         contractId={contractId}
+        onCancel={handleCancel}
       />
     </DashboardLayout>
   );

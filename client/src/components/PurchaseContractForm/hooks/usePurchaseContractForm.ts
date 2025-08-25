@@ -522,7 +522,45 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   };
 
   const onCancel = () => {
-    form.reset();
+    // Reset form with clean default values to avoid read-only array errors
+    form.reset({
+      folio: '',
+      reference_number: '',
+      commodity: {
+        commodity_id: '',
+        name: ''
+      },
+      participants: [],
+      characteristics: {
+        configuration_id: '',
+        configuration_name: ''
+      },
+      type: contractType,
+      sub_type: 'direct',
+      grade: 0,
+      quantity: 0,
+      measurement_unit_id: '',
+      measurement_unit: '',
+      price_schedule: [],
+      logistic_schedule: [],
+      shipping_start_date: '',
+      shipping_end_date: '',
+      contract_date: '',
+      delivered: '',
+      transport: '',
+      weights: '',
+      inspections: '',
+      proteins: '',
+      application_priority: 0,
+      thresholds: {
+        min_thresholds_percentage: 0,
+        min_thresholds_weight: 0,
+        max_thresholds_percentage: 0,
+        max_thresholds_weight: 0
+      },
+      adjustments: [],
+      remarks: []
+    });
   };
 
   return {

@@ -14,6 +14,7 @@ import { LogisticSection } from './sections/LogisticSection';
 import { AdjustmentsSection } from './sections/AdjustmentsSection';
 import { ShipmentSection } from './sections/ShipmentSection';
 import { RemarksSection } from './sections/RemarksSection';
+import { useLocation } from 'wouter';
 
 export interface PurchaseContractFormProps {
   contractType: 'purchase' | 'sale';
@@ -33,6 +34,7 @@ export function PurchaseContractForm({
   onCancel: onCancelProp
 }: PurchaseContractFormProps) {
   const dispatch = useDispatch();
+  const [, setLocation] = useLocation();
   
   // Obtener draft del estado global (solo para modo create)
   const draft = useSelector((state: RootState) => 
@@ -137,10 +139,19 @@ export function PurchaseContractForm({
       }
     }
     
+    // Llamar onCancel del hook para limpiar formulario
+    onCancel();
+    
+    // Si hay callback personalizado, llamarlo
     if (onCancelProp) {
       onCancelProp();
     } else {
-      onCancel();
+      // Navegar al listado correspondiente
+      if (contractType === 'purchase') {
+        setLocation('/purchase-contracts');
+      } else {
+        setLocation('/sale-contracts');
+      }
     }
   };
 
