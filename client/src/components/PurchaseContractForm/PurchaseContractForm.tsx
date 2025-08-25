@@ -18,7 +18,7 @@ import { RemarksSection } from './sections/RemarksSection';
 export interface PurchaseContractFormProps {
   contractType: 'purchase' | 'sale';
   mode: 'create' | 'edit' | 'view';
-  contractId?: string; // Para modo edit/view
+  contractId?: string; // Para modo edit/view y create (generated ID)
   initialContract?: Partial<PurchaseContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
