@@ -39,7 +39,7 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
           people_id: z.string().min(1, t('fieldRequired')),
           name: z.string().min(1, t('fieldRequired')),
           role: z.string().min(1, t('selectOption')).refine(
-            (val) => ['buyer', 'seller'].includes(val),
+            (val) => ['buyer', 'seller', 'trader', 'contactVendor', 'purchase', 'sale'].includes(val),
             t('selectOption')
           ),
         })
