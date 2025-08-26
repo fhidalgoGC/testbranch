@@ -133,6 +133,10 @@ export const authenticatedFetch = (url: string, options: RequestInit & Intercept
         bodyData.created_by_id = createdById;
         bodyData.created_by_name = createdByName;
         
+        // Agregar registered_by_id y registered_by_name al body
+        bodyData.registered_by_id = createdById;
+        bodyData.registered_by_name = createdByName;
+        
         // Convertir de vuelta a string
         modifiedOptions.body = JSON.stringify(bodyData);
         

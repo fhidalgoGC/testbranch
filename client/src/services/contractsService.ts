@@ -421,7 +421,7 @@ export const deleteSubContract = async (
 // Service function to generate a new contract ID
 export const generateContractId = async (): Promise<string | null> => {
   try {
-    console.log("🆔 Generating new contract ID...");
+    console.log("🆔 Generating new contract ID....");
     const response = await authenticatedFetch(
       `${environment.TRM_BASE_URL}/contracts/sp-contracts`,
       {
@@ -438,10 +438,10 @@ export const generateContractId = async (): Promise<string | null> => {
     }
 
     const data = await response.json();
-    console.log("✅ Contract ID generated:", data.data.key);
-    return data.key;
+    console.log("✅  SERVICE Contract ID generated:", data.data.key);
+    return data.data.key;
   } catch (error) {
-    console.error("❌ Error generating contract ID:", error);
+    console.error("❌ SERVICE Error generating contract ID:", error);
     return null;
   }
 };
