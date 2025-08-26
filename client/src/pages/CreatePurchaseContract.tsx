@@ -25,25 +25,6 @@ export default function CreatePurchaseContract() {
   const [contractId, setContractId] = useState<string | undefined>(urlContractId);
   const [errorModal, setErrorModal] = useState({ open: false, message: "" });
 
-  // Función para generar nuevo contrato usando el servicio (solo si no viene por URL)
-  const handleGenerateContractId = async () => {
-    console.log("🆔 Generating new contract ID...");
-    const contractIdGenerated = await generateContractId();
-    if (contractIdGenerated) {
-      console.log("✅ Contract ID generated:", contractIdGenerated);
-      setContractId(contractIdGenerated);
-    }
-  };
-
-  // Generar contractId solo si no viene de la URL
-  useEffect(() => {
-    if (!urlContractId) {
-      handleGenerateContractId();
-    } else {
-      console.log("📥 Using contract ID from URL:", urlContractId);
-      setContractId(urlContractId);
-    }
-  }, [urlContractId]);
 
   // Función para manejar cancelación - solo navegar
   const handleCancel = () => {
@@ -79,7 +60,7 @@ export default function CreatePurchaseContract() {
       <PurchaseContractForm
         contractType="purchase"
         mode="create"
-        contractId={contractId}
+        contractId={urlContractId}
         representativeRole="buyer"
         onCancel={handleCancel}
         onSubmitContract={handleSubmitContract}
