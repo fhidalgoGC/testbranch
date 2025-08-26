@@ -12,7 +12,7 @@ interface UsePurchaseContractFormOptions {
   mode?: 'create' | 'edit' | 'view';
   representativeRole?: 'buyer' | 'seller' | 'trader' | 'contactVendor' | 'purchase' | 'sale';
   onSuccess?: () => void;
-  onSubmitContract?: (data: any) => Promise<void>;
+  onSubmitContract?: (contractId: string, data: any) => Promise<void>;
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
