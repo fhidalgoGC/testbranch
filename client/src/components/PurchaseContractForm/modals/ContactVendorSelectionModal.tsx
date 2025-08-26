@@ -141,15 +141,16 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
         <DialogTrigger asChild>
           <Button
             variant="outline"
-            className={`w-full justify-start text-left font-normal ${
-              error ? 'border-red-500 focus:border-red-500' : ''
-            } ${
+            className={`w-full h-12 justify-start text-left font-normal ${
+              error ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'
+            } hover:bg-gray-50 dark:hover:bg-gray-800 ${
               selectedVendorData
                 ? 'text-foreground'
                 : 'text-muted-foreground'
             }`}
           >
-            <div className="flex items-center space-x-2 w-full">
+            <div className="flex items-center gap-2 w-full">
+              <Search className="h-4 w-4 text-gray-500" />
               {selectedVendorData ? (
                 <>
                   {selectedVendorData.person_type === 'juridical_person' ? (
