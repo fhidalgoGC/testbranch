@@ -447,6 +447,73 @@ export const generateContractId = async (): Promise<string | null> => {
 };
 
 // Service function to submit/update a contract
+// Get contract by ID
+export const getContractById = async (contractId: string) => {
+  const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts/${contractId}`;
+  return await authenticatedFetch(url, {
+    method: "GET",
+    customHeaders: {
+      "pk-organization": localStorage.getItem("partition_key") || "",
+    },
+  });
+};
+
+// Get sub-contracts by contract ID
+export const getSubContractsByContractId = async (contractId: string) => {
+  const filter = JSON.stringify({ contract_id: contractId });
+  const url = `${environment.TRM_BASE_URL}/contracts/sp-sub-contracts?filter=${encodeURIComponent(filter)}&limit=100`;
+  return await authenticatedFetch(url, {
+    method: "GET",
+    customHeaders: {
+      "pk-organization": localStorage.getItem("partition_key") || "",
+    },
+  });
+};
+
+// Get participant location
+export const getParticipantLocation = async (participantId: string) => {
+  const url = `${environment.CRM_BASE_URL}/crm-locations/address/contracts-owner/${participantId}`;
+  return await authenticatedFetch(url, {
+    method: "GET",
+    customHeaders: {
+      "pk-organization": localStorage.getItem("partition_key") || "",
+    },
+  });
+};
+
+// Delete contract by ID
+export const deleteContract = async (contractId: string) => {
+  const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts/${contractId}`;
+  return await authenticatedFetch(url, {
+    method: "DELETE",
+    customHeaders: {
+      "pk-organization": localStorage.getItem("partition_key") || "",
+    },
+  });
+};
+
+// Settle parent contract
+export const settleParentContract = async (contractId: string) => {
+  const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts/settled/${contractId}`;
+  return await authenticatedFetch(url, {
+    method: "PATCH",
+    customHeaders: {
+      "pk-organization": localStorage.getItem("partition_key") || "",
+    },
+  });
+};
+
+// Settle sub-contract
+export const settleSubContract = async (subContractId: string) => {
+  const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts/settled/${subContractId}`;
+  return await authenticatedFetch(url, {
+    method: "PATCH",
+    customHeaders: {
+      "pk-organization": localStorage.getItem("partition_key") || "",
+    },
+  });
+};
+
 export const submitContract = async (
   contractId: string,
   contractData: any,

@@ -45,7 +45,7 @@ import {
   Lock,
 } from "lucide-react";
 import { Link } from "wouter";
-import { PurchaseContract } from "@/types/purchaseContract.types";
+import { PurchaseContract } from "@/types/purchaseSaleContract.types";
 import { formatNumber } from "@/lib/numberFormatter";
 import { environment } from "@/environment";
 import SubContractsSection from "@/components/contracts/SubContractsSection";
@@ -55,7 +55,15 @@ import {
   ProgressBarConfig,
 } from "@/components/contracts/SubContractCard";
 import { authenticatedFetch, hasAuthTokens } from "@/utils/apiInterceptors";
-import { deleteSubContract } from "@/services/contractsService";
+import { 
+  deleteSubContract, 
+  getContractById, 
+  getSubContractsByContractId, 
+  getParticipantLocation, 
+  deleteContract, 
+  settleParentContract, 
+  settleSubContract 
+} from "@/services/contractsService";
 
 export default function PurchaseContractDetail() {
   const { t } = useTranslation();
@@ -168,16 +176,8 @@ export default function PurchaseContractDetail() {
         return;
       }
 
-      // Usar el interceptor authenticatedFetch que maneja automáticamente JWT + partition_key
-      const response = await authenticatedFetch(
-        `https://crm-develop.grainchain.io/api/v1/crm-locations/address/contracts-owner/${participantId}`,
-        {
-          method: "GET",
-          customHeaders: {
-            "pk-organization": localStorage.getItem("partition_key") || "",
-          },
-        },
-      );
+      // Usar el servicio contractsService
+      const response = await getParticipantLocation(participantId);
 
       if (response.ok) {
         const data = await response.json();
@@ -231,20 +231,8 @@ export default function PurchaseContractDetail() {
         return;
       }
 
-      // Call the contract detail endpoint using the provided curl structure
-      const response = await authenticatedFetch(
-        `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/${contractId}`,
-        {
-          method: "GET",
-          customHeaders: {
-            priority: "u=1, i",
-            "sec-ch-ua":
-              '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"macOS"',
-          },
-        },
-      );
+      // Call the contract detail endpoint using the service
+      const response = await getContractById(contractId);
 
       if (response.ok) {
         const result = await response.json();
@@ -302,34 +290,9 @@ export default function PurchaseContractDetail() {
       // Ejecutar ambos endpoints en paralelo para mejor rendimiento
       const [contractResponse, subContractsResponse] = await Promise.all([
         // 1. Refresh del contrato principal
-        authenticatedFetch(
-          `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/${contractId}`,
-          {
-            method: "GET",
-            customHeaders: {
-              priority: "u=1, i",
-              "sec-ch-ua":
-                '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-              "sec-ch-ua-mobile": "?0",
-              "sec-ch-ua-platform": '"macOS"',
-            },
-          },
-        ),
+        getContractById(contractId),
         // 2. Refresh de sub-contratos
-        authenticatedFetch(
-          `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(JSON.stringify({ contract_id: contractId }))}&limit=100`,
-          {
-            method: "GET",
-            customHeaders: {
-              "pk-organization": localStorage.getItem("partition_key") || "",
-              priority: "u=1, i",
-              "sec-ch-ua":
-                '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-              "sec-ch-ua-mobile": "?0",
-              "sec-ch-ua-platform": '"macOS"',
-            },
-          },
-        ),
+        getSubContractsByContractId(contractId),
       ]);
 
       // Procesar respuesta del contrato principal
@@ -509,25 +472,8 @@ export default function PurchaseContractDetail() {
         return;
       }
 
-      // Call delete endpoint using the provided curl structure
-      const response = await authenticatedFetch(
-        `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/${contractId}`,
-        {
-          method: "DELETE",
-          customHeaders: {
-            _partitionkey: localStorage.getItem("partition_key") || "",
-            "bt-organization": localStorage.getItem("partition_key") || "",
-            "bt-uid": localStorage.getItem("partition_key") || "",
-            organization_id: localStorage.getItem("partition_key") || "",
-            "pk-organization": localStorage.getItem("partition_key") || "",
-            priority: "u=1, i",
-            "sec-ch-ua":
-              '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"macOS"',
-          },
-        },
-      );
+      // Call delete endpoint using the service
+      const response = await deleteContract(contractId);
 
       if (response.ok) {
         console.log("✅ Contract deleted successfully");
@@ -627,15 +573,8 @@ export default function PurchaseContractDetail() {
       const contractId = currentContractData.id || currentContractData._id;
       console.log("✅ Settling parent contract:", contractId);
 
-      // Llamar al endpoint para liquidar contrato padre
-      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/settled/${contractId}`;
-
-      const response = await authenticatedFetch(url, {
-        method: "PATCH",
-        customHeaders: {
-          "pk-organization": localStorage.getItem("partition_key") || "",
-        },
-      });
+      // Llamar al servicio para liquidar contrato padre
+      const response = await settleParentContract(contractId);
 
       if (response.ok) {
         console.log("✅ Contrato padre liquidado exitosamente");
@@ -688,27 +627,8 @@ export default function PurchaseContractDetail() {
     try {
       console.log("✅ Settling sub-contract:", selectedSubContractForSettle.id);
 
-      // Llamar al endpoint para liquidar sub-contrato
-      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts/settled/${selectedSubContractForSettle.id}`;
-
-      const response = await authenticatedFetch(url, {
-        method: "PATCH",
-        customHeaders: {
-          "pk-organization": localStorage.getItem("partition_key") || "",
-          "bt-organization": localStorage.getItem("partition_key") || "",
-          "bt-uid": localStorage.getItem("partition_key") || "",
-          organization_id: localStorage.getItem("partition_key") || "",
-          priority: "u=1, i",
-          "sec-ch-ua":
-            '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": '"macOS"',
-        },
-        body: JSON.stringify({
-          created_by_name: localStorage.getItem("user_name") || "Unknown User",
-          created_by_id: localStorage.getItem("user_id") || "",
-        }),
-      });
+      // Llamar al servicio para liquidar sub-contrato
+      const response = await settleSubContract(selectedSubContractForSettle.id);
 
       if (response.ok) {
         console.log("✅ Sub-contract settled successfully");
@@ -1223,21 +1143,8 @@ export default function PurchaseContractDetail() {
         return;
       }
 
-      const filter = JSON.stringify({ contract_id: contractId });
-      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter=${encodeURIComponent(filter)}&limit=100`;
-
-      // Usar el interceptor authenticatedFetch que maneja automáticamente JWT + partition_key
-      const response = await authenticatedFetch(url, {
-        method: "GET",
-        customHeaders: {
-          "pk-organization": localStorage.getItem("partition_key") || "",
-          priority: "u=1, i",
-          "sec-ch-ua":
-            '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": '"macOS"',
-        },
-      });
+      // Usar el servicio para obtener sub-contratos
+      const response = await getSubContractsByContractId(contractId);
 
       console.log("📡 Response status:", response.status);
       console.log(
