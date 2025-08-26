@@ -1,17 +1,17 @@
-# Use Node.js 18 Alpine for smaller image size
-FROM node:18-alpine
+# Use Node.js 20 Alpine for compatibility with Vite
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache git
+# Install system dependencies including wget for health check
+RUN apk add --no-cache git wget
 
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production=false
+RUN npm install
 
 # Copy all source code
 COPY . .
@@ -19,8 +19,8 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Remove development dependencies to reduce image size
-RUN npm ci --only=production && npm cache clean --force
+# Clean up after build
+RUN npm prune --production && npm cache clean --force
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -37,8 +37,8 @@ EXPOSE 5000
 ENV NODE_ENV=production
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node --version || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:5000 || exit 1
 
 # Start the application
 CMD ["npm", "start"]
