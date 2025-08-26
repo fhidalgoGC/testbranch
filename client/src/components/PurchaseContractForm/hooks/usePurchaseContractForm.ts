@@ -315,78 +315,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     const partitionKey = localStorage.getItem('partition_key') || '';
     const userId = localStorage.getItem('user_id') || '';
     
-    // Fake sellers data (same as in ContractInfoSection)
-    const FAKE_SELLERS = [
-      {
-        id: '1',
-        name: 'Juan Carlos Rodríguez',
-        company: 'Agricola San Miguel',
-        email: 'juan.rodriguez@sanmiguel.com',
-        phone: '+52 55 1234 5678',
-        location: 'Guadalajara, México',
-        type: 'company' as const
-      },
-      {
-        id: '2',
-        name: 'María Elena Vásquez',
-        email: 'maria.vasquez@email.com',
-        phone: '+52 33 9876 5432',
-        location: 'Zapopan, México',
-        type: 'individual' as const
-      },
-      {
-        id: '3',
-        name: 'Roberto Fernández',
-        company: 'Granos del Norte SA',
-        email: 'r.fernandez@granoselnorte.com',
-        phone: '+52 81 5555 0123',
-        location: 'Monterrey, México',
-        type: 'company' as const
-      },
-      {
-        id: '4',
-        name: 'Ana Patricia Morales',
-        company: 'Cooperativa El Campo',
-        email: 'ana.morales@elcampo.mx',
-        phone: '+52 444 777 8899',
-        location: 'San Luis Potosí, México',
-        type: 'company' as const
-      },
-      {
-        id: '5',
-        name: 'Carlos David Herrera',
-        email: 'carlos.herrera@outlook.com',
-        phone: '+52 477 123 4567',
-        location: 'León, México',
-        type: 'individual' as const
-      },
-      {
-        id: '6',
-        name: 'Luisa Fernanda García',
-        company: 'Agroexportadora del Bajío',
-        email: 'luisa.garcia@agrobajio.com',
-        phone: '+52 462 888 9999',
-        location: 'Celaya, México',
-        type: 'company' as const
-      }
-    ];
-    
-    // Define options arrays to find labels
-    const COMMODITY_OPTIONS = [
-      { key: 'corn', value: '6839ef25edc3c27f091bdfc0', label: 'Maíz / Corn' },
-      { key: 'soybean', value: '6839ef25edc3c27f091bdfc1', label: 'Soja / Soybean' },
-      { key: 'wheat', value: '6839ef25edc3c27f091bdfc2', label: 'Trigo / Wheat' },
-      { key: 'sorghum', value: '6839ef25edc3c27f091bdfc3', label: 'Sorgo / Sorghum' },
-      { key: 'barley', value: '6839ef25edc3c27f091bdfc4', label: 'Cebada / Barley' }
-    ];
-    
-    const CHARACTERISTICS_CONFIG_OPTIONS = [
-      { key: 'standard', value: 'config_standard', label: 'Estándar / Standard' },
-      { key: 'premium', value: 'config_premium', label: 'Premium' },
-      { key: 'organic', value: 'config_organic', label: 'Orgánico / Organic' },
-      { key: 'non_gmo', value: 'config_non_gmo', label: 'No GMO / Non-GMO' },
-      { key: 'export', value: 'config_export', label: 'Exportación / Export Grade' }
-    ];
+
     
     const MEASUREMENT_UNIT_OPTIONS = [
       { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
@@ -430,6 +359,17 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     } else {
       console.log('⚠️ No representative info found in localStorage.');
     }
+    
+    // Función para eliminar participantes con roles trader y contactVendor
+    const removeTraderAndContactVendor = (participants: any[]) => {
+      return participants.filter(participant => 
+        participant.role !== 'trader' && participant.role !== 'contactVendor'
+      );
+    };
+    
+    // Aplicar filtro para eliminar trader y contactVendor
+    processedParticipants = removeTraderAndContactVendor(processedParticipants);
+    console.log('🗑️ Participants after removing trader and contactVendor:', processedParticipants);
     
     console.log('✅ Final processed participants:', processedParticipants);
     
