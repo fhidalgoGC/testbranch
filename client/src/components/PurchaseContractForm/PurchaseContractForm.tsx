@@ -20,7 +20,7 @@ export interface PurchaseContractFormProps {
   initialContract?: Partial<PurchaseSaleContract>; // Datos iniciales del contrato
   onSuccess?: () => void;
   onCancel?: () => void;
-  onSubmitContract?: (data: any) => Promise<void>;
+  onSubmitContract?: (contractId: string, data: any) => Promise<void>;
 }
 
 export function PurchaseContractForm({ 
@@ -73,6 +73,7 @@ export function PurchaseContractForm({
   } = usePurchaseContractForm({
     initialData: getInitialData(),
     contractType,
+    contractId,
     mode,
     representativeRole,
     // Sin auto-save de drafts

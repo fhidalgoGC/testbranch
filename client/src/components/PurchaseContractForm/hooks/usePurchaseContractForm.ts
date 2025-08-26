@@ -11,12 +11,13 @@ interface UsePurchaseContractFormOptions {
   contractType?: 'purchase' | 'sale';
   mode?: 'create' | 'edit' | 'view';
   representativeRole?: 'buyer' | 'seller' | 'trader' | 'contactVendor' | 'purchase' | 'sale';
+  contractId?: string;
   onSuccess?: () => void;
   onSubmitContract?: (contractId: string, data: any) => Promise<void>;
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
-  const { initialData = {}, contractType = 'purchase', mode = 'create', representativeRole = 'buyer', onSuccess, onSubmitContract } = options;
+  const { initialData = {}, contractType = 'purchase', mode = 'create', representativeRole = 'buyer', contractId, onSuccess, onSubmitContract } = options;
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 

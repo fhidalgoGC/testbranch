@@ -45,8 +45,8 @@ export default function CreatePurchaseContract() {
   };
 
   // Función para manejar submit del contrato
-  const handleSubmitContract = async (contractId: string, contractData: any) => {
-    console.log("📝 CreatePurchaseContract: Received contractId:", contractId);
+  const handleSubmitContract = async (contractId:string,contractData: any) => {
+    console.log("que paso", contractId);
     if (!contractId) {
       throw new Error("No contract ID available");
     }
