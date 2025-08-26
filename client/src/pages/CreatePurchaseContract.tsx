@@ -51,7 +51,7 @@ export default function CreatePurchaseContract() {
         open: true,
         message: result.error || "Error desconocido al crear el contrato",
       });
-      throw new Error(result.error);
+      // No lanzar error adicional para evitar el modal genérico de runtime error
     }
   };
 

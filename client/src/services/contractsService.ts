@@ -472,11 +472,16 @@ export const submitContract = async (
         `❌ Error submitting contract! status: ${response.status}, response: ${errorText}`,
       );
 
-      // Parse error message from response
+      // Parse error message from response - prioritize messages.value from API
       let errorMessage = `Error ${response.status}`;
       try {
         const errorData = JSON.parse(errorText);
-        errorMessage = errorData.message || errorData.error || errorText;
+        // Priority order: messages.value (API specific error) > message > error > raw text
+        if (errorData.messages && errorData.messages.value) {
+          errorMessage = errorData.messages.value;
+        } else {
+          errorMessage = errorData.message || errorData.error || errorText;
+        }
       } catch {
         errorMessage = errorText || `Error ${response.status}`;
       }
