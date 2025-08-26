@@ -530,7 +530,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       // Call external submit function if provided, otherwise show alert
       if (onSubmitContract) {
         console.log('🌐 Calling external onSubmitContract function...');
-        await onSubmitContract(contractJSON);
+        await onSubmitContract(contractId || '', contractJSON);
         console.log('✅ onSubmitContract completed successfully');
       } else {
         console.log('⚠️ No onSubmitContract function provided, showing alert');
