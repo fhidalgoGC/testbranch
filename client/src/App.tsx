@@ -5,43 +5,53 @@ import { queryClient } from "./lib/queryClient";
 import { store } from "./app/store";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import "./common/utils/i18n";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { useStateRestoration } from "@/hooks/usePageState";
 import Login from "@/pages/Login";
-import Home from "@/pages/Home";
-import Buyers from "@/pages/Buyers";
-import CreateBuyer from "@/pages/CreateBuyer";
-import Sellers from "@/pages/Sellers";
-import PurchaseContracts from "@/pages/PurchaseContracts";
-import PurchaseContractDetail from "@/pages/PurchaseContractDetail";
-import CreatePurchaseContract from "@/pages/CreatePurchaseContract";
-import CreateSubContract from "@/pages/CreateSubContract";
-import EditSubContract from "@/pages/EditSubContract";
-import ViewSubContract from "@/pages/ViewSubContract";
-import SaleContracts from "@/pages/SaleContracts";
-import CreateSaleContract from "@/pages/CreateSaleContract";
-import NotFound from "@/pages/not-found";
+// Lazy load heavy pages for better code splitting
+const Home = lazy(() => import("@/pages/Home"));
+const Buyers = lazy(() => import("@/pages/Buyers"));
+const CreateBuyer = lazy(() => import("@/pages/CreateBuyer"));
+const Sellers = lazy(() => import("@/pages/Sellers"));
+const PurchaseContracts = lazy(() => import("@/pages/PurchaseContracts"));
+const PurchaseContractDetail = lazy(() => import("@/pages/PurchaseContractDetail"));
+const CreatePurchaseContract = lazy(() => import("@/pages/CreatePurchaseContract"));
+const CreateSubContract = lazy(() => import("@/pages/CreateSubContract"));
+const EditSubContract = lazy(() => import("@/pages/EditSubContract"));
+const ViewSubContract = lazy(() => import("@/pages/ViewSubContract"));
+const SaleContracts = lazy(() => import("@/pages/SaleContracts"));
+const CreateSaleContract = lazy(() => import("@/pages/CreateSaleContract"));
+const NotFound = lazy(() => import("@/pages/not-found"));
+
+// Loading component for Suspense fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+  </div>
+);
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Login} />
-      <Route path="/home" component={Home} />
-      <Route path="/buyers" component={Buyers} />
-      <Route path="/buyers/create" component={CreateBuyer} />
-      <Route path="/sellers" component={Sellers} />
-      <Route path="/purchase-contracts" component={PurchaseContracts} />
-      <Route path="/purchase-contracts/create/:contractId?" component={CreatePurchaseContract} />
-      <Route path="/purchase-contracts/:contractId/sub-contracts/create" component={CreateSubContract} />
-      <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSubContract} />
-      <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
-      <Route path="/purchase-contracts/:id" component={PurchaseContractDetail} />
-      <Route path="/sale-contracts" component={SaleContracts} />
-      <Route path="/sale-contracts/create" component={CreateSaleContract} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<PageLoader />}>
+      <Switch>
+        <Route path="/" component={Login} />
+        <Route path="/home" component={Home} />
+        <Route path="/buyers" component={Buyers} />
+        <Route path="/buyers/create" component={CreateBuyer} />
+        <Route path="/sellers" component={Sellers} />
+        <Route path="/purchase-contracts" component={PurchaseContracts} />
+        <Route path="/purchase-contracts/create/:contractId?" component={CreatePurchaseContract} />
+        <Route path="/purchase-contracts/:contractId/sub-contracts/create" component={CreateSubContract} />
+        <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSubContract} />
+        <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
+        <Route path="/purchase-contracts/:id" component={PurchaseContractDetail} />
+        <Route path="/sale-contracts" component={SaleContracts} />
+        <Route path="/sale-contracts/create" component={CreateSaleContract} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 
