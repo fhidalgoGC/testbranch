@@ -10,21 +10,27 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
       (val) => ['direct', 'imported', 'importedFreight'].includes(val),
       t('selectOption')
     ),
-    commodity_id: z.string().min(1, t('fieldRequired')),
-    commodity_name: z.string().optional(),
-    characteristics_configuration_id: z.string().min(1, t('fieldRequired')),
-    characteristics_configuration_name: z.string().optional(),
+    commodity: z.object({
+      commodity_id: z.string().min(1, t('fieldRequired')),
+      name: z.string().min(1, t('fieldRequired'))
+    }),
+    characteristics: z.object({
+      configuration_id: z.string().min(1, t('fieldRequired')),
+      configuration_name: z.string().min(1, t('fieldRequired'))
+    }),
     grade: z.number({ required_error: t('fieldRequired') }).min(1, t('positiveNumber')).max(10, t('positiveNumber')),
     quantity: z.number({ required_error: t('fieldRequired') }).min(1, t('positiveNumber')),
     reference_number: z.string().optional(),
     measurement_unit_id: z.string().optional(),
     measurement_unit: z.string().min(1, t('fieldRequired')),
     contract_date: z.string().min(1, t('validDate')),
-    min_thresholds_percentage: z.number({ required_error: t('fieldRequired') }).min(0, t('positiveNumber')).max(100, t('positiveNumber')),
-    max_thresholds_percentage: z.number({ required_error: t('fieldRequired') }).min(0, t('positiveNumber')).max(100, t('positiveNumber')),
-    seller: z.string().min(1, t('selectOption')),
-    contact_vendor: z.string().min(1, t('selectOption')),
-    trader: z.string().min(1, t('selectOption')),
+    thresholds: z.object({
+      min_thresholds_percentage: z.number({ required_error: t('fieldRequired') }).min(0, t('positiveNumber')).max(100, t('positiveNumber')),
+      min_thresholds_weight: z.number().min(0).optional(),
+      max_thresholds_percentage: z.number({ required_error: t('fieldRequired') }).min(0, t('positiveNumber')).max(100, t('positiveNumber')),
+      max_thresholds_weight: z.number().min(0).optional()
+    }),
+    // Individual participant fields removed - validation via participants array
 
     // Participants validation - minimum 2, must include 1 buyer and 1 seller
     participants: z

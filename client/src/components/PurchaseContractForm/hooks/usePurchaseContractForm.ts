@@ -45,9 +45,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
         max_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MAX,
         max_thresholds_weight: 0
       },
-      seller: '',
-      contact_vendor: '',
-      trader: '',
+      // Individual participant fields removed - managed via participants array
       participants: [],
       price_schedule: [{
         pricing_type: 'fixed',
