@@ -565,10 +565,10 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                   <Select
                     value={watch('measurement_unit_id')}
                     onValueChange={(value) => {
-                      // Find the selected option to get both ID and label
+                      // Find the selected option to get both ID and slug
                       const selectedOption = measurementUnits.find(option => option.key === value);
-                      setValue('measurement_unit_id', value);
-                      setValue('measurement_unit', selectedOption?.label || '');
+                      setValue('measurement_unit_id', selectedOption?.key || '');
+                      setValue('measurement_unit', selectedOption?.value || '');
                       clearErrors('measurement_unit');
                     }}
                   >
