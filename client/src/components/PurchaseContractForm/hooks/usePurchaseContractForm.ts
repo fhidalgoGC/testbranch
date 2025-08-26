@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
 import type { PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
-import { APP_CONFIG, CURRENCY_OPTIONS } from '@/environment/environment';
+import { APP_CONFIG, CURRENCY_OPTIONS, MEASUREMENT_UNIT_OPTIONS } from '@/environment/environment';
 
 interface UsePurchaseContractFormOptions {
   initialData?: Partial<PurchaseSaleContract>;
@@ -317,13 +317,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     
 
     
-    const MEASUREMENT_UNIT_OPTIONS = [
-      { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
-      { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
-      { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
-      { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
-      { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
-    ];
+    // MEASUREMENT_UNIT_OPTIONS now imported from environment
     
     // Helper function to find label by value
     const findLabel = (options: any[], value: string) => {
@@ -334,7 +328,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     // Helper function to convert currency key to value for API
     const findCurrencyValue = (key: string) => {
       const option = CURRENCY_OPTIONS.find(opt => opt.key === key);
-      return option ? option.value : key;
+      return option ? option.key : key;
     };
     
     // Process participants - use existing participants from form selections
@@ -451,14 +445,12 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
 
     // Debug: Log before cleaning
     console.log('🔍 Contract JSON Before Cleaning:', JSON.stringify(contractJSON, null, 2));
-    console.log('🐛 DEBUG payment_currency before cleaning:', contractJSON.price_schedule?.[0]?.payment_currency, contractJSON.logistic_schedule?.[0]?.payment_currency);
     
     // Remove all empty fields from the final JSON
     const cleanedJSON = removeEmptyFields(contractJSON);
     
     // Debug: Log after cleaning
     console.log('✨ Contract JSON After Cleaning:', JSON.stringify(cleanedJSON, null, 2));
-    console.log('🐛 DEBUG payment_currency after cleaning:', cleanedJSON.price_schedule?.[0]?.payment_currency, cleanedJSON.logistic_schedule?.[0]?.payment_currency);
     
     return cleanedJSON;
   };
