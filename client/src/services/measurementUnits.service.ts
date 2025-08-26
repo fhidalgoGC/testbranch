@@ -76,8 +76,8 @@ export class MeasurementUnitsService {
         const label = unit.names[currentLanguage] || unit.names.default || unit.slug;
         
         return {
-          key: unit.slug,
-          value: unit.slug,
+          key: unit._id,
+          value: unit._id,
           label: label,
           type: unit.type
         };
