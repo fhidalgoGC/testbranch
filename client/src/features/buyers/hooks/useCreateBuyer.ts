@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
 import type { CreateBuyerIdResponse, CreateBuyerPayload, BuyerFormData } from '../types/create-buyer';
+import { environment } from '@/environment';
 
 // Interface for the location payload
 interface CreateLocationPayload {
@@ -67,7 +68,7 @@ export function useCreateBuyer() {
         }
 
         // Make real API call to generate idempotent ID
-        const crmUrl = import.meta.env.VITE_URL_CRM;
+        const crmUrl = environment.CRM_BASE_URL;
         console.log('CreateBuyer: CRM URL:', crmUrl);
         
         if (!crmUrl) {
@@ -111,7 +112,7 @@ export function useCreateBuyer() {
   const createBuyerLocation = async (peopleId: string, formData: BuyerFormData) => {
     const jwt = localStorage.getItem('jwt');
     const partitionKey = localStorage.getItem('partition_key');
-    const crmUrl = import.meta.env.VITE_URL_CRM;
+    const crmUrl = environment.CRM_BASE_URL;
     
     if (!jwt || !partitionKey || !crmUrl) {
       console.log('CreateBuyer: Missing data for location creation, skipping location step');
@@ -252,7 +253,7 @@ export function useCreateBuyer() {
         return { success: true, data: payload, people_id: idempotentBuyerId };
       }
 
-      const crmUrl = import.meta.env.VITE_URL_CRM;
+      const crmUrl = environment.CRM_BASE_URL;
       if (!crmUrl) {
         throw new Error('CRM URL not configured');
       }

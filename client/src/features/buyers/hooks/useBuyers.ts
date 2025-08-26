@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { BuyersResponse } from '../types';
+import { environment } from '@/environment';
 
 interface UseBuyersParams {
   page?: number;
@@ -20,7 +21,7 @@ export function useBuyers(params: UseBuyersParams = {}) {
 
   const buildApiUrl = useCallback(() => {
     const partitionKey = localStorage.getItem('partition_key');
-    const baseUrl = import.meta.env.VITE_URL_CRM;
+    const baseUrl = environment.CRM_BASE_URL;
     
     console.log('Building API URL with:', { partitionKey, baseUrl, envVars: import.meta.env });
     
