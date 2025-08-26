@@ -26,8 +26,8 @@ RUN npx update-browserslist-db@latest
 # Build the application
 RUN npm run build
 
-# Clean up after build
-RUN npm prune --production && npm cache clean --force
+# Clean up after build - keep vite and related dependencies for runtime
+RUN npm cache clean --force
 
 # Create non-root user for security
 RUN groupadd --gid 1001 nodejs && \
