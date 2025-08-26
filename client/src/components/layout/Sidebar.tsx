@@ -9,7 +9,7 @@ import {
   Home
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import logoPath from '@assets/LogoGrainchain_1752610987841.png';
+const logoPath = '/assets/LogoGrainchain_1752610987841.png';
 
 const menuItems = [
   {
