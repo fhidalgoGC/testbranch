@@ -17,7 +17,11 @@ interface UsePurchaseContractFormOptions {
 }
 
 export function usePurchaseContractForm(options: UsePurchaseContractFormOptions = {}) {
+
+  
   const { initialData = {}, contractType = 'purchase', mode = 'create', representativeRole = 'buyer', contractId, onSuccess, onSubmitContract } = options;
+
+  console.log("contractId",contractId);
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
