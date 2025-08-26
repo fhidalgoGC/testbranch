@@ -661,8 +661,13 @@ export function PriceSection({
                 {t('paymentCurrency')} <span className="text-red-500">*</span>
               </Label>
               <Select
-                value={currentSchedule.payment_currency || APP_CONFIG.defaultCurrency}
+                value={(() => {
+                  const currentValue = currentSchedule.payment_currency || APP_CONFIG.defaultCurrency;
+                  console.log('🐛 DEBUG Current payment_currency value:', currentValue, 'Default:', APP_CONFIG.defaultCurrency);
+                  return currentValue;
+                })()}
                 onValueChange={(value) => {
+                  console.log('🐛 DEBUG Selected currency:', value);
                   const currentPriceSchedule = watch('price_schedule') || [{}];
                   const updatedSchedule = [...currentPriceSchedule];
                   updatedSchedule[0] = { ...updatedSchedule[0], payment_currency: value };
