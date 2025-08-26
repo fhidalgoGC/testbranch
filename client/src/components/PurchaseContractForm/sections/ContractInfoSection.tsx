@@ -311,6 +311,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <SellerSelectionModal
+                selectedSeller={watch('participants')?.find(p => p.role === 'seller')?.people_id || ''}
+                selectedSellerName={watch('participants')?.find(p => p.role === 'seller')?.name || ''}
                 onSelect={(seller) => {
                   // Add to participants array with seller role
                   const currentParticipants = watch('participants') || [];
@@ -350,6 +352,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 Contact Vendor <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <ContactVendorSelectionModal
+                selectedContactVendor={watch('participants')?.find(p => p.role === 'contactVendor')?.people_id || ''}
+                selectedContactVendorName={watch('participants')?.find(p => p.role === 'contactVendor')?.name || ''}
                 onSelect={(vendor) => {
                   // Add to participants array with contactVendor role
                   const currentParticipants = watch('participants') || [];
@@ -374,6 +378,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 Trader <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <TraderSelectionModal
+                selectedTrader={watch('participants')?.find(p => p.role === 'trader')?.people_id || ''}
+                selectedTraderName={watch('participants')?.find(p => p.role === 'trader')?.name || ''}
                 onSelect={(trader) => {
                   // Add to participants array with trader role
                   const currentParticipants = watch('participants') || [];
