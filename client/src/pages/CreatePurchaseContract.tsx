@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useLocation } from 'wouter';
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import { PurchaseContractForm } from '@/components/PurchaseContractForm/PurchaseContractForm';
-import { generateContractId, submitContract } from '@/services/contractsService';
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { PurchaseContractForm } from "@/components/PurchaseContractForm/PurchaseContractForm";
+import {
+  generateContractId,
+  submitContract,
+} from "@/services/contractsService";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,70 +15,79 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 
 export default function CreatePurchaseContract() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const [contractId, setContractId] = useState<string | undefined>();
-  const [errorModal, setErrorModal] = useState({ open: false, message: '' });
-  
+  const [errorModal, setErrorModal] = useState({ open: false, message: "" });
+
   // Función para generar nuevo contrato usando el servicio
   const handleGenerateContractId = async () => {
-    console.log('🆔 Generating new contract ID...');
+    console.log("🆔 Generating new contract ID...");
     const contractIdGenerated = await generateContractId();
     if (contractIdGenerated) {
-      console.log('✅ Contract ID generated:', contractIdGenerated);
+      console.log("✅ Contract ID generated:", contractIdGenerated);
       setContractId(contractIdGenerated);
     }
   };
-  
+
   // Siempre generar contractId al montar el componente
   useEffect(() => {
     handleGenerateContractId();
   }, []);
-  
+
   // Función para manejar cancelación - solo navegar
   const handleCancel = () => {
-    console.log('🧹 CreatePurchaseContract: Navegando a purchase-contracts');
-    setLocation('/purchase-contracts');
+    console.log("🧹 CreatePurchaseContract: Navegando a purchase-contracts");
+    setLocation("/purchase-contracts");
   };
 
   // Función para manejar submit del contrato
   const handleSubmitContract = async (contractData: any) => {
+    console.log("que paso", contractId);
     if (!contractId) {
-      throw new Error('No contract ID available');
+      await handleGenerateContractId();
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      if (!contractId) {
+        throw new Error("No contract ID available");
+      }
+      throw new Error("No contract ID available");
     }
 
-    console.log('📝 CreatePurchaseContract: Submitting contract', contractId);
+    console.log("📝 CreatePurchaseContract: Submitting contract", contractId);
     const result = await submitContract(contractId, contractData);
-    
+
     if (result.success) {
-      console.log('✅ Contract submitted successfully, redirecting...');
-      setLocation('/purchase-contracts');
+      console.log("✅ Contract submitted successfully, redirecting...");
+      setLocation("/purchase-contracts");
     } else {
-      console.error('❌ Contract submission failed:', result.error);
+      console.error("❌ Contract submission failed:", result.error);
       setErrorModal({
         open: true,
-        message: result.error || 'Error desconocido al crear el contrato'
+        message: result.error || "Error desconocido al crear el contrato",
       });
       throw new Error(result.error);
     }
   };
 
   return (
-    <DashboardLayout title={t('createPurchaseContract')}>
-      <PurchaseContractForm 
-        contractType="purchase" 
-        mode="create" 
+    <DashboardLayout title={t("createPurchaseContract")}>
+      <PurchaseContractForm
+        contractType="purchase"
+        mode="create"
         contractId={contractId}
         representativeRole="buyer"
         onCancel={handleCancel}
         onSubmitContract={handleSubmitContract}
       />
-      
+
       {/* Error Modal */}
-      <AlertDialog open={errorModal.open} onOpenChange={(open) => setErrorModal(prev => ({ ...prev, open }))}>
+      <AlertDialog
+        open={errorModal.open}
+        onOpenChange={(open) => setErrorModal((prev) => ({ ...prev, open }))}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Error al crear contrato</AlertDialogTitle>
@@ -84,7 +96,9 @@ export default function CreatePurchaseContract() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setErrorModal({ open: false, message: '' })}>
+            <AlertDialogAction
+              onClick={() => setErrorModal({ open: false, message: "" })}
+            >
               Entendido
             </AlertDialogAction>
           </AlertDialogFooter>

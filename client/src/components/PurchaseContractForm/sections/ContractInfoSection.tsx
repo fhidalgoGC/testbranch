@@ -563,9 +563,12 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                     {t('measurementUnit')} <span className="text-red-500">{t('requiredField')}</span>
                   </Label>
                   <Select
-                    value={watch('measurement_unit')}
+                    value={watch('measurement_unit_id')}
                     onValueChange={(value) => {
-                      setValue('measurement_unit', value);
+                      // Find the selected option to get both ID and label
+                      const selectedOption = measurementUnits.find(option => option.key === value);
+                      setValue('measurement_unit_id', value);
+                      setValue('measurement_unit', selectedOption?.label || '');
                       clearErrors('measurement_unit');
                     }}
                   >
