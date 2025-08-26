@@ -52,7 +52,7 @@ function Router() {
         <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
         <Route path="/purchase-contracts/:id" component={PurchaseContractDetail} />
         <Route path="/sale-contracts" component={SaleContracts} />
-        <Route path="/sale-contracts/create" component={CreateSaleContract} />
+        <Route path="/sale-contracts/create/:contractId?" component={CreateSaleContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/create" component={CreateSaleSubContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSaleSubContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSaleSubContract} />
