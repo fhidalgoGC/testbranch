@@ -39,16 +39,16 @@ export default function SaleContracts() {
   const hasDraftData = false;
 
   // Hook para persistir estado de la página
-  const { pageState, updateState } = useContractsPageState("purchaseContracts");
+  const { pageState, updateState } = useContractsPageState("saleContracts");
   const { handleNavigateToPage } = useNavigationHandler();
-  usePageTracking("/purchase-contracts");
+  usePageTracking("/sale-contracts");
 
   // Notificar navegación al cargar la página
   useEffect(() => {
     console.log(
-      "🔄 PURCHASE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
+      "🔄 SALE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
     );
-    handleNavigateToPage("purchaseContracts");
+    handleNavigateToPage("saleContracts");
   }, []);
 
   // Estado principal organizado como JSON
@@ -144,234 +144,7 @@ export default function SaleContracts() {
     console.log("Commodity filters:", commodityFilters);
   }, [commodityFilters]);
 
-  // Función para cargar contratos desde la API
-  const fetchContracts = async (
-    page: number = 1,
-    limit: number = 10,
-    activeFilters: Record<string, any> = {},
-    searchTerm: string = "",
-    sortConfig: { field: string; direction: string } | null = null,
-  ) => {
-    try {
-      setContractsLoading(true);
-      setContractsError(null);
-
-      // Obtener datos de autenticación
-      const partitionKey = localStorage.getItem("partition_key") || "";
-      const idToken = localStorage.getItem("id_token") || "";
-
-      if (!partitionKey || !idToken) {
-        console.error(
-          "No hay datos de autenticación disponibles para contratos",
-        );
-        setPageStateData((prev) => ({ ...prev, contracts: [] }));
-        return;
-      }
-
-      // Construir filtro
-      const filter: any = {
-        type: "sale",
-      };
-
-      // Agregar filtro de commodity si está seleccionado
-      if (activeFilters.commodity && !activeFilters.commodity.includes("all")) {
-        // Ahora los filtros ya contienen los IDs directamente, no necesitamos mapear
-        const selectedCommodityIds = activeFilters.commodity.filter(
-          (id: string) => id !== "all",
-        );
-
-        if (selectedCommodityIds.length > 0) {
-          filter["commodity.commodity_id"] = { $in: selectedCommodityIds };
-        }
-      }
-
-      // Agregar filtro de pricing_type si está seleccionado (no debe incluir 'all')
-      if (activeFilters.pricingType && activeFilters.pricingType.length > 0) {
-        const validPricingTypes = activeFilters.pricingType.filter(
-          (type: string) => type !== "all",
-        );
-        if (validPricingTypes.length > 0) {
-          // Para pricingType usamos solo el primer valor ya que es single selection
-          filter["price_schedule.pricing_type"] = validPricingTypes[0];
-        }
-      }
-
-      // Construir parámetros de URL
-      const params = new URLSearchParams({
-        all: "true",
-        filter: JSON.stringify(filter),
-        page: page.toString(),
-        limit: limit.toString(),
-      });
-
-      // Agregar ordenamiento si existe
-      if (sortConfig) {
-        params.append(
-          `sort[${sortConfig.field}]`,
-          sortConfig.direction === "asc" ? "1" : "-1",
-        );
-      } else {
-        // Ordenamiento por defecto por fecha de creación descendente
-        params.append("sort[created_at]", "-1");
-      }
-
-      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${params.toString()}`;
-      console.log("Fetching contracts from:", url);
-
-      // Headers de la petición
-      const headers = {
-        _partitionkey: partitionKey,
-        accept: "*/*",
-        "accept-language": "es-419,es;q=0.9",
-        authorization: `Bearer ${idToken}`,
-        "bt-organization": partitionKey,
-        "bt-uid": partitionKey,
-        organization_id: partitionKey,
-        origin: "https://contracts-develop.grainchain.io",
-        "pk-organization": partitionKey,
-      };
-
-      console.log("Fetching contracts with headers:", headers);
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: headers,
-      });
-
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(
-          `HTTP error! status: ${response.status}, response: ${errorText}`,
-        );
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: any = await response.json();
-      console.log("Contracts response:", data);
-
-      // Mapear los datos de la API real a nuestro formato
-      const mappedContracts: PurchaseSaleContract[] = data.data.map(
-        (contract: any) => ({
-          id: contract._id || contract.id,
-          folio: contract.folio,
-          reference_number: contract.folio,
-          commodity: contract.commodity,
-          participants: contract.participants,
-          characteristics: contract.characteristics,
-          type: contract.type as "sale",
-          sub_type: contract.sub_type as
-            | "direct"
-            | "imported"
-            | "importedFreight",
-          quantity: contract.quantity,
-          measurement_unit_id: contract.measurement_unit_id,
-          measurement_unit: contract.measurement_unit,
-          price_schedule: contract.price_schedule,
-          logistic_schedule: contract.logistic_schedule,
-          shipping_start_date: contract.shipping_start_date,
-          shipping_end_date: contract.shipping_end_date,
-          contract_date: contract.contract_date,
-          delivered: contract.delivered,
-          transport: contract.transport,
-          weights: contract.weights,
-          inspections: contract.inspections,
-          proteins: contract.proteins,
-          application_priority: contract.application_priority,
-          thresholds: contract.thresholds,
-          status: contract.status,
-          grade:
-            typeof contract.grade === "string"
-              ? parseInt(contract.grade) || 0
-              : contract.grade,
-          inventory: contract.inventory,
-        }),
-      );
-
-      console.log("Mapped contracts:", mappedContracts);
-      console.log(
-        "Setting contracts in state. Total contracts:",
-        mappedContracts.length,
-      );
-      console.log(
-        "First contract example:",
-        mappedContracts[0] || "No contracts found",
-      );
-      console.log("=== TODOS LOS IDs MAPEADOS ===");
-      console.log(
-        "IDs de contratos cargados:",
-        mappedContracts.map((c) => ({ _id: c._id, folio: c.folio })),
-      );
-      console.log("===========================");
-
-      // Calcular páginas totales basado en total_elements y pageSize
-      const totalElements = data._meta.total_elements;
-      const totalPages = Math.ceil(totalElements / tableParams.limit);
-
-      // Actualizar el estado principal con los contratos
-      setPageStateData((prev) => ({ ...prev, contracts: mappedContracts }));
-      setTotalContracts(totalElements);
-
-      // Actualizar tableData con información de paginación completa
-      setTableData({
-        contracts: mappedContracts,
-        totalElements: totalElements,
-        currentPage: tableParams.page,
-        filters: selectedFilters,
-      });
-
-      console.log(
-        "📊 PAGINACIÓN - Total elementos:",
-        totalElements,
-        "Total páginas:",
-        totalPages,
-        "Página actual:",
-        tableParams.page,
-      );
-
-      // Guardar contratos en Redux state para uso en otras páginas
-      updateState({
-        contractsData: mappedContracts,
-      });
-    } catch (error) {
-      console.error("Error al cargar contratos:", error);
-      setContractsError(
-        error instanceof Error ? error.message : "Error al cargar contratos",
-      );
-      setPageStateData((prev) => ({ ...prev, contracts: [] }));
-    } finally {
-      setContractsLoading(false);
-    }
-  };
-
-  // Auto-reload table data when selectedFilters change (without using table callback to avoid loops)
-  useEffect(() => {
-    const reloadTableWithFilters = async () => {
-      if (commodities.length > 0) {
-        console.log(
-          "🔄 Filtros cambiaron, recargando tabla con nuevos filtros:",
-          selectedFilters,
-        );
-
-        // Usar parámetros básicos para evitar loops
-        const basicParams = {
-          page: 1,
-          pageSize: tableParams.limit,
-          search: "",
-          sort: null,
-        };
-
-        await handleFetchContractsData(basicParams);
-        console.log("✅ Tabla recargada con filtros actualizados");
-      }
-    };
-
-    reloadTableWithFilters();
-  }, [selectedFilters, commodities.length]); // Trigger when filters or commodities change
-
-  // Función de fetch de datos usando el servicio externo
+  // Función de fetch de datos usando el servicio centralizado
   const handleFetchContractsData: DataFetchFunction<PurchaseSaleContract> = async (
     params,
   ) => {
@@ -475,6 +248,31 @@ export default function SaleContracts() {
     }
   };
 
+  // Auto-reload table data when selectedFilters change (without using table callback to avoid loops)
+  useEffect(() => {
+    const reloadTableWithFilters = async () => {
+      if (commodities.length > 0) {
+        console.log(
+          "🔄 Filtros cambiaron, recargando tabla con nuevos filtros:",
+          selectedFilters,
+        );
+
+        // Usar parámetros básicos para evitar loops
+        const basicParams = {
+          page: 1,
+          pageSize: tableParams.limit,
+          search: "",
+          sort: null,
+        };
+
+        await handleFetchContractsData(basicParams);
+        console.log("✅ Tabla recargada con filtros actualizados");
+      }
+    };
+
+    reloadTableWithFilters();
+  }, [selectedFilters, commodities.length]); // Trigger when filters or commodities change
+
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {
     console.log("🔄 TOGGLE FILTER:", filterKey, "Value:", value);
@@ -569,10 +367,10 @@ export default function SaleContracts() {
       key: "customer",
       titleKey: "customer",
       render: (contract) => {
-        const seller = contract.participants?.find((p) => p.role === "seller");
+        const buyer = contract.participants?.find((p) => p.role === "buyer");
         return (
           <span className="font-medium text-gray-900 dark:text-white">
-            {seller?.name || "Unknown"}
+            {buyer?.name || "Unknown"}
           </span>
         );
       },

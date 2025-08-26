@@ -22,7 +22,11 @@ const CreateSubContract = lazy(() => import("@/pages/CreateSubContract"));
 const EditSubContract = lazy(() => import("@/pages/EditSubContract"));
 const ViewSubContract = lazy(() => import("@/pages/ViewSubContract"));
 const SaleContracts = lazy(() => import("@/pages/SaleContracts"));
+const SaleContractDetail = lazy(() => import("@/pages/SaleContractDetail"));
 const CreateSaleContract = lazy(() => import("@/pages/CreateSaleContract"));
+const CreateSaleSubContract = lazy(() => import("@/pages/CreateSaleSubContract"));
+const EditSaleSubContract = lazy(() => import("@/pages/EditSaleSubContract"));
+const ViewSaleSubContract = lazy(() => import("@/pages/ViewSaleSubContract"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 // Loading component for Suspense fallback
@@ -49,6 +53,10 @@ function Router() {
         <Route path="/purchase-contracts/:id" component={PurchaseContractDetail} />
         <Route path="/sale-contracts" component={SaleContracts} />
         <Route path="/sale-contracts/create" component={CreateSaleContract} />
+        <Route path="/sale-contracts/:contractId/sub-contracts/create" component={CreateSaleSubContract} />
+        <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSaleSubContract} />
+        <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSaleSubContract} />
+        <Route path="/sale-contracts/:id" component={SaleContractDetail} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
