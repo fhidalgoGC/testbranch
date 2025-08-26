@@ -450,7 +450,7 @@ export const generateContractId = async (): Promise<string | null> => {
 export const submitContract = async (
   contractId: string,
   contractData: any,
-): Promise<{ success: boolean; error?: string }> => {
+): Promise<{ success: boolean; error?: string; data?: any }> => {
   try {
     console.log("📝 Submitting contract:", contractId);
     console.log("📦 Contract data:", JSON.stringify(contractData, null, 2));
@@ -497,6 +497,7 @@ export const submitContract = async (
 
     return {
       success: true,
+      data: responseData,
     };
   } catch (error) {
     console.error("❌ Error submitting contract:", error);
