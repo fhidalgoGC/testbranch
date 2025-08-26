@@ -42,7 +42,7 @@ export default function Sellers() {
 
   console.log("Sellers component render:", { data, isLoading, currentPage });
 
-  const handleAddBuyer = () => {
+  const handleAddSeller = () => {
     setLocation("/sellers/create");
   };
 
@@ -120,7 +120,8 @@ export default function Sellers() {
           onPageSizeChange={handlePageSizeChange}
           onSortChange={handleSortChange}
           onSearchChange={handleSearchChange}
-          onAddNew={handleAddBuyer}
+          onAddNew={handleAddSeller}
+          addButtonLabel={t("addSeller")}
           getItemId={(buyer) => buyer._id}
         />
       </div>
