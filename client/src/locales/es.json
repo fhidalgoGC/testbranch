@@ -88,6 +88,7 @@
   "addSeller": "Agregar Vendedor",
   "toggleTheme": "Cambiar tema",
   "unknownBuyer": "Comprador desconocido",
+  "unknownSeller": "Vendedor desconocido",
   "registrationDate": "Fecha de registro",
   "personType": "Tipo de persona",
   "createBuyerDescription": "Complete la información para registrar un nuevo comprador",

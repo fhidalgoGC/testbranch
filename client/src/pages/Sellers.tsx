@@ -8,8 +8,8 @@ import {
 } from "@/hooks/usePageState";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { DataTable, Column } from "@/components/ui/data-table";
-import { Buyer } from "@/features/buyers/types";
-import BuyerDetailsCard from "@/components/buyers/BuyerDetailsCard";
+import { Seller } from "@/features/sellers/types";
+import SellerDetailsCard from "@/components/sellers/SellerDetailsCard";
 import { formatSellerId } from "@/lib/formatters";
 import { useSellers } from "@/features/buyers/hooks/useSellers";
 export default function Sellers() {
@@ -46,34 +46,34 @@ export default function Sellers() {
     setLocation("/sellers/create");
   };
 
-  const columns: Column<Buyer>[] = [
+  const columns: Column<Seller>[] = [
     {
       key: "details",
       title: "",
-      render: (buyer) => <BuyerDetailsCard buyer={buyer} />,
+      render: (seller) => <SellerDetailsCard seller={seller} />,
       sortable: false,
       width: "60px",
     },
     {
       key: "id",
       title: t("sellerId"),
-      render: (buyer) => formatSellerId(buyer._id),
+      render: (seller) => formatSellerId(seller._id),
       sortable: false,
     },
     {
       key: "full_name",
       title: t("fullName"),
-      render: (buyer) => buyer.full_name || "-",
+      render: (seller) => seller.full_name || "-",
       sortable: true,
       sortKey: "full_name",
     },
     {
       key: "email",
       title: t("email"),
-      render: (buyer) => {
+      render: (seller) => {
         const email =
-          buyer.emails && buyer.emails.length > 0
-            ? buyer.emails[0].value
+          seller.emails && seller.emails.length > 0
+            ? seller.emails[0].value
             : null;
         return email || "-";
       },
@@ -83,9 +83,9 @@ export default function Sellers() {
     {
       key: "phone",
       title: t("phoneNumber"),
-      render: (buyer) => {
-        if (buyer.phones && buyer.phones.length > 0) {
-          const phone = buyer.phones[0];
+      render: (seller) => {
+        if (seller.phones && seller.phones.length > 0) {
+          const phone = seller.phones[0];
           return `${phone.calling_code} ${phone.phone_number}`;
         }
         return "-";
@@ -122,7 +122,7 @@ export default function Sellers() {
           onSearchChange={handleSearchChange}
           onAddNew={handleAddSeller}
           addButtonLabel={t("addSeller")}
-          getItemId={(buyer) => buyer._id}
+          getItemId={(seller) => seller._id}
         />
       </div>
     </DashboardLayout>
