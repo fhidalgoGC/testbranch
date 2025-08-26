@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { PurchaseContractForm } from "@/components/PurchaseContractForm/PurchaseContractForm";
 import {
@@ -20,10 +20,12 @@ import {
 export default function CreatePurchaseContract() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
-  const [contractId, setContractId] = useState<string | undefined>();
+  const params = useParams();
+  const urlContractId = params.contractId;
+  const [contractId, setContractId] = useState<string | undefined>(urlContractId);
   const [errorModal, setErrorModal] = useState({ open: false, message: "" });
 
-  // Función para generar nuevo contrato usando el servicio
+  // Función para generar nuevo contrato usando el servicio (solo si no viene por URL)
   const handleGenerateContractId = async () => {
     console.log("🆔 Generating new contract ID...");
     const contractIdGenerated = await generateContractId();
@@ -33,10 +35,15 @@ export default function CreatePurchaseContract() {
     }
   };
 
-  // Siempre generar contractId al montar el componente
+  // Generar contractId solo si no viene de la URL
   useEffect(() => {
-    handleGenerateContractId();
-  }, []);
+    if (!urlContractId) {
+      handleGenerateContractId();
+    } else {
+      console.log("📥 Using contract ID from URL:", urlContractId);
+      setContractId(urlContractId);
+    }
+  }, [urlContractId]);
 
   // Función para manejar cancelación - solo navegar
   const handleCancel = () => {

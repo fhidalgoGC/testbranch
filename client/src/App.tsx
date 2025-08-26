@@ -33,7 +33,7 @@ function Router() {
       <Route path="/buyers/create" component={CreateBuyer} />
       <Route path="/sellers" component={Sellers} />
       <Route path="/purchase-contracts" component={PurchaseContracts} />
-      <Route path="/purchase-contracts/create" component={CreatePurchaseContract} />
+      <Route path="/purchase-contracts/create/:contractId?" component={CreatePurchaseContract} />
       <Route path="/purchase-contracts/:contractId/sub-contracts/create" component={CreateSubContract} />
       <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSubContract} />
       <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
