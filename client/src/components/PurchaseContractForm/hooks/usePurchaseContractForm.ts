@@ -338,7 +338,17 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     const representativePeopleId = localStorage.getItem('representative_people_id');
     const representativePeopleFullName = localStorage.getItem('representative_people_full_name');
     
-    console.log('🔍 Representative info from localStorage:', { representativePeopleId, representativePeopleFullName, representativeRole });
+    // Determine correct representative role based on contract type
+    let correctRepresentativeRole = representativeRole;
+    if (contractType === 'purchase' && representativeRole !== 'buyer') {
+      correctRepresentativeRole = 'buyer';
+      console.log(`🔧 Contract type is '${contractType}', correcting representative role from '${representativeRole}' to 'buyer'`);
+    } else if (contractType === 'sale' && representativeRole !== 'seller') {
+      correctRepresentativeRole = 'seller';
+      console.log(`🔧 Contract type is '${contractType}', correcting representative role from '${representativeRole}' to 'seller'`);
+    }
+    
+    console.log('🔍 Representative info from localStorage:', { representativePeopleId, representativePeopleFullName, representativeRole, correctRepresentativeRole, contractType });
     
     if (representativePeopleId && representativePeopleFullName) {
       // Check if representative is not already in participants
@@ -348,9 +358,9 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
         processedParticipants.push({
           people_id: representativePeopleId,
           name: representativePeopleFullName,
-          role: representativeRole
+          role: correctRepresentativeRole
         });
-        console.log(`✅ Representative added with role '${representativeRole}' for ${formData.type} contract:`, { representativePeopleId, representativePeopleFullName, representativeRole });
+        console.log(`✅ Representative added with role '${correctRepresentativeRole}' for ${contractType} contract:`, { representativePeopleId, representativePeopleFullName, correctRepresentativeRole });
       } else {
         console.log('ℹ️ Representative already exists in participants, skipping.');
       }
