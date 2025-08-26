@@ -77,7 +77,7 @@ export class MeasurementUnitsService {
         
         return {
           key: unit._id,
-          value: unit._id,
+          value: unit.value,
           label: label,
           type: unit.type
         };
