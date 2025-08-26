@@ -9,7 +9,7 @@ import { DatePicker } from '@/components/ui/datepicker';
 import { SellerSelectionModal } from '../modals/SellerSelectionModal';
 import { ContactVendorSelectionModal } from '../modals/ContactVendorSelectionModal';
 import { TraderSelectionModal } from '../modals/TraderSelectionModal';
-import type { PurchaseContractFormData } from '@/types/purchaseContract.types';
+import type { PurchaseContractFormData } from '@/validation/purchaseContract.schema';
 import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
 import { formatNumber } from '@/lib/numberFormatter';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
@@ -329,8 +329,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 {t('seller')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <SellerSelectionModal
-                selectedSeller={watch('participants')?.find(p => p.role === 'seller')?.people_id || ''}
-                selectedSellerName={watch('participants')?.find(p => p.role === 'seller')?.name || ''}
+                selectedSeller={watch('participants')?.find((p: any) => p.role === 'seller')?.people_id || ''}
+                selectedSellerName={watch('participants')?.find((p: any) => p.role === 'seller')?.name || ''}
                 onSelect={(seller) => {
                   // Add to participants array with seller role
                   const currentParticipants = watch('participants') || [];
@@ -370,8 +370,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 Contact Vendor <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <ContactVendorSelectionModal
-                selectedContactVendor={watch('participants')?.find(p => p.role === 'contactVendor')?.people_id || ''}
-                selectedContactVendorName={watch('participants')?.find(p => p.role === 'contactVendor')?.name || ''}
+                selectedContactVendor={watch('participants')?.find((p: any) => p.role === 'contactVendor')?.people_id || ''}
+                selectedContactVendorName={watch('participants')?.find((p: any) => p.role === 'contactVendor')?.name || ''}
                 onSelect={(vendor) => {
                   // Add to participants array with contactVendor role
                   const currentParticipants = watch('participants') || [];
@@ -396,8 +396,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 Trader <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <TraderSelectionModal
-                selectedTrader={watch('participants')?.find(p => p.role === 'trader')?.people_id || ''}
-                selectedTraderName={watch('participants')?.find(p => p.role === 'trader')?.name || ''}
+                selectedTrader={watch('participants')?.find((p: any) => p.role === 'trader')?.people_id || ''}
+                selectedTraderName={watch('participants')?.find((p: any) => p.role === 'trader')?.name || ''}
                 onSelect={(trader) => {
                   // Add to participants array with trader role
                   const currentParticipants = watch('participants') || [];

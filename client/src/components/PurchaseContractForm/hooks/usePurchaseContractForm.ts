@@ -230,18 +230,18 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
 
   // Remarks management
   const addRemark = () => {
-    const currentRemarks = form.getValues('remarks');
+    const currentRemarks = form.getValues('remarks') || [];
     form.setValue('remarks', [...currentRemarks, '']);
   };
 
   const removeRemark = (index: number) => {
-    const currentRemarks = form.getValues('remarks');
+    const currentRemarks = form.getValues('remarks') || [];
     const updatedRemarks = currentRemarks.filter((_, i) => i !== index);
     form.setValue('remarks', updatedRemarks);
   };
 
   const updateRemark = (index: number, value: string) => {
-    const currentRemarks = form.getValues('remarks');
+    const currentRemarks = form.getValues('remarks') || [];
     const updatedRemarks = currentRemarks.map((remark, i) =>
       i === index ? value : remark
     );
@@ -416,7 +416,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
         processedParticipants.push({
           people_id: representativePeopleId,
           name: representativePeopleFullName,
-          role: representativeRole as const
+          role: representativeRole
         });
         console.log(`✅ Representative added with role '${representativeRole}' for ${formData.type} contract:`, { representativePeopleId, representativePeopleFullName, representativeRole });
       } else {
@@ -518,8 +518,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       // Participants will be processed by the form submission flow
       // The real seller/contact vendor data is already available in the form
       // and will be handled by the generateContractJSON function
-      console.log('📋 Seller ID:', data.seller);
-      console.log('📋 Contact Vendor ID:', data.contact_vendor);
+      // Individual participant fields removed - using participants array only
       console.log('📋 Current participants:', processedParticipants);
       
       processedData.participants = processedParticipants;
