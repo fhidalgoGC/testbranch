@@ -34,7 +34,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   const defaultValues = useMemo(() => {
     const baseDefaults = {
       folio: '',
-      type: 'purchase',
+      type: contractType,
       sub_type: '' as any,
       commodity: { commodity_id: '', name: '' },
       characteristics: { configuration_id: '', configuration_name: '' },
@@ -394,7 +394,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       created_by: userId,
       created_at: new Date().toISOString(),
       ...(formData.folio && formData.folio.trim() !== '' && { folio: formData.folio }),
-      type: 'purchase',
+      type: contractType,
       sub_type: formData.sub_type,
       commodity: {
         commodity_id: formData.commodity?.commodity_id || '',
