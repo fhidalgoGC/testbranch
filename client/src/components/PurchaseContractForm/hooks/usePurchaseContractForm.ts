@@ -451,12 +451,14 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
 
     // Debug: Log before cleaning
     console.log('🔍 Contract JSON Before Cleaning:', JSON.stringify(contractJSON, null, 2));
+    console.log('🐛 DEBUG payment_currency before cleaning:', contractJSON.price_schedule?.[0]?.payment_currency, contractJSON.logistic_schedule?.[0]?.payment_currency);
     
     // Remove all empty fields from the final JSON
     const cleanedJSON = removeEmptyFields(contractJSON);
     
     // Debug: Log after cleaning
     console.log('✨ Contract JSON After Cleaning:', JSON.stringify(cleanedJSON, null, 2));
+    console.log('🐛 DEBUG payment_currency after cleaning:', cleanedJSON.price_schedule?.[0]?.payment_currency, cleanedJSON.logistic_schedule?.[0]?.payment_currency);
     
     return cleanedJSON;
   };
