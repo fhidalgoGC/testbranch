@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import colombiaFlag from '@assets/colombia_1753044330762.png';
-import guatemalaFlag from '@assets/guatemala_1753044330764.png';
+const colombiaFlag = '/assets/colombia_1753044330762.png';
+const guatemalaFlag = '/assets/guatemala_1753044330764.png';
 
 interface FlagImageProps {
   src?: string;

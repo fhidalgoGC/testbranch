@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { CountryApiResponse, UseCountriesParams } from '../types/country';
-import colombiaFlag from '@assets/colombia_1753044330762.png';
-import guatemalaFlag from '@assets/guatemala_1753044330764.png';
+const colombiaFlag = '/assets/colombia_1753044330762.png';
+const guatemalaFlag = '/assets/guatemala_1753044330764.png';
 
 export function useCountries({ 
   page = 1, 
