@@ -416,7 +416,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       })),
       quantity: quantity,
       reference_number: formData.reference_number,
-      measurement_unit_id: formData.measurement_unit, // Use the same value as measurement_unit
+      measurement_unit_id: formData.measurement_unit_id, // Use the ID from form selection
       measurement_unit: formData.measurement_unit,
       shipping_start_date: new Date(formData.shipping_start_date).toISOString(),
       shipping_end_date: new Date(formData.shipping_end_date).toISOString(),
