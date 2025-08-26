@@ -23,7 +23,7 @@ export function useSellers(params: UseSellersParams = {}) {
   const buildQueryOptions = useCallback(() => {
     // Build sort object
     const sort = {
-      [sortKey]: sortDirection === "asc" ? "1" : "-1",
+      [sortKey]: sortDirection === "asc" ? "1" as const : "-1" as const,
     };
 
     return {
@@ -36,7 +36,7 @@ export function useSellers(params: UseSellersParams = {}) {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: [
-      "buyers",
+      "sellers",
       currentPage,
       pageSize,
       sortKey,
@@ -45,7 +45,7 @@ export function useSellers(params: UseSellersParams = {}) {
     ],
     queryFn: async () => {
       console.log(
-        "Executing getBuyers query with options:",
+        "Executing getSellers query with options:",
         buildQueryOptions(),
       );
 
@@ -63,10 +63,10 @@ export function useSellers(params: UseSellersParams = {}) {
           },
         };
 
-        console.log("Buyers hook - Transformed result:", transformedResult);
+        console.log("Sellers hook - Transformed result:", transformedResult);
         return transformedResult;
       } catch (error) {
-        console.error("Buyers hook - Query error:", error);
+        console.error("Sellers hook - Query error:", error);
         throw error;
       }
     },

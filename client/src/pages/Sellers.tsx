@@ -40,7 +40,7 @@ export default function Sellers() {
     handleSearchChange,
   } = useSellers();
 
-  console.log("Buyers component render:", { data, isLoading, currentPage });
+  console.log("Sellers component render:", { data, isLoading, currentPage });
 
   const handleAddBuyer = () => {
     setLocation("/sellers/create");
@@ -56,7 +56,7 @@ export default function Sellers() {
     },
     {
       key: "id",
-      title: t("buyerId"),
+      title: t("sellerId"),
       render: (buyer) => formatSellerId(buyer._id),
       sortable: false,
     },
@@ -100,7 +100,7 @@ export default function Sellers() {
       <div className="p-6">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-            {t("buyers")}
+            {t("sellers")}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
             {t("sellersDescription")}
@@ -109,7 +109,7 @@ export default function Sellers() {
 
         <DataTable
           columns={columns}
-          data={data}
+          data={data || null}
           loading={isLoading}
           currentPage={currentPage}
           pageSize={pageSize}

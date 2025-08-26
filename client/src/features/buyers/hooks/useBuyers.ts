@@ -21,7 +21,7 @@ export function useBuyers(params: UseBuyersParams = {}) {
   const buildQueryOptions = useCallback(() => {
     // Build sort object
     const sort = {
-      [sortKey]: sortDirection === 'asc' ? '1' : '-1'
+      [sortKey]: sortDirection === 'asc' ? '1' as const : '-1' as const
     };
 
     return {

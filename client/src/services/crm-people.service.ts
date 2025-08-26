@@ -149,6 +149,7 @@ export const getPeople = async (
 export const getSellers = async (
   options?: GetPeopleOptions,
 ): Promise<CrmPeopleResponse> => {
+  console.log("no llega aqui");
   // Add search filter if provided
   const filters: GetPeopleFilters = {
     roles: ["seller"],
