@@ -71,6 +71,7 @@
     "viewSubContract": "Ver Sub-contrato"
   },
   "buyerId": "Id Comprador",
+  "sellerId": "Id Vendedor",
   "fullName": "Nombre Completo",
   "email": "Correo Electrónico",
   "phoneNumber": "Número de Teléfono",
@@ -84,6 +85,7 @@
   "loading": "Cargando...",
   "noResults": "No se encontraron resultados",
   "addBuyer": "Agregar Comprador",
+  "addSeller": "Agregar Vendedor",
   "toggleTheme": "Cambiar tema",
   "unknownBuyer": "Comprador desconocido",
   "registrationDate": "Fecha de registro",

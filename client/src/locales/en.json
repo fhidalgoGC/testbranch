@@ -71,6 +71,7 @@
     "viewSubContract": "View Sub-contract"
   },
   "buyerId": "Buyer ID",
+  "sellerId": "Seller ID",
   "fullName": "Full Name",
   "email": "Email",
   "phoneNumber": "Phone Number",
@@ -84,6 +85,7 @@
   "loading": "Loading...",
   "noResults": "No results found",
   "addBuyer": "Add Buyer",
+  "addSeller": "Add Seller",
   "toggleTheme": "Toggle theme",
   "unknownBuyer": "Unknown buyer",
   "registrationDate": "Registration date",
