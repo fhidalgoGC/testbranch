@@ -432,7 +432,17 @@ export default function PurchaseContractDetail() {
                 id: item._id || `subcontract-${index}`,
                 contractNumber: item.folio || `Sub-Contract ${index + 1}`,
                 quantity: quantity,
-                unit: item.measurement_unit || "Unknown Unit",
+                unit: (() => {
+                  // Map measurement unit values to display labels
+                  const unitMap: Record<string, string> = {
+                    'unit_tons': 'Tons',
+                    'unit_kg': 'Kg', 
+                    'unit_bushels': 'Bushels',
+                    'unit_cwt': 'CWT',
+                    'unit_mt': 'MT'
+                  };
+                  return unitMap[item.measurement_unit || ''] || item.measurement_unit || "Unknown Unit";
+                })(),
                 thresholds: {
                   min: item.thresholds?.min_thresholds_weight || 0,
                   max: item.thresholds?.max_thresholds_weight || 0,
