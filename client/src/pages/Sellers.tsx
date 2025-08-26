@@ -1,31 +1,128 @@
-import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
-import { useContractsPageState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
-import DashboardLayout from '@/components/layout/DashboardLayout';
-
+import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
+import { useEffect } from "react";
+import {
+  useContractsPageState,
+  usePageTracking,
+  useNavigationHandler,
+} from "@/hooks/usePageState";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { DataTable, Column } from "@/components/ui/data-table";
+import { Buyer } from "@/features/buyers/types";
+import BuyerDetailsCard from "@/components/buyers/BuyerDetailsCard";
+import { formatSellerId } from "@/lib/formatters";
+import { useSellers } from "@/features/buyers/hooks/useSellers";
 export default function Sellers() {
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
   const { handleNavigateToPage } = useNavigationHandler();
-  const { pageState, updateState } = useContractsPageState('sellers');
-  usePageTracking('/sellers');
   
+  usePageTracking("/buyers");
+
   // Notificar navegación jerárquica al cargar la página
   useEffect(() => {
-    console.log('🔄 SELLERS PAGE: Cargando página y ejecutando navegación jerárquica');
-    handleNavigateToPage('sellers');
+    console.log(
+      "🔄 SELLER PAGE: Cargando página y ejecutando navegación jerárquica",
+    );
+    handleNavigateToPage("sellers");
   }, []);
+  const {
+    data,
+    isLoading,
+    currentPage,
+    pageSize,
+    sortKey,
+    sortDirection,
+    searchValue,
+    handlePageChange,
+    handlePageSizeChange,
+    handleSortChange,
+    handleSearchChange,
+  } = useSellers();
+
+  console.log("Buyers component render:", { data, isLoading, currentPage });
+
+  const handleAddBuyer = () => {
+    setLocation("/sellers/create");
+  };
+
+  const columns: Column<Buyer>[] = [
+    {
+      key: "details",
+      title: "",
+      render: (buyer) => <BuyerDetailsCard buyer={buyer} />,
+      sortable: false,
+      width: "60px",
+    },
+    {
+      key: "id",
+      title: t("buyerId"),
+      render: (buyer) => formatSellerId(buyer._id),
+      sortable: false,
+    },
+    {
+      key: "full_name",
+      title: t("fullName"),
+      render: (buyer) => buyer.full_name || "-",
+      sortable: true,
+      sortKey: "full_name",
+    },
+    {
+      key: "email",
+      title: t("email"),
+      render: (buyer) => {
+        const email =
+          buyer.emails && buyer.emails.length > 0
+            ? buyer.emails[0].value
+            : null;
+        return email || "-";
+      },
+      sortable: true,
+      sortKey: "emails.value",
+    },
+    {
+      key: "phone",
+      title: t("phoneNumber"),
+      render: (buyer) => {
+        if (buyer.phones && buyer.phones.length > 0) {
+          const phone = buyer.phones[0];
+          return `${phone.calling_code} ${phone.phone_number}`;
+        }
+        return "-";
+      },
+      sortable: true,
+      sortKey: "phones.calling_code",
+    },
+  ];
 
   return (
-    <DashboardLayout title={t('sellers')}>
-      <div className="space-y-6">
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            {t('sellers')}
+    <DashboardLayout title={t("sellers")}>
+      <div className="p-6">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+            {t("buyers")}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {t('sellersDescription')}
+            {t("sellersDescription")}
           </p>
         </div>
+
+        <DataTable
+          columns={columns}
+          data={data}
+          loading={isLoading}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          sortKey={sortKey}
+          sortDirection={sortDirection}
+          searchValue={searchValue}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          onSortChange={handleSortChange}
+          onSearchChange={handleSearchChange}
+          onAddNew={handleAddBuyer}
+          getItemId={(buyer) => buyer._id}
+        />
       </div>
     </DashboardLayout>
   );

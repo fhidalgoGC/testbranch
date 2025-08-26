@@ -8,6 +8,10 @@ export function formatBuyerId(id: string): string {
   return id.toUpperCase().slice(-6);
 }
 
+export function formatSellerId(id: string): string {
+  return id.toUpperCase().slice(-6);
+}
+
 /**
  * Formats a date string to a readable format based on locale
  */

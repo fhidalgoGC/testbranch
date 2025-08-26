@@ -13,7 +13,7 @@ export default function Buyers() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { handleNavigateToPage } = useNavigationHandler();
-  const { pageState, updateState } = useContractsPageState('buyers');
+  
   usePageTracking('/buyers');
   
   // Notificar navegación jerárquica al cargar la página

@@ -149,7 +149,15 @@ export const getPeople = async (
 export const getSellers = async (
   options?: GetPeopleOptions,
 ): Promise<CrmPeopleResponse> => {
-  return getPeople({ roles: ["seller"], active: true }, options);
+  // Add search filter if provided
+  const filters: GetPeopleFilters = {
+    roles: ["seller"],
+    active: true,
+  };
+  if (options?.search) {
+    filters.search = options.search;
+  }
+  return getPeople(filters, options);
 };
 
 /**
@@ -158,16 +166,16 @@ export const getSellers = async (
 export const getBuyers = async (
   options?: GetPeopleOptions,
 ): Promise<CrmPeopleResponse> => {
-  const filters: GetPeopleFilters = { 
-    roles: ["buyer"], 
-    active: true 
+  const filters: GetPeopleFilters = {
+    roles: ["buyer"],
+    active: true,
   };
-  
+
   // Add search filter if provided
   if (options?.search) {
     filters.search = options.search;
   }
-  
+
   return getPeople(filters, options);
 };
 
