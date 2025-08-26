@@ -65,7 +65,8 @@ export default function Sidebar() {
         <nav className="space-y-0.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location === item.path;
+            // Check if current path matches exactly or is a sub-route
+            const isActive = location === item.path || location.startsWith(item.path + '/');
             
             return (
               <Link key={item.key} href={item.path}>
