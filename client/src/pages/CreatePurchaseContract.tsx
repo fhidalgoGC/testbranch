@@ -48,11 +48,6 @@ export default function CreatePurchaseContract() {
   const handleSubmitContract = async (contractData: any) => {
     console.log("que paso", contractId);
     if (!contractId) {
-      await handleGenerateContractId();
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      if (!contractId) {
-        throw new Error("No contract ID available");
-      }
       throw new Error("No contract ID available");
     }
 
