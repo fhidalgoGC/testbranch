@@ -81,15 +81,20 @@ export default function CreateSaleContract() {
       
       {/* Error Modal */}
       <AlertDialog open={errorModal.open} onOpenChange={(open) => setErrorModal(prev => ({ ...prev, open }))}>
-        <AlertDialogContent>
+        <AlertDialogContent className="border-red-500">
           <AlertDialogHeader>
-            <AlertDialogTitle>Error al crear contrato</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-red-700 dark:text-red-400">
+              ❌ Error al crear contrato
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-red-600 dark:text-red-300">
               {errorModal.message}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setErrorModal({ open: false, message: '' })}>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
+              onClick={() => setErrorModal({ open: false, message: '' })}
+            >
               Entendido
             </AlertDialogAction>
           </AlertDialogFooter>
