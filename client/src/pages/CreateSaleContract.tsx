@@ -19,6 +19,7 @@ export default function CreateSaleContract() {
   const [, setLocation] = useLocation();
   const [contractId, setContractId] = useState<string | undefined>();
   const [errorModal, setErrorModal] = useState({ open: false, message: '' });
+  const [successModal, setSuccessModal] = useState({ open: false, folio: '' });
   
   // Función para generar nuevo contrato usando el servicio
   const handleGenerateContractId = async () => {
@@ -42,7 +43,8 @@ export default function CreateSaleContract() {
   };
 
   // Función para manejar submit del contrato
-  const handleSubmitContract = async (contractData: any) => {
+  const handleSubmitContract = async (contractId: string, contractData: any) => {
+    console.log('que paso', contractId);
     if (!contractId) {
       throw new Error('No contract ID available');
     }
@@ -51,8 +53,11 @@ export default function CreateSaleContract() {
     const result = await submitContract(contractId, contractData);
     
     if (result.success) {
-      console.log('✅ Contract submitted successfully, redirecting...');
-      setLocation('/sale-contracts');
+      console.log('✅ Contract submitted successfully:', result.data);
+      
+      // Extract folio from response
+      const folio = result.data?.folio || result.data?.data?.folio || contractId;
+      setSuccessModal({ open: true, folio });
     } else {
       console.error('❌ Contract submission failed:', result.error);
       setErrorModal({
@@ -86,6 +91,40 @@ export default function CreateSaleContract() {
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setErrorModal({ open: false, message: '' })}>
               Entendido
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Success Modal */}
+      <AlertDialog
+        open={successModal.open}
+        onOpenChange={(open) => {
+          setSuccessModal((prev) => ({ ...prev, open }));
+          if (!open) {
+            // Redirect to contracts list when modal is closed
+            setLocation("/sale-contracts");
+          }
+        }}
+      >
+        <AlertDialogContent className="border-green-500">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-green-700 dark:text-green-400">
+              ✅ Contrato creado exitosamente
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-green-600 dark:text-green-300">
+              El contrato se ha creado correctamente con el folio: <strong>{successModal.folio}</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+              onClick={() => {
+                setSuccessModal({ open: false, folio: "" });
+                setLocation("/sale-contracts");
+              }}
+            >
+              Continuar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
