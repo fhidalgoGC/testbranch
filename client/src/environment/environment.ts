@@ -39,15 +39,6 @@ export const CURRENCY_OPTIONS = [
   { key: "mxn", value: "MXN", label: "MXN" },
 ];
 
-// Measurement unit options
-export const MEASUREMENT_UNIT_OPTIONS = [
-  { key: 'tons', value: 'unit_tons', label: 'Toneladas / Tons' },
-  { key: 'kg', value: 'unit_kg', label: 'Kilogramos / Kilograms' },
-  { key: 'bushels', value: 'unit_bushels', label: 'Bushels' },
-  { key: 'cwt', value: 'unit_cwt', label: 'Quintales / Hundredweight' },
-  { key: 'mt', value: 'unit_mt', label: 'Toneladas Métricas / Metric Tons' }
-];
-
 // Pricing type options
 export const PRICING_TYPE_OPTIONS = [
   { key: "fixed", value: "fixed", label: "Fixed" },

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
 import type { PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
-import { APP_CONFIG, CURRENCY_OPTIONS, MEASUREMENT_UNIT_OPTIONS } from '@/environment/environment';
+import { APP_CONFIG, CURRENCY_OPTIONS } from '@/environment/environment';
 
 interface UsePurchaseContractFormOptions {
   initialData?: Partial<PurchaseSaleContract>;
@@ -317,9 +317,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     
 
     
-    // MEASUREMENT_UNIT_OPTIONS now imported from environment
-    
-    // Helper function to find label by value
+    // Helper function to find label by value (kept for future use if needed)
     const findLabel = (options: any[], value: string) => {
       const option = options.find(opt => opt.value === value);
       return option ? option.label : '';
@@ -418,7 +416,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       })),
       quantity: quantity,
       reference_number: formData.reference_number,
-      measurement_unit_id: findLabel(MEASUREMENT_UNIT_OPTIONS, formData.measurement_unit),
+      measurement_unit_id: formData.measurement_unit, // Use the same value as measurement_unit
       measurement_unit: formData.measurement_unit,
       shipping_start_date: new Date(formData.shipping_start_date).toISOString(),
       shipping_end_date: new Date(formData.shipping_end_date).toISOString(),
