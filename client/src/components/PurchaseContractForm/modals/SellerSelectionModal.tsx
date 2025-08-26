@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getSellers, type CrmPerson } from '@/services/crm-people.service';
+import { getSellers, getBuyers, type CrmPerson } from '@/services/crm-people.service';
 import { User, Building2, Search, Mail } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -12,13 +12,15 @@ interface SellerSelectionModalProps {
   selectedSeller?: string;
   selectedSellerName?: string; // Add name for display
   error?: boolean;
+  contractType?: "purchase" | "sale"; // Determine which service to call
 }
 
 export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
   onSelect,
   selectedSeller,
   selectedSellerName,
-  error = false
+  error = false,
+  contractType = "purchase"
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -63,15 +65,19 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
 
   const loadSellers = async (page: number = 1, reset: boolean = false) => {
     try {
-      console.log(`🚀 SellerModal: Loading sellers - Page ${page}, Reset: ${reset}`);
+      const participantType = contractType === "sale" ? "buyers" : "sellers";
+      console.log(`🚀 SellerModal: Loading ${participantType} - Page ${page}, Reset: ${reset}`);
       
       if (!reset) {
         setLoadingMore(true);
       }
       // Note: loading state is already set in useEffect for reset case
 
-      const response = await getSellers({ page, limit: 5 });
-      console.log(`✅ SellerModal: Loaded ${response.data.length} sellers`);
+      // Call the appropriate service based on contract type
+      const response = contractType === "sale" 
+        ? await getBuyers({ page, limit: 5 })
+        : await getSellers({ page, limit: 5 });
+      console.log(`✅ SellerModal: Loaded ${response.data.length} ${participantType}`);
       console.log(`📊 SellerModal: Pagination - Page ${response._meta.page_number}/${response._meta.total_pages}, Total: ${response._meta.total_elements}`);
       
       if (reset) {
@@ -85,7 +91,8 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
       setCurrentPage(response._meta.page_number);
       
     } catch (error) {
-      console.error('❌ SellerModal: Error fetching sellers:', error);
+      const participantType = contractType === "sale" ? "buyers" : "sellers";
+      console.error(`❌ SellerModal: Error fetching ${participantType}:`, error);
       if (reset) {
         setSellers([]);
       }
@@ -169,7 +176,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
               ) : (
                 <>
                   <User className="h-4 w-4" />
-                  <span>{t('selectSeller')}</span>
+                  <span>{contractType === "sale" ? t('selectBuyer') : t('selectSeller')}</span>
                 </>
               )}
             </div>
@@ -179,7 +186,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
               <User className="h-5 w-5" />
-              <span>{t('selectSeller')}</span>
+              <span>{contractType === "sale" ? t('selectBuyer') : t('selectSeller')}</span>
             </DialogTitle>
           </DialogHeader>
           
@@ -188,7 +195,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder={t('searchSellers')}
+                placeholder={contractType === "sale" ? t('searchBuyers') : t('searchSellers')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -199,7 +206,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
             {loading && (
               <div className="text-center py-12">
                 <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <p className="mt-4 text-lg font-medium">Cargando vendedores...</p>
+                <p className="mt-4 text-lg font-medium">{contractType === "sale" ? "Cargando compradores..." : "Cargando vendedores..."}</p>
                 <p className="mt-2 text-sm text-gray-500">Obteniendo datos del CRM</p>
               </div>
             )}
@@ -210,7 +217,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
                 {filteredSellers.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     <User className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>No se encontraron vendedores</p>
+                    <p>{contractType === "sale" ? t('noBuyersFound') : t('noSellersFound')}</p>
                   </div>
                 ) : (
                   <div className="space-y-2">

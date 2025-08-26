@@ -428,6 +428,7 @@ export function ContractInfoSection({
                 <span className="text-red-500">{t("requiredField")}</span>
               </Label>
               <SellerSelectionModal
+                contractType={contractType}
                 selectedSeller={
                   watch("participants")?.find((p: any) => p.role === (contractType === "sale" ? "buyer" : "seller"))
                     ?.people_id || ""
@@ -448,7 +449,7 @@ export function ContractInfoSection({
                   updatedParticipants.push({
                     people_id: seller.id,
                     name: seller.name,
-                    role: targetRole as const,
+                    role: targetRole,
                   });
                   setValue("participants", updatedParticipants);
 
