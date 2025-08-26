@@ -188,7 +188,7 @@ export function PurchaseContractForm({
           className="space-y-8"
         >
           {/* Section 1: Contract Info */}
-          <ContractInfoSection representativeRole={representativeRole} />
+          <ContractInfoSection representativeRole={representativeRole} contractType={contractType} />
 
           {/* Section 2: Price Contract Per (Bushel 56) */}
           <PriceSection

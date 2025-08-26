@@ -31,6 +31,7 @@ interface ContractInfoSectionProps {
     | "contactVendor"
     | "purchase"
     | "sale";
+  contractType?: "purchase" | "sale";
 }
 
 // Fake sellers data for display
@@ -106,6 +107,7 @@ const SUB_TYPE_OPTIONS = [
 
 export function ContractInfoSection({
   representativeRole = "purchase",
+  contractType = "purchase",
 }: ContractInfoSectionProps) {
   const { t } = useTranslation();
   const { data: measurementUnits = [], isLoading: loadingUnits } =
@@ -422,35 +424,36 @@ export function ContractInfoSection({
 
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                {t("seller")}{" "}
+                {contractType === "sale" ? t("buyer") : t("seller")}{" "}
                 <span className="text-red-500">{t("requiredField")}</span>
               </Label>
               <SellerSelectionModal
                 selectedSeller={
-                  watch("participants")?.find((p: any) => p.role === "seller")
+                  watch("participants")?.find((p: any) => p.role === (contractType === "sale" ? "buyer" : "seller"))
                     ?.people_id || ""
                 }
                 selectedSellerName={
-                  watch("participants")?.find((p: any) => p.role === "seller")
+                  watch("participants")?.find((p: any) => p.role === (contractType === "sale" ? "buyer" : "seller"))
                     ?.name || ""
                 }
                 onSelect={(seller) => {
-                  // Add to participants array with seller role
+                  // Add to participants array with appropriate role
+                  const targetRole = contractType === "sale" ? "buyer" : "seller";
                   const currentParticipants = watch("participants") || [];
                   const updatedParticipants = currentParticipants.filter(
-                    (p) => p.role !== "seller",
-                  ); // Remove existing seller
+                    (p) => p.role !== targetRole,
+                  ); // Remove existing participant with target role
 
-                  // Add selected seller with seller role
+                  // Add selected participant with appropriate role
                   updatedParticipants.push({
                     people_id: seller.id,
                     name: seller.name,
-                    role: "seller" as const,
+                    role: targetRole as const,
                   });
                   setValue("participants", updatedParticipants);
 
                   console.log(
-                    "Seller selected and added to participants with seller role:",
+                    `${targetRole} selected and added to participants with ${targetRole} role:`,
                     seller,
                   );
                   console.log("Updated participants:", updatedParticipants);
