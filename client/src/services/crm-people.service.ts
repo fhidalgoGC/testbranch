@@ -1,4 +1,5 @@
 import { authenticatedFetch } from "@/utils/apiInterceptors";
+import { environment } from "@/environment/environment";
 
 export interface CrmPerson {
   _id: string;
@@ -115,7 +116,7 @@ export const getPeople = async (
     queryParams.append("sort", JSON.stringify({ full_name: "1" }));
   }
 
-  const url = `${import.meta.env.VITE_URL_CRM}/crm-people/people?${queryParams.toString()}`;
+  const url = `${environment.CRM_BASE_URL}/crm-people/people?${queryParams.toString()}`;
 
   console.log("CRM People API URL:", url);
 
