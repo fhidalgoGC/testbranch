@@ -1,11 +1,14 @@
-# Use Node.js 20 Alpine for compatibility with Vite
-FROM node:20-alpine
+# Use Node.js 20 on Ubuntu for better compatibility with esbuild
+FROM node:20
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies including wget for health check
-RUN apk add --no-cache git wget
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
@@ -23,8 +26,8 @@ RUN npm run build
 RUN npm prune --production && npm cache clean --force
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+RUN groupadd --gid 1001 nodejs && \
+    useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home nextjs
 
 # Change ownership of the app directory
 RUN chown -R nextjs:nodejs /app
