@@ -1,5 +1,6 @@
 import { MeasurementUnit, MeasurementUnitOption } from '@/types/measurementUnit.types';
 import { environment } from '@/environment/environment';
+import { authenticatedFetch } from '@/utils/apiInterceptors';
 import i18n from '@/common/utils/i18n';
 
 export class MeasurementUnitsService {
@@ -19,34 +20,15 @@ export class MeasurementUnitsService {
     return `${baseUrl}${endpoint}?limit=${limit}&language=${language}&filter=${filter}`;
   }
 
-  private static buildHeaders(): Record<string, string> {
-    const authToken = localStorage.getItem('authToken') || '';
-    const partitionKey = localStorage.getItem('partition_key') || '';
-    
-    return {
-      '_partitionkey': partitionKey,
-      'accept': '*/*',
-      'accept-language': 'es-419,es;q=0.9',
-      'authorization': `Bearer ${authToken}`,
-      'bt-organization': partitionKey,
-      'bt-uid': partitionKey,
-      'organization_id': partitionKey,
-      'pk-organization': partitionKey,
-      'Content-Type': 'application/json'
-    };
-  }
 
   public static async fetchMeasurementUnits(): Promise<MeasurementUnit[]> {
     try {
       const url = this.buildUrl();
-      const headers = this.buildHeaders();
 
       console.log('Fetching measurement units from:', url);
-      console.log('Headers:', headers);
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers
+      const response = await authenticatedFetch(url, {
+        method: 'GET'
       });
 
       if (!response.ok) {
