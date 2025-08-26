@@ -15,7 +15,10 @@ import {
 } from "@/components/general/StandardTable";
 import { PurchaseSaleContract } from "@/types/purchaseSaleContract.types";
 import { formatNumber } from "@/lib/numberFormatter";
-import { fetchContractsData } from "@/services/contractsService";
+import {
+  fetchContractsData,
+  generateContractId,
+} from "@/services/contractsService";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -597,18 +600,34 @@ export default function SaleContracts() {
             >
               Debug Page State
             </Button>
-            <Link href="/sale-contracts/create" className="inline-block">
-              <Button
-                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
-                size="lg"
-              >
-                {hasDraftData && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-white animate-pulse" />
-                )}
-                <Plus className="w-4 h-4" />
-                {t('createContract')}
-              </Button>
-            </Link>
+            <Button
+              className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
+              size="lg"
+              onClick={async () => {
+                console.log(
+                  "🆔 Generating contract ID before navigation...",
+                );
+                const contractIdGenerated = await generateContractId();
+                console.log(contractIdGenerated);
+                if (contractIdGenerated) {
+                  console.log(
+                    "✅ Contract ID generated successfully:",
+                    contractIdGenerated,
+                  );
+                  setLocation(
+                    `/sale-contracts/create/${contractIdGenerated}`,
+                  );
+                } else {
+                  console.error("❌ Failed to generate contract ID");
+                }
+              }}
+            >
+              {hasDraftData && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-white animate-pulse" />
+              )}
+              <Plus className="w-4 h-4" />
+              {t("createContract")}
+            </Button>
           </div>
         </div>
 
