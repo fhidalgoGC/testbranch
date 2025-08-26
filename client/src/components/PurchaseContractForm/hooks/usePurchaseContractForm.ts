@@ -39,8 +39,12 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       measurement_unit_id: '',
       measurement_unit: '',
       contract_date: new Date().toISOString().split('T')[0],
-      min_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MIN,
-      max_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MAX,
+      thresholds: {
+        min_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MIN,
+        min_thresholds_weight: 0,
+        max_thresholds_percentage: APP_CONFIG.PRICE_THRESHOLD_MAX,
+        max_thresholds_weight: 0
+      },
       seller: '',
       contact_vendor: '',
       trader: '',

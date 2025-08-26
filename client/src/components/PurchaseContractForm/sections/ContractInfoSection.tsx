@@ -591,13 +591,13 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Min Threshold */}
                 <div className="space-y-2">
-                  <Label htmlFor="min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                  <Label htmlFor="thresholds.min_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
                     {t('minThresholds')} <span className="text-red-500">{t('requiredField')}</span>
                   </Label>
                   <div className="flex items-center gap-3">
                     <div className="w-[100px]">
                       <Controller
-                        name="min_thresholds_percentage"
+                        name="thresholds.min_thresholds_percentage"
                         control={control}
                         render={({ field }) => {
                           const [displayValue, setDisplayValue] = React.useState(() => {
@@ -619,7 +619,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
 
                           return (
                             <Input
-                              id="min_thresholds_percentage"
+                              id="thresholds.min_thresholds_percentage"
                               type="text"
                               inputMode="decimal"
                               value={displayValue}
@@ -659,7 +659,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                                   e.preventDefault();
                                 }
                               }}
-                              className={`h-10 ${errors.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                              className={`h-10 ${errors.thresholds?.min_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                               placeholder="0.00"
                               style={{
                                 MozAppearance: 'textfield'
@@ -673,7 +673,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">
                         {(() => {
                           const quantity = watch('quantity') || 0;
-                          const percentage = watch('min_thresholds_percentage') || 0;
+                          const percentage = watch('thresholds.min_thresholds_percentage') || 0;
                           const calculatedValue = quantity - (quantity * percentage) / 100;
                           
                           // Get unit display name
@@ -699,13 +699,13 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
 
                 {/* Max Threshold */}
                 <div className="space-y-2">
-                  <Label htmlFor="max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
+                  <Label htmlFor="thresholds.max_thresholds_percentage" className="text-sm font-medium text-gray-900 dark:text-white">
                     {t('maxThresholds')} <span className="text-red-500">{t('requiredField')}</span>
                   </Label>
                   <div className="flex items-center gap-3">
                     <div className="w-[100px]">
                       <Controller
-                        name="max_thresholds_percentage"
+                        name="thresholds.max_thresholds_percentage"
                         control={control}
                         render={({ field }) => {
                           const [displayValue, setDisplayValue] = React.useState(() => {
@@ -727,7 +727,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
 
                           return (
                             <Input
-                              id="max_thresholds_percentage"
+                              id="thresholds.max_thresholds_percentage"
                               type="text"
                               inputMode="decimal"
                               value={displayValue}
@@ -767,7 +767,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                                   e.preventDefault();
                                 }
                               }}
-                              className={`h-10 ${errors.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                              className={`h-10 ${errors.thresholds?.max_thresholds_percentage ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
                               placeholder="100.00"
                               style={{
                                 MozAppearance: 'textfield'
@@ -781,7 +781,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">
                         {(() => {
                           const quantity = watch('quantity') || 0;
-                          const percentage = watch('max_thresholds_percentage') || 0;
+                          const percentage = watch('thresholds.max_thresholds_percentage') || 0;
                           const calculatedValue = quantity + (quantity * percentage) / 100;
                           
                           // Get unit display name
@@ -809,13 +809,13 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
               {/* Min and Max Thresholds Errors */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[20px]">
                 <div>
-                  {errors.min_thresholds_percentage && (
-                    <p className="text-sm text-red-600 dark:text-red-400">{errors.min_thresholds_percentage.message}</p>
+                  {errors.thresholds?.min_thresholds_percentage && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.thresholds.min_thresholds_percentage.message}</p>
                   )}
                 </div>
                 <div>
-                  {errors.max_thresholds_percentage && (
-                    <p className="text-sm text-red-600 dark:text-red-400">{errors.max_thresholds_percentage.message}</p>
+                  {errors.thresholds?.max_thresholds_percentage && (
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.thresholds.max_thresholds_percentage.message}</p>
                   )}
                 </div>
               </div>
