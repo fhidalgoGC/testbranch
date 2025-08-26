@@ -102,7 +102,7 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
   } = useFormContext<PurchaseContractFormData>();
   
   // Watch for selected commodity to get commodity_id and subcategory_id
-  const selectedCommodityId = watch('commodity_id');
+  const selectedCommodityId = watch('commodity')?.commodity_id;
   const selectedCommodity = commodities.find(c => c.key === selectedCommodityId);
   
   // Extract subcategory_id from commodity data (original_name_id.subcategory._id)
@@ -206,20 +206,21 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
                 {t('commodity')} <span className="text-red-500">{t('requiredField')}</span>
               </Label>
               <Select
-                value={watch('commodity_id')}
+                value={watch('commodity')?.commodity_id || ''}
                 onValueChange={(value) => {
                   // Find the selected commodity to get both ID and name
                   const selectedCommodity = commodities.find(commodity => commodity.key === value);
-                  setValue('commodity_id', value);
-                  setValue('commodity_name', selectedCommodity?.label || '');
+                  setValue('commodity', {
+                    commodity_id: value,
+                    name: selectedCommodity?.label || ''
+                  });
                   // Clear characteristics configuration when commodity changes
                   setValue('characteristics', { configuration_id: '', configuration_name: '' });
-                  clearErrors('commodity_id');
-                  clearErrors('commodity_name');
+                  clearErrors('commodity');
                   clearErrors('characteristics');
                 }}
               >
-                <SelectTrigger className={`h-10 ${errors.commodity_id ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
+                <SelectTrigger className={`h-10 ${errors.commodity ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}>
                   <SelectValue placeholder={t('selectCommodity')} />
                 </SelectTrigger>
                 <SelectContent>
@@ -280,8 +281,8 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
           {/* Row 2 Errors */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[20px]">
             <div>
-              {errors.commodity_id && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity_id.message}</p>
+              {errors.commodity && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.commodity.message}</p>
               )}
             </div>
             <div>

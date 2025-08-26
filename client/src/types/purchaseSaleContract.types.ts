@@ -78,10 +78,8 @@ export interface PurchaseSaleContract {
   type: 'purchase' | 'sale';
   sub_type: 'direct' | 'imported' | 'importedFreight';
   
-  // Commodity fields - can be object or individual fields
+  // Commodity - object format only
   commodity?: Commodity;
-  commodity_id?: string;
-  commodity_name?: string;
   
   // Characteristics - object format only
   characteristics?: Characteristics;

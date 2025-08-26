@@ -31,8 +31,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       folio: '',
       type: 'purchase',
       sub_type: '' as any,
-      commodity_id: '',
-      commodity_name: '',
+      commodity: { commodity_id: '', name: '' },
       characteristics: { configuration_id: '', configuration_name: '' },
       grade: 1,
       quantity: undefined,
@@ -446,8 +445,8 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       type: 'purchase',
       sub_type: formData.sub_type,
       commodity: {
-        commodity_id: formData.commodity_id,
-        name: findLabel(COMMODITY_OPTIONS, formData.commodity_id),
+        commodity_id: formData.commodity?.commodity_id || '',
+        name: formData.commodity?.name || '',
       },
       characteristics: {
         configuration_id: formData.characteristics?.configuration_id || '',
