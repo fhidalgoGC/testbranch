@@ -386,16 +386,7 @@ export const deleteSubContract = async (
       {
         method: "DELETE",
         customHeaders: {
-          _partitionkey: localStorage.getItem("partition_key") || "",
-          "bt-organization": localStorage.getItem("partition_key") || "",
-          "bt-uid": localStorage.getItem("partition_key") || "",
-          organization_id: localStorage.getItem("partition_key") || "",
           "pk-organization": localStorage.getItem("partition_key") || "",
-          priority: "u=1, i",
-          "sec-ch-ua":
-            '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": '"macOS"',
         },
       },
     );
