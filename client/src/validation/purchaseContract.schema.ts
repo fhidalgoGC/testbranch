@@ -6,7 +6,7 @@ export const createPurchaseContractSchema = (t: (key: string) => string) => {
   return z.object({
     // Contract Info Section
     folio: z.string().optional(),
-    type: z.enum(['purchase']).default('purchase'),
+    type: z.enum(['purchase', 'sale']).default('purchase'),
     sub_type: z.string().min(1, t('fieldRequired')).refine(
       (val) => ['direct', 'imported', 'importedFreight'].includes(val),
       t('selectOption')
