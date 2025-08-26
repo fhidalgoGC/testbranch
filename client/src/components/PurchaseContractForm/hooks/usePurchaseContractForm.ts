@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { createPurchaseContractSchema } from '@/validation/purchaseContract.schema';
 import type { PurchaseSaleContract, Participant, PriceSchedule, LogisticSchedule } from '@/types/purchaseSaleContract.types';
-import { APP_CONFIG } from '@/environment/environment';
+import { APP_CONFIG, CURRENCY_OPTIONS } from '@/environment/environment';
 
 interface UsePurchaseContractFormOptions {
   initialData?: Partial<PurchaseSaleContract>;
@@ -331,6 +331,12 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       return option ? option.label : '';
     };
     
+    // Helper function to convert currency key to value for API
+    const findCurrencyValue = (key: string) => {
+      const option = CURRENCY_OPTIONS.find(opt => opt.key === key);
+      return option ? option.value : key;
+    };
+    
     // Process participants - use existing participants from form selections
     let processedParticipants = [...(formData.participants || [])];
     
@@ -408,8 +414,14 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       },
       grade: formData.grade,
       participants: processedParticipants,
-      price_schedule: formData.price_schedule,
-      logistic_schedule: formData.logistic_schedule,
+      price_schedule: (formData.price_schedule || []).map(ps => ({
+        ...ps,
+        payment_currency: findCurrencyValue(ps.payment_currency)
+      })),
+      logistic_schedule: (formData.logistic_schedule || []).map(ls => ({
+        ...ls,
+        payment_currency: findCurrencyValue(ls.payment_currency)
+      })),
       quantity: quantity,
       reference_number: formData.reference_number,
       measurement_unit_id: findLabel(MEASUREMENT_UNIT_OPTIONS, formData.measurement_unit),

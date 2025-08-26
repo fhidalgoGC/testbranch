@@ -1,8 +1,8 @@
 // Purchase and Sale Contract Types based on JSON structure
 import { CURRENCY_OPTIONS } from '@/environment/environment';
 
-// Dynamic currency type based on CURRENCY_OPTIONS
-export type Currency = typeof CURRENCY_OPTIONS[number]['value'];
+// Dynamic currency type based on CURRENCY_OPTIONS - use key for data storage
+export type Currency = typeof CURRENCY_OPTIONS[number]['key'];
 
 export interface Commodity {
   commodity_id: string;

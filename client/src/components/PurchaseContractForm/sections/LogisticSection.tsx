@@ -202,7 +202,7 @@ export function LogisticSection({
                     </SelectTrigger>
                     <SelectContent>
                       {CURRENCY_OPTIONS.map((currency) => (
-                        <SelectItem key={currency.key} value={currency.value}>
+                        <SelectItem key={currency.key} value={currency.key}>
                           {currency.label}
                         </SelectItem>
                       ))}

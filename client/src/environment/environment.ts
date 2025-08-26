@@ -7,7 +7,7 @@ export const environment = {
   UNIT_CONVERSIONS_ENDPOINT: "/unit-conversions/units",
   CRAFTMYPDF_BASE_URL:
     import.meta.env.VITE_CRAFTMYPDF_BASE_URL || "https://api.craftmypdf.com/v1",
-  defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || "USD",
+  defaultCurrency: import.meta.env.VITE_DEFAULT_CURRENCY || "usd",
   TEMPLATE_ID: import.meta.env.VITE_TEMPLATE_ID || "5e177b2393797a28",
   CRAFTMYPDF_API_KEY:
     import.meta.env.VITE_CRAFTMYPDF_API_KEY ||
