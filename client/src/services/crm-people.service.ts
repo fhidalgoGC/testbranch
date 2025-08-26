@@ -68,6 +68,7 @@ export interface GetPeopleOptions {
   page?: number;
   limit?: number;
   sort?: Record<string, "1" | "-1">;
+  search?: string;
 }
 
 /**
@@ -157,7 +158,17 @@ export const getSellers = async (
 export const getBuyers = async (
   options?: GetPeopleOptions,
 ): Promise<CrmPeopleResponse> => {
-  return getPeople({ roles: ["buyer"], active: true }, options);
+  const filters: GetPeopleFilters = { 
+    roles: ["buyer"], 
+    active: true 
+  };
+  
+  // Add search filter if provided
+  if (options?.search) {
+    filters.search = options.search;
+  }
+  
+  return getPeople(filters, options);
 };
 
 /**
