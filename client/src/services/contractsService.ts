@@ -314,7 +314,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
           ...ps,
           pricing_type: ps.pricing_type as "fixed" | "basis",
           basis_operation: ps.basis_operation as "add" | "subtract",
-          payment_currency: ps.payment_currency as "USD" | "MXN",
+          payment_currency: ps.payment_currency,
         })),
         logistic_schedule: (contract.logistic_schedule || []).map((ls) => ({
           ...ls,
@@ -325,7 +325,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
               | "buyer"
               | "seller"
               | "other",
-          payment_currency: ls.payment_currency as "USD" | "MXN",
+          payment_currency: ls.payment_currency,
           freight_cost: {
             ...ls.freight_cost,
             type: ls.freight_cost?.type as "none" | "fixed" | "variable",
