@@ -105,6 +105,23 @@ export function ContractInfoSection({ representativeRole = 'purchase' }: Contrac
   const selectedCommodityId = watch('commodity')?.commodity_id;
   const selectedCommodity = commodities.find(c => c.key === selectedCommodityId);
   
+  // Watch quantity and thresholds to update weights automatically
+  const currentQuantity = watch('quantity');
+  const currentThresholds = watch('thresholds');
+  
+  React.useEffect(() => {
+    if (currentQuantity && currentThresholds) {
+      const minWeight = currentQuantity - (currentQuantity * (currentThresholds.min_thresholds_percentage || 0) / 100);
+      const maxWeight = currentQuantity + (currentQuantity * (currentThresholds.max_thresholds_percentage || 0) / 100);
+      
+      setValue('thresholds', {
+        ...currentThresholds,
+        min_thresholds_weight: minWeight,
+        max_thresholds_weight: maxWeight
+      });
+    }
+  }, [currentQuantity, currentThresholds?.min_thresholds_percentage, currentThresholds?.max_thresholds_percentage, setValue]);
+  
   // Extract subcategory_id from commodity data (original_name_id.subcategory._id)
   // The commodities hook stores the raw data in the 'data' property
   const subcategoryId = selectedCommodity?.data?.original_name_id?.subcategory?._id;
