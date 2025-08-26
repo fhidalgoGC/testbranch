@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
 # Copy package files
 COPY package*.json ./
 
+RUN npm install -g npm@11.5.2
 # Install dependencies
 RUN npm install
 
