@@ -19,18 +19,15 @@ Preferred communication style: Simple, everyday language.
 
 ### Backend
 - **Framework**: Express.js with TypeScript.
-- **Database**: PostgreSQL with Drizzle ORM (via Neon serverless).
 - **Authentication**: Auth0 integration with JWT, refresh, and access token management.
 - **API Structure**: RESTful endpoints (`/api` prefix).
 
 ### Project Structure
 - `client/src/`: Frontend code (components, services, features, pages, locales).
 - `server/`: Backend logic.
-- `shared/`: Shared database schema and types.
 
 ### Key Features & Design Decisions
 - **Authentication**: Auth0 integration for secure login, token management, and protected routes.
-- **Database Layer**: Drizzle ORM for type-safe interactions and managed migrations.
 - **UI System**: Consistent design via Shadcn/ui, responsive layout with Tailwind CSS, and accessible components.
 - **Data Flow**: RTK Query for API calls, Redux for global state, and localStorage for persistent preferences.
 - **Form Management**: Extensive use of React Hook Form and Zod for type-safe and validated inputs.
@@ -45,8 +42,6 @@ Preferred communication style: Simple, everyday language.
 ## External Dependencies
 
 ### Core
-- `@neondatabase/serverless`
-- `drizzle-orm`
 - `@reduxjs/toolkit`
 - `react-hook-form`
 - `zod`
@@ -65,5 +60,4 @@ Preferred communication style: Simple, everyday language.
 
 ### Third-Party Services
 - **Auth0**: User authentication and authorization.
-- **Neon**: Serverless PostgreSQL database.
 - **CRM API**: External CRM system.
