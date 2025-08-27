@@ -14,13 +14,13 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
       <Sidebar />
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         {/* Navigation Bar */}
         <NavBar title={title} />
         
         {/* Content Area */}
-        <main className="flex-1 overflow-auto bg-gray-100/80 dark:bg-gray-900/60">
-          <div className="max-w-7xl mx-auto min-h-0">
+        <main className="flex-1 overflow-y-auto bg-gray-100/80 dark:bg-gray-900/60 min-h-0">
+          <div className="w-full h-full">
             {children}
           </div>
         </main>
