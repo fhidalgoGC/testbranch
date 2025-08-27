@@ -18,6 +18,7 @@ export function useCreateSeller() {
         const jwt = localStorage.getItem('jwt');
         const partitionKey = localStorage.getItem('partition_key');
         
+        console.log('CreateSeller: Calling service to create seller ID');
         const sellerId = await createPersonId();
         setIdempotentSellerId(sellerId);
         setInitializationError(null);
@@ -80,11 +81,13 @@ export function useCreateSeller() {
         active: true,
       };
 
+      console.log("Creating seller with payload:", payload);
 
       const result = await createSeller(idempotentSellerId, payload);
       return result;
     },
     onSuccess: (data) => {
+      console.log("Seller creation mutation successful:", data);
     },
     onError: (error) => {
       console.error("Seller creation mutation failed:", error);

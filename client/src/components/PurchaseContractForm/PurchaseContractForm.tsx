@@ -118,6 +118,7 @@ export function PurchaseContractForm({
 
   // Manejar cancel - solo limpiar state del componente
   const handleCancel = () => {
+    console.log("🧹 PurchaseContractForm: Limpiando form state");
 
     try {
       // Solo limpiar el estado del formulario
@@ -149,9 +150,11 @@ export function PurchaseContractForm({
                 // Use the same function as Submit to generate the exact final JSON
                 const finalJSON = generateContractJSON(formValues);
 
+                console.log(
                   "🔍 DEBUG: Final JSON (same as Submit):",
                   JSON.stringify(finalJSON, null, 2),
                 );
+                console.log("📋 DEBUG: Final JSON Object:", finalJSON);
               }}
               className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
             >
@@ -161,9 +164,11 @@ export function PurchaseContractForm({
               type="button"
               onClick={() => {
                 const formValues = form.getValues();
+                console.log(
                   "📄 FORM STATE (Raw):",
                   JSON.stringify(formValues, null, 2),
                 );
+                console.log("📊 FORM STATE Object:", formValues);
               }}
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
             >
@@ -176,6 +181,9 @@ export function PurchaseContractForm({
       <FormProvider {...form}>
         <form
           onSubmit={(e) => {
+            console.log("📝 FORM submit event triggered");
+            console.log("🔍 Form errors:", form.formState.errors);
+            console.log("🔍 Form is valid:", form.formState.isValid);
             onSubmit(e);
           }}
           className={`space-y-8 ${mode === "view" ? "view-only-form" : ""}`}

@@ -159,6 +159,7 @@ export default function EditSubContract() {
       );
       if (response.ok) {
         const result = await response.json();
+        console.log('🔄 Sub-contracts reloaded after update:', result.data?.length || 0);
         // Dispatch to Redux to update sub-contracts data if needed
       }
     } catch (error) {
@@ -266,7 +267,7 @@ export default function EditSubContract() {
           measurementUnitId: currentSubContract.measurement_unit || 'bu60'
         });
         
-        console.log("Sub-contract data loaded:", {
+        console.log('📝 Form initialized with sub-contract data:', {
           subContractId: currentSubContract._id,
           quantity: currentSubContract.quantity,
           future: currentSubContract.price_schedule?.[0]?.future_price,
@@ -277,7 +278,7 @@ export default function EditSubContract() {
           measurementUnit: currentSubContract.measurement_unit
         });
         
-        console.log("API Data Details:", {
+        console.log('✅ All fields loaded from sub-contract state:', {
           'Future from API': currentSubContract.price_schedule?.[0]?.future_price,
           'Basis from API': currentSubContract.price_schedule?.[0]?.basis,
           'Price from API': currentSubContract.price_schedule?.[0]?.price,
@@ -303,6 +304,7 @@ export default function EditSubContract() {
   
   // Handle form submission
   const onSubmit = (data: SubContractFormData) => {
+    console.log('📝 Form submitted with data:', data);
     setFormDataForSubmission(data);
     setShowConfirmModal(true);
   };
@@ -321,7 +323,7 @@ export default function EditSubContract() {
       // Use the measurement_unit_id from the current sub-contract (it has the correct _id)
       const measurementUnitId = originalSubContract.measurement_unit_id;
       
-      console.log("Measurement unit mapping:", {
+      console.log('🔍 Measurement Unit Debug:', {
         slugFromForm: formDataForSubmission.measurementUnitId,
         idFromSubContract: measurementUnitId,
         originalSubContract: originalSubContract
@@ -355,7 +357,7 @@ export default function EditSubContract() {
         }
       };
       
-      console.log("Update payload:", payload);
+      console.log('🔄 Updating sub-contract with payload:', payload);
       
       // Call update API
       const response = await authenticatedFetch(
@@ -371,6 +373,7 @@ export default function EditSubContract() {
       
       if (response.ok) {
         const result = await response.json();
+        console.log('✅ Sub-contract updated successfully:', result);
         
         // Close modal first
         setShowConfirmModal(false);

@@ -107,6 +107,7 @@ export default function ContractDetail() {
     const shouldRefresh = urlParams.get("refresh") === "true";
 
     if (shouldRefresh && contractId) {
+      console.log("🔄 Refresh parameter detected, triggering full refresh");
       // Limpiar el parámetro de la URL
       const cleanUrl = window.location.pathname;
       window.history.replaceState({}, "", cleanUrl);
@@ -228,6 +229,59 @@ export default function ContractDetail() {
     }
   };
 
+  // Función para refrescar los datos del contrato desde la API
+  const refreshContractData = async (contractId: string) => {
+    try {
+      setRefreshingContract(true);
+      console.log("🔄 Refreshing contract data for ID:", contractId);
+
+      const authCheck = hasAuthTokens();
+      if (!authCheck.isAuthenticated) {
+        console.error(
+          "❌ No authentication tokens available for contract refresh",
+        );
+        return;
+      }
+
+      // Call the contract detail endpoint using the service
+      const response = await getContractById(contractId);
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("✅ Contract data refreshed successfully:", result);
+
+        if (result.data) {
+          // Update the current contract data immediately
+          setCurrentContractData(result.data);
+          console.log("🔄 Updated contract data in local state");
+
+          // Reload related data
+          const seller = result.data.participants?.find(
+            (p: any) => p.role === "seller",
+          );
+          if (seller && seller.people_id) {
+            loadParticipantAddress(seller.people_id);
+          }
+
+          // Reload sub-contracts if it's a basis contract
+          if (result.data.price_schedule?.[0]?.pricing_type === "basis") {
+            loadSubContracts(contractId);
+          }
+        }
+      } else {
+        console.error(
+          "❌ Failed to refresh contract data:",
+          response.status,
+          response.statusText,
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error refreshing contract data:", error);
+    } finally {
+      setRefreshingContract(false);
+    }
+  };
+
   // Función completa de refresh con overlay de pantalla completa y mínimo 0.3 segundos
   const handleFullRefresh = async () => {
     if (!contractId) return;
@@ -237,9 +291,11 @@ export default function ContractDetail() {
     const startTime = Date.now();
 
     try {
+      console.log("🔄 Full refresh started for contract:", contractId);
 
       const authCheck = hasAuthTokens();
       if (!authCheck.isAuthenticated) {
+        console.error("❌ No authentication tokens available for full refresh");
         return;
       }
 
@@ -254,11 +310,14 @@ export default function ContractDetail() {
       // Procesar respuesta del contrato principal
       if (contractResponse.ok) {
         const contractResult = await contractResponse.json();
+        console.log("✅ Contract data refreshed successfully:", contractResult);
 
         if (contractResult.data) {
           setCurrentContractData(contractResult.data);
+          console.log("🔄 Updated contract data in local state");
 
           // Solo log para confirmar que tenemos los datos actualizados
+          console.log("✅ Contract data refreshed and set in local state:", {
             contractId,
             folio: contractResult.data.folio,
             oldQuantity: currentContractData?.quantity,
@@ -288,11 +347,13 @@ export default function ContractDetail() {
       // Procesar respuesta de sub-contratos
       if (subContractsResponse.ok) {
         const subContractsResult = await subContractsResponse.json();
+        console.log(
           "✅ Sub-contracts data refreshed successfully:",
           subContractsResult,
         );
 
         if (subContractsResult.data && Array.isArray(subContractsResult.data)) {
+          console.log(
             `✅ ${subContractsResult.data.length} sub-contratos refrescados exitosamente`,
           );
 
@@ -347,6 +408,7 @@ export default function ContractDetail() {
               const reserved = item.inventory?.reserved || 0;
               const unreserved = quantity - reserved;
 
+              console.log("🔍 Sub-contract measurement unit debug:", {
                 item_id: item._id,
                 measurement_unit: item.measurement_unit,
                 measurement_unit_id: item.measurement_unit_id,
@@ -416,6 +478,7 @@ export default function ContractDetail() {
 
       // Quitar el loading de pantalla completa
       setFullScreenLoading(false);
+      console.log("✅ Full refresh completed");
     }
   };
 
@@ -427,6 +490,7 @@ export default function ContractDetail() {
     const startTime = Date.now();
 
     try {
+      console.log("🗑️ Deleting contract:", contractId);
 
       const authCheck = hasAuthTokens();
       if (!authCheck.isAuthenticated) {
@@ -440,6 +504,7 @@ export default function ContractDetail() {
       const response = await deleteContract(contractId);
 
       if (response.ok) {
+        console.log("✅ Contract deleted successfully");
 
         // Calculate elapsed time and ensure minimum duration of 0.3 seconds
         const elapsedTime = Date.now() - startTime;
@@ -476,8 +541,10 @@ export default function ContractDetail() {
     const startTime = Date.now();
 
     try {
+      console.log("🗑️ Deleting sub-contract:", selectedSubContractForDelete.id);
 
       await deleteSubContract(selectedSubContractForDelete.id);
+      console.log("✅ Sub-contract deleted successfully");
 
       // Calculate elapsed time and ensure minimum duration of 0.3 seconds
       const elapsedTime = Date.now() - startTime;
@@ -532,11 +599,13 @@ export default function ContractDetail() {
 
     try {
       const contractId = currentContractData.id || currentContractData._id;
+      console.log("✅ Settling parent contract:", contractId);
 
       // Llamar al servicio para liquidar contrato padre
       const response = await settleParentContract(contractId);
 
       if (response.ok) {
+        console.log("✅ Contrato padre liquidado exitosamente");
 
         // Solo cerrar modal y refrescar si es exitoso
         setShowSettleContractModal(false);
@@ -591,11 +660,13 @@ export default function ContractDetail() {
     const startTime = Date.now();
 
     try {
+      console.log("✅ Settling sub-contract:", selectedSubContractForSettle.id);
 
       // Llamar al servicio para liquidar sub-contrato
       const response = await settleSubContract(selectedSubContractForSettle.id);
 
       if (response.ok) {
+        console.log("✅ Sub-contract settled successfully");
 
         // Solo cerrar modal y refrescar si es exitoso
         setShowSettleSubContractModal(false);
@@ -803,6 +874,7 @@ export default function ContractDetail() {
 
   // Función para manejar impresión del contrato padre
   const handlePrintContract = async () => {
+    console.log("🖨️ Print contract:", currentContractData?.folio);
 
     if (!currentContractData) {
       console.error("❌ No contract data available for printing");
@@ -818,6 +890,7 @@ export default function ContractDetail() {
       // Mapear datos del contrato a formato JSON para imprimir
       const printData = mapContractDataForPrint(currentContractData);
 
+      console.log(
         "📄 Mapped contract data for printing:",
         JSON.stringify(printData, null, 2),
       );
@@ -835,6 +908,7 @@ export default function ContractDetail() {
 
   // Función para manejar impresión de sub-contrato
   const handlePrintSubContract = (subContractId: string) => {
+    console.log("🖨️ Print sub-contract:", subContractId);
 
     // Set loading state
     setPrintingSubContractId(subContractId);
@@ -845,6 +919,7 @@ export default function ContractDetail() {
     );
     if (!subContract) {
       console.error("❌ Sub-contrato no encontrado:", subContractId);
+      console.log(
         "🔍 Sub-contratos disponibles:",
         subContractsData.map((sc) => ({
           _id: sc._id,
@@ -855,14 +930,24 @@ export default function ContractDetail() {
       return;
     }
 
+    console.log("🔍 DEBUG subContract encontrado:", subContract);
+    console.log("🔍 DEBUG subContract.quantity:", subContract.quantity);
+    console.log(
       "🔍 DEBUG subContract.price_schedule:",
       subContract.price_schedule,
     );
+    console.log("🔍 DEBUG subContract.commodity:", subContract.commodity);
 
     // DEBUG: Verificar los valores que se van a usar en el mapping
+    console.log("🔍 Valores para mapping:");
+    console.log("  - quantity:", subContract.quantity);
+    console.log("  - price:", subContract.price_schedule[0].price);
+    console.log("  - basis:", subContract.price_schedule[0].basis);
+    console.log(
       "  - future_price:",
       subContract.price_schedule[0].future_price,
     );
+    console.log("  - commodity name:", currentContractData?.commodity?.name);
 
     // Crear el JSON para impresión usando SOLO datos del sub-contrato
     const printData = {
@@ -1021,11 +1106,19 @@ export default function ContractDetail() {
       postaction_s3_bucket: "string",
     };
 
+    console.log(
       "🔍 DEBUG price mapeados:",
       subContract.price_schedule[0].price,
     );
 
+    console.log("🔍 DEBUG valores finales mapeados:");
+    console.log("  - quantityUnits:", printData.data.quantityUnits);
+    console.log("  - contractPrice:", printData.data.contractPrice);
+    console.log("  - contractBasis:", printData.data.contractBasis);
+    console.log("  - contractFuture:", printData.data.contractFuture);
 
+    console.log("🖨️ PRINT DATA JSON:", JSON.stringify(printData, null, 2));
+    console.log("🖨️ Sub-contrato a imprimir:", subContract);
 
     // Llamar al servicio centralizado para generar el PDF
     handleGenerateAndDownloadPDF(
@@ -1058,8 +1151,10 @@ export default function ContractDetail() {
       setLoadingSubContracts(true);
 
       const authCheck = hasAuthTokens();
+      console.log("🔐 Auth check para sub-contratos:", authCheck);
 
       if (!authCheck.isAuthenticated) {
+        console.log(
           "🔐 Sin autenticación válida - no se cargarán sub-contratos",
         );
         setSubContractsData([]);
@@ -1069,14 +1164,18 @@ export default function ContractDetail() {
       // Usar el servicio para obtener sub-contratos
       const response = await getSubContractsByContractId(contractId);
 
+      console.log("📡 Response status:", response.status);
+      console.log(
         "📡 Response headers:",
         Object.fromEntries(response.headers.entries()),
       );
 
       if (response.ok) {
         const data = await response.json();
+        console.log("📋 Sub-contratos response:", data);
 
         if (data.data && Array.isArray(data.data)) {
+          console.log(
             `✅ ${data.data.length} sub-contratos cargados exitosamente`,
           );
 
@@ -1157,6 +1256,7 @@ export default function ContractDetail() {
 
           setSubContractsData(transformedData);
         } else {
+          console.log("⚠️ Respuesta exitosa pero sin datos de sub-contratos");
           setSubContractsData([]);
         }
       } else {
@@ -1182,6 +1282,7 @@ export default function ContractDetail() {
     const shouldRefresh = urlParams.get("refresh") === "true";
 
     if (shouldRefresh && contractId) {
+      console.log(
         "🔄 Refresh parameter detected from sub-contract creation, triggering full refresh",
       );
       handleFullRefresh();
@@ -1200,11 +1301,13 @@ export default function ContractDetail() {
       setLoading(true);
       setError(null);
       
+      console.log("🔄 Loading contract from API:", contractId);
       
       const response = await getContractById(contractId);
       
       if (response.ok) {
         const result = await response.json();
+        console.log("✅ Contract loaded from API:", result.data?.folio);
         
         if (result.data) {
           setCurrentContractData(result.data);
@@ -1242,9 +1345,14 @@ export default function ContractDetail() {
       return;
     }
 
+    console.log("=== EFFECT DE BÚSQUEDA EJECUTADO ===");
+    console.log("Contract ID:", contractId);
+    console.log("Current contract data:", currentContractData?.folio || "none");
+    console.log("Contracts Data Length:", contractsData.length);
 
     // Si ya tenemos los datos del contrato (después de refresh), no hacer nada
     if (currentContractData && currentContractData._id === contractId) {
+      console.log("✅ Usando datos locales del contrato:", currentContractData.folio);
       setLoading(false);
       setError(null);
       return;
@@ -1252,11 +1360,13 @@ export default function ContractDetail() {
 
     // Intentar buscar en Redux
     if (contractsData.length > 0) {
+      console.log("Buscando contrato con ID:", contractId);
       const foundContract = contractsData.find(
         (contract: any) => contract._id === contractId,
       );
 
       if (foundContract) {
+        console.log("✅ Contrato ENCONTRADO en Redux:", foundContract.folio);
         setCurrentContractData(foundContract);
         setLoading(false);
         setError(null);
@@ -1278,7 +1388,9 @@ export default function ContractDetail() {
     }
 
     // Si no se encontró en Redux, cargar desde API
+    console.log("❌ Contrato no encontrado en Redux, cargando desde API");
     loadContractFromAPI();
+    console.log("=== FIN EFFECT ===");
   }, [contractId, contractsData, currentContractData]);
 
   // Efecto para persistir cambios de tab activo
@@ -1531,6 +1643,7 @@ export default function ContractDetail() {
                       <Button
                         size="sm"
                         onClick={() => {
+                          console.log("Ver contrato completo:", contractId);
                           setLocation(`/${contractType}-contracts/${contractId}/view`);
                         }}
                         className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
@@ -1699,6 +1812,7 @@ export default function ContractDetail() {
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
                         {(() => {
+                          console.log(
                             "🔍 DEBUG THRESHOLDS:",
                             currentContractData?.thresholds,
                           );
@@ -1708,6 +1822,7 @@ export default function ContractDetail() {
                           const maxValue =
                             currentContractData?.thresholds
                               ?.max_thresholds_weight || 0;
+                          console.log("📊 Min/Max values:", {
                             minValue,
                             maxValue,
                           });
@@ -1793,9 +1908,11 @@ export default function ContractDetail() {
                         {(() => {
                           const refNumber =
                             currentContractData?.reference_number;
+                          console.log(
                             "🔍 Reference Number from API:",
                             refNumber,
                           );
+                          console.log(
                             "🔍 Full contract data:",
                             currentContractData,
                           );
@@ -2052,6 +2169,7 @@ export default function ContractDetail() {
                 );
               }}
               onViewSubContract={(id) => {
+                console.log("View sub-contract:", id);
                 handleNavigateToPage("viewSubContract", id);
 
                 // Encontrar el sub-contrato específico
@@ -2086,6 +2204,7 @@ export default function ContractDetail() {
               onPrintSubContract={handlePrintSubContract}
               printingSubContractId={printingSubContractId}
               onEditSubContract={(id) => {
+                console.log("Edit sub-contract:", id);
 
                 // Encontrar el sub-contrato específico
                 const subContractToEdit = subContractsData.find(

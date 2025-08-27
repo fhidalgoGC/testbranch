@@ -20,6 +20,7 @@ export function useSellers(params: UseSellersParams = {}) {
   );
   const [searchValue, setSearchValue] = useState(params.search || "");
 
+  console.log("seller----");
   const buildQueryOptions = useCallback(() => {
     // Build sort object
     const sort = {
@@ -63,6 +64,7 @@ export function useSellers(params: UseSellersParams = {}) {
           },
         };
 
+        console.log("Sellers hook - Transformed result:", transformedResult);
         return transformedResult;
       } catch (error) {
         console.error("Sellers hook - Query error:", error);

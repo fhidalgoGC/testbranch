@@ -20,6 +20,7 @@ export default function Home() {
   
   // Notificar navegación jerárquica al cargar la página
   useEffect(() => {
+    console.log('🔄 HOME PAGE: Cargando dashboard y ejecutando navegación jerárquica');
     handleNavigateToPage('dashboard');
   }, []);
 

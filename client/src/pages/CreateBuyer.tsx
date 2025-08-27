@@ -183,6 +183,7 @@ export default function CreateBuyer() {
         selectedCity,
       };
       
+      console.log('CreateBuyer: Submitting form with location data:', formDataWithLocation);
       await createBuyer(formDataWithLocation);
       
       // Show success modal
@@ -481,6 +482,7 @@ export default function CreateBuyer() {
                       <CountrySelector
                         value={selectedCountry ? (i18n.language === 'es' ? selectedCountry.names.es : selectedCountry.names.en) : ''}
                         onChange={(country) => {
+                          console.log('CreateBuyer: Country change triggered:', country ? {
                             name: i18n.language === 'es' ? country.names.es : country.names.en,
                             slug: country.slug,
                             hasFlag: !!country.flag
@@ -495,6 +497,7 @@ export default function CreateBuyer() {
                           setSelectedCity(null);
                           
                           if (country) {
+                            console.log('CreateBuyer: Updated selectedCountry state, reset selectedState');
                           }
                         }}
                         placeholder={t('countrySelect')}
@@ -516,6 +519,7 @@ export default function CreateBuyer() {
                         value={selectedState ? normalizeText(selectedState.name) : ''}
                         selectedCountry={selectedCountry}
                         onChange={(state) => {
+                          console.log('CreateBuyer: State change triggered:', state ? {
                             name: state.name,
                             code: state.code,
                             countrySlug: state.country_slug
@@ -528,6 +532,7 @@ export default function CreateBuyer() {
                           setSelectedCity(null);
                           
                           if (state) {
+                            console.log('CreateBuyer: Updated selectedState, reset selectedCity');
                           }
                         }}
                         placeholder={t('stateSelect')}
@@ -555,6 +560,7 @@ export default function CreateBuyer() {
                         selectedState={selectedState}
                         selectedCity={selectedCity}
                         onCityChange={(city) => {
+                          console.log('CreateBuyer: City change triggered:', city ? {
                             name: city.name,
                             id: city._id,
                             countrySlug: city.country_slug,
@@ -564,6 +570,7 @@ export default function CreateBuyer() {
                           setSelectedCity(city);
                           
                           if (city) {
+                            console.log('CreateBuyer: Updated selectedCity');
                           }
                         }}
                         disabled={!selectedCountry || !selectedState}

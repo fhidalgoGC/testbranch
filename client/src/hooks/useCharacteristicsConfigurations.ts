@@ -43,6 +43,7 @@ export function useCharacteristicsConfigurations({
       const idToken = localStorage.getItem('id_token');
       const partitionKey = localStorage.getItem('partition_key');
       
+      console.log('Available tokens:', {
         hasAccessToken: !!accessToken,
         hasIdToken: !!idToken,
         hasPartition: !!partitionKey,
@@ -54,12 +55,14 @@ export function useCharacteristicsConfigurations({
       const authToken = idToken || accessToken;
       
       if (!authToken || !partitionKey) {
+        console.log('No auth data available for characteristics configurations:', { 
           hasAuthToken: !!authToken, 
           hasPartition: !!partitionKey 
         });
         return [];
       }
       
+      console.log('Auth data for characteristics configurations:', {
         tokenType: idToken ? 'id_token' : 'access_token',
         tokenLength: authToken.length,
         partitionKey: partitionKey
@@ -67,6 +70,9 @@ export function useCharacteristicsConfigurations({
 
       const url = `https://ssm-develop.grainchain.io/silosys-service/api/v1/chars-configs/summary?commodity_id=${commodityId}&subcategory_id=${subcategoryId}`;
       
+      console.log('Characteristics configurations URL:', url);
+      console.log('Making request with token:', authToken.substring(0, 50) + '...');
+      console.log('Making request with partition:', partitionKey);
 
       const response = await fetch(url, {
         method: 'GET',
@@ -102,6 +108,7 @@ export function useCharacteristicsConfigurations({
 
       const result: CharacteristicsConfigurationResponse = await response.json();
       
+      console.log('Raw characteristics configurations from API:', result.data);
 
       // Map to standardized structure
       const mappedConfigurations = result.data.map((config: CharacteristicsConfigurationData) => ({
@@ -110,6 +117,7 @@ export function useCharacteristicsConfigurations({
         label: config.name
       }));
 
+      console.log('Mapped characteristics configurations for UI:', mappedConfigurations);
 
       return mappedConfigurations;
     },

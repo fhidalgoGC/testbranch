@@ -79,9 +79,12 @@ export function useCities() {
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchCities = useCallback(async (params: CitiesParams) => {
+    console.log('Cities API: Triggering fetch due to parameter change');
+    console.log('Cities API: Starting fetch with params:', params);
 
     // Validate required parameters
     if (!params.countrySlug || !params.stateId) {
+      console.log('Cities API: Missing required params (countrySlug or stateId), clearing cities');
       setCities([]);
       setMeta(null);
       setFetchError(null);
@@ -133,11 +136,15 @@ export function useCities() {
       });
 
       const url = `${baseUrl}${endpoint}?${queryParams.toString()}`;
+      console.log('Cities API: Making request to:', url);
+      console.log('Cities API: Filter configuration:', JSON.stringify(filter));
+      console.log('Cities API: Sort configuration:', JSON.stringify(sort));
 
       // Check for authentication tokens
       const jwt = localStorage.getItem('jwt_token');
       const partitionKey = localStorage.getItem('partition_key');
 
+      console.log('Cities API: Authentication check:', {
         jwt: jwt ? 'present' : 'missing',
         jwtLength: jwt?.length || 0,
         partitionKey: partitionKey ? 'present' : 'missing',
@@ -145,6 +152,7 @@ export function useCities() {
       });
 
       // Always try real API call first
+      console.log('Cities API: Making real API call with headers:', Object.keys({
         'Content-Type': 'application/json',
         'Authorization': jwt ? `Bearer ${jwt}` : 'Bearer demo-token',
         'X-Partition-Key': partitionKey || 'demo-partition'
@@ -160,6 +168,7 @@ export function useCities() {
         signal: abortController.signal
       });
 
+      console.log('Cities API: Response status:', response.status);
 
       if (!response.ok) {
         console.error('Cities API: HTTP error! status:', response.status);
@@ -205,7 +214,9 @@ export function useCities() {
       }
 
       const data: CitiesResponse = await response.json();
+      console.log('Cities API: Success response with', data.data.length, 'cities');
       if (data.data.length > 0) {
+        console.log('Cities API: Sample city:', data.data[0]);
       }
       
       setCities(data.data);
@@ -214,6 +225,7 @@ export function useCities() {
 
     } catch (error: any) {
       if (error.name === 'AbortError') {
+        console.log('Cities API: Request was aborted');
         return;
       }
 
@@ -276,6 +288,7 @@ export function useCities() {
   }, []);
 
   const clearCities = useCallback(() => {
+    console.log('Cities API: Manually clearing cities');
     setCities([]);
     setMeta(null);
     setFetchError(null);

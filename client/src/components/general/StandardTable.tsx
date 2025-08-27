@@ -359,6 +359,7 @@ export function GenericTable<T = any>({
   };
 
   // Debug: Log pagination info
+  console.log('🔢 PAGINACIÓN DEBUG - currentTotalElements:', currentTotalElements, 'currentTotalPages:', currentTotalPages, 'pageSize:', pageSize, 'currentPage:', currentPage);
 
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {

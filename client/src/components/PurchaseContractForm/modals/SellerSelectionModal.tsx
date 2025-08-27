@@ -34,6 +34,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
   // Load sellers when modal opens - always fresh data
   useEffect(() => {
     if (isOpen) {
+      console.log('🔄 SellerModal: Modal opened, loading fresh data...');
       // Reset state immediately when modal opens
       setLoading(true);
       setSellers([]);
@@ -65,6 +66,7 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
   const loadSellers = async (page: number = 1, reset: boolean = false) => {
     try {
       const participantType = contractType === "sale" ? "buyers" : "sellers";
+      console.log(`🚀 SellerModal: Loading ${participantType} - Page ${page}, Reset: ${reset}`);
       
       if (!reset) {
         setLoadingMore(true);
@@ -75,6 +77,8 @@ export const SellerSelectionModal: React.FC<SellerSelectionModalProps> = ({
       const response = contractType === "sale" 
         ? await getBuyers({ page, limit: 5 })
         : await getSellers({ page, limit: 5 });
+      console.log(`✅ SellerModal: Loaded ${response.data.length} ${participantType}`);
+      console.log(`📊 SellerModal: Pagination - Page ${response._meta.page_number}/${response._meta.total_pages}, Total: ${response._meta.total_elements}`);
       
       if (reset) {
         setSellers(response.data);

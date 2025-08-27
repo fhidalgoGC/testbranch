@@ -119,6 +119,7 @@ export default function CreateSubContract() {
   const fetchSubContractKey = async () => {
     // Skip if key already exists
     if (subContractKey) {
+      console.log('🔑 Sub-contract key already exists:', subContractKey);
       return;
     }
     
@@ -127,6 +128,7 @@ export default function CreateSubContract() {
       const keyResponse = await SubContractService.getSubContractKey();
       
       setSubContractKey(keyResponse.key);
+      console.log('🔑 Sub-contract key set:', keyResponse.key);
       
       // Save the key to Redux state for persistence and debug visibility
       updateState({ subContractKey: keyResponse.key });
@@ -223,8 +225,22 @@ export default function CreateSubContract() {
   
   // Debug measurement units loading
   useEffect(() => {
+    console.log('🔍 Measurement Units Debug:');
+    console.log('- Loading:', loadingUnits);
+    console.log('- Error:', unitsError);
+    console.log('- Data:', measurementUnits);
+    console.log('- Count:', measurementUnits.length);
+    console.log('🔍 Parent Contract measurement_unit_id:', parentContractData?.measurement_unit_id);
+    console.log('🔍 Parent Contract measurement_unit:', parentContractData?.measurement_unit);
     
     // Debug form default values
+    console.log('📝 Form Default Values Debug:');
+    console.log('- Today date:', new Date().toISOString().split('T')[0]);
+    console.log('- Open inventory:', parentContractData?.inventory?.open);
+    console.log('- Contract contract_date:', parentContractData?.contract_date);
+    console.log('- All parent contract keys:', parentContractData ? Object.keys(parentContractData) : 'No parent data');
+    console.log('- Contract created_at:', parentContractData?.created_at);
+    console.log('- Min date for picker:', parentContractData?.contract_date ? new Date(parentContractData.contract_date) : new Date());
   }, [measurementUnits, loadingUnits, unitsError, parentContractData]);
   
   // Get open inventory for validation
@@ -284,6 +300,7 @@ export default function CreateSubContract() {
         };
         
         updateState({ formData });
+        console.log('💾 Auto-saved form data to Redux:', formData);
       }, 300); // 300ms debounce
       
       return () => clearTimeout(timeoutId);
@@ -303,6 +320,9 @@ export default function CreateSubContract() {
       contractNumber: parentContractData?.folio || 'SPC-46'
     };
     
+    console.log('📋 Form submission data:', data);
+    console.log('📋 Redux state data:', stateFormData);
+    console.log('📋 Merged data for modal:', mergedData);
     
     // Store merged data for submission and open confirmation modal
     setFormDataForSubmission(mergedData);
@@ -364,6 +384,8 @@ export default function CreateSubContract() {
         }
       };
       
+      console.log('🔗 Parent Contract ID from route:', contractId);
+      console.log('🔗 Parent Contract Data ID:', parentContractData?._id);
       
       // Make API call to create sub-contract using the service
       if (!subContractKey) {

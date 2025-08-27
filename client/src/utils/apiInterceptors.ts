@@ -129,6 +129,8 @@ export const authenticatedFetch = (
       const createdById = localStorage.getItem("user_id") || "";
       const createdByName = localStorage.getItem("user_name") || "";
 
+      console.log(createdById);
+      console.log(createdByName);
 
       // Si hay un body existente, parsearlo y agregar los campos
       if (modifiedOptions.body) {

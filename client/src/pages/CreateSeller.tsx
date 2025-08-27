@@ -205,9 +205,9 @@ export default function CreateSeller() {
         ...data,
         address,
         postalCode,
-        selectedCountry: selectedCountry || undefined,
-        selectedState: selectedState || undefined,
-        selectedCity: selectedCity || undefined,
+        selectedCountry,
+        selectedState,
+        selectedCity,
       };
 
       console.log(
@@ -664,6 +664,7 @@ export default function CreateSeller() {
                           setSelectedCity(city);
 
                           if (city) {
+                            console.log("CreateSeller: Updated selectedCity");
                           }
                         }}
                         disabled={!selectedCountry || !selectedState}

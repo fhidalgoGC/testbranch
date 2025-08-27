@@ -96,6 +96,7 @@ export function StateSelector({
 
   // Handle state selection
   const handleStateSelect = (state: State) => {
+    console.log('StateSelector: State selected:', {
       name: state.name,
       code: state.code,
       countrySlug: state.country_slug

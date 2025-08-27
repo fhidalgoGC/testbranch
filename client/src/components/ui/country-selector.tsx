@@ -76,6 +76,7 @@ export function CountrySelector({ value, onChange, placeholder, disabled, error 
 
   // Handle country selection
   const handleCountrySelect = (country: Country) => {
+    console.log('CountrySelector: Country selected:', {
       name: getCountryDisplayName(country),
       slug: country.slug,
       hasFlag: !!country.flag,

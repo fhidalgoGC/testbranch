@@ -37,6 +37,7 @@ export default function ViewContract() {
       );
       
       if (foundContract) {
+        console.log('📄 CONTRACT VIEW: Contrato encontrado', foundContract);
         setContractData(foundContract);
       } else {
         console.warn('⚠️ CONTRACT VIEW: Contrato no encontrado en Redux');

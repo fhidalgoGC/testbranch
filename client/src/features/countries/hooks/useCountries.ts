@@ -41,9 +41,11 @@ export function useCountries({
       const sort = JSON.stringify({ [sortKey]: 1 });
       url += `&sort=${encodeURIComponent(sort)}`;
 
+      console.log('Countries API: Making request to:', url);
 
       // Check if we're in demo mode
       if (jwt === 'demo-jwt-token-for-testing') {
+        console.log('Countries API: Demo mode - returning mock data');
         
         // Simulate delay
         await new Promise(resolve => setTimeout(resolve, 300));
@@ -238,7 +240,9 @@ export function useCountries({
           }
         ];
 
+        console.log('Countries API: Demo mode loaded', mockCountries.length, 'countries with flags');
         mockCountries.forEach(country => {
+          console.log(`Country ${country.names.en}: flag source type:`, {
             slug: country.slug,
             hasFlag: !!country.flag,
             flagType: country.flag ? (country.flag.startsWith('data:') ? 'base64' : country.flag.startsWith('http') ? 'url' : 'asset') : 'none'
@@ -286,6 +290,7 @@ export function useCountries({
 
       const data: CountryApiResponse = await response.json();
       
+      console.log('Countries API: Success, received', data.data.length, 'countries');
       
       return data;
     },

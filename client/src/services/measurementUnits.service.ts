@@ -25,6 +25,7 @@ export class MeasurementUnitsService {
     try {
       const url = this.buildUrl();
 
+      console.log('Fetching measurement units from:', url);
 
       const response = await authenticatedFetch(url, {
         method: 'GET'
@@ -35,6 +36,7 @@ export class MeasurementUnitsService {
       }
 
       const data = await response.json();
+      console.log('Measurement units response:', data);
 
       // Handle response structure - could be direct array or wrapped in data property
       const units = data.data ? data.data : (Array.isArray(data) ? data : []);

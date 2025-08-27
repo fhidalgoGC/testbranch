@@ -78,6 +78,7 @@ export default function Sidebar() {
                       : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 hover:text-gray-900 dark:hover:text-gray-100"
                   )}
                   onClick={(e) => {
+                    console.log(`🔄 SIDEBAR CLICK: Navegando de ${location} a ${item.path} (${item.key})`);
                     
                     // Ejecutar navegación jerárquica inmediatamente
                     handleNavigateToPage(item.key);

@@ -29,18 +29,22 @@ export default function CreatePurchaseContract() {
 
   // Función para manejar cancelación - solo navegar
   const handleCancel = () => {
+    console.log("🧹 CreatePurchaseContract: Navegando a purchase-contracts");
     setLocation("/purchase-contracts");
   };
 
   // Función para manejar submit del contrato
   const handleSubmitContract = async (contractId:string,contractData: any) => {
+    console.log("que paso", contractId);
     if (!contractId) {
       throw new Error("No contract ID available");
     }
 
+    console.log("📝 CreatePurchaseContract: Submitting contract", contractId);
     const result = await submitContract(contractId, contractData);
 
     if (result.success) {
+      console.log("✅ Contract submitted successfully:", result.data);
       
       // Extract folio from response
       const folio = result.data?.folio || result.data?.data?.folio || contractId;

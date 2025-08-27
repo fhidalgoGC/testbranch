@@ -42,6 +42,7 @@ i18n
     joinArrays: false,
     saveMissing: false,
     parseMissingKeyHandler: (key: string) => {
+      console.log('🔑 Missing i18n key:', key);
       return key;
     }
   });

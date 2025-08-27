@@ -62,6 +62,7 @@ export function CitySelector({
 
   // Effect to trigger API calls when dependencies change
   useEffect(() => {
+    console.log('CitySelector: Dependencies changed:', {
       countrySlug: selectedCountry?.slug,
       stateId: selectedState?._id,
       searchTerm,
@@ -71,6 +72,7 @@ export function CitySelector({
     });
 
     if (!selectedCountry?.slug || !selectedState?._id) {
+      console.log('CitySelector: Missing country or state, clearing cities');
       clearCities();
       onCityChange(null);
       return;
@@ -96,6 +98,7 @@ export function CitySelector({
     const stateChanged = prevStateRef.current !== selectedState?._id;
     
     if ((countryChanged || stateChanged) && (prevCountryRef.current !== undefined || prevStateRef.current !== undefined)) {
+      console.log('CitySelector: Country or state actually changed, clearing city:', {
         country: selectedCountry?.slug,
         state: selectedState?._id,
         countryChanged,
@@ -109,6 +112,7 @@ export function CitySelector({
   }, [selectedCountry?.slug, selectedState?._id, onCityChange]);
 
   const handleCitySelect = (city: City) => {
+    console.log('CitySelector: City selected:', city);
     onCityChange(city);
     setIsOpen(false);
   };

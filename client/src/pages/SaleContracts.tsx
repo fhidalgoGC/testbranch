@@ -123,6 +123,9 @@ export default function SaleContracts() {
 
   // Debug: Log commodity data
   useEffect(() => {
+    console.log("Commodities data:", commodities);
+    console.log("Commodities loading:", commoditiesLoading);
+    console.log("Commodities error:", commoditiesError);
   }, [commodities, commoditiesLoading, commoditiesError]);
 
   // Crear filtros de commodity basados en los datos reales
@@ -141,6 +144,7 @@ export default function SaleContracts() {
 
   // Debug: Log commodity filters
   useEffect(() => {
+    console.log("Commodity filters:", commodityFilters);
   }, [commodityFilters]);
 
   // Función de fetch de datos usando el servicio centralizado
@@ -161,7 +165,8 @@ export default function SaleContracts() {
       // Aplicar filtros seleccionados
       const filters = selectedFilters;
 
-      console.log("Fetch params:", {
+      console.log("📤 ENVIANDO AL ENDPOINT - Filtros:", filters);
+      console.log("📤 ENVIANDO AL ENDPOINT - Parámetros completos:", {
         ...params,
         filters,
       });
@@ -264,6 +269,7 @@ export default function SaleContracts() {
         };
 
         await handleFetchContractsData(basicParams);
+        console.log("✅ Tabla recargada con filtros actualizados");
       }
     };
 
@@ -272,7 +278,8 @@ export default function SaleContracts() {
 
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {
-    console.log("Toggle filter:", filterKey, value);
+    console.log("🔄 TOGGLE FILTER:", filterKey, "Value:", value);
+    console.log("Current filters before toggle:", selectedFilters);
 
     setPageStateData((prev) => {
       const currentFilters = prev.selectedFilters;
@@ -320,6 +327,7 @@ export default function SaleContracts() {
           newValues = [...newValues, value];
         }
 
+        console.log("📦 COMMODITY - New values:", newValues);
         return {
           ...prev,
           selectedFilters: { ...currentFilters, [filterKey]: newValues },
@@ -335,6 +343,7 @@ export default function SaleContracts() {
         : [value];
 
       const newFilters = { ...currentFilters, [filterKey]: newValues };
+      console.log("📋 Final filter result:", newFilters);
       return { ...prev, selectedFilters: newFilters };
     });
     setCurrentPage(1);
@@ -537,10 +546,16 @@ export default function SaleContracts() {
               size="sm"
               variant="outline"
               onClick={() => {
+                console.log("=== ESTADO DE LA PÁGINA (TABLE DATA) ===");
+                console.log("Contracts:", tableData.contracts);
+                console.log("Total Elements:", tableData.totalElements);
+                console.log("Current Page:", tableData.currentPage);
+                console.log("Filters:", tableData.filters);
                 console.log(
                   "Total contracts in state:",
                   tableData.contracts.length,
                 );
+                console.log("==========================================");
               }}
             >
               Debug Table
@@ -549,10 +564,13 @@ export default function SaleContracts() {
               size="sm"
               variant="outline"
               onClick={() => {
+                console.log("=== ESTADO JSON DE PURCHASECONTRACTS ===");
                 console.group("📋 Selected Filters");
+                console.log(pageStateData.selectedFilters);
                 console.groupEnd();
 
                 console.group("📄 Contracts Summary");
+                console.log("Total contracts:", pageStateData.contracts.length);
 
                 // Mostrar solo información básica de los contratos
                 const contractsSummary = pageStateData.contracts.map(
@@ -566,15 +584,17 @@ export default function SaleContracts() {
                   }),
                 );
 
+                console.log("Contracts (basic info):", contractsSummary);
                 console.groupEnd();
 
                 console.group("🔗 Full JSON Structure (collapsed)");
-                console.log("Page State Data:", {
+                console.log("Complete state structure:", {
                   selectedFilters: pageStateData.selectedFilters,
                   contracts: `[${pageStateData.contracts.length} contracts - expand to see full data]`,
                   contractsFullData: pageStateData.contracts,
                 });
                 console.groupEnd();
+                console.log("========================================");
               }}
               className="bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
             >
@@ -588,6 +608,7 @@ export default function SaleContracts() {
                   "🆔 Generating contract ID before navigation...",
                 );
                 const contractIdGenerated = await generateContractId();
+                console.log(contractIdGenerated);
                 if (contractIdGenerated) {
                   console.log(
                     "✅ Contract ID generated successfully:",
@@ -724,6 +745,7 @@ export default function SaleContracts() {
             handleFetchContractsData(newParams);
           }}
           onSortChange={(sort) => {
+            console.log("🔧 SORT CHANGE - Sort recibido:", sort);
             const newParams = {
               page: 1,
               pageSize: tableParams.limit,
@@ -738,6 +760,7 @@ export default function SaleContracts() {
               key: "view",
               labelKey: "view",
               action: (contract: PurchaseSaleContract) => {
+                console.log("Ver contrato de venta:", contract._id);
                 handleNavigateToPage("contractDetail", contract._id);
                 setLocation(`/sale-contracts/${contract._id}`);
               },
@@ -746,6 +769,7 @@ export default function SaleContracts() {
               key: "edit",
               labelKey: "edit",
               action: (contract: PurchaseSaleContract) => {
+                console.log("Editar contrato:", contract._id);
                 // Implementar navegación a editar
               },
             },

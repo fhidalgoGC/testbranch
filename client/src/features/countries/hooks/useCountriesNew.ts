@@ -28,6 +28,7 @@ export function useCountries(params: UseCountriesParams) {
       const sortValue = sortOrder === 'asc' ? 1 : -1;
       const sort = { [sortKey]: sortValue };
       
+      console.log('Countries API: Sort configuration:', {
         language,
         sortOrder,
         sortKey,
@@ -59,6 +60,7 @@ export function useCountries(params: UseCountriesParams) {
       }
 
       const url = `${baseUrl}/crm-locations/countries/find-countries?${queryParams.toString()}`;
+      console.log('Countries API: Making request to:', url);
 
       // Check for authentication tokens
       const jwt = localStorage.getItem('jwt_token');
@@ -71,17 +73,21 @@ export function useCountries(params: UseCountriesParams) {
       // Add authentication headers if available and not demo tokens
       if (jwt && jwt !== 'demo-jwt-token') {
         headers['Authorization'] = `Bearer ${jwt}`;
+        console.log('Countries API: Using JWT token for authentication');
       }
       if (partitionKey && partitionKey !== 'demo-partition-key') {
         headers['X-Partition-Key'] = partitionKey;
+        console.log('Countries API: Using partition key:', partitionKey);
       }
 
+      console.log('Countries API: Making real API call with headers:', Object.keys(headers));
 
       const response = await fetch(url, {
         method: 'GET',
         headers
       });
 
+      console.log('Countries API: Response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -90,9 +96,11 @@ export function useCountries(params: UseCountriesParams) {
       }
 
       const data: CountryApiResponse = await response.json();
+      console.log('Countries API: Success response with', data.data.length, 'countries');
       
       // Log sample of received countries for debugging
       data.data.slice(0, 3).forEach(country => {
+        console.log('Countries API: Sample country:', {
           id: country._id,
           slug: country.slug,
           nameEn: country.names?.en || country.name,

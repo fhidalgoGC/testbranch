@@ -167,6 +167,7 @@ export const fetchContractsDataDirect = async (
     }
 
     const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${params.toString()}`;
+    console.log("Fetching contracts from:", url);
 
     // Headers de la petición
     const headers = {
@@ -181,12 +182,15 @@ export const fetchContractsDataDirect = async (
       "pk-organization": partitionKey,
     };
 
+    console.log("Fetching contracts with headers:", headers);
 
     const response = await fetch(url, {
       method: "GET",
       headers: headers,
     });
 
+    console.log("Response status:", response.status);
+    console.log("Response ok:", response.ok);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -197,6 +201,7 @@ export const fetchContractsDataDirect = async (
     }
 
     const data: any = await response.json();
+    console.log("Contracts response:", data);
 
     // Mapear los datos de la API real a nuestro formato
     const mappedContracts: PurchaseSaleContract[] = data.data.map(
@@ -278,8 +283,10 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     // Construir filtros para la API usando $and structure
     const andConditions: any[] = [{ type: contractType }];
 
+    console.log("🔍 SERVICIO - Filtros recibidos:", filters);
 
     if (filters?.pricingType?.length && !filters.pricingType.includes("all")) {
+      console.log(
         "📍 SERVICIO - Aplicando filtro pricingType:",
         filters.pricingType[0],
       );
@@ -292,9 +299,11 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       // Los filtros ya contienen los IDs directamente, solo necesitamos usarlos
       const selectedCommodityIds = filters.commodity;
 
+      console.log(
         "📍 SERVICIO - Commodities seleccionadas (IDs):",
         filters.commodity,
       );
+      console.log(
         "📍 SERVICIO - Aplicando filtro con IDs:",
         selectedCommodityIds,
       );
@@ -338,6 +347,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
 
     const apiFilter = { $and: andConditions };
 
+    console.log(
       "🎯 SERVICIO - Filtro final para API:",
       JSON.stringify(apiFilter, null, 2),
     );
@@ -351,6 +361,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     });
 
     // Agregar ordenamiento en el mismo formato que fetchContracts
+    console.log(
       "🔧 SERVICIO - Sort recibido:",
       sort,
       "Type:",
@@ -360,6 +371,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
     );
     if (sort && sort.key && sort.key !== "undefined" && sort.key !== null) {
       const apiFieldName = sortFieldMapping[sort.key] || sort.key;
+      console.log(
         "🔧 SERVICIO - Usando sort:",
         sort.key,
         "→",
@@ -373,11 +385,14 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       );
     } else {
       // Ordenamiento por defecto por fecha de contrato descendente
+      console.log("🔧 SERVICIO - Usando sort por defecto: contract_date");
       queryParams.append("sort[contract_date]", "-1");
     }
 
+    console.log("🌐 SERVICIO - URL con parámetros:", queryParams.toString());
 
     const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts?${queryParams.toString()}`;
+    console.log("📡 SERVICIO - URL completa:", url);
 
     // Headers de la petición
     const headers = {
@@ -409,6 +424,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
 
     // Check if data exists and has data array
     if (!data || !data.data || !Array.isArray(data.data)) {
+      console.log("⚠️ SERVICIO - No data found in API response:", data);
       return {
         contracts: [],
         totalElements: 0,
@@ -504,6 +520,7 @@ export const deleteSubContract = async (
   subContractId: string,
 ): Promise<boolean> => {
   try {
+    console.log("🗑️ Iniciando eliminación de sub-contrato:", subContractId);
 
     // Usar authenticatedFetch del interceptor
     const { authenticatedFetch } = await import("@/utils/apiInterceptors");
@@ -518,6 +535,7 @@ export const deleteSubContract = async (
       },
     );
 
+    console.log("📡 Delete response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -527,6 +545,7 @@ export const deleteSubContract = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
+    console.log("✅ Sub-contrato eliminado exitosamente");
     return true;
   } catch (error) {
     console.error("❌ Error eliminando sub-contrato:", error);
@@ -537,6 +556,7 @@ export const deleteSubContract = async (
 // Service function to generate a new contract ID
 export const generateContractId = async (): Promise<string | null> => {
   try {
+    console.log("🆔 Generating new contract ID....");
     const response = await authenticatedFetch(
       `${environment.TRM_BASE_URL}/contracts/sp-contracts`,
       {
@@ -553,6 +573,7 @@ export const generateContractId = async (): Promise<string | null> => {
     }
 
     const data = await response.json();
+    console.log("✅  SERVICE Contract ID generated:", data.data.key);
     return data.data.key;
   } catch (error) {
     console.error("❌ SERVICE Error generating contract ID:", error);
@@ -633,8 +654,11 @@ export const submitContract = async (
   contractData: any,
 ): Promise<{ success: boolean; error?: string; data?: any }> => {
   try {
+    console.log("📝 Submitting contract:", contractId);
+    console.log("📦 Contract data:", JSON.stringify(contractData, null, 2));
 
     const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts/${contractId}`;
+    console.log("📡 Submit URL:", url);
 
     const response = await authenticatedFetch(url, {
       method: "PUT",
@@ -671,6 +695,7 @@ export const submitContract = async (
     }
 
     const responseData = await response.json();
+    console.log("✅ Contract submitted successfully:", responseData);
 
     return {
       success: true,
@@ -688,6 +713,7 @@ export const submitContract = async (
 // Generate and download PDF using CraftMyPDF service
 export const generateAndDownloadPDF = async (printData: any, fileName: string): Promise<void> => {
   try {
+    console.log("📄 Iniciando generación de PDF...");
     
     const response = await fetch(`${environment.CRAFTMYPDF_BASE_URL}/create`, {
       method: 'POST',
@@ -715,9 +741,11 @@ export const generateAndDownloadPDF = async (printData: any, fileName: string): 
     }
 
     const result = await response.json();
+    console.log("✅ Respuesta de CraftMyPDF:", result);
 
     // Verificar que la respuesta contiene la URL del archivo
     if (result.file) {
+      console.log("📄 URL del PDF generado:", result.file);
       
       // Descargar automáticamente el PDF
       const link = document.createElement('a');
@@ -728,6 +756,7 @@ export const generateAndDownloadPDF = async (printData: any, fileName: string): 
       link.click();
       document.body.removeChild(link);
       
+      console.log("✅ PDF descargado exitosamente");
     } else {
       console.error("❌ No se encontró la URL del archivo en la respuesta:", result);
       throw new Error("No se pudo generar el PDF. Inténtalo de nuevo.");

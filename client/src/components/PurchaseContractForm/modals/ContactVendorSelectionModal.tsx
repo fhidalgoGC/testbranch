@@ -32,6 +32,7 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
   // Load vendors when modal opens - always fresh data
   useEffect(() => {
     if (isOpen) {
+      console.log('🔄 ContactVendorModal: Modal opened, loading fresh data...');
       // Reset state immediately when modal opens
       setLoading(true);
       setVendors([]);
@@ -62,6 +63,7 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
 
   const loadVendors = async (page: number = 1, reset: boolean = false) => {
     try {
+      console.log(`🚀 ContactVendorModal: Loading vendors - Page ${page}, Reset: ${reset}`);
       
       if (!reset) {
         setLoadingMore(true);
@@ -69,6 +71,8 @@ export const ContactVendorSelectionModal: React.FC<ContactVendorSelectionModalPr
       // Note: loading state is already set in useEffect for reset case
 
       const response = await getContactVendors({ page, limit: 5 });
+      console.log(`✅ ContactVendorModal: Loaded ${response.data.length} contact vendors`);
+      console.log(`📊 ContactVendorModal: Pagination - Page ${response._meta.page_number}/${response._meta.total_pages}, Total: ${response._meta.total_elements}`);
       
       if (reset) {
         setVendors(response.data);

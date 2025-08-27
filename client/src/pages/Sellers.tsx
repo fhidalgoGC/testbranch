@@ -36,6 +36,7 @@ export default function Sellers() {
     handleSearchChange,
   } = useSellers();
 
+  console.log("Sellers component render:", { data, isLoading, currentPage });
 
   const handleAddSeller = () => {
     setLocation("/sellers/create");

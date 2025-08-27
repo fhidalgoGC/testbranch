@@ -31,6 +31,8 @@ export const useAuth = () => {
       // After successful login, fetch user identity
       const baseUrl = import.meta.env.VITE_URL_IDENTITY || 'https://un4grlwfx2.execute-api.us-west-2.amazonaws.com/dev';
       const identityUrl = `${baseUrl}/identity/customers`;
+      console.log('Identity URL:', identityUrl);
+      console.log('Environment variable VITE_URL_IDENTITY:', import.meta.env.VITE_URL_IDENTITY);
       
       const identityResponse = await fetch(identityUrl, {
         method: 'GET',
@@ -50,6 +52,7 @@ export const useAuth = () => {
         
         // Third endpoint: Get partition keys
         const partitionKeysUrl = `${baseUrl}/identity/v2/customers/${identityData.data.id}/partition_keys`;
+        console.log('Partition Keys URL:', partitionKeysUrl);
         
         const partitionKeysResponse = await fetch(partitionKeysUrl, {
           method: 'GET',
@@ -71,6 +74,7 @@ export const useAuth = () => {
           // Fourth endpoint: Get organization information
           const crmBaseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
           const organizationUrl = `${crmBaseUrl}/mngm-organizations/organizations?filter={"_partitionKey":{"$in":["${partitionKey}"]}}`;
+          console.log('Organization URL:', organizationUrl);
           
           const organizationResponse = await fetch(organizationUrl, {
             method: 'GET',
@@ -116,6 +120,7 @@ export const useAuth = () => {
             
             // Fifth endpoint: Get representative people information
             const peopleUrl = `${crmBaseUrl}/crm-people/people/${representativePeopleId}`;
+            console.log('People URL:', peopleUrl);
             
             const peopleResponse = await fetch(peopleUrl, {
               method: 'GET',

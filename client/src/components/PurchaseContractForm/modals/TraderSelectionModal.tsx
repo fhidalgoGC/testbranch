@@ -42,6 +42,7 @@ export const TraderSelectionModal: React.FC<TraderSelectionModalProps> = ({
   const loadTraders = async (page: number, reset: boolean = false) => {
     try {
       setLoading(true);
+      console.log(`🚀 TraderModal: Loading traders - Page ${page}, Reset: ${reset}`);
 
       const response: CrmPeopleResponse = await getTraders({
         page,
@@ -63,6 +64,8 @@ export const TraderSelectionModal: React.FC<TraderSelectionModalProps> = ({
       setTotalPages(totalPages);
       setHasMore(page < totalPages);
 
+      console.log(`✅ TraderModal: Loaded ${newTraders.length} traders`);
+      console.log(`📊 TraderModal: Pagination - Page ${page}/${totalPages}, Total: ${total}`);
     } catch (error) {
       console.error('❌ TraderModal: Error fetching traders:', error);
       setTraders([]);
@@ -75,6 +78,7 @@ export const TraderSelectionModal: React.FC<TraderSelectionModalProps> = ({
   const handleModalOpen = (isOpen: boolean) => {
     setIsOpen(isOpen);
     if (isOpen) {
+      console.log('🔄 TraderModal: Modal opened, loading fresh data...');
       setCurrentPage(1);
       setSearchTerm('');
       loadTraders(1, true);
@@ -91,6 +95,7 @@ export const TraderSelectionModal: React.FC<TraderSelectionModalProps> = ({
     onSelect(traderData);
     setIsOpen(false);
     setSearchTerm('');
+    console.log('Trader selected:', traderData);
   };
 
   const handleLoadMore = () => {
