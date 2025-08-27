@@ -403,10 +403,10 @@ export function QuantityActualOverview({
                           type="text"
                           value={
                             measurementUnits?.find(
-                              (unit) => unit.key === field.value,
+                              (unit) => unit.value === field.value,
                             )?.label ||
                             field.value ||
-                            "A"
+                            "Seleccione unidad"
                           }
                           readOnly
                           disabled
@@ -415,8 +415,13 @@ export function QuantityActualOverview({
                         />
                       ) : (
                         <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
+                          value={measurementUnits?.find(unit => unit.value === field.value)?.key || ""}
+                          onValueChange={(selectedKey) => {
+                            const selectedUnit = measurementUnits?.find(unit => unit.key === selectedKey);
+                            if (selectedUnit) {
+                              field.onChange(selectedUnit.value);
+                            }
+                          }}
                         >
                           <SelectTrigger
                             className={`text-sm ${errors?.measurementUnitId ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-green-500"}`}

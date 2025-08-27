@@ -163,6 +163,22 @@ export default function CreateSubContract() {
         shipmentPeriod: '-'
       };
     }
+    
+    // Datos por defecto si no hay datos del contrato principal
+    return {
+      contractNumber: '',
+      contractDate: '7/31/2025',
+      customerNumber: 'Test Seller LLC',
+      idContract: 'SPC-46',
+      referenceNumber: 'NA',
+      commodity: 'HRW - Wheat Hard Red Winter',
+      quantityUnits: 1400,
+      price: 0,
+      basis: 0,
+      future: 0,
+      contact: '-',
+      shipmentPeriod: '-'
+    };
   });
 
   // API hooks - Force refetch measurement units every time this page loads
