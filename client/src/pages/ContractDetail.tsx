@@ -320,8 +320,13 @@ export default function ContractDetail() {
           console.log("✅ Contract data refreshed and set in local state:", {
             contractId,
             folio: contractResult.data.folio,
+            oldQuantity: currentContractData?.quantity,
+            newQuantity: contractResult.data.quantity,
             timestamp: new Date().toISOString()
           });
+
+          // Forzar un re-render mínimo para asegurar que el componente se actualice
+          setLoading(false);
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(
