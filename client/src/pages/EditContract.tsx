@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { PurchaseContractForm } from '@/components/PurchaseContractForm/PurchaseContractForm';
-import { RootState } from '@/store/store';
+import { RootState } from '@/app/store';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
-import { submitContract } from '@/services/contractsService';
+import { submitContract, getContractById } from '@/services/contractsService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,13 +39,41 @@ export default function EditContract() {
   );
 
   useEffect(() => {
-    if (contractId && contractsData) {
-      const contract = contractsData.find(c => c.id === contractId);
-      if (contract) {
-        setContractData(contract);
+    const loadContractData = async () => {
+      if (!contractId) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
-    }
+
+      // Primero intentar obtener desde Redux
+      if (contractsData && contractsData.length > 0) {
+        const contract = contractsData.find((c: any) => c.id === contractId);
+        if (contract) {
+          setContractData(contract);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Si no está en Redux, cargar desde API
+      try {
+        console.log("🔄 EditContract: Loading contract from API...", contractId);
+        const result = await getContractById(contractId);
+        
+        if ((result as any).success && (result as any).data) {
+          console.log("✅ EditContract: Contract loaded from API", (result as any).data);
+          setContractData((result as any).data);
+        } else {
+          console.error("❌ EditContract: Failed to load contract", (result as any).error);
+        }
+      } catch (error) {
+        console.error("❌ EditContract: Error loading contract", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContractData();
   }, [contractId, contractsData]);
 
   const handleCancel = () => {
