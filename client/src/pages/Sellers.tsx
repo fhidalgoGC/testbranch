@@ -17,6 +17,7 @@ export default function Sellers() {
 
   // Notificar navegación jerárquica al cargar la página
   useEffect(() => {
+    console.log(
       "🔄 SELLER PAGE: Cargando página y ejecutando navegación jerárquica",
     );
     handleNavigateToPage("sellers");

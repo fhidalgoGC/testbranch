@@ -44,6 +44,7 @@ export function useSellers(params: UseSellersParams = {}) {
       searchValue,
     ],
     queryFn: async () => {
+      console.log(
         "Executing getSellers query with options:",
         buildQueryOptions(),
       );

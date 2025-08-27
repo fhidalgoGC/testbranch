@@ -49,6 +49,7 @@ export default function PurchaseContracts() {
 
   // Notificar navegación al cargar la página
   useEffect(() => {
+    console.log(
       "🔄 PURCHASE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
     );
     handleNavigateToPage("purchaseContracts");
@@ -182,6 +183,7 @@ export default function PurchaseContracts() {
       const totalElements = result.total;
       const totalPages = result.totalPages;
 
+      console.log(
         "IDs de contratos cargados:",
         mappedContracts.map((c) => ({ _id: c._id, folio: c.folio })),
       );
@@ -198,6 +200,7 @@ export default function PurchaseContracts() {
         filters: selectedFilters,
       });
 
+      console.log(
         "📊 PAGINACIÓN - Total elementos:",
         totalElements,
         "Total páginas:",
@@ -225,6 +228,7 @@ export default function PurchaseContracts() {
   useEffect(() => {
     const reloadTableWithFilters = async () => {
       if (commodities.length > 0) {
+        console.log(
           "🔄 Filtros cambiaron, recargando tabla con nuevos filtros:",
           selectedFilters,
         );
@@ -262,6 +266,7 @@ export default function PurchaseContracts() {
       // Aplicar filtros seleccionados
       const filters = selectedFilters;
 
+      console.log("Fetch params:", {
         ...params,
         filters,
       });
@@ -304,9 +309,11 @@ export default function PurchaseContracts() {
         contracts: result.data,
       }));
 
+      console.log(
         "🔄 DATOS ACTUALIZADOS - Total contratos encontrados:",
         result.data.length,
       );
+      console.log(
         "🔄 DATOS ACTUALIZADOS - Contratos (primeros 2):",
         result.data
           .slice(0, 2)
@@ -345,6 +352,7 @@ export default function PurchaseContracts() {
 
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {
+    console.log("Toggle filter:", filterKey, value);
 
     setPageStateData((prev) => {
       const currentFilters = prev.selectedFilters;
@@ -609,6 +617,7 @@ export default function PurchaseContracts() {
               size="sm"
               variant="outline"
               onClick={() => {
+                console.log(
                   "Total contracts in state:",
                   tableData.contracts.length,
                 );
@@ -640,6 +649,7 @@ export default function PurchaseContracts() {
                 console.groupEnd();
 
                 console.group("🔗 Full JSON Structure (collapsed)");
+                console.log("Page State Data:", {
                   selectedFilters: pageStateData.selectedFilters,
                   contracts: `[${pageStateData.contracts.length} contracts - expand to see full data]`,
                   contractsFullData: pageStateData.contracts,
@@ -654,11 +664,13 @@ export default function PurchaseContracts() {
               className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
               size="lg"
               onClick={async () => {
-                  "🆔 Generating contract ID before navigationwwwwww...",
+                console.log(
+                  "🆔 Generating contract ID before navigation...",
                 );
                 const contractIdGenerated = await generateContractId();
                 if (contractIdGenerated) {
-                    "✅ Contract ID generated8888:",
+                  console.log(
+                    "✅ Contract ID generated:",
                     contractIdGenerated,
                   );
                   setLocation(

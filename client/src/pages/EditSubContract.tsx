@@ -266,6 +266,7 @@ export default function EditSubContract() {
           measurementUnitId: currentSubContract.measurement_unit || 'bu60'
         });
         
+        console.log("Sub-contract data loaded:", {
           subContractId: currentSubContract._id,
           quantity: currentSubContract.quantity,
           future: currentSubContract.price_schedule?.[0]?.future_price,
@@ -276,6 +277,7 @@ export default function EditSubContract() {
           measurementUnit: currentSubContract.measurement_unit
         });
         
+        console.log("API Data Details:", {
           'Future from API': currentSubContract.price_schedule?.[0]?.future_price,
           'Basis from API': currentSubContract.price_schedule?.[0]?.basis,
           'Price from API': currentSubContract.price_schedule?.[0]?.price,
@@ -319,6 +321,7 @@ export default function EditSubContract() {
       // Use the measurement_unit_id from the current sub-contract (it has the correct _id)
       const measurementUnitId = originalSubContract.measurement_unit_id;
       
+      console.log("Measurement unit mapping:", {
         slugFromForm: formDataForSubmission.measurementUnitId,
         idFromSubContract: measurementUnitId,
         originalSubContract: originalSubContract
@@ -352,6 +355,7 @@ export default function EditSubContract() {
         }
       };
       
+      console.log("Update payload:", payload);
       
       // Call update API
       const response = await authenticatedFetch(

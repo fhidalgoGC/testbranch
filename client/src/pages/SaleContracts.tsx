@@ -48,6 +48,7 @@ export default function SaleContracts() {
 
   // Notificar navegación al cargar la página
   useEffect(() => {
+    console.log(
       "🔄 SALE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
     );
     handleNavigateToPage("saleContracts");
@@ -160,6 +161,7 @@ export default function SaleContracts() {
       // Aplicar filtros seleccionados
       const filters = selectedFilters;
 
+      console.log("Fetch params:", {
         ...params,
         filters,
       });
@@ -203,9 +205,11 @@ export default function SaleContracts() {
         contracts: result.data,
       }));
 
+      console.log(
         "🔄 DATOS ACTUALIZADOS - Total contratos encontrados:",
         result.data.length,
       );
+      console.log(
         "🔄 DATOS ACTUALIZADOS - Contratos (primeros 2):",
         result.data
           .slice(0, 2)
@@ -246,6 +250,7 @@ export default function SaleContracts() {
   useEffect(() => {
     const reloadTableWithFilters = async () => {
       if (commodities.length > 0) {
+        console.log(
           "🔄 Filtros cambiaron, recargando tabla con nuevos filtros:",
           selectedFilters,
         );
@@ -267,6 +272,7 @@ export default function SaleContracts() {
 
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {
+    console.log("Toggle filter:", filterKey, value);
 
     setPageStateData((prev) => {
       const currentFilters = prev.selectedFilters;
@@ -531,6 +537,7 @@ export default function SaleContracts() {
               size="sm"
               variant="outline"
               onClick={() => {
+                console.log(
                   "Total contracts in state:",
                   tableData.contracts.length,
                 );
@@ -562,6 +569,7 @@ export default function SaleContracts() {
                 console.groupEnd();
 
                 console.group("🔗 Full JSON Structure (collapsed)");
+                console.log("Page State Data:", {
                   selectedFilters: pageStateData.selectedFilters,
                   contracts: `[${pageStateData.contracts.length} contracts - expand to see full data]`,
                   contractsFullData: pageStateData.contracts,
@@ -576,10 +584,12 @@ export default function SaleContracts() {
               className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
               size="lg"
               onClick={async () => {
+                console.log(
                   "🆔 Generating contract ID before navigation...",
                 );
                 const contractIdGenerated = await generateContractId();
                 if (contractIdGenerated) {
+                  console.log(
                     "✅ Contract ID generated successfully:",
                     contractIdGenerated,
                   );
