@@ -220,6 +220,7 @@
   "commentPlaceholder": "Comentario aquí...",
   "cancel": "Cancelar",
   "createContract": "Crear Contrato",
+  "saveChanges": "Actualizar Contrato",
   "contractDetail": "Detalle del Contrato",
   "view": "Ver",
   "back": "Volver",
