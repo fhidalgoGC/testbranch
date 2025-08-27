@@ -773,24 +773,6 @@ export default function SaleContracts() {
                 // Implementar navegación a editar
               },
             },
-            {
-              key: "duplicate",
-              labelKey: "duplicate",
-              action: (contract: PurchaseSaleContract) => {
-                console.log("Duplicar contrato:", contract._id);
-                // Implementar duplicación
-              },
-            },
-            {
-              key: "delete",
-              labelKey: "delete",
-              action: (contract: PurchaseSaleContract) => {
-                console.log("Eliminar contrato:", contract._id);
-                // Implementar eliminación
-              },
-              className:
-                "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
-            },
           ]}
         />
       </div>
