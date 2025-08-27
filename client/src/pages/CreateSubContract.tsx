@@ -218,6 +218,15 @@ export default function CreateSubContract() {
   // API hooks
   const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
   
+  // Debug measurement units API call
+  useEffect(() => {
+    console.log('🔍 Measurement Units Debug in CreateSubContract:');
+    console.log('- Loading:', loadingUnits);
+    console.log('- Error:', unitsError);
+    console.log('- Data:', measurementUnits);
+    console.log('- Count:', measurementUnits.length);
+  }, [measurementUnits, loadingUnits, unitsError]);
+  
   // Modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [formDataForSubmission, setFormDataForSubmission] = useState<SubContractFormData | null>(null);

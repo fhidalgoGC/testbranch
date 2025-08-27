@@ -6,6 +6,7 @@ export const useMeasurementUnits = (type?: 'weight' | 'volume') => {
   return useQuery<MeasurementUnitOption[]>({
     queryKey: ['measurementUnits', type],
     queryFn: async () => {
+      console.log('🚀 useMeasurementUnits queryFn called with type:', type);
       if (type === 'weight') {
         return await MeasurementUnitsService.getWeightUnits();
       } else if (type === 'volume') {
@@ -17,7 +18,9 @@ export const useMeasurementUnits = (type?: 'weight' | 'volume') => {
       }
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes,
+    enabled: true, // Ensure the query is enabled
+    refetchOnMount: true, // Ensure it refetches on mount
   });
 };
 
