@@ -148,7 +148,6 @@ export default function ContractDetail() {
   const [subContractsData, setSubContractsData] = useState<any[]>([]);
   const [loadingSubContracts, setLoadingSubContracts] =
     useState<boolean>(false);
-  const [refreshingContract, setRefreshingContract] = useState<boolean>(false);
   const [fullScreenLoading, setFullScreenLoading] = useState<boolean>(false);
 
   // Delete confirmation modal states
@@ -244,7 +243,6 @@ export default function ContractDetail() {
   // Función para refrescar los datos del contrato desde la API
   const refreshContractData = async (contractId: string) => {
     try {
-      setRefreshingContract(true);
       console.log("🔄 Refreshing contract data for ID:", contractId);
 
       const authCheck = hasAuthTokens();
@@ -290,7 +288,7 @@ export default function ContractDetail() {
     } catch (error) {
       console.error("❌ Error refreshing contract data:", error);
     } finally {
-      setRefreshingContract(false);
+      // No cleanup needed
     }
   };
 
@@ -336,20 +334,21 @@ export default function ContractDetail() {
             quantity: contractResult.data.quantity
           });
 
-          // Forzar actualización del estado usando JSON para crear una copia completamente nueva
-          const newData = JSON.parse(JSON.stringify(contractResult.data));
+          // Forzar actualización del estado usando una nueva referencia
+          const newData = { ...contractResult.data };
+          console.log("newdata from api",newData);
           
-          // Primero incrementar la key para forzar re-render
+          
+          setCurrentContractData(newData);
+          setTimeout(()=>{console.log("currentContractData",currentContractData);},500);
+          
+          console.log("✅ setState llamado con nuevos datos");
+
+          // Forzar re-render del componente incrementando la key
           setRefreshKey(prev => {
             console.log("🔄 Incrementando refreshKey de", prev, "a", prev + 1);
             return prev + 1;
           });
-          
-          // Luego actualizar los datos con un pequeño delay para asegurar que React procese el cambio
-          setTimeout(() => {
-            setCurrentContractData(newData);
-            console.log("✅ setState llamado con nuevos datos (después del refreshKey)");
-          }, 50);
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(

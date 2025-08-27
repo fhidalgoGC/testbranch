@@ -21,7 +21,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   
   const { initialData = {}, contractType = 'purchase', mode = 'create', representativeRole = 'buyer', contractId, onSuccess, onSubmitContract } = options;
 
-  console.log("contractId",contractId);
+  // console.log("contractId",contractId);
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -332,7 +332,7 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     // Process participants - use existing participants from form selections
     let processedParticipants = [...(formData.participants || [])];
     
-    console.log('🔍 Processing participants from form selections:', processedParticipants);
+    // console.log('🔍 Processing participants from form selections:', processedParticipants);
     
     // Add representative for all contract types
     const representativePeopleId = localStorage.getItem('representative_people_id');
@@ -342,13 +342,13 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     let correctRepresentativeRole = representativeRole;
     if (contractType === 'purchase' && representativeRole !== 'buyer') {
       correctRepresentativeRole = 'buyer';
-      console.log(`🔧 Contract type is '${contractType}', correcting representative role from '${representativeRole}' to 'buyer'`);
+      // console.log(`🔧 Contract type is '${contractType}', correcting representative role from '${representativeRole}' to 'buyer'`);
     } else if (contractType === 'sale' && representativeRole !== 'seller') {
       correctRepresentativeRole = 'seller';
-      console.log(`🔧 Contract type is '${contractType}', correcting representative role from '${representativeRole}' to 'seller'`);
+      // console.log(`🔧 Contract type is '${contractType}', correcting representative role from '${representativeRole}' to 'seller'`);
     }
     
-    console.log('🔍 Representative info from localStorage:', { representativePeopleId, representativePeopleFullName, representativeRole, correctRepresentativeRole, contractType });
+    // console.log('🔍 Representative info from localStorage:', { representativePeopleId, representativePeopleFullName, representativeRole, correctRepresentativeRole, contractType });
     
     if (representativePeopleId && representativePeopleFullName) {
       // Check if representative is not already in participants
@@ -360,12 +360,12 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
           name: representativePeopleFullName,
           role: correctRepresentativeRole
         });
-        console.log(`✅ Representative added with role '${correctRepresentativeRole}' for ${contractType} contract:`, { representativePeopleId, representativePeopleFullName, correctRepresentativeRole });
+        // console.log(`✅ Representative added with role '${correctRepresentativeRole}' for ${contractType} contract:`, { representativePeopleId, representativePeopleFullName, correctRepresentativeRole });
       } else {
-        console.log('ℹ️ Representative already exists in participants, skipping.');
+        // console.log('ℹ️ Representative already exists in participants, skipping.');
       }
     } else {
-      console.log('⚠️ No representative info found in localStorage.');
+      // console.log('⚠️ No representative info found in localStorage.');
     }
     
     // Función para eliminar participantes con roles trader y contactVendor
@@ -377,9 +377,9 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     
     // Aplicar filtro para eliminar trader y contactVendor
     processedParticipants = removeTraderAndContactVendor(processedParticipants);
-    console.log('🗑️ Participants after removing trader and contactVendor:', processedParticipants);
+    // console.log('🗑️ Participants after removing trader and contactVendor:', processedParticipants);
     
-    console.log('✅ Final processed participants:', processedParticipants);
+    // console.log('✅ Final processed participants:', processedParticipants);
     
     // Calculate thresholds weights based on quantity and percentages (handle null/undefined)
     const quantity = formData.quantity || 0;
@@ -452,13 +452,13 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
     };
 
     // Debug: Log before cleaning
-    console.log('🔍 Contract JSON Before Cleaning:', JSON.stringify(contractJSON, null, 2));
+    // console.log('🔍 Contract JSON Before Cleaning:', JSON.stringify(contractJSON, null, 2));
     
     // Remove all empty fields from the final JSON
     const cleanedJSON = removeEmptyFields(contractJSON);
     
     // Debug: Log after cleaning
-    console.log('✨ Contract JSON After Cleaning:', JSON.stringify(cleanedJSON, null, 2));
+    // console.log('✨ Contract JSON After Cleaning:', JSON.stringify(cleanedJSON, null, 2));
     
     return cleanedJSON;
   };
@@ -466,9 +466,9 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
   const onSubmit = async (data: PurchaseSaleContract) => {
     try {
       setIsSubmitting(true);
-      console.log('🚀 HOOK onSubmit called - Form validation passed');
-      console.log('📊 onSubmitContract function available:', !!onSubmitContract);
-      console.log('📋 Form data received:', data);
+      // console.log('🚀 HOOK onSubmit called - Form validation passed');
+      // console.log('📊 onSubmitContract function available:', !!onSubmitContract);
+      // console.log('📋 Form data received:', data);
       
       // Process participants before JSON generation to ensure they exist
       const processedData = { ...data };
@@ -478,21 +478,21 @@ export function usePurchaseContractForm(options: UsePurchaseContractFormOptions 
       // The real seller/contact vendor data is already available in the form
       // and will be handled by the generateContractJSON function
       // Individual participant fields removed - using participants array only
-      console.log('📋 Current participants:', processedParticipants);
+      // console.log('📋 Current participants:', processedParticipants);
       
       processedData.participants = processedParticipants;
-      console.log('👥 Processed participants:', processedParticipants);
+      // console.log('👥 Processed participants:', processedParticipants);
       
       const contractJSON = generateContractJSON(processedData);
-      console.log('✨ Generated Contract JSON (After Cleaning):', JSON.stringify(contractJSON, null, 2));
+      // console.log('✨ Generated Contract JSON (After Cleaning):', JSON.stringify(contractJSON, null, 2));
       
       // Call external submit function if provided, otherwise show alert
       if (onSubmitContract) {
-        console.log('🌐 Calling external onSubmitContract function...');
+        // console.log('🌐 Calling external onSubmitContract function...');
         await onSubmitContract(contractId || '', contractJSON);
-        console.log('✅ onSubmitContract completed successfully');
+        // console.log('✅ onSubmitContract completed successfully');
       } else {
-        console.log('⚠️ No onSubmitContract function provided, showing alert');
+        // console.log('⚠️ No onSubmitContract function provided, showing alert');
         alert('Contrato creado exitosamente!\nRevisa la consola para ver el JSON generado.');
         
         // Call success callback if provided
