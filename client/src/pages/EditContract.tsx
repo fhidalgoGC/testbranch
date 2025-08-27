@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { PurchaseContractForm } from '@/components/PurchaseContractForm/PurchaseContractForm';
 import { RootState } from '@/app/store';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
-import { submitContract } from '@/services/contractsService';
+import { submitContract, getContractById } from '@/services/contractsService';
+import { updateContractsState } from '@/store/slices/pageStateSlice';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +24,7 @@ export default function EditContract() {
   const { t } = useTranslation();
   const params = useParams();
   const [location, setLocation] = useLocation();
+  const dispatch = useDispatch();
   const contractId = params.contractId;
   
   // Determinar el tipo de contrato desde la URL
@@ -72,6 +74,30 @@ export default function EditContract() {
 
       if (result.success) {
         console.log("✅ Contract updated successfully:", result.data);
+        
+        // Actualizar el cache de Redux con los datos actualizados
+        try {
+          const updatedContractResult = await getContractById(contractId);
+          if ((updatedContractResult as any).success && (updatedContractResult as any).data) {
+            const updatedContract = (updatedContractResult as any).data;
+            
+            // Actualizar el contrato en el array de contractsData
+            const updatedContractsData = contractsData.map((contract: any) => 
+              contract._id === contractId ? updatedContract : contract
+            );
+            
+            // Dispatch para actualizar Redux
+            const pageName = contractType === 'purchase' ? 'purchaseContracts' : 'saleContracts';
+            dispatch(updateContractsState({ 
+              page: pageName as 'purchaseContracts' | 'saleContracts', 
+              updates: { contractsData: updatedContractsData }
+            }));
+            
+            console.log("✅ Redux cache updated with new contract data");
+          }
+        } catch (error) {
+          console.warn("⚠️ Could not update Redux cache:", error);
+        }
         
         // Extract folio from response
         const folio = result.data?.folio || result.data?.data?.folio || contractId;
