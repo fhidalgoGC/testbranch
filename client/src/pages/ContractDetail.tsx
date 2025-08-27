@@ -11,8 +11,6 @@ import { store } from "@/app/store";
 import {
   updateCreateSubContractState,
   updateEditSubContractState,
-  updateSingleContractInArray,
-  updateContractDetailState,
 } from "@/store/slices/pageStateSlice";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -318,35 +316,13 @@ export default function ContractDetail() {
         console.log("✅ Contract data refreshed successfully:", contractResult);
 
         if (contractResult.data) {
-          // 1. Actualizar estado local
+          // Actualizar solo estado local
           setCurrentContractData(contractResult.data);
-          console.log("🔄 Updated contract data in local state");
-
-          // 2. Actualizar Redux store con los nuevos datos del contrato
-          const contractPage = contractType === "purchase" ? "purchaseContracts" : "saleContracts";
-          
-          // Actualizar el contrato específico en la lista de contratos en Redux
-          dispatch(updateSingleContractInArray({
-            page: contractPage,
-            contractId: contractId,
-            contractData: contractResult.data
-          }));
-          
-          // Actualizar el estado específico del detalle del contrato en Redux
-          dispatch(updateContractDetailState({
-            contractId: contractId,
-            updates: {
-              contractData: contractResult.data,
-              lastRefresh: Date.now()
-            }
-          }));
-
-          console.log("✅ Contract data updated in both local state and Redux:", {
+          console.log("✅ Contract data updated in local state:", {
             contractId,
             folio: contractResult.data.folio,
             oldQuantity: currentContractData?.quantity,
             newQuantity: contractResult.data.quantity,
-            reduxPage: contractPage,
             timestamp: new Date().toISOString()
           });
 

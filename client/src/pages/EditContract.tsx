@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { PurchaseContractForm } from '@/components/PurchaseContractForm/PurchaseContractForm';
-import { RootState } from '@/app/store';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
-import { submitContract } from '@/services/contractsService';
+import { submitContract, getContractById } from '@/services/contractsService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,30 +31,36 @@ export default function EditContract() {
   const [errorModal, setErrorModal] = useState({ open: false, message: "" });
   const [successModal, setSuccessModal] = useState({ open: false, folio: "" });
 
-  // Obtener datos del contrato desde Redux según el tipo (igual que ViewContract)
-  const contractsState = useSelector((state: any) => 
-    contractType === 'purchase' 
-      ? state.pageState.purchaseContracts 
-      : state.pageState.saleContracts
-  );
-  const contractsData = contractsState?.contractsData || [];
-
+  // Cargar datos del contrato directamente del API
   useEffect(() => {
-    if (contractId && contractsData.length > 0) {
-      // Buscar el contrato específico en los datos de Redux (igual que ViewContract)
-      const foundContract = contractsData.find((contract: PurchaseSaleContract) => 
-        contract._id === contractId
-      );
+    const loadContractData = async () => {
+      if (!contractId) return;
       
-      if (foundContract) {
-        console.log('📝 EDIT CONTRACT: Contrato encontrado', foundContract);
-        setContractData(foundContract);
-      } else {
-        console.warn('⚠️ EDIT CONTRACT: Contrato no encontrado en Redux');
+      setLoading(true);
+      try {
+        console.log('📝 EDIT CONTRACT: Cargando contrato desde API:', contractId);
+        const response = await getContractById(contractId);
+        
+        if (response.ok) {
+          const result = await response.json();
+          if (result.data) {
+            console.log('✅ EDIT CONTRACT: Contrato cargado exitosamente', result.data);
+            setContractData(result.data);
+          } else {
+            console.warn('⚠️ EDIT CONTRACT: No se encontraron datos del contrato');
+          }
+        } else {
+          console.error('❌ EDIT CONTRACT: Error al cargar contrato:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ EDIT CONTRACT: Error de conexión:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    }
-  }, [contractId, contractsData]);
+    };
+
+    loadContractData();
+  }, [contractId]);
 
   const handleCancel = () => {
     // Regresar al detalle del contrato
