@@ -20,7 +20,7 @@ import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { DatePicker } from '@/components/ui/datepicker';
 import { formatNumber } from '@/lib/numberFormatter';
 import { NUMBER_FORMAT_CONFIG } from '@/environment/environment';
-import { authenticatedFetch } from '@/utils/apiInterceptors';
+import { SubContractService, CreateSubContractPayload } from '@/services/subContract.service';
 import { QuantityActualOverview } from '@/components/contracts/QuantityActualOverview';
 
 // Sub-contract form validation schema with business rules
@@ -115,7 +115,7 @@ export default function CreateSubContract() {
   
   usePageTracking(`/${contractType}-contracts/${contractId}/sub-contracts/create`);
   
-  // Function to fetch sub-contract key when page loads
+  // Function to fetch sub-contract key when page loads using service
   const fetchSubContractKey = async () => {
     // Skip if key already exists
     if (subContractKey) {
@@ -125,41 +125,13 @@ export default function CreateSubContract() {
     
     setLoadingSubContractKey(true);
     try {
-      console.log('🔑 Fetching sub-contract key...');
-      const response = await authenticatedFetch(
-        'https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({})
-        }
-      );
+      const keyResponse = await SubContractService.getSubContractKey();
       
-      if (!response.ok) {
-        throw new Error(`Failed to fetch sub-contract key: ${response.status}`);
-      }
+      setSubContractKey(keyResponse.key);
+      console.log('🔑 Sub-contract key set:', keyResponse.key);
       
-      const result = await response.json();
-      console.log('✅ Sub-contract key response:', result);
-      
-      // The key is nested in result.data.key based on the API response
-      if (result.data?.key) {
-        setSubContractKey(result.data.key);
-        console.log('🔑 Sub-contract key set:', result.data.key);
-        
-        // Save the key to Redux state for persistence and debug visibility
-        updateState({ subContractKey: result.data.key });
-      } else if (result.key) {
-        setSubContractKey(result.key);
-        console.log('🔑 Sub-contract key set (direct):', result.key);
-        
-        // Save the key to Redux state for persistence and debug visibility
-        updateState({ subContractKey: result.key });
-      } else {
-        console.warn('⚠️ No key found in response:', result);
-      }
+      // Save the key to Redux state for persistence and debug visibility
+      updateState({ subContractKey: keyResponse.key });
       
     } catch (error) {
       console.error('❌ Error fetching sub-contract key:', error);
@@ -168,14 +140,6 @@ export default function CreateSubContract() {
     }
   };
   
-  // Notificar navegación al cargar la página y obtener key del sub-contrato
-  useEffect(() => {
-    handleNavigateToPage('createSubContract', contractId);
-    fetchSubContractKey();
-    // Force refetch measurement units every time this page loads
-    refetchMeasurementUnits();
-  }, [contractId, refetchMeasurementUnits]);
-
   // Estados locales - usar datos del contrato principal si están disponibles
   const [contractData] = useState<ContractData>(() => {
     if (parentContractData) {
@@ -219,6 +183,14 @@ export default function CreateSubContract() {
 
   // API hooks - Force refetch measurement units every time this page loads
   const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError, refetch: refetchMeasurementUnits } = useMeasurementUnits();
+  
+  // Notificar navegación al cargar la página y obtener key del sub-contrato
+  useEffect(() => {
+    handleNavigateToPage('createSubContract', contractId);
+    fetchSubContractKey();
+    // Force refetch measurement units every time this page loads
+    refetchMeasurementUnits();
+  }, [contractId, refetchMeasurementUnits]);
   
   // Modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -378,9 +350,9 @@ export default function CreateSubContract() {
       // Extract price schedule values from parent contract
       const parentPriceSchedule = parentContractData?.price_schedule?.[0] || {};
       
-      // Construct API payload matching the required structure from curl example
-      const apiPayload = {
-        contract_id: contractId, // Parent contract ID from route params
+      // Construct API payload matching the required structure
+      const apiPayload: CreateSubContractPayload = {
+        contract_id: contractId!, // Parent contract ID from route params
         contract_folio: data.contractNumber,
         measurement_unit: selectedUnitSlug, // Short code like "bu60"
         total_price: data.totalPrice,
@@ -389,8 +361,8 @@ export default function CreateSubContract() {
         price_schedule: [{
           pricing_type: parentPriceSchedule.pricing_type || 'basis',
           price: data.totalPrice, // Use totalPrice (future + basis)
-          basis: data.basis,
-          future_price: data.future,
+          basis: data.basis || 0,
+          future_price: data.future || 0,
           basis_operation: parentPriceSchedule.basis_operation || 'add',
           option_month: parentPriceSchedule.option_month || 'september',
           option_year: parentPriceSchedule.option_year || 2025,
@@ -408,33 +380,15 @@ export default function CreateSubContract() {
         }
       };
       
-      console.log('📤 Creating sub-contract with API payload:', apiPayload);
       console.log('🔗 Parent Contract ID from route:', contractId);
       console.log('🔗 Parent Contract Data ID:', parentContractData?._id);
       
-      // Make API call to create sub-contract using the key from initial call
+      // Make API call to create sub-contract using the service
       if (!subContractKey) {
         throw new Error('Sub-contract key not available. Please try again.');
       }
       
-      const response = await authenticatedFetch(
-        `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${subContractKey}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(apiPayload)
-        }
-      );
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API call failed with status ${response.status}: ${errorText}`);
-      }
-      
-      const result = await response.json();
-      console.log('✅ Sub-contract created successfully:', result);
+      const result = await SubContractService.createSubContract(subContractKey, apiPayload);
       
       // Calculate elapsed time and ensure minimum duration of 0.3 seconds
       const elapsedTime = Date.now() - startTime;
