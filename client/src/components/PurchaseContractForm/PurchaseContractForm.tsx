@@ -136,11 +136,11 @@ export function PurchaseContractForm({
   return (
     <div className="max-w-6xl mx-auto space-y-8 p-6">
       {/* Header with title and debug button */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {getTitle()}
-        </h1>
-        {mode !== "view" && (
+      {mode !== "view" && (
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            {getTitle()}
+          </h1>
           <div className="flex gap-2">
             <button
               type="button"
@@ -175,8 +175,8 @@ export function PurchaseContractForm({
               📄 Form State
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <FormProvider {...form}>
         <form
