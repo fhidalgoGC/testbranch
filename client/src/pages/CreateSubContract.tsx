@@ -109,9 +109,9 @@ export default function CreateSubContract() {
   const contractsData = contractsState.contractsData || [];
   
   // Obtener el estado del contrato principal para crear sub-contrato
-  const createSubContractState = useSelector((state: any) => state.pageState.createSubContract[contractId!]);
-  const parentContractData = createSubContractState?.parentContractData;
-  const subContractsData = createSubContractState?.subContractsData || [];
+  const parentContractState = useSelector((state: any) => state.pageState.createSubContract[contractId!]);
+  const parentContractData = parentContractState?.parentContractData;
+  const subContractsData = parentContractState?.subContractsData || [];
   
   usePageTracking(`/${contractType}-contracts/${contractId}/sub-contracts/create`);
   
@@ -335,7 +335,7 @@ export default function CreateSubContract() {
 
   const handleCreateSubContract = handleSubmit((data: SubContractFormData) => {
     // Get the most up-to-date data from Redux state (auto-saved)
-    const stateFormData = createSubContractState.formData;
+    const stateFormData = parentContractState?.formData;
     const mergedData = {
       ...data,
       ...stateFormData, // Redux state takes precedence

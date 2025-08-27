@@ -297,7 +297,7 @@ export default function CreateSaleSubContract() {
       console.log('✅ Sub-contract created successfully:', responseData);
 
       // Clear form state
-      updateState({ formData: {}, currentStep: 1, completedSteps: [] });
+      updateState({ formData: {} });
       
       // Navigate back to sale contract detail with refresh
       setLocation(`/sale-contracts/${contractId}?refresh=true`);
@@ -313,7 +313,7 @@ export default function CreateSaleSubContract() {
 
   const handleCancel = () => {
     // Clear form state
-    updateState({ formData: {}, currentStep: 1, completedSteps: [] });
+    updateState({ formData: {} });
     // Navigate back
     setLocation(`/sale-contracts/${contractId}`);
   };
@@ -328,7 +328,7 @@ export default function CreateSaleSubContract() {
     );
   }
 
-  if (measurementUnitsError) {
+  if (unitsError) {
     return (
       <DashboardLayout title={t('createSaleSubContract')}>
         <div className="flex flex-col items-center justify-center min-h-screen">
@@ -337,7 +337,7 @@ export default function CreateSaleSubContract() {
             {t('error')}
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {measurementUnitsError}
+            {unitsError ? String(unitsError) : 'Failed to load measurement units'}
           </p>
           <Button onClick={handleCancel}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -382,9 +382,10 @@ export default function CreateSaleSubContract() {
 
         {/* Quantity Overview */}
         <QuantityActualOverview
-          totalQuantity={contractData.quantityUnits}
-          openInventory={openInventory}
-          contractType="sale"
+          mode="view"
+          parentQuantity={contractData.quantityUnits}
+          parentContractData={{ inventory: { open: openInventory } }}
+          contractData={{ commodity: contractData.commodity }}
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -475,7 +476,6 @@ export default function CreateSaleSubContract() {
                           trigger('quantity');
                         }}
                         placeholder={t('enterQuantity')}
-                        formatConfig={NUMBER_FORMAT_CONFIG}
                         error={!!errors.quantity}
                       />
                     )}
@@ -536,7 +536,6 @@ export default function CreateSaleSubContract() {
                         value={field.value || 0}
                         onChange={field.onChange}
                         placeholder={t('enterFuture')}
-                        formatConfig={NUMBER_FORMAT_CONFIG}
                       />
                     )}
                   />
@@ -553,7 +552,6 @@ export default function CreateSaleSubContract() {
                         value={field.value}
                         onChange={field.onChange}
                         placeholder={t('enterBasis')}
-                        formatConfig={NUMBER_FORMAT_CONFIG}
                         error={!!errors.basis}
                       />
                     )}

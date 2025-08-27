@@ -190,7 +190,8 @@ export function QuantityActualOverview({
                         value={field.value || ''}
                         onChange={(value) => {
                           // Convert empty string to 0 for calculations
-                          field.onChange(value === '' || value === null || value === undefined ? 0 : value);
+                          const numValue = typeof value === 'string' ? (value === '' ? 0 : Number(value)) : value;
+                          field.onChange(numValue === null || numValue === undefined ? 0 : numValue);
                         }}
                         placeholder="0.00"
                         className="text-sm"
