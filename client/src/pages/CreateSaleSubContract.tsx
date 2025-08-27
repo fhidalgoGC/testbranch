@@ -266,11 +266,15 @@ export default function CreateSaleSubContract() {
       
       console.log('🚀 Submitting sub-contract creation request...');
       
+      // Find the selected measurement unit to get both slug and ObjectId
+      const selectedUnit = measurementUnits.find(unit => unit.value === formData.measurementUnitId);
+      
       // Prepare API payload for sale sub-contract
       const apiPayload = {
         parent_contract_id: contractId,
         quantity: formData.quantity,
-        measurement_unit_id: formData.measurementUnitId,
+        measurement_unit: selectedUnit?.value || formData.measurementUnitId, // Send slug (like "bu60")
+        measurement_unit_id: selectedUnit?.key || '', // Send ObjectId
         future_price: formData.future || 0,
         basis: formData.basis,
         price: totalPriceCalc, // Calculated total price
