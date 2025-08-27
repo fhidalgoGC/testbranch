@@ -760,9 +760,9 @@ export default function SaleContracts() {
               key: "view",
               labelKey: "view",
               action: (contract: PurchaseSaleContract) => {
-                console.log("Ver contrato:", contract._id);
+                console.log("Ver contrato de venta:", contract._id);
                 handleNavigateToPage("contractDetail", contract._id);
-                setLocation(`/purchase-contracts/${contract._id}`);
+                setLocation(`/sale-contracts/${contract._id}`);
               },
             },
             {
