@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation, setLocation } from 'wouter';
+import { useParams, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -22,7 +22,7 @@ import {
 export default function EditContract() {
   const { t } = useTranslation();
   const params = useParams();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const contractId = params.contractId;
   
   // Determinar el tipo de contrato desde la URL
