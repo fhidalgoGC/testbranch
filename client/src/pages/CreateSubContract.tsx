@@ -164,20 +164,20 @@ export default function CreateSubContract() {
       };
     }
     
-    // Datos por defecto si no hay datos del contrato principal
+    // Si no hay datos del contrato principal, retornar valores vacíos
     return {
       contractNumber: '',
-      contractDate: '7/31/2025',
-      customerNumber: 'Test Seller LLC',
-      idContract: 'SPC-46',
-      referenceNumber: 'NA',
-      commodity: 'HRW - Wheat Hard Red Winter',
-      quantityUnits: 1400,
+      contractDate: '',
+      customerNumber: '',
+      idContract: '',
+      referenceNumber: '',
+      commodity: '',
+      quantityUnits: 0,
       price: 0,
       basis: 0,
       future: 0,
-      contact: '-',
-      shipmentPeriod: '-'
+      contact: '',
+      shipmentPeriod: ''
     };
   });
 
@@ -253,20 +253,24 @@ export default function CreateSubContract() {
   const form = useForm<SubContractFormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
-      contractNumber: contractData.idContract, // Usar idContract (folio) como contractNumber
-      contractDate: contractData.contractDate,
-      customerNumber: contractData.customerNumber,
-      idContract: contractData.idContract,
-      referenceNumber: contractData.referenceNumber,
-      commodity: contractData.commodity,
+      contractNumber: parentContractData?.folio || '',
+      contractDate: parentContractData?.contract_date ? new Date(parentContractData.contract_date).toLocaleDateString() : '',
+      customerNumber: (() => {
+        const contractType = parentContractData?.type;
+        const targetRole = contractType === 'purchase' ? 'seller' : 'buyer';
+        return parentContractData?.participants?.find((p: any) => p.role === targetRole)?.name || '';
+      })(),
+      idContract: parentContractData?.folio || '',
+      referenceNumber: parentContractData?.reference_number || '',
+      commodity: parentContractData?.commodity?.name || '',
       future: parentContractData?.price_schedule?.[0]?.future_price ?? 0,
-      basis: parentContractData?.price_schedule?.[0]?.basis ?? contractData.basis,
-      totalPrice: (parentContractData?.price_schedule?.[0]?.future_price ?? 0) + (parentContractData?.price_schedule?.[0]?.basis ?? contractData.basis),
+      basis: parentContractData?.price_schedule?.[0]?.basis ?? 0,
+      totalPrice: (parentContractData?.price_schedule?.[0]?.future_price ?? 0) + (parentContractData?.price_schedule?.[0]?.basis ?? 0),
       totalDate: new Date().toISOString().split('T')[0], // Fecha de hoy en formato YYYY-MM-DD
-      quantity: parentContractData?.inventory?.open ?? 0, // Usar el valor "open" del inventario
-      measurementUnitId: parentContractData?.measurement_unit || 'bu60',
-      contact: contractData.contact,
-      shipmentPeriod: contractData.shipmentPeriod,
+      quantity: parentContractData?.inventory?.open ?? 0,
+      measurementUnitId: parentContractData?.measurement_unit || '',
+      contact: '-',
+      shipmentPeriod: '-',
     }
   });
 
