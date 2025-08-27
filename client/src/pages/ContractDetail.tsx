@@ -11,6 +11,8 @@ import { store } from "@/app/store";
 import {
   updateCreateSubContractState,
   updateEditSubContractState,
+  updateSingleContractInArray,
+  updateContractDetailState,
 } from "@/store/slices/pageStateSlice";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -129,6 +131,9 @@ export default function ContractDetail() {
 
   // Estado para el contrato específico encontrado
   const [currentContractData, setCurrentContractData] = useState<any>(null);
+  
+  // Estado para forzar re-render cuando se actualizan los datos
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
   // Estado para la dirección del participante
   const [participantAddress, setParticipantAddress] =
@@ -313,20 +318,40 @@ export default function ContractDetail() {
         console.log("✅ Contract data refreshed successfully:", contractResult);
 
         if (contractResult.data) {
+          // 1. Actualizar estado local
           setCurrentContractData(contractResult.data);
           console.log("🔄 Updated contract data in local state");
 
-          // Solo log para confirmar que tenemos los datos actualizados
-          console.log("✅ Contract data refreshed and set in local state:", {
+          // 2. Actualizar Redux store con los nuevos datos del contrato
+          const contractPage = contractType === "purchase" ? "purchaseContracts" : "saleContracts";
+          
+          // Actualizar el contrato específico en la lista de contratos en Redux
+          dispatch(updateSingleContractInArray({
+            page: contractPage,
+            contractId: contractId,
+            contractData: contractResult.data
+          }));
+          
+          // Actualizar el estado específico del detalle del contrato en Redux
+          dispatch(updateContractDetailState({
+            contractId: contractId,
+            updates: {
+              contractData: contractResult.data,
+              lastRefresh: Date.now()
+            }
+          }));
+
+          console.log("✅ Contract data updated in both local state and Redux:", {
             contractId,
             folio: contractResult.data.folio,
             oldQuantity: currentContractData?.quantity,
             newQuantity: contractResult.data.quantity,
+            reduxPage: contractPage,
             timestamp: new Date().toISOString()
           });
 
-          // Forzar un re-render mínimo para asegurar que el componente se actualice
-          setLoading(false);
+          // Forzar re-render del componente incrementando la key
+          setRefreshKey(prev => prev + 1);
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(

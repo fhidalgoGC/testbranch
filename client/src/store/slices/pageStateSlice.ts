@@ -43,6 +43,8 @@ interface ContractDetailState {
   activeTab: string;
   subContractFilters: Record<string, any>;
   expandedSections: string[];
+  contractData?: any; // Datos del contrato actual
+  lastRefresh?: number; // Timestamp del último refresh
 }
 
 interface CreateSubContractState {
@@ -353,6 +355,7 @@ const pageStateSlice = createSlice({
 export const {
   navigateToPage,
   updateContractsState,
+  updateSingleContractInArray,
   updateContractDetailState,
   updateCreateSubContractState,
   updateEditSubContractState,
