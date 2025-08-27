@@ -78,14 +78,8 @@ export const getPeople = async (
   filters: GetPeopleFilters = {},
   options: GetPeopleOptions = {},
 ): Promise<CrmPeopleResponse> => {
-  const partitionKey = localStorage.getItem("partition_key");
-  if (!partitionKey) {
-    throw new Error("Partition key not found");
-  }
-
-  // Build filter object
+  // Build filter object - interceptor handles partition key automatically
   const filterObj: any = {
-    _partitionKey: partitionKey,
     ...(filters.active !== undefined && { active: filters.active }),
   };
 
@@ -184,18 +178,13 @@ export const getBuyers = async (
  * Create idempotent ID for a new person (buyer or seller)
  */
 export const createPersonId = async (): Promise<string> => {
-  const partitionKey = localStorage.getItem("partition_key");
-  if (!partitionKey) {
-    throw new Error("Partition key not found");
-  }
-
   const response = await authenticatedFetch(`${environment.CRM_BASE_URL}/crm-people/people`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      _partitionKey: `organization_id=${partitionKey}`
+      // Interceptor handles partition key automatically
     }),
   });
 

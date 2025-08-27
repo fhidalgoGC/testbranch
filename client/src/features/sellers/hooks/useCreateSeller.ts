@@ -41,12 +41,7 @@ export function useCreateSeller() {
         throw new Error("Idempotent seller ID not initialized");
       }
 
-      // Get partition key from localStorage
-      const partitionKey = localStorage.getItem("partition_key");
-
-      if (!partitionKey) {
-        throw new Error("Partition key not found");
-      }
+      // Interceptor handles partition key automatically
 
       // Build full name based on person type
       const fullName =
@@ -77,7 +72,6 @@ export function useCreateSeller() {
             verified: false,
           },
         ] : [],
-        _partitionKey: partitionKey,
         active: true,
       };
 
