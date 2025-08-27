@@ -345,11 +345,11 @@ export default function CreateSubContract() {
       
       // Find selected measurement unit details from raw API data
       const measurementUnitsData = measurementUnits;
-      const selectedUnitSlug = data.measurementUnitId; // This is the slug like "bu60"
+      const selectedUnitSlug = data.measurementUnitId; // This is the slug like "bu45"
       
-      // Find the full unit data from the API response to get the ObjectId
-      // We need to find it in the raw API response that was logged
-      const selectedUnitId = parentContractData?.measurement_unit_id || ''; // Use parent's ObjectId as fallback
+      // Find the full unit data from the API response to get the correct ObjectId
+      const selectedUnit = measurementUnits.find(unit => unit.value === selectedUnitSlug);
+      const selectedUnitId = selectedUnit?.key || ''; // Use the key (ObjectId) of the selected unit
       
       // Extract price schedule values from parent contract
       const parentPriceSchedule = parentContractData?.price_schedule?.[0] || {};
