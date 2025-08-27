@@ -91,11 +91,11 @@ export default function CreateSubContract() {
   const contractId = params.contractId;
   
   // Hook para persistir estado de crear sub-contrato
-  const { formState, updateState } = useCreateSubContractState(contractId!);
+  const { createSubContractState, updateState } = useCreateSubContractState(contractId!);
   const { handleNavigateToPage } = useNavigationHandler();
   
   // Initialize subContractKey from Redux state if available
-  const initialSubContractKey = formState.subContractKey;
+  const initialSubContractKey = createSubContractState.subContractKey;
   
   // Obtener contratos del state de Redux para buscar el contrato actual
   const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
@@ -328,7 +328,7 @@ export default function CreateSubContract() {
 
   const handleCreateSubContract = handleSubmit((data: SubContractFormData) => {
     // Get the most up-to-date data from Redux state (auto-saved)
-    const stateFormData = formState.formData;
+    const stateFormData = createSubContractState.formData;
     const mergedData = {
       ...data,
       ...stateFormData, // Redux state takes precedence

@@ -82,7 +82,7 @@ export const useCreateSubContractState = (contractId: string) => {
   };
 
   return { 
-    formState: formState || { 
+    createSubContractState: formState || { 
       formData: {}, 
       selectedCommodity: null, 
       selectedMeasurementUnit: null, 
