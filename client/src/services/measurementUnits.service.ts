@@ -25,29 +25,24 @@ export class MeasurementUnitsService {
     try {
       const url = this.buildUrl();
 
-      console.log('🌐 Fetching measurement units from:', url);
-      console.log('🔐 AuthenticatedFetch will be used for API call');
+      console.log('Fetching measurement units from:', url);
 
       const response = await authenticatedFetch(url, {
         method: 'GET'
       });
-
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response ok:', response.ok);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log('📊 Measurement units response:', data);
+      console.log('Measurement units response:', data);
 
       // Handle response structure - could be direct array or wrapped in data property
       const units = data.data ? data.data : (Array.isArray(data) ? data : []);
-      console.log('📦 Processed units count:', units.length);
       return units;
     } catch (error) {
-      console.error('❌ Error fetching measurement units:', error);
+      console.error('Error fetching measurement units:', error);
       return [];
     }
   }
