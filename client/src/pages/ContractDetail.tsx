@@ -1253,7 +1253,7 @@ export default function ContractDetail() {
   }, [contractId, location]);
 
 
-  // Efecto principal para cargar datos del contrato siempre desde API
+  // Efecto que se ejecuta una sola vez al montar el componente
   useEffect(() => {
     if (!contractId) {
       setError("ID de contrato no válido");
@@ -1261,9 +1261,9 @@ export default function ContractDetail() {
       return;
     }
 
-    console.log("🔄 Cargando contrato desde API:", contractId);
+    console.log("🔄 Componente montado - Cargando contrato desde API:", contractId);
     handleFullRefresh();
-  }, [contractId]);
+  }, []); // Array vacío para que solo se ejecute al montar
 
   // Efecto para persistir cambios de tab activo
   useEffect(() => {
