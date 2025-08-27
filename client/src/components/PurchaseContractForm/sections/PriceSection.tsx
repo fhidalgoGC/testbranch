@@ -182,24 +182,12 @@ export function PriceSection({
                     
                     const [isFocused, setIsFocused] = React.useState(false);
 
-                    // Update display value when field value changes externally
+                    // Sync display value only when component initializes
                     React.useEffect(() => {
-                      if (!isFocused) {
-                        if (field.value !== null && field.value !== undefined && field.value !== 0) {
-                          const absValue = Math.abs(field.value);
-                          const formatted = formatNumber({
-                            minDecimals: NUMBER_FORMAT_CONFIG.minDecimals,
-                            maxDecimals: NUMBER_FORMAT_CONFIG.maxDecimals,
-                            value: absValue,
-                            formatPattern: NUMBER_FORMAT_CONFIG.formatPattern,
-                            roundMode: NUMBER_FORMAT_CONFIG.roundMode
-                          });
-                          setDisplayValue(formatted);
-                        } else {
-                          setDisplayValue('');
-                        }
+                      if (field.value !== null && field.value !== undefined && field.value !== 0) {
+                        setDisplayValue(Math.abs(field.value).toString());
                       }
-                    }, [field.value, isFocused]);
+                    }, []); // Empty dependency array - only run on mount
 
                     return (
                       <Input
