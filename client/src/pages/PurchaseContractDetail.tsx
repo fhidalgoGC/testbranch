@@ -77,16 +77,21 @@ export default function PurchaseContractDetail() {
   const { contractState, updateState } = useContractDetailState(contractId!);
   const { handleNavigateToPage } = useNavigationHandler();
 
-  // Obtener contratos del state de Redux
+  // Detectar tipo de contrato basado en la URL
+  const contractType = location.includes('/sale-contracts/') ? 'sale' : 'purchase';
+  
+  // Obtener contratos del state de Redux basado en el tipo
   const contractsState = useSelector(
-    (state: any) => state.pageState.purchaseContracts,
+    (state: any) => contractType === 'sale' 
+      ? state.pageState.saleContracts 
+      : state.pageState.purchaseContracts,
   );
   const contractsData = contractsState.contractsData || [];
 
   // Get dispatch function for updating Redux state
   const dispatch = useDispatch();
 
-  usePageTracking(`/purchase-contracts/${contractId}`);
+  usePageTracking(`/${contractType}-contracts/${contractId}`);
 
   // Notificar navegación al cargar la página
   useEffect(() => {
@@ -488,7 +493,7 @@ export default function PurchaseContractDetail() {
         await new Promise((resolve) => setTimeout(resolve, remainingTime));
 
         // Navigate back to contracts list
-        setLocation("/purchase-contracts");
+        setLocation(`/${contractType}-contracts`);
       } else {
         console.error(
           "❌ Failed to delete contract:",
@@ -1352,7 +1357,7 @@ export default function PurchaseContractDetail() {
 
   if (loading) {
     return (
-      <DashboardLayout title={t("contractDetail.title")}>
+      <DashboardLayout title={t(contractType === 'sale' ? "saleContractDetail" : "contractDetail.title")}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -1369,14 +1374,14 @@ export default function PurchaseContractDetail() {
 
   if (error) {
     return (
-      <DashboardLayout title={t("contractDetail.title")}>
+      <DashboardLayout title={t(contractType === 'sale' ? "saleContractDetail" : "contractDetail.title")}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-lg font-medium text-red-600 dark:text-red-400 mb-2">
               {t("contractDetail.errorLoadingContract")}
             </div>
             <div className="text-gray-600 dark:text-gray-400">{error}</div>
-            <Link href="/purchase-contracts">
+            <Link href={`/${contractType}-contracts`}>
               <Button className="mt-4" variant="outline">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 {t("backToList")}
@@ -1390,7 +1395,7 @@ export default function PurchaseContractDetail() {
 
   if (!currentContractData) {
     return (
-      <DashboardLayout title={t("contractDetail.title")}>
+      <DashboardLayout title={t(contractType === 'sale' ? "saleContractDetail" : "contractDetail.title")}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -1399,7 +1404,7 @@ export default function PurchaseContractDetail() {
             <div className="text-gray-600 dark:text-gray-400 mb-4">
               {error || "Contrato no encontrado en los datos cargados"}
             </div>
-            <Link href="/purchase-contracts">
+            <Link href={`/${contractType}-contracts`}>
               <Button className="mt-4" variant="outline">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 {t("backToList")}
@@ -2041,14 +2046,14 @@ export default function PurchaseContractDetail() {
                   }),
                 );
                 setLocation(
-                  `/purchase-contracts/${contractId}/sub-contracts/create`,
+                  `/${contractType}-contracts/${contractId}/sub-contracts/create`,
                 );
               }}
               onViewSubContract={(id) => {
                 console.log("View sub-contract:", id);
                 handleNavigateToPage("viewSubContract", id);
                 setLocation(
-                  `/purchase-contracts/${contractId}/sub-contracts/${id}/view`,
+                  `/${contractType}-contracts/${contractId}/sub-contracts/${id}/view`,
                 );
               }}
               onPrintSubContract={handlePrintSubContract}
@@ -2079,7 +2084,7 @@ export default function PurchaseContractDetail() {
                   );
 
                   setLocation(
-                    `/purchase-contracts/${contractId}/sub-contracts/${id}/edit`,
+                    `/${contractType}-contracts/${contractId}/sub-contracts/${id}/edit`,
                   );
                 } else {
                   console.error("Sub-contrato no encontrado:", id);
