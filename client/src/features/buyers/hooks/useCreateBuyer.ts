@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
+import { authenticatedFetch } from '@/utils/apiInterceptors';
 import type { CreateBuyerIdResponse, CreateBuyerPayload, BuyerFormData } from '../types/create-buyer';
 import { environment } from '@/environment';
 
@@ -77,10 +78,9 @@ export function useCreateBuyer() {
 
         console.log('CreateBuyer: Making POST request to initialize buyer ID');
         
-        const response = await fetch(`${crmUrl}/crm-people/people`, {
+        const response = await authenticatedFetch(`${crmUrl}/crm-people/people`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${jwt}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -156,10 +156,9 @@ export function useCreateBuyer() {
       return { success: true, data: locationPayload };
     }
     
-    const locationResponse = await fetch(`${crmUrl}/crm-locations/address`, {
+    const locationResponse = await authenticatedFetch(`${crmUrl}/crm-locations/address`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${jwt}`,
         'Content-Type': 'application/json',
         '_partitionkey': partitionKey,
         'bt-organization': partitionKey,
@@ -287,10 +286,9 @@ export function useCreateBuyer() {
         payload.organization_name = formData.organization_name;
       }
 
-      const response = await fetch(`${crmUrl}/crm-people/people/${idempotentBuyerId}`, {
+      const response = await authenticatedFetch(`${crmUrl}/crm-people/people/${idempotentBuyerId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${jwt}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),

@@ -57,10 +57,9 @@ export function useCreateSeller() {
 
         console.log('CreateSeller: Making POST request to initialize seller ID');
         
-        const response = await fetch(`${crmUrl}/crm-people/people`, {
+        const response = await authenticatedFetch(`${crmUrl}/crm-people/people`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${jwt}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
