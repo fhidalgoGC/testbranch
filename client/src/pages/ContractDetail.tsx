@@ -132,6 +132,9 @@ export default function ContractDetail() {
   
   // Estado para forzar re-render cuando se actualizan los datos
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  
+  // Flag para evitar múltiples refreshes simultáneos
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   // Debug: Monitor changes to currentContractData
   useEffect(() => {
@@ -148,6 +151,7 @@ export default function ContractDetail() {
   const [subContractsData, setSubContractsData] = useState<any[]>([]);
   const [loadingSubContracts, setLoadingSubContracts] =
     useState<boolean>(false);
+  const [refreshingContract, setRefreshingContract] = useState<boolean>(false);
   const [fullScreenLoading, setFullScreenLoading] = useState<boolean>(false);
 
   // Delete confirmation modal states
@@ -240,64 +244,19 @@ export default function ContractDetail() {
     }
   };
 
-  // Función para refrescar los datos del contrato desde la API
-  const refreshContractData = async (contractId: string) => {
-    try {
-      console.log("🔄 Refreshing contract data for ID:", contractId);
-
-      const authCheck = hasAuthTokens();
-      if (!authCheck.isAuthenticated) {
-        console.error(
-          "❌ No authentication tokens available for contract refresh",
-        );
-        return;
-      }
-
-      // Call the contract detail endpoint using the service
-      const response = await getContractById(contractId);
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("✅ Contract data refreshed successfully:", result);
-
-        if (result.data) {
-          // Update the current contract data immediately
-          setCurrentContractData(result.data);
-          console.log("🔄 Updated contract data in local state");
-
-          // Reload related data
-          const seller = result.data.participants?.find(
-            (p: any) => p.role === "seller",
-          );
-          if (seller && seller.people_id) {
-            loadParticipantAddress(seller.people_id);
-          }
-
-          // Reload sub-contracts if it's a basis contract
-          if (result.data.price_schedule?.[0]?.pricing_type === "basis") {
-            loadSubContracts(contractId);
-          }
-        }
-      } else {
-        console.error(
-          "❌ Failed to refresh contract data:",
-          response.status,
-          response.statusText,
-        );
-      }
-    } catch (error) {
-      console.error("❌ Error refreshing contract data:", error);
-    } finally {
-      // No cleanup needed
-    }
-  };
-
   // Función completa de refresh con overlay de pantalla completa y mínimo 0.3 segundos
   const handleFullRefresh = async () => {
     console.log("YEAYEA",contractId);
     if (!contractId) return;
+    
+    // Si ya está refrescando, ignorar esta llamada
+    if (isRefreshing) {
+      console.log("⚠️ Refresh ya en progreso, ignorando nueva llamada");
+      return;
+    }
 
-    // Iniciar el loading de pantalla completa y medir el tiempo
+    // Marcar como refrescando y iniciar el loading de pantalla completa
+    setIsRefreshing(true);
     setFullScreenLoading(true);
     const startTime = Date.now();
 
@@ -334,21 +293,14 @@ export default function ContractDetail() {
             quantity: contractResult.data.quantity
           });
 
-          // Forzar actualización del estado usando una nueva referencia
-          const newData = { ...contractResult.data };
-          console.log("newdata from api",newData);
+          // Crear una copia profunda para asegurar que React detecte el cambio
+          const newData = JSON.parse(JSON.stringify(contractResult.data));
           
+          console.log("✅ Actualizando datos - quantity:", newData.quantity);
           
+          // Actualizar ambos estados juntos
           setCurrentContractData(newData);
-          setTimeout(()=>{console.log("currentContractData",currentContractData);},500);
-          
-          console.log("✅ setState llamado con nuevos datos");
-
-          // Forzar re-render del componente incrementando la key
-          setRefreshKey(prev => {
-            console.log("🔄 Incrementando refreshKey de", prev, "a", prev + 1);
-            return prev + 1;
-          });
+          setRefreshKey(prev => prev + 1);
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(
@@ -498,8 +450,9 @@ export default function ContractDetail() {
       // Esperar el tiempo restante si la API fue más rápida que la duración mínima
       await new Promise((resolve) => setTimeout(resolve, remainingTime));
 
-      // Quitar el loading de pantalla completa
+      // Quitar el loading de pantalla completa y liberar el lock
       setFullScreenLoading(false);
+      setIsRefreshing(false);
       console.log("✅ Full refresh completed");
     }
   };
