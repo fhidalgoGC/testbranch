@@ -1,6 +1,8 @@
 import { PurchaseSaleContract } from "@/types/purchaseSaleContract.types";
 import { authenticatedFetch } from "@/utils/apiInterceptors";
 import { environment } from "@/environment/environment";
+import { store } from "@/app/store";
+import { updateContractsState } from "@/store/slices/pageStateSlice";
 
 // Interface para la respuesta de contratos basada en la respuesta real de la API
 interface ContractResponse {
@@ -696,6 +698,38 @@ export const submitContract = async (
 
     const responseData = await response.json();
     console.log("✅ Contract submitted successfully:", responseData);
+
+    // Actualizar Redux cache automáticamente después de actualizar contrato
+    try {
+      // Obtener los datos actualizados del contrato
+      const updatedContractResult = await getContractById(contractId);
+      if ((updatedContractResult as any).success && (updatedContractResult as any).data) {
+        const updatedContract = (updatedContractResult as any).data;
+        
+        // Determinar el tipo de contrato desde la URL actual o el tipo del contrato
+        const currentState = store.getState();
+        const contractType = updatedContract.type === 'purchase' ? 'purchase' : 'sale';
+        const statePage = contractType === 'purchase' ? 'purchaseContracts' : 'saleContracts';
+        
+        // Obtener el array actual de contratos
+        const currentContractsData = currentState.pageState[statePage].contractsData || [];
+        
+        // Actualizar el contrato en el array
+        const updatedContractsData = currentContractsData.map((contract: any) => 
+          contract._id === contractId ? updatedContract : contract
+        );
+        
+        // Dispatch para actualizar Redux
+        store.dispatch(updateContractsState({ 
+          page: statePage as 'purchaseContracts' | 'saleContracts', 
+          updates: { contractsData: updatedContractsData }
+        }));
+        
+        console.log("✅ Redux cache updated automatically in service");
+      }
+    } catch (error) {
+      console.warn("⚠️ Could not auto-update Redux cache:", error);
+    }
 
     return {
       success: true,
