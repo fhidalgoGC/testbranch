@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Calendar, Package, FileText } from 'lucide-react';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { QuantityActualOverview } from '@/components/contracts/QuantityActualOverview';
+import { authenticatedFetch } from '@/utils/apiInterceptors';
 // No validation needed for view mode
 
 interface ContractData {
@@ -50,8 +51,15 @@ export default function ViewSubContract() {
   
   const { handleNavigateToPage } = useNavigationHandler();
   
+  // Determinar el tipo de contrato desde la URL
+  const contractType = location.includes('/purchase-contracts/') ? 'purchase' : 'sale';
+  
   // Obtener contratos del state de Redux para buscar el contrato actual
-  const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
+  const contractsState = useSelector((state: any) => 
+    contractType === 'purchase' 
+      ? state.pageState.purchaseContracts 
+      : state.pageState.saleContracts
+  );
   const contractsData = contractsState.contractsData || [];
   
   // Obtener el estado del contrato principal para editar sub-contrato (usar el mismo que edit)
@@ -62,7 +70,47 @@ export default function ViewSubContract() {
   // Use the specific sub-contract data from Redux state
   const currentSubContract = currentSubContractData;
   
-  usePageTracking('viewSubContract');
+  usePageTracking(`/${contractType}-contracts/${contractId}/sub-contracts/${subContractId}/view`);
+  
+  // State para controlar la carga de datos frescos
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Función para refrescar los datos del subcontrato desde el API
+  const refreshSubContractData = async () => {
+    if (!contractId || !subContractId) return;
+    
+    try {
+      setIsLoading(true);
+      const response = await authenticatedFetch(`/api/sub-contracts/${subContractId}`, {
+        method: 'GET',
+      });
+      
+      if (response.ok) {
+        const freshSubContract = await response.json();
+        console.log('🔄 Fresh sub-contract data:', freshSubContract);
+        
+        // Actualizar los valores del formulario con datos frescos
+        if (setValue && freshSubContract) {
+          setValue('quantity', freshSubContract.quantity || 0);
+          setValue('future', freshSubContract.price_schedule?.[0]?.future_price || 0);
+          setValue('basis', freshSubContract.price_schedule?.[0]?.basis || 0);
+          setValue('price', freshSubContract.price_schedule?.[0]?.price || 0);
+          setValue('totalPrice', freshSubContract.total_price || 0);
+          setValue('totalDate', freshSubContract.sub_contract_date ? new Date(freshSubContract.sub_contract_date).toISOString().split('T')[0] : '');
+          setValue('measurementUnitId', freshSubContract.measurement_unit || '');
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing sub-contract data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Refrescar datos cuando carga la vista
+  useEffect(() => {
+    refreshSubContractData();
+  }, [contractId, subContractId]);
   
   // State management
   const [contractData, setContractData] = useState<ContractData>({
@@ -122,7 +170,7 @@ export default function ViewSubContract() {
 
   // Handle cancel - go back to contract detail
   const handleCancel = () => {
-    setLocation(`/purchase-contracts/${contractId}`);
+    setLocation(`/${contractType}-contracts/${contractId}`);
   };
 
   // Load data from Redux state exactly like EditSubContract does
