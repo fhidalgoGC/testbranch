@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation, useRouter } from 'wouter';
+import { useParams, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -22,8 +22,7 @@ import {
 export default function EditContract() {
   const { t } = useTranslation();
   const params = useParams();
-  const [location] = useLocation();
-  const router = useRouter();
+  const [location, setLocation] = useLocation();
   const contractId = params.contractId;
   
   // Determinar el tipo de contrato desde la URL
@@ -60,8 +59,8 @@ export default function EditContract() {
   }, [contractId, contractsData]);
 
   const handleCancel = () => {
-    // Regresar al detalle del contrato (igual que ViewContract)
-    router.push(`/${contractType}-contracts/${contractId}`);
+    // Regresar al detalle del contrato
+    setLocation(`/${contractType}-contracts/${contractId}`);
   };
 
   // Función para manejar submit del contrato actualizado
