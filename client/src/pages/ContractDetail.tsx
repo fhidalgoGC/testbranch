@@ -7,7 +7,6 @@ import {
   useNavigationHandler,
 } from "@/hooks/usePageState";
 import { useSelector, useDispatch } from "react-redux";
-import { store } from "@/app/store";
 import {
   updateCreateSubContractState,
   updateEditSubContractState,
@@ -39,7 +38,6 @@ import {
   Eye,
   Printer,
   Plus,
-  Check,
   RefreshCw,
   Loader2,
   X,
@@ -55,7 +53,7 @@ import {
   FieldConfig,
   ProgressBarConfig,
 } from "@/components/contracts/SubContractCard";
-import { authenticatedFetch, hasAuthTokens } from "@/utils/apiInterceptors";
+import { hasAuthTokens } from "@/utils/apiInterceptors";
 import {
   deleteSubContract,
   getContractById,
@@ -128,8 +126,6 @@ export default function ContractDetail() {
   // Estado para el contrato específico encontrado
   const [currentContractData, setCurrentContractData] = useState<any>(null);
   
-  // Estado para forzar re-render cuando se actualizan los datos
-  const [refreshKey, setRefreshKey] = useState<number>(0);
   
 
 
@@ -1371,7 +1367,7 @@ export default function ContractDetail() {
 
   return (
     <DashboardLayout title={t("contractDetail.title")}>
-      <div key={`contract-detail-${refreshKey}`} className="space-y-6 max-w-6xl mx-auto">
+      <div className="space-y-6 max-w-6xl mx-auto">
         {/* Main Contract Header */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
           <div className="flex items-start justify-between mb-4">
