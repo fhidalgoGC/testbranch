@@ -1644,6 +1644,10 @@ export default function ContractDetail() {
                       <TooltipTrigger asChild>
                         <Button
                           size="sm"
+                          onClick={() => {
+                            const contractType = location.includes('/purchase-contracts/') ? 'purchase' : 'sale';
+                            setLocation(`/${contractType}-contracts/${contractId}/edit`);
+                          }}
                           className="h-8 w-8 p-0 bg-yellow-500 hover:bg-yellow-600 text-white"
                         >
                           <Edit className="w-4 h-4" />
