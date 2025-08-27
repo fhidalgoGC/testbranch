@@ -11,7 +11,7 @@ import { store } from "@/app/store";
 import {
   updateCreateSubContractState,
   updateEditSubContractState,
-  updateContractsState,
+  updateSingleContractInArray,
 } from "@/store/slices/pageStateSlice";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -325,30 +325,21 @@ export default function ContractDetail() {
             const currentContractType = location.includes("/sale-contracts/") ? "sale" : "purchase";
             const statePage = currentContractType === 'purchase' ? 'purchaseContracts' : 'saleContracts';
             
-            // Obtener el array actual de contratos desde Redux
-            const currentState = store.getState();
-            const currentContractsData = currentState.pageState[statePage].contractsData || [];
-            
-            console.log("🔄 Updating Redux cache:", {
+            console.log("🔄 Updating Redux cache using new action:", {
               contractId,
               currentContractType,
               statePage,
-              currentDataLength: currentContractsData.length,
-              contractFound: currentContractsData.some((c: any) => c._id === contractId)
+              updatedContractFolio: updatedContract.folio
             });
             
-            // Actualizar el contrato específico en el array
-            const updatedContractsData = currentContractsData.map((contract: any) => 
-              contract._id === contractId ? updatedContract : contract
-            );
-            
-            // Dispatch para actualizar Redux
-            dispatch(updateContractsState({ 
+            // Usar la nueva acción que actualiza solo el contrato específico
+            dispatch(updateSingleContractInArray({ 
               page: statePage as 'purchaseContracts' | 'saleContracts', 
-              updates: { contractsData: updatedContractsData }
+              contractId: contractId,
+              contractData: updatedContract
             }));
             
-            console.log("✅ Redux cache updated in handleFullRefresh");
+            console.log("✅ Redux cache updated with new action in handleFullRefresh");
           } catch (error) {
             console.warn("⚠️ Could not update Redux cache in handleFullRefresh:", error);
           }

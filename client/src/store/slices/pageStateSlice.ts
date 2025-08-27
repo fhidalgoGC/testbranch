@@ -241,6 +241,32 @@ const pageStateSlice = createSlice({
         ...action.payload.updates,
       };
     },
+    updateSingleContractInArray: (
+      state,
+      action: PayloadAction<{ 
+        page: 'purchaseContracts' | 'buyers' | 'sellers' | 'saleContracts';
+        contractId: string;
+        contractData: any;
+      }>
+    ) => {
+      const { page, contractId, contractData } = action.payload;
+      const currentData = state[page]?.contractsData || [];
+      
+      // Buscar y actualizar solo el contrato específico
+      const updatedData = currentData.map((contract: any) => 
+        contract._id === contractId ? contractData : contract
+      );
+      
+      // Si no se encontró el contrato, agregarlo al array
+      if (!currentData.some((contract: any) => contract._id === contractId)) {
+        updatedData.push(contractData);
+      }
+      
+      state[page] = {
+        ...state[page],
+        contractsData: updatedData,
+      };
+    },
 
     // Acciones para detalle de contrato
     updateContractDetailState: (
