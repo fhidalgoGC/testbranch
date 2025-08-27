@@ -69,7 +69,7 @@ type SubContractFormData = z.infer<typeof baseSubContractSchema>;
 interface ContractData {
   contractNumber: string; // Ya no se usa, mantener por compatibilidad
   contractDate: string;
-  customerNumber: string; // Ahora representa seller para purchase contracts
+  customerNumber: string; // Representa seller para purchase contracts, buyer para sale contracts
   idContract: string; // Ahora es el folio
   referenceNumber: string;
   commodity: string;
@@ -97,8 +97,15 @@ export default function CreateSubContract() {
   // Initialize subContractKey from Redux state if available
   const initialSubContractKey = createSubContractState.subContractKey;
   
-  // Obtener contratos del state de Redux para buscar el contrato actual
-  const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
+  // Detectar tipo de contrato basado en la URL
+  const contractType = location.includes('/sale-contracts/') ? 'sale' : 'purchase';
+  
+  // Obtener contratos del state de Redux basado en el tipo
+  const contractsState = useSelector(
+    (state: any) => contractType === 'sale' 
+      ? state.pageState.saleContracts 
+      : state.pageState.purchaseContracts,
+  );
   const contractsData = contractsState.contractsData || [];
   
   // Obtener el estado del contrato principal para crear sub-contrato
@@ -106,7 +113,7 @@ export default function CreateSubContract() {
   const parentContractData = createSubContractState?.parentContractData;
   const subContractsData = createSubContractState?.subContractsData || [];
   
-  usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/create`);
+  usePageTracking(`/${contractType}-contracts/${contractId}/sub-contracts/create`);
   
   // Function to fetch sub-contract key when page loads
   const fetchSubContractKey = async () => {
@@ -323,7 +330,7 @@ export default function CreateSubContract() {
   }, [futureValue, basisValue, quantityValue, totalPriceValue, measurementUnitValue, totalDateValue, parentContractData?.folio]);
 
   const handleCancel = () => {
-    setLocation(`/purchase-contracts/${contractId}`);
+    setLocation(`/${contractType}-contracts/${contractId}`);
   };
 
   const handleCreateSubContract = handleSubmit((data: SubContractFormData) => {
@@ -441,7 +448,7 @@ export default function CreateSubContract() {
       setFormDataForSubmission(null);
       
       // Navigate back to contract detail and trigger data refresh
-      setLocation(`/purchase-contracts/${contractId}?refresh=true`);
+      setLocation(`/${contractType}-contracts/${contractId}?refresh=true`);
       
     } catch (error) {
       console.error('❌ Error creating sub-contract:', error);
