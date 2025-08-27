@@ -210,15 +210,4 @@ input[inputmode="numeric"]::-webkit-inner-spin-button {
   .view-only-form button:has(svg.lucide-x) {
     display: none !important;
   }
-
-  /* Fix infinite scroll issue - force proper content height */
-  main {
-    height: calc(100vh - 64px) !important; /* Assuming navbar is ~64px */
-    overflow-y: auto !important;
-  }
-
-  main > div {
-    height: fit-content !important;
-    max-height: none !important;
-  }
 }
