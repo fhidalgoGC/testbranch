@@ -26,8 +26,8 @@ import { CitySelector } from "@/components/ui/city-selector-new";
 import type { Country } from "@/features/countries/types/country";
 import type { State } from "@/features/states/types/state";
 import type { City } from "@/features/cities/hooks/useCities";
-import { useCreateSeller } from "@/features/buyers/hooks/useCreateSeller";
-import type { BuyerFormData } from "@/features/buyers/types/create-buyer";
+import { useCreateSeller } from "@/features/sellers/hooks/useCreateSeller";
+import type { SellerFormData } from "@/features/sellers/types/create-seller";
 
 // Form validation schema
 const sellerSchema = z
@@ -94,16 +94,16 @@ export default function CreateSeller() {
   const [postalCodeError, setPostalCodeError] = useState<string>("");
 
   const {
-    idempotentBuyerId,
+    idempotentSellerId,
     isInitializing,
     initializationError,
-    createBuyer,
+    createSeller,
     isCreating,
     error,
     isSuccess,
   } = useCreateSeller();
 
-  const form = useForm<BuyerFormData>({
+  const form = useForm<SellerFormData>({
     resolver: zodResolver(sellerSchema),
     defaultValues: {
       person_type: "natural_person",
@@ -187,9 +187,9 @@ export default function CreateSeller() {
       .join(" ");
   };
 
-  const onSubmit = async (data: BuyerFormData) => {
+  const onSubmit = async (data: SellerFormData) => {
     // Add location fields to the form data
-    const formDataWithLocation: BuyerFormData = {
+    const formDataWithLocation: SellerFormData = {
       ...data,
       address,
       postalCode,
@@ -199,13 +199,13 @@ export default function CreateSeller() {
     };
 
     console.log(
-      "CreateBuyer: Submitting form with location data:",
+      "CreateSeller: Submitting form with location data:",
       formDataWithLocation,
     );
-    await createBuyer(formDataWithLocation);
+    await createSeller(formDataWithLocation);
   };
 
-  // Show success message when buyer is created
+  // Show success message when seller is created
   if (isSuccess && !showSuccess) {
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 3000);
@@ -213,7 +213,7 @@ export default function CreateSeller() {
 
   if (isInitializing) {
     return (
-      <DashboardLayout title="Agregar Comprador">
+      <DashboardLayout title="Agregar Vendedor">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -224,7 +224,7 @@ export default function CreateSeller() {
     );
   }
 
-  if (!isInitializing && (!idempotentBuyerId || initializationError)) {
+  if (!isInitializing && (!idempotentSellerId || initializationError)) {
     return (
       <DashboardLayout title="Error">
         <div className="max-w-2xl mx-auto space-y-4">
@@ -243,7 +243,7 @@ export default function CreateSeller() {
           </Alert>
           <div className="text-center">
             <Button asChild variant="outline">
-              <Link href="/buyers">{t("backToList")}</Link>
+              <Link href="/sellers">{t("backToList")}</Link>
             </Button>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function CreateSeller() {
   }
 
   return (
-    <DashboardLayout title="Agregar Comprador">
+    <DashboardLayout title="Agregar Vendedor">
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 -mx-6 -my-6 px-6 py-6">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Header */}
@@ -263,16 +263,16 @@ export default function CreateSeller() {
               size="sm"
               className="p-3 hover:bg-white/60 dark:hover:bg-gray-800/60 rounded-xl transition-all duration-200"
             >
-              <Link href="/buyers">
+              <Link href="/sellers">
                 <ArrowLeft className="w-5 h-5" />
               </Link>
             </Button>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                {t("addBuyer")}
+                {t("addSeller")}
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {t("createBuyerDescription")}
+                {t("createSellerDescription")}
               </p>
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function CreateSeller() {
           {showSuccess && (
             <Alert className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 rounded-xl shadow-sm">
               <AlertDescription className="text-emerald-800 dark:text-emerald-200 font-medium">
-                {t("buyerRegisteredSuccess")}
+                {t("sellerRegisteredSuccess")}
               </AlertDescription>
             </Alert>
           )}
@@ -289,7 +289,7 @@ export default function CreateSeller() {
           {/* Error Message */}
           {error && (
             <Alert variant="destructive" className="rounded-xl shadow-sm">
-              <AlertDescription>{t("buyerRegistrationError")}</AlertDescription>
+              <AlertDescription>{t("sellerRegistrationError")}</AlertDescription>
             </Alert>
           )}
 
@@ -529,7 +529,7 @@ export default function CreateSeller() {
                         }
                         onChange={(country) => {
                           console.log(
-                            "CreateBuyer: Country change triggered:",
+                            "CreateSeller: Country change triggered:",
                             country
                               ? {
                                   name:
@@ -559,7 +559,7 @@ export default function CreateSeller() {
 
                           if (country) {
                             console.log(
-                              "CreateBuyer: Updated selectedCountry state, reset selectedState",
+                              "CreateSeller: Updated selectedCountry state, reset selectedState",
                             );
                           }
                         }}
@@ -585,7 +585,7 @@ export default function CreateSeller() {
                         selectedCountry={selectedCountry}
                         onChange={(state) => {
                           console.log(
-                            "CreateBuyer: State change triggered:",
+                            "CreateSeller: State change triggered:",
                             state
                               ? {
                                   name: state.name,
@@ -603,7 +603,7 @@ export default function CreateSeller() {
 
                           if (state) {
                             console.log(
-                              "CreateBuyer: Updated selectedState, reset selectedCity",
+                              "CreateSeller: Updated selectedState, reset selectedCity",
                             );
                           }
                         }}
@@ -632,7 +632,7 @@ export default function CreateSeller() {
                         selectedCity={selectedCity}
                         onCityChange={(city) => {
                           console.log(
-                            "CreateBuyer: City change triggered:",
+                            "CreateSeller: City change triggered:",
                             city
                               ? {
                                   name: city.name,
@@ -646,7 +646,7 @@ export default function CreateSeller() {
                           setSelectedCity(city);
 
                           if (city) {
-                            console.log("CreateBuyer: Updated selectedCity");
+                            console.log("CreateSeller: Updated selectedCity");
                           }
                         }}
                         disabled={!selectedCountry || !selectedState}
@@ -720,7 +720,7 @@ export default function CreateSeller() {
                     asChild
                     className="flex-1 h-12 rounded-lg border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
-                    <Link href="/buyers">{t("cancel")}</Link>
+                    <Link href="/sellers">{t("cancel")}</Link>
                   </Button>
                   <Button
                     type="submit"
@@ -733,7 +733,7 @@ export default function CreateSeller() {
                         {t("registering")}
                       </>
                     ) : (
-                      t("registerBuyer")
+                      t("registerSeller")
                     )}
                   </Button>
                 </div>
