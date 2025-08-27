@@ -62,7 +62,8 @@ import {
   getParticipantLocation, 
   deleteContract, 
   settleParentContract, 
-  settleSubContract 
+  settleSubContract,
+  generateAndDownloadPDF
 } from "@/services/contractsService";
 
 export default function PurchaseContractDetail() {
@@ -1063,61 +1064,14 @@ export default function PurchaseContractDetail() {
     console.log("🖨️ PRINT DATA JSON:", JSON.stringify(printData, null, 2));
     console.log("🖨️ Sub-contrato a imprimir:", subContract);
 
-    // Llamar al endpoint de CraftMyPDF para generar el PDF
-    generateAndDownloadPDF(printData, subContract.folio || "SUB-CONTRACT");
+    // Llamar al servicio centralizado para generar el PDF
+    handleGenerateAndDownloadPDF(printData, subContract.folio || "SUB-CONTRACT");
   };
 
-  // Función para generar y descargar el PDF
-  const generateAndDownloadPDF = async (printData: any, fileName: string) => {
+  // Función para generar y descargar el PDF usando el servicio centralizado
+  const handleGenerateAndDownloadPDF = async (printData: any, fileName: string) => {
     try {
-      console.log("📄 Iniciando generación de PDF...");
-      
-      const response = await fetch(`${environment.CRAFTMYPDF_BASE_URL}/create`, {
-        method: 'POST',
-        headers: {
-          'accept': '*/*',
-          'accept-language': 'es-419,es;q=0.9',
-          'content-type': 'application/json; charset=utf-8',
-          'origin': 'https://contracts-develop.grainchain.io',
-          'priority': 'u=1, i',
-          'referer': 'https://contracts-develop.grainchain.io/',
-          'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-          'sec-ch-ua-mobile': '?0',
-          'sec-ch-ua-platform': '"macOS"',
-          'sec-fetch-dest': 'empty',
-          'sec-fetch-mode': 'cors',
-          'sec-fetch-site': 'cross-site',
-          'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
-          'x-api-key': environment.CRAFTMYPDF_API_KEY
-        },
-        body: JSON.stringify(printData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error en la respuesta: ${response.status} ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log("✅ Respuesta de CraftMyPDF:", result);
-
-      // Verificar que la respuesta contiene la URL del archivo
-      if (result.file) {
-        console.log("📄 URL del PDF generado:", result.file);
-        
-        // Descargar automáticamente el PDF
-        const link = document.createElement('a');
-        link.href = result.file;
-        link.download = `${fileName}.pdf`;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        console.log("✅ PDF descargado exitosamente");
-      } else {
-        console.error("❌ No se encontró la URL del archivo en la respuesta:", result);
-        alert("Error: No se pudo generar el PDF. Inténtalo de nuevo.");
-      }
+      await generateAndDownloadPDF(printData, fileName);
     } catch (error) {
       console.error("❌ Error al generar/descargar PDF:", error);
       alert("Error al generar el PDF. Por favor verifica tu conexión e inténtalo de nuevo.");

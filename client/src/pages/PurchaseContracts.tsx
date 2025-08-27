@@ -17,6 +17,7 @@ import { PurchaseSaleContract } from "@/types/purchaseSaleContract.types";
 import { formatNumber } from "@/lib/numberFormatter";
 import {
   fetchContractsData,
+  fetchContractsDataDirect,
   generateContractId,
 } from "@/services/contractsService";
 import {
@@ -171,147 +172,30 @@ export default function PurchaseContracts() {
         return;
       }
 
-      // Construir filtro
-      const filter: any = {
-        type: "purchase",
-      };
-
-      // Agregar filtro de commodity si está seleccionado
-      if (activeFilters.commodity && !activeFilters.commodity.includes("all")) {
-        // Ahora los filtros ya contienen los IDs directamente, no necesitamos mapear
-        const selectedCommodityIds = activeFilters.commodity.filter(
-          (id: string) => id !== "all",
-        );
-
-        if (selectedCommodityIds.length > 0) {
-          filter["commodity.commodity_id"] = { $in: selectedCommodityIds };
-        }
-      }
-
-      // Agregar filtro de pricing_type si está seleccionado (no debe incluir 'all')
-      if (activeFilters.pricingType && activeFilters.pricingType.length > 0) {
-        const validPricingTypes = activeFilters.pricingType.filter(
-          (type: string) => type !== "all",
-        );
-        if (validPricingTypes.length > 0) {
-          // Para pricingType usamos solo el primer valor ya que es single selection
-          filter["price_schedule.pricing_type"] = validPricingTypes[0];
-        }
-      }
-
-      // Construir parámetros de URL
-      const params = new URLSearchParams({
-        all: "true",
-        filter: JSON.stringify(filter),
-        page: page.toString(),
-        limit: limit.toString(),
-      });
-
-      // Agregar ordenamiento si existe
-      if (sortConfig) {
-        params.append(
-          `sort[${sortConfig.field}]`,
-          sortConfig.direction === "asc" ? "1" : "-1",
-        );
-      } else {
-        // Ordenamiento por defecto por fecha de creación descendente
-        params.append("sort[created_at]", "-1");
-      }
-
-      const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${params.toString()}`;
-      console.log("Fetching contracts from:", url);
-
-      // Headers de la petición
-      const headers = {
-        _partitionkey: partitionKey,
-        accept: "*/*",
-        "accept-language": "es-419,es;q=0.9",
-        authorization: `Bearer ${idToken}`,
-        "bt-organization": partitionKey,
-        "bt-uid": partitionKey,
-        organization_id: partitionKey,
-        origin: "https://contracts-develop.grainchain.io",
-        "pk-organization": partitionKey,
-      };
-
-      console.log("Fetching contracts with headers:", headers);
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: headers,
-      });
-
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(
-          `HTTP error! status: ${response.status}, response: ${errorText}`,
-        );
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data: any = await response.json();
-      console.log("Contracts response:", data);
-
-      // Mapear los datos de la API real a nuestro formato
-      const mappedContracts: PurchaseSaleContract[] = data.data.map(
-        (contract: any) => ({
-          id: contract._id || contract.id,
-          folio: contract.folio,
-          reference_number: contract.folio,
-          commodity: contract.commodity,
-          participants: contract.participants,
-          characteristics: contract.characteristics,
-          type: contract.type as "purchase",
-          sub_type: contract.sub_type as
-            | "direct"
-            | "imported"
-            | "importedFreight",
-          quantity: contract.quantity,
-          measurement_unit_id: contract.measurement_unit_id,
-          measurement_unit: contract.measurement_unit,
-          price_schedule: contract.price_schedule,
-          logistic_schedule: contract.logistic_schedule,
-          shipping_start_date: contract.shipping_start_date,
-          shipping_end_date: contract.shipping_end_date,
-          contract_date: contract.contract_date,
-          delivered: contract.delivered,
-          transport: contract.transport,
-          weights: contract.weights,
-          inspections: contract.inspections,
-          proteins: contract.proteins,
-          application_priority: contract.application_priority,
-          thresholds: contract.thresholds,
-          status: contract.status,
-          grade:
-            typeof contract.grade === "string"
-              ? parseInt(contract.grade) || 0
-              : contract.grade,
-          inventory: contract.inventory,
-        }),
+      // Usar servicio centralizado de contratos
+      const result = await fetchContractsDataDirect(
+        page,
+        limit,
+        searchTerm,
+        activeFilters,
+        sortConfig,
+        commodities,
+        { partitionKey, idToken }
       );
 
-      console.log("Mapped contracts:", mappedContracts);
-      console.log(
-        "Setting contracts in state. Total contracts:",
-        mappedContracts.length,
-      );
-      console.log(
-        "First contract example:",
-        mappedContracts[0] || "No contracts found",
-      );
+      const mappedContracts = result.data;
+      const totalElements = result.total;
+      const totalPages = result.totalPages;
+
+      console.log("Contracts from service:", mappedContracts);
+      console.log("Setting contracts in state. Total contracts:", mappedContracts.length);
+      console.log("First contract example:", mappedContracts[0] || "No contracts found");
       console.log("=== TODOS LOS IDs MAPEADOS ===");
       console.log(
         "IDs de contratos cargados:",
         mappedContracts.map((c) => ({ _id: c._id, folio: c.folio })),
       );
       console.log("===========================");
-
-      // Calcular páginas totales basado en total_elements y pageSize
-      const totalElements = data._meta.total_elements;
-      const totalPages = Math.ceil(totalElements / tableParams.limit);
 
       // Actualizar el estado principal con los contratos
       setPageStateData((prev) => ({ ...prev, contracts: mappedContracts }));

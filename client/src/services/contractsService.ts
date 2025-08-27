@@ -112,6 +112,150 @@ const sortFieldMapping: Record<string, string> = {
   id: "_id",
 };
 
+// Direct fetch function for contracts (to be deprecated)
+export const fetchContractsDataDirect = async (
+  page: number,
+  limit: number,
+  search: string | undefined,
+  filters: Record<string, any>,
+  sortConfig: { field: string; direction: "asc" | "desc" } | null,
+  commodities: Array<{ key: string; value: string; label: string }>,
+  authData: { partitionKey: string; idToken: string }
+) => {
+  const { partitionKey, idToken } = authData;
+  
+  try {
+    // Construir filtros para la API
+    const filter: any = { type: "purchase" };
+    
+    // Si hay filtros de commodity, los aplicamos
+    if (filters?.commodity?.length && !filters.commodity.includes("all")) {
+      const selectedCommodityIds = filters.commodity;
+      if (selectedCommodityIds.length > 0) {
+        filter["commodity.commodity_id"] = { $in: selectedCommodityIds };
+      }
+    }
+
+    // Si hay filtros de pricing type, los aplicamos
+    if (filters?.pricingType?.length && !filters.pricingType.includes("all")) {
+      const validPricingTypes = filters.pricingType.filter(
+        (type: string) => type === "fixed" || type === "basis",
+      );
+      if (validPricingTypes.length > 0) {
+        // Para pricingType usamos solo el primer valor ya que es single selection
+        filter["price_schedule.pricing_type"] = validPricingTypes[0];
+      }
+    }
+
+    // Construir parámetros de URL
+    const params = new URLSearchParams({
+      all: "true",
+      filter: JSON.stringify(filter),
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    // Agregar ordenamiento si existe
+    if (sortConfig) {
+      params.append(
+        `sort[${sortConfig.field}]`,
+        sortConfig.direction === "asc" ? "1" : "-1",
+      );
+    } else {
+      // Ordenamiento por defecto por fecha de creación descendente
+      params.append("sort[created_at]", "-1");
+    }
+
+    const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${params.toString()}`;
+    console.log("Fetching contracts from:", url);
+
+    // Headers de la petición
+    const headers = {
+      _partitionkey: partitionKey,
+      accept: "*/*",
+      "accept-language": "es-419,es;q=0.9",
+      authorization: `Bearer ${idToken}`,
+      "bt-organization": partitionKey,
+      "bt-uid": partitionKey,
+      organization_id: partitionKey,
+      origin: "https://contracts-develop.grainchain.io",
+      "pk-organization": partitionKey,
+    };
+
+    console.log("Fetching contracts with headers:", headers);
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: headers,
+    });
+
+    console.log("Response status:", response.status);
+    console.log("Response ok:", response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        `HTTP error! status: ${response.status}, response: ${errorText}`,
+      );
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: any = await response.json();
+    console.log("Contracts response:", data);
+
+    // Mapear los datos de la API real a nuestro formato
+    const mappedContracts: PurchaseSaleContract[] = data.data.map(
+      (contract: any) => ({
+        id: contract._id || contract.id,
+        folio: contract.folio,
+        reference_number: contract.folio,
+        commodity: contract.commodity,
+        participants: contract.participants,
+        characteristics: contract.characteristics,
+        type: contract.type as "purchase",
+        sub_type: contract.sub_type as
+          | "direct"
+          | "imported"
+          | "importedFreight",
+        quantity: contract.quantity,
+        measurement_unit_id: contract.measurement_unit_id,
+        measurement_unit: contract.measurement_unit,
+        price_schedule: contract.price_schedule,
+        logistic_schedule: contract.logistic_schedule,
+        shipping_start_date: contract.shipping_start_date,
+        shipping_end_date: contract.shipping_end_date,
+        contract_date: contract.contract_date,
+        delivered: contract.delivered,
+        transport: contract.transport,
+        weights: contract.weights,
+        inspections: contract.inspections,
+        proteins: contract.proteins,
+        application_priority: contract.application_priority,
+        thresholds: contract.thresholds,
+        status: contract.status,
+        grade:
+          typeof contract.grade === "string"
+            ? parseInt(contract.grade) || 0
+            : contract.grade,
+        inventory: contract.inventory,
+      }),
+    );
+
+    return {
+      data: mappedContracts,
+      total: data._meta.total_elements,
+      totalPages: data._meta.total_pages,
+    };
+  } catch (error) {
+    console.error("Error fetching contracts:", error);
+    return {
+      data: [] as PurchaseSaleContract[],
+      total: 0,
+      totalPages: 0,
+    };
+  }
+};
+
 export const fetchContractsData = async (params: FetchContractsParams) => {
   const {
     page,
@@ -563,5 +707,62 @@ export const submitContract = async (
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
+  }
+};
+
+// Generate and download PDF using CraftMyPDF service
+export const generateAndDownloadPDF = async (printData: any, fileName: string): Promise<void> => {
+  try {
+    console.log("📄 Iniciando generación de PDF...");
+    
+    const response = await fetch(`${environment.CRAFTMYPDF_BASE_URL}/create`, {
+      method: 'POST',
+      headers: {
+        'accept': '*/*',
+        'accept-language': 'es-419,es;q=0.9',
+        'content-type': 'application/json; charset=utf-8',
+        'origin': 'https://contracts-develop.grainchain.io',
+        'priority': 'u=1, i',
+        'referer': 'https://contracts-develop.grainchain.io/',
+        'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'cross-site',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+        'x-api-key': environment.CRAFTMYPDF_API_KEY
+      },
+      body: JSON.stringify(printData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error en la respuesta: ${response.status} ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log("✅ Respuesta de CraftMyPDF:", result);
+
+    // Verificar que la respuesta contiene la URL del archivo
+    if (result.file) {
+      console.log("📄 URL del PDF generado:", result.file);
+      
+      // Descargar automáticamente el PDF
+      const link = document.createElement('a');
+      link.href = result.file;
+      link.download = `${fileName}.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log("✅ PDF descargado exitosamente");
+    } else {
+      console.error("❌ No se encontró la URL del archivo en la respuesta:", result);
+      throw new Error("No se pudo generar el PDF. Inténtalo de nuevo.");
+    }
+  } catch (error) {
+    console.error("❌ Error al generar/descargar PDF:", error);
+    throw error;
   }
 };
