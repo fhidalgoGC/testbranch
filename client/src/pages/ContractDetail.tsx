@@ -112,10 +112,8 @@ export default function ContractDetail() {
       const cleanUrl = window.location.pathname;
       window.history.replaceState({}, "", cleanUrl);
 
-      // Disparar refresh después de un breve delay para asegurar que el componente esté montado
-      setTimeout(() => {
-        handleFullRefresh();
-      }, 100);
+      // Disparar refresh inmediatamente
+      handleFullRefresh();
     }
   }, [location, contractId]);
 
@@ -447,8 +445,6 @@ export default function ContractDetail() {
       const minimumDuration = 300; // 0.3 segundos en milisegundos
       const remainingTime = Math.max(0, minimumDuration - elapsedTime);
 
-      // Esperar el tiempo restante si la API fue más rápida que la duración mínima
-      await new Promise((resolve) => setTimeout(resolve, remainingTime));
 
       // Quitar el loading de pantalla completa y liberar el lock
       setFullScreenLoading(false);
@@ -486,8 +482,6 @@ export default function ContractDetail() {
         const minimumDuration = 300; // 0.3 seconds in milliseconds
         const remainingTime = Math.max(0, minimumDuration - elapsedTime);
 
-        // Wait for remaining time if API was faster than minimum duration
-        await new Promise((resolve) => setTimeout(resolve, remainingTime));
 
         // Navigate back to contracts list
         setLocation(`/${contractType}-contracts`);
@@ -527,7 +521,6 @@ export default function ContractDetail() {
       const remainingTime = Math.max(0, minimumDuration - elapsedTime);
 
       // Wait for remaining time if API was faster than minimum duration
-      await new Promise((resolve) => setTimeout(resolve, remainingTime));
 
       // Close modal and refresh data
       setShowDeleteSubContractModal(false);
@@ -616,12 +609,7 @@ export default function ContractDetail() {
       setShowErrorModal(true);
       setShowSettleContractModal(false);
     } finally {
-      // Asegurar tiempo mínimo de loading (300ms) sin importar el resultado
-      const elapsed = Date.now() - startTime;
-      const minTime = 300;
-      if (elapsed < minTime) {
-        await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
-      }
+
 
       setSettlingContract(false);
     }
@@ -680,12 +668,7 @@ export default function ContractDetail() {
       setShowSettleSubContractModal(false);
       setSelectedSubContractForSettle(null);
     } finally {
-      // Asegurar tiempo mínimo de loading (300ms) sin importar el resultado
-      const elapsed = Date.now() - startTime;
-      const minTime = 300;
-      if (elapsed < minTime) {
-        await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
-      }
+
 
       setSettlingSubContract(false);
     }
