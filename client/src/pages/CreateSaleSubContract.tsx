@@ -125,7 +125,7 @@ export default function CreateSaleSubContract() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // Get measurement units
-  const { measurementUnits, loading: measurementUnitsLoading, error: measurementUnitsError } = useMeasurementUnits();
+  const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
 
   // Create form with validation schema
   const validationSchema = createSubContractValidationSchema(openInventory);
@@ -318,7 +318,7 @@ export default function CreateSaleSubContract() {
     setLocation(`/sale-contracts/${contractId}`);
   };
 
-  if (measurementUnitsLoading) {
+  if (loadingUnits) {
     return (
       <DashboardLayout title={t('createSaleSubContract')}>
         <div className="flex items-center justify-center min-h-screen">
