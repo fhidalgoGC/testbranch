@@ -1294,49 +1294,6 @@ export default function ContractDetail() {
     }
   }, [contractId, location]);
 
-  // Función para cargar contrato directamente desde API
-  const loadContractFromAPI = async () => {
-    if (!contractId) return;
-    
-    try {
-      setLoading(true);
-      setError(null);
-      
-      console.log("🔄 Loading contract from API:", contractId);
-      
-      const response = await getContractById(contractId);
-      
-      if (response.ok) {
-        const result = await response.json();
-        console.log("✅ Contract loaded from API:", result.data?.folio);
-        
-        if (result.data) {
-          setCurrentContractData(result.data);
-          
-          // Cargar dirección del seller
-          const seller = result.data.participants?.find(
-            (p: any) => p.role === "seller",
-          );
-          if (seller && seller.people_id) {
-            loadParticipantAddress(seller.people_id);
-          }
-
-          // Cargar sub-contratos si es un contrato basis
-          if (result.data.price_schedule?.[0]?.pricing_type === "basis") {
-            loadSubContracts(contractId);
-          }
-        }
-      } else {
-        console.error("❌ Failed to load contract from API:", response.status);
-        setError("Error al cargar el contrato desde la API");
-      }
-    } catch (error) {
-      console.error("❌ Error loading contract from API:", error);
-      setError("Error al cargar el contrato");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Buscar y establecer el contrato específico al cargar la página
   useEffect(() => {
@@ -1390,7 +1347,7 @@ export default function ContractDetail() {
 
     // Si no se encontró en Redux, cargar desde API
     console.log("❌ Contrato no encontrado en Redux, cargando desde API");
-    loadContractFromAPI();
+    handleFullRefresh();
     console.log("=== FIN EFFECT ===");
   }, [contractId, contractsData, currentContractData]);
 
