@@ -11,7 +11,6 @@ import { store } from "@/app/store";
 import {
   updateCreateSubContractState,
   updateEditSubContractState,
-  updateSingleContractInArray,
 } from "@/store/slices/pageStateSlice";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -317,32 +316,12 @@ export default function ContractDetail() {
           setCurrentContractData(contractResult.data);
           console.log("🔄 Updated contract data in local state");
 
-          // Actualizar Redux cache con los datos actualizados del contrato
-          try {
-            const updatedContract = contractResult.data;
-            
-            // Usar el tipo detectado desde la URL actual en lugar del tipo del contrato
-            const currentContractType = location.includes("/sale-contracts/") ? "sale" : "purchase";
-            const statePage = currentContractType === 'purchase' ? 'purchaseContracts' : 'saleContracts';
-            
-            console.log("🔄 Updating Redux cache using new action:", {
-              contractId,
-              currentContractType,
-              statePage,
-              updatedContractFolio: updatedContract.folio
-            });
-            
-            // Usar la nueva acción que actualiza solo el contrato específico
-            dispatch(updateSingleContractInArray({ 
-              page: statePage as 'purchaseContracts' | 'saleContracts', 
-              contractId: contractId,
-              contractData: updatedContract
-            }));
-            
-            console.log("✅ Redux cache updated with new action in handleFullRefresh");
-          } catch (error) {
-            console.warn("⚠️ Could not update Redux cache in handleFullRefresh:", error);
-          }
+          // Solo log para confirmar que tenemos los datos actualizados
+          console.log("✅ Contract data refreshed and set in local state:", {
+            contractId,
+            folio: contractResult.data.folio,
+            timestamp: new Date().toISOString()
+          });
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(
@@ -1309,39 +1288,27 @@ export default function ContractDetail() {
     }
   }, [contractId, location]);
 
-  // Buscar y establecer el contrato específico al cargar la página
-  useEffect(() => {
-    console.log("=== EFFECT DE BÚSQUEDA EJECUTADO ===");
-    console.log("Contract ID:", contractId);
-    console.log("Contracts Data Length:", contractsData.length);
-
-    if (contractId) {
-      if (contractsData.length > 0) {
-        console.log("Buscando contrato con ID:", contractId);
-        console.log(
-          "IDs disponibles en contractsData:",
-          contractsData.map((c: any) => c._id),
-        );
-
-        const foundContract = contractsData.find(
-          (contract: any) => contract._id === contractId,
-        );
-
-        if (foundContract) {
-          console.log(
-            "✅ Contrato ENCONTRADO en Redux, estableciendo en estado del componente",
-          );
-          console.log("Contrato encontrado:", foundContract.folio);
-          console.log(
-            "🔍 THRESHOLDS EN EL CONTRATO (CORREGIDO):",
-            foundContract.thresholds,
-          );
-          setCurrentContractData(foundContract);
-          setLoading(false);
-          setError(null);
-
+  // Función para cargar contrato directamente desde API
+  const loadContractFromAPI = async () => {
+    if (!contractId) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log("🔄 Loading contract from API:", contractId);
+      
+      const response = await getContractById(contractId);
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log("✅ Contract loaded from API:", result.data?.folio);
+        
+        if (result.data) {
+          setCurrentContractData(result.data);
+          
           // Cargar dirección del seller
-          const seller = foundContract.participants?.find(
+          const seller = result.data.participants?.find(
             (p: any) => p.role === "seller",
           );
           if (seller && seller.people_id) {
@@ -1349,36 +1316,77 @@ export default function ContractDetail() {
           }
 
           // Cargar sub-contratos si es un contrato basis
-          if (foundContract.price_schedule?.[0]?.pricing_type === "basis") {
+          if (result.data.price_schedule?.[0]?.pricing_type === "basis") {
             loadSubContracts(contractId);
           }
-
-          // Contrato encontrado - Redux state ya tiene los datos necesarios
-        } else {
-          console.log("❌ Contrato NO encontrado en Redux state");
-          console.log("Contract ID buscado:", contractId);
-          console.log(
-            "IDs disponibles:",
-            contractsData.map((c: any) => ({ _id: c._id, folio: c.folio })),
-          );
-          setCurrentContractData(null);
-          setError("Contrato no encontrado en los datos cargados");
-          setLoading(false);
         }
       } else {
-        console.log("❌ No hay datos de contratos en Redux state");
-        setCurrentContractData(null);
-        setError("No hay datos de contratos disponibles");
-        setLoading(false);
+        console.error("❌ Failed to load contract from API:", response.status);
+        setError("Error al cargar el contrato desde la API");
       }
-    } else {
-      console.log("❌ No hay contractId");
-      setCurrentContractData(null);
-      setError("ID de contrato no válido");
+    } catch (error) {
+      console.error("❌ Error loading contract from API:", error);
+      setError("Error al cargar el contrato");
+    } finally {
       setLoading(false);
     }
+  };
+
+  // Buscar y establecer el contrato específico al cargar la página
+  useEffect(() => {
+    if (!contractId) {
+      setError("ID de contrato no válido");
+      setLoading(false);
+      return;
+    }
+
+    console.log("=== EFFECT DE BÚSQUEDA EJECUTADO ===");
+    console.log("Contract ID:", contractId);
+    console.log("Current contract data:", currentContractData?.folio || "none");
+    console.log("Contracts Data Length:", contractsData.length);
+
+    // Si ya tenemos los datos del contrato (después de refresh), no hacer nada
+    if (currentContractData && currentContractData._id === contractId) {
+      console.log("✅ Usando datos locales del contrato:", currentContractData.folio);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    // Intentar buscar en Redux
+    if (contractsData.length > 0) {
+      console.log("Buscando contrato con ID:", contractId);
+      const foundContract = contractsData.find(
+        (contract: any) => contract._id === contractId,
+      );
+
+      if (foundContract) {
+        console.log("✅ Contrato ENCONTRADO en Redux:", foundContract.folio);
+        setCurrentContractData(foundContract);
+        setLoading(false);
+        setError(null);
+
+        // Cargar dirección del seller
+        const seller = foundContract.participants?.find(
+          (p: any) => p.role === "seller",
+        );
+        if (seller && seller.people_id) {
+          loadParticipantAddress(seller.people_id);
+        }
+
+        // Cargar sub-contratos si es un contrato basis
+        if (foundContract.price_schedule?.[0]?.pricing_type === "basis") {
+          loadSubContracts(contractId);
+        }
+        return;
+      }
+    }
+
+    // Si no se encontró en Redux, cargar desde API
+    console.log("❌ Contrato no encontrado en Redux, cargando desde API");
+    loadContractFromAPI();
     console.log("=== FIN EFFECT ===");
-  }, [contractId, contractsData]);
+  }, [contractId, contractsData, currentContractData]);
 
   // Efecto para persistir cambios de tab activo
   useEffect(() => {
