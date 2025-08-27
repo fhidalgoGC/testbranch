@@ -1509,7 +1509,7 @@ export default function ContractDetail() {
 
   return (
     <DashboardLayout title={t("contractDetail.title")}>
-      <div className="space-y-6 max-w-6xl mx-auto">
+      <div key={`contract-detail-${refreshKey}`} className="space-y-6 max-w-6xl mx-auto">
         {/* Main Contract Header */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
           <div className="flex items-start justify-between mb-4">
@@ -1770,7 +1770,7 @@ export default function ContractDetail() {
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                         {t("contractDetail.quantityUnits")}:
                       </span>
-                      <span key={`quantity-${refreshKey}`} className="text-sm font-medium text-gray-900 dark:text-white">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
                         {formatNumber({
                           value: currentContractData?.quantity || 0,
                           minDecimals: 0,
