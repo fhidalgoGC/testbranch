@@ -108,8 +108,15 @@ export default function EditSubContract() {
   
   const { handleNavigateToPage } = useNavigationHandler();
   
+  // Determinar el tipo de contrato desde la URL
+  const contractType = location.includes('/purchase-contracts/') ? 'purchase' : 'sale';
+  
   // Obtener contratos del state de Redux para buscar el contrato actual
-  const contractsState = useSelector((state: any) => state.pageState.purchaseContracts);
+  const contractsState = useSelector((state: any) => 
+    contractType === 'purchase' 
+      ? state.pageState.purchaseContracts 
+      : state.pageState.saleContracts
+  );
   const contractsData = contractsState.contractsData || [];
   
   // Obtener el estado del contrato principal para editar sub-contrato
@@ -121,7 +128,7 @@ export default function EditSubContract() {
   // Use the specific sub-contract data from Redux state
   const currentSubContract = currentSubContractData;
   
-  usePageTracking(`/purchase-contracts/${contractId}/sub-contracts/${subContractId}/edit`);
+  usePageTracking(`/${contractType}-contracts/${contractId}/sub-contracts/${subContractId}/edit`);
   
   // State management
   const [loadingSubContractKey, setLoadingSubContractKey] = useState(false);
@@ -373,7 +380,7 @@ export default function EditSubContract() {
         
         // Reload sub-contracts data and navigate back using Wouter with refresh parameter
         await reloadSubContracts();
-        setLocation(`/purchase-contracts/${contractId}?refresh=true`);
+        setLocation(`/${contractType}-contracts/${contractId}?refresh=true`);
       } else {
         console.error('❌ Failed to update sub-contract:', response.status, response.statusText);
         // Handle error - show user feedback
@@ -388,7 +395,7 @@ export default function EditSubContract() {
   
   // Handle cancel
   const handleCancel = () => {
-    setLocation(`/purchase-contracts/${contractId}`);
+    setLocation(`/${contractType}-contracts/${contractId}`);
   };
   
   if (!currentSubContract) {

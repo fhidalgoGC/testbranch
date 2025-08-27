@@ -10,7 +10,7 @@ import "./common/utils/i18n";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { useStateRestoration } from "@/hooks/usePageState";
 import Login from "@/pages/Login";
-import PurchaseSaleContractDetail from "./pages/PurchaseSaleContractDetail";
+import ContractDetail from "./pages/ContractDetail";
 // Lazy load heavy pages for better code splitting
 const Home = lazy(() => import("@/pages/Home"));
 const Buyers = lazy(() => import("@/pages/Buyers"));
@@ -18,13 +18,11 @@ const CreateBuyer = lazy(() => import("@/pages/CreateBuyer"));
 const CreateSeller = lazy(() => import("@/pages/CreateSeller"));
 const Sellers = lazy(() => import("@/pages/Sellers"));
 const PurchaseContracts = lazy(() => import("@/pages/PurchaseContracts"));
-const PurchaseContractDetail = lazy(() => import("@/pages/PurchaseContractDetail"));
 const CreatePurchaseContract = lazy(() => import("@/pages/CreatePurchaseContract"));
 const CreateSubContract = lazy(() => import("@/pages/CreateSubContract"));
 const EditSubContract = lazy(() => import("@/pages/EditSubContract"));
 const ViewSubContract = lazy(() => import("@/pages/ViewSubContract"));
 const SaleContracts = lazy(() => import("@/pages/SaleContracts"));
-const SaleContractDetail = lazy(() => import("@/pages/SaleContractDetail"));
 const CreateSaleContract = lazy(() => import("@/pages/CreateSaleContract"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
@@ -50,13 +48,13 @@ function Router() {
         <Route path="/purchase-contracts/:contractId/sub-contracts/create" component={CreateSubContract} />
         <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSubContract} />
         <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
-        <Route path="/purchase-contracts/:id" component={PurchaseSaleContractDetail} />
+        <Route path="/purchase-contracts/:id" component={ContractDetail} />
         <Route path="/sale-contracts" component={SaleContracts} />
         <Route path="/sale-contracts/create/:contractId?" component={CreateSaleContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/create" component={CreateSubContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSubContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
-        <Route path="/sale-contracts/:id" component={PurchaseSaleContractDetail} />
+        <Route path="/sale-contracts/:id" component={ContractDetail} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

@@ -55,18 +55,18 @@ import {
   ProgressBarConfig,
 } from "@/components/contracts/SubContractCard";
 import { authenticatedFetch, hasAuthTokens } from "@/utils/apiInterceptors";
-import { 
-  deleteSubContract, 
-  getContractById, 
-  getSubContractsByContractId, 
-  getParticipantLocation, 
-  deleteContract, 
-  settleParentContract, 
+import {
+  deleteSubContract,
+  getContractById,
+  getSubContractsByContractId,
+  getParticipantLocation,
+  deleteContract,
+  settleParentContract,
   settleSubContract,
-  generateAndDownloadPDF
+  generateAndDownloadPDF,
 } from "@/services/contractsService";
 
-export default function PurchaseContractDetail() {
+export default function ContractDetail() {
   const { t } = useTranslation();
   const params = useParams();
   const [location, setLocation] = useLocation();
@@ -78,12 +78,14 @@ export default function PurchaseContractDetail() {
   const { handleNavigateToPage } = useNavigationHandler();
 
   // Detectar tipo de contrato basado en la URL
-  const contractType = location.includes('/sale-contracts/') ? 'sale' : 'purchase';
-  
+  const contractType = location.includes("/sale-contracts/")
+    ? "sale"
+    : "purchase";
+
   // Obtener contratos del state de Redux basado en el tipo
-  const contractsState = useSelector(
-    (state: any) => contractType === 'sale' 
-      ? state.pageState.saleContracts 
+  const contractsState = useSelector((state: any) =>
+    contractType === "sale"
+      ? state.pageState.saleContracts
       : state.pageState.purchaseContracts,
   );
   const contractsData = contractsState.contractsData || [];
@@ -159,16 +161,19 @@ export default function PurchaseContractDetail() {
   // Parent contract settle modal states
   const [showSettleContractModal, setShowSettleContractModal] =
     useState<boolean>(false);
-  const [settlingContract, setSettlingContract] =
-    useState<boolean>(false);
+  const [settlingContract, setSettlingContract] = useState<boolean>(false);
 
   // Error modal states
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   // Print loading state
-  const [printingSubContractId, setPrintingSubContractId] = useState<string | null>(null);
-  const [printingContractId, setPrintingContractId] = useState<string | null>(null);
+  const [printingSubContractId, setPrintingSubContractId] = useState<
+    string | null
+  >(null);
+  const [printingContractId, setPrintingContractId] = useState<string | null>(
+    null,
+  );
 
   // Función para cargar la dirección del participante usando el interceptor addJwtPk
   const loadParticipantAddress = async (participantId: string) => {
@@ -404,13 +409,17 @@ export default function PurchaseContractDetail() {
                 unit: (() => {
                   // Map measurement unit values to display labels
                   const unitMap: Record<string, string> = {
-                    'unit_tons': 'Tons',
-                    'unit_kg': 'Kg', 
-                    'unit_bushels': 'Bushels',
-                    'unit_cwt': 'CWT',
-                    'unit_mt': 'MT'
+                    unit_tons: "Tons",
+                    unit_kg: "Kg",
+                    unit_bushels: "Bushels",
+                    unit_cwt: "CWT",
+                    unit_mt: "MT",
                   };
-                  return unitMap[item.measurement_unit || ''] || item.measurement_unit || "Unknown Unit";
+                  return (
+                    unitMap[item.measurement_unit || ""] ||
+                    item.measurement_unit ||
+                    "Unknown Unit"
+                  );
                 })(),
                 thresholds: {
                   min: item.thresholds?.min_thresholds_weight || 0,
@@ -584,29 +593,36 @@ export default function PurchaseContractDetail() {
 
       if (response.ok) {
         console.log("✅ Contrato padre liquidado exitosamente");
-        
+
         // Solo cerrar modal y refrescar si es exitoso
         setShowSettleContractModal(false);
         await handleFullRefresh();
       } else {
-        console.error("❌ Error al liquidar contrato padre:", response.statusText);
-        
+        console.error(
+          "❌ Error al liquidar contrato padre:",
+          response.statusText,
+        );
+
         // Manejar error del API
         let errorText = "";
         try {
           const errorData = await response.json();
-          errorText = errorData.messages?.value || t("settleContract.error.serverError");
+          errorText =
+            errorData.messages?.value || t("settleContract.error.serverError");
         } catch {
-          errorText = response.status === 500 ? t("settleContract.error.serverError") : t("settleContract.error.serverError");
+          errorText =
+            response.status === 500
+              ? t("settleContract.error.serverError")
+              : t("settleContract.error.serverError");
         }
-        
+
         setErrorMessage(errorText);
         setShowErrorModal(true);
         setShowSettleContractModal(false);
       }
     } catch (error) {
       console.error("❌ Error al liquidar contrato padre:", error);
-      
+
       // Error de conexión o código
       setErrorMessage(t("settleContract.error.serverError"));
       setShowErrorModal(true);
@@ -618,7 +634,7 @@ export default function PurchaseContractDetail() {
       if (elapsed < minTime) {
         await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
       }
-      
+
       setSettlingContract(false);
     }
   };
@@ -638,23 +654,30 @@ export default function PurchaseContractDetail() {
 
       if (response.ok) {
         console.log("✅ Sub-contract settled successfully");
-        
+
         // Solo cerrar modal y refrescar si es exitoso
         setShowSettleSubContractModal(false);
         setSelectedSubContractForSettle(null);
         await handleFullRefresh();
       } else {
-        console.error("❌ Error al liquidar sub-contrato:", response.statusText);
-        
+        console.error(
+          "❌ Error al liquidar sub-contrato:",
+          response.statusText,
+        );
+
         // Manejar error del API
         let errorText = "";
         try {
           const errorData = await response.json();
-          errorText = errorData.messages?.value || t("settleContract.error.serverError");
+          errorText =
+            errorData.messages?.value || t("settleContract.error.serverError");
         } catch {
-          errorText = response.status === 500 ? t("settleContract.error.serverError") : t("settleContract.error.serverError");
+          errorText =
+            response.status === 500
+              ? t("settleContract.error.serverError")
+              : t("settleContract.error.serverError");
         }
-        
+
         setErrorMessage(errorText);
         setShowErrorModal(true);
         setShowSettleSubContractModal(false);
@@ -662,7 +685,7 @@ export default function PurchaseContractDetail() {
       }
     } catch (error: any) {
       console.error("❌ Error settling sub-contract:", error);
-      
+
       // Error de conexión o código
       setErrorMessage(t("settleContract.error.serverError"));
       setShowErrorModal(true);
@@ -675,15 +698,19 @@ export default function PurchaseContractDetail() {
       if (elapsed < minTime) {
         await new Promise((resolve) => setTimeout(resolve, minTime - elapsed));
       }
-      
+
       setSettlingSubContract(false);
     }
   };
 
   // Función para mapear datos del contrato padre a JSON para imprimir
   const mapContractDataForPrint = (contractData: any) => {
-    const seller = contractData?.participants?.find((p: any) => p.role === "seller");
-    const buyer = contractData?.participants?.find((p: any) => p.role === "buyer");
+    const seller = contractData?.participants?.find(
+      (p: any) => p.role === "seller",
+    );
+    const buyer = contractData?.participants?.find(
+      (p: any) => p.role === "buyer",
+    );
     const priceSchedule = contractData?.price_schedule?.[0] || {};
     const logisticSchedule = contractData?.logistic_schedule?.[0] || {};
     const inventory = contractData?.inventory || {};
@@ -693,9 +720,9 @@ export default function PurchaseContractDetail() {
     // Format numbers for display
     const formatNumber = (num: number, decimals: number = 2) => {
       if (isNaN(num) || num === null || num === undefined) return "0.00";
-      return num.toLocaleString('en-US', {
+      return num.toLocaleString("en-US", {
         minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
+        maximumFractionDigits: decimals,
       });
     };
 
@@ -709,10 +736,10 @@ export default function PurchaseContractDetail() {
     const formatDate = (dateStr: string) => {
       if (!dateStr) return "-";
       const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', {
-        month: 'numeric',
-        day: 'numeric',
-        year: 'numeric'
+      return date.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
       });
     };
 
@@ -729,7 +756,7 @@ export default function PurchaseContractDetail() {
         sub_type: contractData?.sub_type,
         commodity: {
           commodity_id: contractData?.commodity?.commodity_id,
-          name: contractData?.commodity?.name
+          name: contractData?.commodity?.name,
         },
         grade: contractData?.grade,
         participants: contractData?.participants || [],
@@ -768,8 +795,10 @@ export default function PurchaseContractDetail() {
         premDiscPdf: "-",
         referenceNumber: contractData?.reference_number || "NA",
         quantityNumber: contractData?.quantity || 0,
-        pricingType: priceSchedule?.pricing_type === "fixed" ? "Fixed" : "Basis",
-        pricingColorType: priceSchedule?.pricing_type === "fixed" ? "#b8ebf3" : "#e8d4f1",
+        pricingType:
+          priceSchedule?.pricing_type === "fixed" ? "Fixed" : "Basis",
+        pricingColorType:
+          priceSchedule?.pricing_type === "fixed" ? "#b8ebf3" : "#e8d4f1",
         isFixed: priceSchedule?.pricing_type === "fixed",
         isBasis: priceSchedule?.pricing_type === "basis",
         customerId: seller?.people_id,
@@ -794,21 +823,28 @@ export default function PurchaseContractDetail() {
         contractPaymentSettled: formatCurrency(inventoryValue?.settled || 0),
         contractFixedSettled: formatCurrency(inventoryValue?.fixed || 0),
         overviewAllSettled: formatCurrency(inventory?.settled || 0),
-        percentageDelivered: inventory?.total > 0 ? inventory?.fixed / inventory?.total : 0,
-        percentageSettled: inventory?.total > 0 ? inventory?.settled / inventory?.total : 0,
-        percentageFixed: inventory?.total > 0 ? inventory?.fixed / inventory?.total : 0,
+        percentageDelivered:
+          inventory?.total > 0 ? inventory?.fixed / inventory?.total : 0,
+        percentageSettled:
+          inventory?.total > 0 ? inventory?.settled / inventory?.total : 0,
+        percentageFixed:
+          inventory?.total > 0 ? inventory?.fixed / inventory?.total : 0,
         sellerName: seller?.name || "-",
         buyerName: buyer?.name || "-",
-        companyName: localStorage.getItem('company_business_name') || "",
-        companyAddress: localStorage.getItem('company_address_line') || "",
-        companyPhone: localStorage.getItem('company_calling_code') && localStorage.getItem('company_phone_number') ? `${localStorage.getItem('company_calling_code')}${localStorage.getItem('company_phone_number')}` : '',
-        printDate: new Date().toLocaleDateString('en-GB')
+        companyName: localStorage.getItem("company_business_name") || "",
+        companyAddress: localStorage.getItem("company_address_line") || "",
+        companyPhone:
+          localStorage.getItem("company_calling_code") &&
+          localStorage.getItem("company_phone_number")
+            ? `${localStorage.getItem("company_calling_code")}${localStorage.getItem("company_phone_number")}`
+            : "",
+        printDate: new Date().toLocaleDateString("en-GB"),
       },
       load_data_from: null,
       template_id: environment.TEMPLATE_ID,
       export_type: "json",
       expiration: 60,
-      output_file: `${contractData?.folio || 'CONTRACT'}.pdf`,
+      output_file: `${contractData?.folio || "CONTRACT"}.pdf`,
       is_cmyk: false,
       image_resample_res: 600,
       direct_download: 1,
@@ -817,7 +853,7 @@ export default function PurchaseContractDetail() {
       password_protected: false,
       password: "string",
       postaction_s3_filekey: "string",
-      postaction_s3_bucket: "string"
+      postaction_s3_bucket: "string",
     };
 
     return printData;
@@ -826,23 +862,26 @@ export default function PurchaseContractDetail() {
   // Función para manejar impresión del contrato padre
   const handlePrintContract = async () => {
     console.log("🖨️ Print contract:", currentContractData?.folio);
-    
+
     if (!currentContractData) {
       console.error("❌ No contract data available for printing");
       return;
     }
 
     const contractId = currentContractData?.id || currentContractData?._id;
-    
+
     // Set loading state
     setPrintingContractId(contractId);
 
     try {
       // Mapear datos del contrato a formato JSON para imprimir
       const printData = mapContractDataForPrint(currentContractData);
-      
-      console.log("📄 Mapped contract data for printing:", JSON.stringify(printData, null, 2));
-      
+
+      console.log(
+        "📄 Mapped contract data for printing:",
+        JSON.stringify(printData, null, 2),
+      );
+
       // Generar y descargar PDF
       const fileName = `${currentContractData.folio}.pdf`;
       await generateAndDownloadPDF(printData, fileName);
@@ -854,11 +893,10 @@ export default function PurchaseContractDetail() {
     }
   };
 
-
   // Función para manejar impresión de sub-contrato
   const handlePrintSubContract = (subContractId: string) => {
     console.log("🖨️ Print sub-contract:", subContractId);
-    
+
     // Set loading state
     setPrintingSubContractId(subContractId);
 
@@ -1070,16 +1108,24 @@ export default function PurchaseContractDetail() {
     console.log("🖨️ Sub-contrato a imprimir:", subContract);
 
     // Llamar al servicio centralizado para generar el PDF
-    handleGenerateAndDownloadPDF(printData, subContract.folio || "SUB-CONTRACT");
+    handleGenerateAndDownloadPDF(
+      printData,
+      subContract.folio || "SUB-CONTRACT",
+    );
   };
 
   // Función para generar y descargar el PDF usando el servicio centralizado
-  const handleGenerateAndDownloadPDF = async (printData: any, fileName: string) => {
+  const handleGenerateAndDownloadPDF = async (
+    printData: any,
+    fileName: string,
+  ) => {
     try {
       await generateAndDownloadPDF(printData, fileName);
     } catch (error) {
       console.error("❌ Error al generar/descargar PDF:", error);
-      alert("Error al generar el PDF. Por favor verifica tu conexión e inténtalo de nuevo.");
+      alert(
+        "Error al generar el PDF. Por favor verifica tu conexión e inténtalo de nuevo.",
+      );
     } finally {
       // Clear loading state
       setPrintingSubContractId(null);
@@ -1357,7 +1403,13 @@ export default function PurchaseContractDetail() {
 
   if (loading) {
     return (
-      <DashboardLayout title={t(contractType === 'sale' ? "saleContractDetail" : "contractDetail.title")}>
+      <DashboardLayout
+        title={t(
+          contractType === "sale"
+            ? "saleContractDetail"
+            : "contractDetail.title",
+        )}
+      >
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -1374,7 +1426,13 @@ export default function PurchaseContractDetail() {
 
   if (error) {
     return (
-      <DashboardLayout title={t(contractType === 'sale' ? "saleContractDetail" : "contractDetail.title")}>
+      <DashboardLayout
+        title={t(
+          contractType === "sale"
+            ? "saleContractDetail"
+            : "contractDetail.title",
+        )}
+      >
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-lg font-medium text-red-600 dark:text-red-400 mb-2">
@@ -1395,7 +1453,13 @@ export default function PurchaseContractDetail() {
 
   if (!currentContractData) {
     return (
-      <DashboardLayout title={t(contractType === 'sale' ? "saleContractDetail" : "contractDetail.title")}>
+      <DashboardLayout
+        title={t(
+          contractType === "sale"
+            ? "saleContractDetail"
+            : "contractDetail.title",
+        )}
+      >
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -1509,10 +1573,15 @@ export default function PurchaseContractDetail() {
                       <Button
                         size="sm"
                         onClick={handlePrintContract}
-                        disabled={printingContractId === (currentContractData?.id || currentContractData?._id)}
+                        disabled={
+                          printingContractId ===
+                          (currentContractData?.id || currentContractData?._id)
+                        }
                         className="h-8 w-8 p-0 bg-gray-500 hover:bg-gray-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {printingContractId === (currentContractData?.id || currentContractData?._id) ? (
+                        {printingContractId ===
+                        (currentContractData?.id ||
+                          currentContractData?._id) ? (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         ) : (
                           <Printer className="w-4 h-4" />
@@ -1543,25 +1612,26 @@ export default function PurchaseContractDetail() {
                 </TooltipProvider>
 
                 {/* 4. Settled Button - solo visible cuando pricing_type es 'fixed' y status es 'in-progress' */}
-                {currentContractData?.price_schedule?.[0]?.pricing_type === "fixed" && 
-                 currentContractData?.status === "in-progress" && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          size="sm"
-                          onClick={openSettleContractModal}
-                          className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white"
-                        >
-                          <Lock className="w-4 h-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Settle contract</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                {currentContractData?.price_schedule?.[0]?.pricing_type ===
+                  "fixed" &&
+                  currentContractData?.status === "in-progress" && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="sm"
+                            onClick={openSettleContractModal}
+                            className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white"
+                          >
+                            <Lock className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Settle contract</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
 
                 {/* 5. Edit Button - solo visible cuando status es 'created' */}
                 {currentContractData?.status === "created" && (
@@ -1602,7 +1672,6 @@ export default function PurchaseContractDetail() {
                     </Tooltip>
                   </TooltipProvider>
                 )}
-
               </div>
             </div>
           </div>
