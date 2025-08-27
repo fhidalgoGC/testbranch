@@ -197,11 +197,6 @@ export default function CreateBuyer() {
     }
   };
 
-  // Show success message when buyer is created
-  if (isSuccess && !showSuccess) {
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-  }
 
   if (isInitializing) {
     return (

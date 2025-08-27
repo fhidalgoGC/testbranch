@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
 import { createPersonId, createBuyer, createPersonLocation } from '@/services/crm-people.service';
 import type { CreateBuyerIdResponse, CreateBuyerPayload, BuyerFormData } from '../types/create-buyer';
@@ -27,7 +26,6 @@ interface CreateLocationPayload {
 }
 
 export function useCreateBuyer() {
-  const [, setLocation] = useLocation();
   const [idempotentBuyerId, setIdempotentBuyerId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -161,8 +159,7 @@ export function useCreateBuyer() {
       queryClient.invalidateQueries({ queryKey: ['buyers'] });
       // Also force a refetch of all buyers data
       queryClient.refetchQueries({ queryKey: ['buyers'] });
-      // Redirect to buyers list
-      setLocation('/buyers');
+      // Don't redirect automatically - let the modal handle it
     },
   });
 
