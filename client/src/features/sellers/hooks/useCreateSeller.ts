@@ -18,34 +18,6 @@ export function useCreateSeller() {
         const jwt = localStorage.getItem('jwt');
         const partitionKey = localStorage.getItem('partition_key');
         
-        console.log('CreateSeller: Checking authentication tokens:', { 
-          jwt: !!jwt, 
-          partitionKey: !!partitionKey,
-          jwtLength: jwt?.length || 0,
-          partitionKeyValue: partitionKey 
-        });
-        
-        // Check if we have real authentication tokens (not demo tokens)
-        const isRealAuth = jwt && partitionKey && 
-          jwt !== 'demo-jwt-token-for-testing' && 
-          partitionKey !== 'demo-partition-key' &&
-          localStorage.getItem('user_id'); // Check for user_id from real login
-
-        if (!isRealAuth) {
-          console.warn('CreateSeller: No real authentication found, using demo mode');
-          localStorage.setItem('jwt', 'demo-jwt-token-for-testing');
-          localStorage.setItem('partition_key', 'demo-partition-key');
-          
-          // For demo purposes, simulate the API response
-          const mockSellerId = `demo-seller-id-${Date.now()}`;
-          
-          console.log('CreateSeller: Using demo seller ID:', mockSellerId);
-          setIdempotentSellerId(mockSellerId);
-          setInitializationError(null);
-          setIsInitializing(false);
-          return;
-        }
-
         console.log('CreateSeller: Calling service to create seller ID');
         const sellerId = await createPersonId();
         setIdempotentSellerId(sellerId);
@@ -74,25 +46,6 @@ export function useCreateSeller() {
 
       if (!partitionKey) {
         throw new Error("Partition key not found");
-      }
-
-      // Check if we're in demo mode
-      const isDemoMode = partitionKey === 'demo-partition-key' || idempotentSellerId.startsWith('demo-seller-id-');
-      
-      if (isDemoMode) {
-        console.log("CreateSeller: Demo mode detected, simulating successful seller creation");
-        // Simulate successful seller creation in demo mode
-        return {
-          data: {
-            key: idempotentSellerId,
-            first_name: formData.first_name,
-            last_name: formData.last_name,
-            email: formData.email,
-            person_type: formData.person_type,
-            roles: [{ slug: "seller" }],
-            created: true
-          }
-        };
       }
 
       // Build full name based on person type
