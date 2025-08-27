@@ -133,6 +133,15 @@ export default function ContractDetail() {
   // Estado para forzar re-render cuando se actualizan los datos
   const [refreshKey, setRefreshKey] = useState<number>(0);
 
+  // Debug: Monitor changes to currentContractData
+  useEffect(() => {
+    console.log("🔄 USEEFFECT: currentContractData cambió:", {
+      folio: currentContractData?.folio,
+      quantity: currentContractData?.quantity,
+      refreshKey: refreshKey
+    });
+  }, [currentContractData, refreshKey]);
+
   // Estado para la dirección del participante
   const [participantAddress, setParticipantAddress] =
     useState<string>("Loading address...");
@@ -316,18 +325,27 @@ export default function ContractDetail() {
         console.log("✅ Contract data refreshed successfully:", contractResult);
 
         if (contractResult.data) {
-          // Actualizar solo estado local
-          setCurrentContractData(contractResult.data);
-          console.log("✅ Contract data updated in local state:", {
-            contractId,
+          console.log("🔄 ANTES del setState - currentContractData:", {
+            folio: currentContractData?.folio,
+            quantity: currentContractData?.quantity
+          });
+          
+          console.log("🔄 NUEVOS datos del API:", {
             folio: contractResult.data.folio,
-            oldQuantity: currentContractData?.quantity,
-            newQuantity: contractResult.data.quantity,
-            timestamp: new Date().toISOString()
+            quantity: contractResult.data.quantity
           });
 
+          // Forzar actualización del estado usando una nueva referencia
+          const newData = { ...contractResult.data };
+          setCurrentContractData(newData);
+          
+          console.log("✅ setState llamado con nuevos datos");
+
           // Forzar re-render del componente incrementando la key
-          setRefreshKey(prev => prev + 1);
+          setRefreshKey(prev => {
+            console.log("🔄 Incrementando refreshKey de", prev, "a", prev + 1);
+            return prev + 1;
+          });
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(
