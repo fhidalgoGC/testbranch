@@ -296,6 +296,7 @@ export default function ContractDetail() {
 
   // Función completa de refresh con overlay de pantalla completa y mínimo 0.3 segundos
   const handleFullRefresh = async () => {
+    console.log("YEAYEA",contractId);
     if (!contractId) return;
 
     // Iniciar el loading de pantalla completa y medir el tiempo
@@ -335,17 +336,20 @@ export default function ContractDetail() {
             quantity: contractResult.data.quantity
           });
 
-          // Forzar actualización del estado usando una nueva referencia
-          const newData = { ...contractResult.data };
-          setCurrentContractData(newData);
+          // Forzar actualización del estado usando JSON para crear una copia completamente nueva
+          const newData = JSON.parse(JSON.stringify(contractResult.data));
           
-          console.log("✅ setState llamado con nuevos datos");
-
-          // Forzar re-render del componente incrementando la key
+          // Primero incrementar la key para forzar re-render
           setRefreshKey(prev => {
             console.log("🔄 Incrementando refreshKey de", prev, "a", prev + 1);
             return prev + 1;
           });
+          
+          // Luego actualizar los datos con un pequeño delay para asegurar que React procese el cambio
+          setTimeout(() => {
+            setCurrentContractData(newData);
+            console.log("✅ setState llamado con nuevos datos (después del refreshKey)");
+          }, 50);
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(
