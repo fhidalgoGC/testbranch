@@ -179,8 +179,8 @@ export default function EditContract() {
               className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
               onClick={() => {
                 setSuccessModal({ open: false, folio: "" });
-                // Redirigir a ContractDetail después de actualizar exitosamente
-                setLocation(`/${contractType}-contracts/${contractId}`);
+                // Redirigir a ContractDetail con refresh para recargar datos
+                setLocation(`/${contractType}-contracts/${contractId}?refresh=true`);
               }}
             >
               Continuar
