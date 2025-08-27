@@ -23,10 +23,8 @@ export default function CreateSaleContract() {
   
   // Función para generar nuevo contrato usando el servicio
   const handleGenerateContractId = async () => {
-    console.log('🆔 Generating new contract ID...');
     const contractIdGenerated = await generateContractId();
     if (contractIdGenerated) {
-      console.log('✅ Contract ID generated:', contractIdGenerated);
       setContractId(contractIdGenerated);
     }
   };
@@ -38,22 +36,18 @@ export default function CreateSaleContract() {
   
   // Función para manejar cancelación - solo navegar
   const handleCancel = () => {
-    console.log('🧹 CreateSaleContract: Navegando a sale-contracts');
     setLocation('/sale-contracts');
   };
 
   // Función para manejar submit del contrato
   const handleSubmitContract = async (contractId: string, contractData: any) => {
-    console.log('que paso', contractId);
     if (!contractId) {
       throw new Error('No contract ID available');
     }
 
-    console.log('📝 CreateSaleContract: Submitting contract', contractId);
     const result = await submitContract(contractId, contractData);
     
     if (result.success) {
-      console.log('✅ Contract submitted successfully:', result.data);
       
       // Extract folio from response
       const folio = result.data?.folio || result.data?.data?.folio || contractId;

@@ -18,7 +18,6 @@ export default function Buyers() {
   
   // Notificar navegación jerárquica al cargar la página
   useEffect(() => {
-    console.log('🔄 BUYERS PAGE: Cargando página y ejecutando navegación jerárquica');
     handleNavigateToPage('buyers');
   }, []);
   const {
@@ -35,7 +34,6 @@ export default function Buyers() {
     handleSearchChange,
   } = useBuyers();
 
-  console.log('Buyers component render:', { data, isLoading, currentPage });
 
   const handleAddBuyer = () => {
     setLocation('/buyers/create');

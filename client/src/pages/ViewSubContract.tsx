@@ -136,13 +136,11 @@ export default function ViewSubContract() {
   // Load data from Redux state exactly like EditSubContract does
   useEffect(() => {
     if (currentSubContract && parentContractData && contractsData.length > 0) {
-      console.log('🔍 VIEW SUB-CONTRACT: Loading data from Redux state');
       
       // Find parent contract data from Redux state
       const parentContract = contractsData.find((contract: any) => contract._id === contractId);
       
       if (parentContract) {
-        console.log('🔍 Parent contract found in Redux:', parentContract);
         
         // Set contract data for display (same logic as EditSubContract)
         setContractData({

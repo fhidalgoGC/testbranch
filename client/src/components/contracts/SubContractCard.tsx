@@ -84,7 +84,6 @@ export default function SubContractCard({
   const { t } = useTranslation();
 
   const debugCardData = () => {
-    console.log("🐛 DEBUG SubContractCard Data:", {
       contractNumber: subContract.contractNumber,
       unit: subContract.unit,
       measurement_unit: subContract.measurement_unit,

@@ -23,7 +23,6 @@ export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'se
   // Detectar si necesitamos limpiar el estado al cargar la página
   React.useEffect(() => {
     const lastPage = currentPagePath[currentPagePath.length - 1];
-    console.log(`🔍 ${page.toUpperCase()} STATE: Última página en path:`, lastPage, 'Path completo:', currentPagePath);
     
     // Si la última página no es la página actual, significa que venimos de otra página
     // y necesitamos limpiar el estado solo si es una navegación entre páginas del mismo nivel
@@ -31,7 +30,6 @@ export const useContractsPageState = (page: 'purchaseContracts' | 'buyers' | 'se
     const isTopLevelNavigation = topLevelPages.includes(lastPage) && topLevelPages.includes(page);
     
     if (lastPage && lastPage !== page && isTopLevelNavigation) {
-      console.log(`🧹 LIMPIANDO ESTADO: Navegación ${lastPage} → ${page}, limpiando estado`);
       dispatch(updateContractsState({ 
         page, 
         updates: {
@@ -125,7 +123,6 @@ export const useNavigationHandler = () => {
   const dispatch = useDispatch();
   
   const handleNavigateToPage = (pageKey: string, contractId?: string) => {
-    console.log(`Hook de navegación: ${pageKey}${contractId ? ` con contractId: ${contractId}` : ''}`);
     dispatch(navigateToPage({ pageKey, contractId }));
   };
   

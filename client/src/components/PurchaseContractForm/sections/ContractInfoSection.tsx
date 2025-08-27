@@ -177,9 +177,6 @@ export function ContractInfoSection({
 
   // Debug logging
   React.useEffect(() => {
-    console.log("ContractInfoSection - Commodities loaded:", commodities);
-    console.log("ContractInfoSection - Loading state:", loadingCommodities);
-    console.log("ContractInfoSection - Error state:", commoditiesError);
   }, [commodities, loadingCommodities, commoditiesError]);
 
   return (
@@ -456,11 +453,9 @@ export function ContractInfoSection({
                   });
                   setValue("participants", updatedParticipants);
 
-                  console.log(
                     `${targetRole} selected and added to participants with ${targetRole} role:`,
                     seller,
                   );
-                  console.log("Updated participants:", updatedParticipants);
                 }}
               />
             </div>
@@ -511,11 +506,9 @@ export function ContractInfoSection({
                   });
                   setValue("participants", updatedParticipants);
 
-                  console.log(
                     "Contact Vendor selected and added to participants with contactVendor role:",
                     vendor,
                   );
-                  console.log("Updated participants:", updatedParticipants);
                 }}
               />
             </div>
@@ -549,11 +542,9 @@ export function ContractInfoSection({
                   });
                   setValue("participants", updatedParticipants);
 
-                  console.log(
                     "Trader selected and added to participants with trader role:",
                     trader,
                   );
-                  console.log("Updated participants:", updatedParticipants);
                 }}
               />
             </div>
@@ -753,7 +744,6 @@ export function ContractInfoSection({
                     value={watch("measurement_unit_id")}
                     onValueChange={(value) => {
                       // Find the selected option to get both ID and slug
-                      console.log(measurementUnits, value);
                       const selectedOption = measurementUnits.find(
                         (option) => option.key === value,
                       );

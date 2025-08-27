@@ -119,7 +119,6 @@ export const getPeople = async (
 
   const url = `${environment.CRM_BASE_URL}/crm-people/people?${queryParams.toString()}`;
 
-  console.log("CRM People API URL:", url);
 
   try {
     const response = await authenticatedFetch(url, {
@@ -134,7 +133,6 @@ export const getPeople = async (
     }
 
     const data = await response.json();
-    console.log("CRM People API Response:", data);
 
     return data;
   } catch (error) {
@@ -149,7 +147,6 @@ export const getPeople = async (
 export const getSellers = async (
   options?: GetPeopleOptions,
 ): Promise<CrmPeopleResponse> => {
-  console.log("no llega aqui");
   // Add search filter if provided
   const filters: GetPeopleFilters = {
     roles: ["seller"],
@@ -204,7 +201,6 @@ export const createPersonId = async (): Promise<string> => {
   }
 
   const data = await response.json();
-  console.log("Person ID created:", data.data.key);
   return data.data.key;
 };
 
@@ -228,7 +224,6 @@ export const createBuyer = async (buyerId: string, buyerData: any): Promise<any>
   }
 
   const result = await response.json();
-  console.log("Buyer created successfully:", result);
   return result;
 };
 
@@ -252,7 +247,6 @@ export const createSeller = async (sellerId: string, sellerData: any): Promise<a
   }
 
   const result = await response.json();
-  console.log("Seller created successfully:", result);
   return result;
 };
 
@@ -282,7 +276,6 @@ export const createPersonLocation = async (locationData: any): Promise<any> => {
   }
 
   const result = await response.json();
-  console.log('Location created successfully:', result);
   return result;
 };
 

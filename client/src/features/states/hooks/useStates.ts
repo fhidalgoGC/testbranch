@@ -226,11 +226,9 @@ export function useStates(params: UseStatesParams) {
 
   const fetchStates = async (): Promise<StatesResponse | null> => {
     if (!params.countrySlug) {
-      console.log('States API: No country slug provided, skipping request');
       return null;
     }
 
-    console.log('States API: Starting fetch with params:', {
       countrySlug: params.countrySlug,
       search: params.search,
       page: params.page,
@@ -268,14 +266,11 @@ export function useStates(params: UseStatesParams) {
 
       // Construct the exact URL structure from your example
       const url = `${baseUrl}/crm-locations/states/find-states?${queryParams.toString()}`;
-      console.log('States API: Making request to:', url);
-      console.log('States API: Sort configuration:', JSON.stringify({ name: params.sortOrder === 'desc' ? -1 : 1 }));
 
       // Check for authentication tokens
       const jwt = localStorage.getItem('jwt_token');
       const partitionKey = localStorage.getItem('partition_key');
 
-      console.log('States API: Authentication check:', {
         jwt: jwt ? 'present' : 'missing',
         jwtLength: jwt?.length || 0,
         partitionKey: partitionKey ? 'present' : 'missing',
@@ -283,7 +278,6 @@ export function useStates(params: UseStatesParams) {
       });
 
       // Always try real API call first
-      console.log('States API: Making real API call with headers:', Object.keys({
         'Content-Type': 'application/json',
         'Authorization': jwt ? `Bearer ${jwt}` : 'Bearer demo-token',
         'X-Partition-Key': partitionKey || 'demo-partition'
@@ -298,7 +292,6 @@ export function useStates(params: UseStatesParams) {
         }
       });
 
-      console.log('States API: Response status:', response.status);
 
       if (!response.ok) {
         console.error('States API: HTTP error! status:', response.status);
@@ -344,9 +337,7 @@ export function useStates(params: UseStatesParams) {
       }
 
       const data: StatesResponse = await response.json();
-      console.log('States API: Success response with', data.data.length, 'states');
       if (data.data.length > 0) {
-        console.log('States API: Sample state:', data.data[0]);
       }
       
       setStates(data.data);
@@ -365,10 +356,8 @@ export function useStates(params: UseStatesParams) {
   // Auto-fetch when parameters change - only when countrySlug is present
   useEffect(() => {
     if (params.countrySlug && params.countrySlug.trim() !== '') {
-      console.log('States API: Triggering fetch due to parameter change');
       fetchStates();
     } else {
-      console.log('States API: No country slug, clearing states');
       setStates([]);
       setMeta(null);
     }

@@ -49,7 +49,6 @@ export default function PurchaseContracts() {
 
   // Notificar navegación al cargar la página
   useEffect(() => {
-    console.log(
       "🔄 PURCHASE CONTRACTS PAGE: Cargando página y ejecutando navegación jerárquica",
     );
     handleNavigateToPage("purchaseContracts");
@@ -124,9 +123,6 @@ export default function PurchaseContracts() {
 
   // Debug: Log commodity data
   useEffect(() => {
-    console.log("Commodities data:", commodities);
-    console.log("Commodities loading:", commoditiesLoading);
-    console.log("Commodities error:", commoditiesError);
   }, [commodities, commoditiesLoading, commoditiesError]);
 
   // Crear filtros de commodity basados en los datos reales
@@ -145,7 +141,6 @@ export default function PurchaseContracts() {
 
   // Debug: Log commodity filters
   useEffect(() => {
-    console.log("Commodity filters:", commodityFilters);
   }, [commodityFilters]);
 
   // Función para cargar contratos desde la API
@@ -187,15 +182,9 @@ export default function PurchaseContracts() {
       const totalElements = result.total;
       const totalPages = result.totalPages;
 
-      console.log("Contracts from service:", mappedContracts);
-      console.log("Setting contracts in state. Total contracts:", mappedContracts.length);
-      console.log("First contract example:", mappedContracts[0] || "No contracts found");
-      console.log("=== TODOS LOS IDs MAPEADOS ===");
-      console.log(
         "IDs de contratos cargados:",
         mappedContracts.map((c) => ({ _id: c._id, folio: c.folio })),
       );
-      console.log("===========================");
 
       // Actualizar el estado principal con los contratos
       setPageStateData((prev) => ({ ...prev, contracts: mappedContracts }));
@@ -209,7 +198,6 @@ export default function PurchaseContracts() {
         filters: selectedFilters,
       });
 
-      console.log(
         "📊 PAGINACIÓN - Total elementos:",
         totalElements,
         "Total páginas:",
@@ -237,7 +225,6 @@ export default function PurchaseContracts() {
   useEffect(() => {
     const reloadTableWithFilters = async () => {
       if (commodities.length > 0) {
-        console.log(
           "🔄 Filtros cambiaron, recargando tabla con nuevos filtros:",
           selectedFilters,
         );
@@ -251,7 +238,6 @@ export default function PurchaseContracts() {
         };
 
         await handleFetchContractsData(basicParams);
-        console.log("✅ Tabla recargada con filtros actualizados");
       }
     };
 
@@ -276,8 +262,6 @@ export default function PurchaseContracts() {
       // Aplicar filtros seleccionados
       const filters = selectedFilters;
 
-      console.log("📤 ENVIANDO AL ENDPOINT - Filtros:", filters);
-      console.log("📤 ENVIANDO AL ENDPOINT - Parámetros completos:", {
         ...params,
         filters,
       });
@@ -320,11 +304,9 @@ export default function PurchaseContracts() {
         contracts: result.data,
       }));
 
-      console.log(
         "🔄 DATOS ACTUALIZADOS - Total contratos encontrados:",
         result.data.length,
       );
-      console.log(
         "🔄 DATOS ACTUALIZADOS - Contratos (primeros 2):",
         result.data
           .slice(0, 2)
@@ -363,8 +345,6 @@ export default function PurchaseContracts() {
 
   // Función para toggle de filtros
   const toggleFilter = (filterKey: string, value: any) => {
-    console.log("🔄 TOGGLE FILTER:", filterKey, "Value:", value);
-    console.log("Current filters before toggle:", selectedFilters);
 
     setPageStateData((prev) => {
       const currentFilters = prev.selectedFilters;
@@ -412,7 +392,6 @@ export default function PurchaseContracts() {
           newValues = [...newValues, value];
         }
 
-        console.log("📦 COMMODITY - New values:", newValues);
         return {
           ...prev,
           selectedFilters: { ...currentFilters, [filterKey]: newValues },
@@ -428,7 +407,6 @@ export default function PurchaseContracts() {
         : [value];
 
       const newFilters = { ...currentFilters, [filterKey]: newValues };
-      console.log("📋 Final filter result:", newFilters);
       return { ...prev, selectedFilters: newFilters };
     });
     setCurrentPage(1);
@@ -631,16 +609,9 @@ export default function PurchaseContracts() {
               size="sm"
               variant="outline"
               onClick={() => {
-                console.log("=== ESTADO DE LA PÁGINA (TABLE DATA) ===");
-                console.log("Contracts:", tableData.contracts);
-                console.log("Total Elements:", tableData.totalElements);
-                console.log("Current Page:", tableData.currentPage);
-                console.log("Filters:", tableData.filters);
-                console.log(
                   "Total contracts in state:",
                   tableData.contracts.length,
                 );
-                console.log("==========================================");
               }}
             >
               Debug Table
@@ -649,13 +620,10 @@ export default function PurchaseContracts() {
               size="sm"
               variant="outline"
               onClick={() => {
-                console.log("=== ESTADO JSON DE PURCHASECONTRACTS ===");
                 console.group("📋 Selected Filters");
-                console.log(pageStateData.selectedFilters);
                 console.groupEnd();
 
                 console.group("📄 Contracts Summary");
-                console.log("Total contracts:", pageStateData.contracts.length);
 
                 // Mostrar solo información básica de los contratos
                 const contractsSummary = pageStateData.contracts.map(
@@ -669,17 +637,14 @@ export default function PurchaseContracts() {
                   }),
                 );
 
-                console.log("Contracts (basic info):", contractsSummary);
                 console.groupEnd();
 
                 console.group("🔗 Full JSON Structure (collapsed)");
-                console.log("Complete state structure:", {
                   selectedFilters: pageStateData.selectedFilters,
                   contracts: `[${pageStateData.contracts.length} contracts - expand to see full data]`,
                   contractsFullData: pageStateData.contracts,
                 });
                 console.groupEnd();
-                console.log("========================================");
               }}
               className="bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
             >
@@ -689,13 +654,10 @@ export default function PurchaseContracts() {
               className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
               size="lg"
               onClick={async () => {
-                console.log(
                   "🆔 Generating contract ID before navigationwwwwww...",
                 );
                 const contractIdGenerated = await generateContractId();
-                console.log(contractIdGenerated);
                 if (contractIdGenerated) {
-                  console.log(
                     "✅ Contract ID generated8888:",
                     contractIdGenerated,
                   );
@@ -830,7 +792,6 @@ export default function PurchaseContracts() {
             handleFetchContractsData(newParams);
           }}
           onSortChange={(sort) => {
-            console.log("🔧 SORT CHANGE - Sort recibido:", sort);
             const newParams = {
               page: 1,
               pageSize: tableParams.limit,
@@ -845,7 +806,6 @@ export default function PurchaseContracts() {
               key: "view",
               labelKey: "view",
               action: (contract: PurchaseSaleContract) => {
-                console.log("Ver contrato:", contract._id);
                 handleNavigateToPage("contractDetail", contract._id);
                 setLocation(`/purchase-contracts/${contract._id}`);
               },
@@ -854,7 +814,6 @@ export default function PurchaseContracts() {
               key: "edit",
               labelKey: "edit",
               action: (contract: PurchaseSaleContract) => {
-                console.log("Editar contrato:", contract._id);
                 // Implementar navegación a editar
               },
             },

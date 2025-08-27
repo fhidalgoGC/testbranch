@@ -44,7 +44,6 @@ export class SubContractService {
    */
   public static async getSubContractKey(): Promise<SubContractKeyResponse> {
     try {
-      console.log('🔑 Fetching sub-contract key...');
       
       const response = await authenticatedFetch(this.BASE_URL, {
         method: 'POST',
@@ -59,7 +58,6 @@ export class SubContractService {
       }
       
       const result = await response.json();
-      console.log('✅ Sub-contract key response:', result);
       
       // La clave está anidada en result.data.key basado en la respuesta de la API
       if (result.data?.key) {
@@ -90,8 +88,6 @@ export class SubContractService {
    */
   public static async createSubContract(key: string, payload: CreateSubContractPayload): Promise<any> {
     try {
-      console.log('📤 Creating sub-contract with API payload:', payload);
-      console.log('🔗 Using sub-contract key:', key);
       
       const response = await authenticatedFetch(`${this.BASE_URL}/${key}`, {
         method: 'PUT',
@@ -107,7 +103,6 @@ export class SubContractService {
       }
       
       const result = await response.json();
-      console.log('✅ Sub-contract created successfully:', result);
       
       return result;
       

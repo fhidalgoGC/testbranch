@@ -76,7 +76,6 @@ export default function SubContractsSection({
   const canAddSubContract = parentContractStatus !== 'closed' && parentContractOpen > 0;
 
   const debugProps = () => {
-    console.log('🐛 DEBUG SubContractsSection Props:', {
       subContracts,
       subContractsLength: subContracts.length,
       fields,
@@ -88,9 +87,6 @@ export default function SubContractsSection({
       firstSubContract: subContracts[0],
       targetSubContract: subContracts.find(sc => sc.contractNumber === 'SPC-46-SUBC-27')
     });
-    console.log('🐛 DEBUG Chart Data:', chartData);
-    console.log('🐛 DEBUG Total Sub-Contract Quantity:', totalSubContractQuantity);
-    console.log('🐛 DEBUG Can Add Sub-Contract:', canAddSubContract);
   };
 
   // Color mapping for SVG fill

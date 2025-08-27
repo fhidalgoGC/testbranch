@@ -108,7 +108,6 @@ export interface NumberFormatterOptions {
    if (isNegative && num !== 0) {
      result = "-" + result;
    }
-  console.log(minDecimals,
                  maxDecimals,
                  value,
                  formatPattern,

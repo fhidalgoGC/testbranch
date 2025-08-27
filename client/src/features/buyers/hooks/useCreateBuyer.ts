@@ -38,7 +38,6 @@ export function useCreateBuyer() {
         const jwt = localStorage.getItem('jwt');
         const partitionKey = localStorage.getItem('partition_key');
         
-        console.log('CreateBuyer: Calling service to create buyer ID');
         const buyerId = await createPersonId();
         setIdempotentBuyerId(buyerId);
         setError(null);
@@ -60,17 +59,14 @@ export function useCreateBuyer() {
     const crmUrl = environment.CRM_BASE_URL;
     
     if (!jwt || !partitionKey || !crmUrl) {
-      console.log('CreateBuyer: Missing data for location creation, skipping location step');
       return;
     }
     
     // Only create location if we have address information
     if (!formData.address || !formData.selectedCountry || !formData.selectedState || !formData.selectedCity) {
-      console.log('CreateBuyer: No address information provided, skipping location creation');
       return;
     }
     
-    console.log('CreateBuyer: Creating location for people_id:', peopleId);
     
     // Build the location payload
     const locationPayload: CreateLocationPayload = {
@@ -92,7 +88,6 @@ export function useCreateBuyer() {
       _partitionKey: partitionKey
     };
     
-    console.log('CreateBuyer: Location payload:', locationPayload);
     
     const locationResult = await createPersonLocation(locationPayload);
     return locationResult;
@@ -108,7 +103,6 @@ export function useCreateBuyer() {
         throw new Error('Missing required data for buyer creation');
       }
 
-      console.log('CreateBuyer: Submitting form data:', formData);
 
       const crmUrl = environment.CRM_BASE_URL;
       if (!crmUrl) {

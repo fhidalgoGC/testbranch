@@ -210,7 +210,6 @@ export default function CreateSeller() {
         selectedCity,
       };
 
-      console.log(
         "CreateSeller: Submitting form with location data:",
         formDataWithLocation,
       );
@@ -546,7 +545,6 @@ export default function CreateSeller() {
                             : ""
                         }
                         onChange={(country) => {
-                          console.log(
                             "CreateSeller: Country change triggered:",
                             country
                               ? {
@@ -576,7 +574,6 @@ export default function CreateSeller() {
                           setSelectedCity(null);
 
                           if (country) {
-                            console.log(
                               "CreateSeller: Updated selectedCountry state, reset selectedState",
                             );
                           }
@@ -602,7 +599,6 @@ export default function CreateSeller() {
                         }
                         selectedCountry={selectedCountry}
                         onChange={(state) => {
-                          console.log(
                             "CreateSeller: State change triggered:",
                             state
                               ? {
@@ -620,7 +616,6 @@ export default function CreateSeller() {
                           setSelectedCity(null);
 
                           if (state) {
-                            console.log(
                               "CreateSeller: Updated selectedState, reset selectedCity",
                             );
                           }
@@ -649,7 +644,6 @@ export default function CreateSeller() {
                         selectedState={selectedState}
                         selectedCity={selectedCity}
                         onCityChange={(city) => {
-                          console.log(
                             "CreateSeller: City change triggered:",
                             city
                               ? {
@@ -664,7 +658,6 @@ export default function CreateSeller() {
                           setSelectedCity(city);
 
                           if (city) {
-                            console.log("CreateSeller: Updated selectedCity");
                           }
                         }}
                         disabled={!selectedCountry || !selectedState}

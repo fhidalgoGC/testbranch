@@ -39,7 +39,6 @@ export function useCreateSeller() {
         const jwt = localStorage.getItem('jwt');
         const partitionKey = localStorage.getItem('partition_key');
         
-        console.log('CreateBuyer: Checking authentication tokens:', { 
           jwt: !!jwt, 
           partitionKey: !!partitionKey,
           jwtLength: jwt?.length || 0,
@@ -60,7 +59,6 @@ export function useCreateSeller() {
           // For demo purposes, simulate the API response
           const mockBuyerId = `demo-buyer-id-${Date.now()}`;
           
-          console.log('CreateBuyer: Using demo buyer ID:', mockBuyerId);
           setIdempotentBuyerId(mockBuyerId);
           setError(null);
           setIsInitializing(false);
@@ -69,13 +67,11 @@ export function useCreateSeller() {
 
         // Make real API call to generate idempotent ID
         const crmUrl = environment.CRM_BASE_URL;
-        console.log('CreateBuyer: CRM URL:', crmUrl);
         
         if (!crmUrl) {
           throw new Error('CRM URL not configured');
         }
 
-        console.log('CreateBuyer: Making POST request to initialize buyer ID');
         
         const response = await fetch(`${crmUrl}/crm-people/people`, {
           method: 'POST',
@@ -94,7 +90,6 @@ export function useCreateSeller() {
 
         const data: CreateBuyerIdResponse = await response.json();
 
-        console.log('CreateBuyer: Successfully initialized buyer ID:', data.data.key);
         setIdempotentBuyerId(data.data.key);
         setError(null);
       } catch (err) {
@@ -115,17 +110,14 @@ export function useCreateSeller() {
     const crmUrl = environment.CRM_BASE_URL;
     
     if (!jwt || !partitionKey || !crmUrl) {
-      console.log('CreateBuyer: Missing data for location creation, skipping location step');
       return;
     }
     
     // Only create location if we have address information
     if (!formData.address || !formData.selectedCountry || !formData.selectedState || !formData.selectedCity) {
-      console.log('CreateBuyer: No address information provided, skipping location creation');
       return;
     }
     
-    console.log('CreateBuyer: Creating location for people_id:', peopleId);
     
     // Build the location payload
     const locationPayload: CreateLocationPayload = {
@@ -147,11 +139,9 @@ export function useCreateSeller() {
       _partitionKey: partitionKey
     };
     
-    console.log('CreateBuyer: Location payload:', locationPayload);
     
     // Check if we're in demo mode
     if (jwt === 'demo-jwt-token-for-testing') {
-      console.log('CreateBuyer: Demo mode - simulating location creation');
       await new Promise(resolve => setTimeout(resolve, 500));
       return { success: true, data: locationPayload };
     }
@@ -177,7 +167,6 @@ export function useCreateSeller() {
     }
     
     const locationResult = await locationResponse.json();
-    console.log('CreateBuyer: Location created successfully:', locationResult);
     return locationResult;
   };
 
@@ -191,11 +180,9 @@ export function useCreateSeller() {
         throw new Error('Missing required data for buyer creation');
       }
 
-      console.log('CreateBuyer: Submitting form data:', formData);
 
       // Check if we're in demo mode
       if (jwt === 'demo-jwt-token-for-testing') {
-        console.log('CreateBuyer: Demo mode - simulating buyer creation');
         
         // Simulate a delay
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -229,7 +216,6 @@ export function useCreateSeller() {
           payload.organization_name = formData.organization_name;
         }
 
-        console.log('CreateBuyer: Demo payload would be:', payload);
         
         // Store the created buyer in localStorage for demo mode
         const mockBuyer = {
@@ -245,7 +231,6 @@ export function useCreateSeller() {
         const updatedBuyers = [mockBuyer, ...existingBuyers]; // Add new buyer at the beginning
         
         localStorage.setItem('demo_created_buyers', JSON.stringify(updatedBuyers));
-        console.log('CreateBuyer: Stored demo buyer in localStorage:', mockBuyer);
         
         // Try to create location in demo mode
         await createBuyerLocation(idempotentBuyerId, formData);
@@ -301,7 +286,6 @@ export function useCreateSeller() {
       }
 
       const buyerResult = await response.json();
-      console.log('CreateBuyer: Buyer created successfully:', buyerResult);
       
       // Extract people_id from the response
       const peopleId = buyerResult.people_id || idempotentBuyerId;

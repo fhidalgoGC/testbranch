@@ -80,7 +80,6 @@ export function QuantityActualOverview({
 }: QuantityActualOverviewProps) {
   const { t } = useTranslation();
 
-  console.log("que hay", measurementUnits);
   // Watch future and basis values to calculate price automatically (only for create/edit modes)
   const watchedFuture =
     mode !== "view" && control ? useWatch({ control, name: "future" }) : null;
@@ -105,7 +104,6 @@ export function QuantityActualOverview({
     const calculatedPrice = future + basis;
 
     setValue("price", calculatedPrice);
-    console.log(`💰 Price calculated (${mode} mode):`, {
       future: `${watchedFuture} -> ${future}`,
       basis: `${watchedBasis} -> ${basis}`,
       calculatedPrice,
@@ -138,7 +136,6 @@ export function QuantityActualOverview({
               const strokeDasharray = `${openPercentage}, 100`;
 
               // Debug inventory calculation
-              console.log("🔵 Inventory Debug:", {
                 mode,
                 totalQuantity,
                 openInventory,

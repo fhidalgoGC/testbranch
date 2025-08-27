@@ -40,7 +40,6 @@ export function useBuyers(params: UseBuyersParams = {}) {
   } = useQuery({
     queryKey: ['buyers', currentPage, pageSize, sortKey, sortDirection, searchValue],
     queryFn: async () => {
-      console.log('Executing getBuyers query with options:', buildQueryOptions());
       
       try {
         const response = await getBuyers(buildQueryOptions());
@@ -56,7 +55,6 @@ export function useBuyers(params: UseBuyersParams = {}) {
           }
         };
         
-        console.log('Buyers hook - Transformed result:', transformedResult);
         return transformedResult;
       } catch (error) {
         console.error('Buyers hook - Query error:', error);

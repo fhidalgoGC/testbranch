@@ -49,7 +49,6 @@ export default function EditContract() {
       );
       
       if (foundContract) {
-        console.log('📝 EDIT CONTRACT: Contrato encontrado', foundContract);
         setContractData(foundContract);
       } else {
         console.warn('⚠️ EDIT CONTRACT: Contrato no encontrado en Redux');
@@ -65,13 +64,11 @@ export default function EditContract() {
 
   // Función para manejar submit del contrato actualizado
   const handleSubmitContract = async (contractId: string, contractData: any) => {
-    console.log("📝 EditContract: Submitting updated contract", contractId);
     
     try {
       const result = await submitContract(contractId, contractData);
 
       if (result.success) {
-        console.log("✅ Contract updated successfully:", result.data);
         
         // Extract folio from response
         const folio = result.data?.folio || result.data?.data?.folio || contractId;

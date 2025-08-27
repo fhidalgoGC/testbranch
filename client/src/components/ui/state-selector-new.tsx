@@ -71,7 +71,6 @@ export function StateSelector({
 
   // Reset states when country changes
   useEffect(() => {
-    console.log('StateSelector: Country change detected:', selectedCountry?.slug);
     if (selectedCountry) {
       setStates([]);
       setSelectedState(null);
@@ -111,7 +110,6 @@ export function StateSelector({
 
   // Handle state selection
   const handleStateSelect = (state: State) => {
-    console.log('StateSelector: State selected:', {
       name: getStateDisplayName(state),
       countrySlug: state.country_slug,
       code: state.code

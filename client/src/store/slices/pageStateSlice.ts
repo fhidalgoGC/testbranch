@@ -145,14 +145,12 @@ const pageStateSlice = createSlice({
       const newLevel = getPageLevel(pageKey);
       const currentLastPage = currentPath[currentPath.length - 1];
       
-      console.log(`🚀 NAVEGACIÓN JERÁRQUICA: ${pageKey}, nivel: ${newLevel}, path actual:`, currentPath, `última página: ${currentLastPage}`);
       
       // Si navegamos a un nivel más profundo (hacia adentro), mantener el estado
       if (newLevel > currentPath.length) {
         // Navegación hacia adentro: mantener estado anterior
         const newPath = [...NAVIGATION_HIERARCHY[pageKey], pageKey];
         state.currentPagePath = newPath;
-        console.log('Navegación hacia adentro - manteniendo estado. Nuevo path:', newPath);
       } 
       // Si navegamos al mismo nivel o hacia afuera, limpiar estados según la lógica
       else {
@@ -165,35 +163,26 @@ const pageStateSlice = createSlice({
             ['purchaseContracts', 'buyers', 'sellers', 'saleContracts', 'dashboard'].includes(currentLastPage);
           
           if (isNavigatingBetweenTopLevelPages && pageKey !== currentLastPage) {
-            console.log(`🔄 NAVEGACIÓN ENTRE PÁGINAS PRINCIPALES: ${currentLastPage} → ${pageKey}`);
             
             // Limpiar el estado de la página anterior Y de la página de destino
             if (currentLastPage === 'purchaseContracts') {
-              console.log('🧹 Limpiando estado de purchaseContracts (página anterior)');
               state.purchaseContracts = { ...initialContractsState };
             } else if (currentLastPage === 'buyers') {
-              console.log('🧹 Limpiando estado de buyers (página anterior)');
               state.buyers = { ...initialContractsState };
             } else if (currentLastPage === 'sellers') {
-              console.log('🧹 Limpiando estado de sellers (página anterior)');
               state.sellers = { ...initialContractsState };
             } else if (currentLastPage === 'saleContracts') {
-              console.log('🧹 Limpiando estado de saleContracts (página anterior)');
               state.saleContracts = { ...initialContractsState };
             }
             
             // IMPORTANTE: También limpiar el estado de la página de destino para comenzar limpio
             if (pageKey === 'purchaseContracts') {
-              console.log('🧹 Limpiando estado de purchaseContracts (página destino)');
               state.purchaseContracts = { ...initialContractsState };
             } else if (pageKey === 'buyers') {
-              console.log('🧹 Limpiando estado de buyers (página destino)');
               state.buyers = { ...initialContractsState };
             } else if (pageKey === 'sellers') {
-              console.log('🧹 Limpiando estado de sellers (página destino)');
               state.sellers = { ...initialContractsState };
             } else if (pageKey === 'saleContracts') {
-              console.log('🧹 Limpiando estado de saleContracts (página destino)');
               state.saleContracts = { ...initialContractsState };
             }
             
@@ -205,11 +194,9 @@ const pageStateSlice = createSlice({
         
         // Identificar qué páginas se están abandonando (navegación hacia afuera)
         const abandonedPages = currentPath.slice(newLevel + 1);
-        console.log('Páginas abandonadas:', abandonedPages);
         
         // Limpiar estados de las páginas abandonadas
         abandonedPages.forEach(abandonedPage => {
-          console.log(`Limpiando estado de página abandonada: ${abandonedPage}`);
           
           if (abandonedPage === 'contractDetail' && contractId) {
             delete state.contractDetail[contractId];
@@ -219,7 +206,6 @@ const pageStateSlice = createSlice({
         });
         
         state.currentPagePath = newPath;
-        console.log('Navegación completada. Nuevo path:', newPath);
       }
       
       // Actualizar última página visitada

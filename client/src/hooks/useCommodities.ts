@@ -39,7 +39,6 @@ export const useCommodities = () => {
         const accessToken = localStorage.getItem('access_token') || '';
 
         if (!partitionKey || !accessToken) {
-          console.log('Missing authentication data for commodities');
           setCommodities([]);
           return;
         }
@@ -51,7 +50,6 @@ export const useCommodities = () => {
         
         const url = `https://crm-develop.grainchain.io/api/v1/commodities/commodities?page=1&limit=20&filter=${encodeURIComponent(filter)}`;
         
-        console.log('Fetching commodities from:', url);
 
         // Headers
         const headers = {
@@ -66,7 +64,6 @@ export const useCommodities = () => {
           'Content-Type': 'application/json'
         };
 
-        console.log('Headers:', headers);
 
         const response = await fetch(url, {
           method: 'GET',
@@ -78,8 +75,6 @@ export const useCommodities = () => {
         }
 
         const data: CommodityResponse = await response.json();
-        console.log('Commodities response:', data);
-        console.log('Raw commodities from API:', data.data);
 
         // Map the response to the expected format
         const mappedCommodities: CommodityOption[] = data.data
@@ -91,7 +86,6 @@ export const useCommodities = () => {
             data: commodity               // Store original data for subcategory access
           }));
 
-        console.log('Mapped commodities for UI:', mappedCommodities);
         setCommodities(mappedCommodities);
       } catch (err) {
         console.error('Error fetching commodities:', err);
