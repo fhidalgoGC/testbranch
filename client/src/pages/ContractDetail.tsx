@@ -1220,7 +1220,11 @@ export default function ContractDetail() {
 
   // Efecto principal que se ejecuta al montar y maneja refresh desde URL
   useEffect(() => {
+    console.log("🚀 useEffect PRINCIPAL ejecutándose");
+    console.log("contractId disponible:", contractId);
+    
     if (!contractId) {
+      console.log("❌ No hay contractId, terminando");
       setError("ID de contrato no válido");
       setLoading(false);
       return;
@@ -1238,7 +1242,14 @@ export default function ContractDetail() {
     }
 
     console.log("🔄 Componente montado - Cargando contrato desde API:", contractId);
-    handleFullRefresh();
+    console.log("🔄 Llamando handleFullRefresh...");
+    
+    // Verificar que handleFullRefresh existe
+    if (typeof handleFullRefresh === 'function') {
+      handleFullRefresh();
+    } else {
+      console.error("❌ handleFullRefresh no es una función!");
+    }
   }, []); // Array vacío para que solo se ejecute al montar
 
   // Efecto para persistir cambios de tab activo
