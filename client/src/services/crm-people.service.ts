@@ -181,6 +181,112 @@ export const getBuyers = async (
 };
 
 /**
+ * Create idempotent ID for a new person (buyer or seller)
+ */
+export const createPersonId = async (): Promise<string> => {
+  const partitionKey = localStorage.getItem("partition_key");
+  if (!partitionKey) {
+    throw new Error("Partition key not found");
+  }
+
+  const response = await authenticatedFetch(`${environment.CRM_BASE_URL}/crm-people/people`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      _partitionKey: `organization_id=${partitionKey}`
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  console.log("Person ID created:", data.data.key);
+  return data.data.key;
+};
+
+/**
+ * Create a new buyer
+ */
+export const createBuyer = async (buyerId: string, buyerData: any): Promise<any> => {
+  const response = await authenticatedFetch(
+    `${environment.CRM_BASE_URL}/crm-people/people/${buyerId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(buyerData),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to create buyer: ${response.status}`);
+  }
+
+  const result = await response.json();
+  console.log("Buyer created successfully:", result);
+  return result;
+};
+
+/**
+ * Create a new seller
+ */
+export const createSeller = async (sellerId: string, sellerData: any): Promise<any> => {
+  const response = await authenticatedFetch(
+    `${environment.CRM_BASE_URL}/crm-people/people/${sellerId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(sellerData),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to create seller: ${response.status}`);
+  }
+
+  const result = await response.json();
+  console.log("Seller created successfully:", result);
+  return result;
+};
+
+/**
+ * Create location for a person
+ */
+export const createPersonLocation = async (locationData: any): Promise<any> => {
+  const partitionKey = localStorage.getItem("partition_key");
+  
+  const response = await authenticatedFetch(`${environment.CRM_BASE_URL}/crm-locations/address`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "_partitionkey": partitionKey || "",
+      "bt-organization": partitionKey || "",
+      "bt-uid": partitionKey || "",
+      "organization_id": partitionKey || "",
+      "pk-organization": partitionKey || "",
+    },
+    body: JSON.stringify(locationData),
+  });
+
+  if (!response.ok) {
+    console.warn('Location creation failed:', response.status, response.statusText);
+    // Don't throw error - location creation is optional
+    return null;
+  }
+
+  const result = await response.json();
+  console.log('Location created successfully:', result);
+  return result;
+};
+
+/**
  * Get contact vendors from CRM (assuming they have buyer role for now)
  */
 export const getContactVendors = async (

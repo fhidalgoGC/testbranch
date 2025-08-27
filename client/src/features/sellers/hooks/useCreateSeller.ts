@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import type { SellerFormData, CreateSellerPayload } from "../types/create-seller";
-import { authenticatedFetch } from "@/utils/apiInterceptors";
-import { environment } from "@/environment";
+import { createPersonId, createSeller } from "@/services/crm-people.service";
 
 export function useCreateSeller() {
   const [idempotentSellerId, setIdempotentSellerId] = useState<string | null>(null);
@@ -47,33 +46,9 @@ export function useCreateSeller() {
           return;
         }
 
-        // Make real API call to generate idempotent ID
-        const crmUrl = environment.CRM_BASE_URL;
-        console.log('CreateSeller: CRM URL:', crmUrl);
-        
-        if (!crmUrl) {
-          throw new Error('CRM URL not configured');
-        }
-
-        console.log('CreateSeller: Making POST request to initialize seller ID');
-        
-        const response = await authenticatedFetch(`${crmUrl}/crm-people/people`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            _partitionKey: `organization_id=${partitionKey}`
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log('CreateSeller: Successfully initialized seller ID:', data.data.key);
-        setIdempotentSellerId(data.data.key);
+        console.log('CreateSeller: Calling service to create seller ID');
+        const sellerId = await createPersonId();
+        setIdempotentSellerId(sellerId);
         setInitializationError(null);
       } catch (error) {
         console.error('CreateSeller: Failed to initialize idempotent seller ID:', error);
@@ -137,25 +112,7 @@ export function useCreateSeller() {
 
       console.log("Creating seller with payload:", payload);
 
-      const response = await authenticatedFetch(
-        `${environment.CRM_BASE_URL}/crm-people/people/${idempotentSellerId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Seller creation error:", errorData);
-        throw new Error(`Failed to create seller: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Seller created successfully:", result);
+      const result = await createSeller(idempotentSellerId, payload);
       return result;
     },
     onSuccess: (data) => {

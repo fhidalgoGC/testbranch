@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
-import { authenticatedFetch } from '@/utils/apiInterceptors';
+import { createPersonId, createBuyer, createPersonLocation } from '@/services/crm-people.service';
 import type { CreateBuyerIdResponse, CreateBuyerPayload, BuyerFormData } from '../types/create-buyer';
 import { environment } from '@/environment';
 
@@ -76,26 +76,9 @@ export function useCreateBuyer() {
           throw new Error('CRM URL not configured');
         }
 
-        console.log('CreateBuyer: Making POST request to initialize buyer ID');
-        
-        const response = await authenticatedFetch(`${crmUrl}/crm-people/people`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            _partitionKey: `organization_id=${partitionKey}`
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-        }
-
-        const data: CreateBuyerIdResponse = await response.json();
-
-        console.log('CreateBuyer: Successfully initialized buyer ID:', data.data.key);
-        setIdempotentBuyerId(data.data.key);
+        console.log('CreateBuyer: Calling service to create buyer ID');
+        const buyerId = await createPersonId();
+        setIdempotentBuyerId(buyerId);
         setError(null);
       } catch (err) {
         console.error('CreateBuyer: Failed to initialize idempotent buyer ID:', err);
@@ -156,27 +139,7 @@ export function useCreateBuyer() {
       return { success: true, data: locationPayload };
     }
     
-    const locationResponse = await authenticatedFetch(`${crmUrl}/crm-locations/address`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        '_partitionkey': partitionKey,
-        'bt-organization': partitionKey,
-        'bt-uid': partitionKey,
-        'organization_id': partitionKey,
-        'pk-organization': partitionKey,
-      },
-      body: JSON.stringify(locationPayload),
-    });
-    
-    if (!locationResponse.ok) {
-      console.warn('CreateBuyer: Location creation failed:', locationResponse.status, locationResponse.statusText);
-      // Don't throw error - location creation is optional
-      return null;
-    }
-    
-    const locationResult = await locationResponse.json();
-    console.log('CreateBuyer: Location created successfully:', locationResult);
+    const locationResult = await createPersonLocation(locationPayload);
     return locationResult;
   };
 
@@ -286,20 +249,7 @@ export function useCreateBuyer() {
         payload.organization_name = formData.organization_name;
       }
 
-      const response = await authenticatedFetch(`${crmUrl}/crm-people/people/${idempotentBuyerId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-      }
-
-      const buyerResult = await response.json();
-      console.log('CreateBuyer: Buyer created successfully:', buyerResult);
+      const buyerResult = await createBuyer(idempotentBuyerId, payload);
       
       // Extract people_id from the response
       const peopleId = buyerResult.people_id || idempotentBuyerId;
