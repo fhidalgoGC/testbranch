@@ -12,7 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Calendar, Package, FileText } from 'lucide-react';
 import { useMeasurementUnits } from '@/hooks/useMeasurementUnits';
 import { QuantityActualOverview } from '@/components/contracts/QuantityActualOverview';
-import { authenticatedFetch } from '@/utils/apiInterceptors';
 // No validation needed for view mode
 
 interface ContractData {
@@ -72,45 +71,6 @@ export default function ViewSubContract() {
   
   usePageTracking(`/${contractType}-contracts/${contractId}/sub-contracts/${subContractId}/view`);
   
-  // State para controlar la carga de datos frescos
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // Función para refrescar los datos del subcontrato desde el API
-  const refreshSubContractData = async () => {
-    if (!contractId || !subContractId) return;
-    
-    try {
-      setIsLoading(true);
-      const response = await authenticatedFetch(`/api/sub-contracts/${subContractId}`, {
-        method: 'GET',
-      });
-      
-      if (response.ok) {
-        const freshSubContract = await response.json();
-        console.log('🔄 Fresh sub-contract data:', freshSubContract);
-        
-        // Actualizar los valores del formulario con datos frescos
-        if (setValue && freshSubContract) {
-          setValue('quantity', freshSubContract.quantity || 0);
-          setValue('future', freshSubContract.price_schedule?.[0]?.future_price || 0);
-          setValue('basis', freshSubContract.price_schedule?.[0]?.basis || 0);
-          setValue('price', freshSubContract.price_schedule?.[0]?.price || 0);
-          setValue('totalPrice', freshSubContract.total_price || 0);
-          setValue('totalDate', freshSubContract.sub_contract_date ? new Date(freshSubContract.sub_contract_date).toISOString().split('T')[0] : '');
-          setValue('measurementUnitId', freshSubContract.measurement_unit || '');
-        }
-      }
-    } catch (error) {
-      console.error('Error refreshing sub-contract data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Refrescar datos cuando carga la vista
-  useEffect(() => {
-    refreshSubContractData();
-  }, [contractId, subContractId]);
   
   // State management
   const [contractData, setContractData] = useState<ContractData>({

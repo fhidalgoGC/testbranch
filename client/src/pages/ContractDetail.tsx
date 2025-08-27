@@ -2121,9 +2121,35 @@ export default function ContractDetail() {
               onViewSubContract={(id) => {
                 console.log("View sub-contract:", id);
                 handleNavigateToPage("viewSubContract", id);
-                setLocation(
-                  `/${contractType}-contracts/${contractId}/sub-contracts/${id}/view`,
+
+                // Encontrar el sub-contrato específico
+                const subContractToView = subContractsData.find(
+                  (sc) => sc.id === id,
                 );
+
+                if (subContractToView) {
+                  // Establecer el estado del sub-contrato en Redux antes de navegar (igual que editar)
+                  dispatch(
+                    updateEditSubContractState({
+                      contractId: contractId!,
+                      updates: {
+                        parentContractData: currentContractData,
+                        subContractsData: subContractsData,
+                        currentSubContractData: subContractToView,
+                        subContractId: id,
+                        pricingType:
+                          currentContractData?.price_schedule?.[0]
+                            ?.pricing_type || "basis",
+                      },
+                    }),
+                  );
+
+                  setLocation(
+                    `/${contractType}-contracts/${contractId}/sub-contracts/${id}/view`,
+                  );
+                } else {
+                  console.error("Sub-contrato no encontrado:", id);
+                }
               }}
               onPrintSubContract={handlePrintSubContract}
               printingSubContractId={printingSubContractId}
