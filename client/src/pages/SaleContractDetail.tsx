@@ -202,12 +202,26 @@ export default function SaleContractDetail() {
       setSubContractsLoading(true);
       console.log("📥 LOADING SUB-CONTRACTS for contract:", contractId);
 
-      const subContractsData = await getSubContractsByContractId(contractId);
-      setSubContracts(subContractsData);
+      const subContractsResponse = await getSubContractsByContractId(contractId);
       
-      console.log("✅ Sub-contracts loaded successfully:", subContractsData);
+      if (subContractsResponse.ok) {
+        const subContractsResult = await subContractsResponse.json();
+        console.log("✅ Sub-contracts data loaded successfully:", subContractsResult);
+        
+        // Procesar los datos de sub-contratos como en PurchaseContractDetail
+        const processedSubContracts = subContractsResult.data?.map((item: any) => ({
+          ...item,
+          id: item._id, // Asegurar que tiene un ID
+        })) || [];
+        
+        setSubContracts(processedSubContracts);
+      } else {
+        console.error("Error loading sub-contracts:", subContractsResponse.status);
+        setSubContracts([]);
+      }
     } catch (error) {
       console.error("Error loading sub-contracts:", error);
+      setSubContracts([]);
     } finally {
       setSubContractsLoading(false);
     }
@@ -385,10 +399,10 @@ export default function SaleContractDetail() {
 
   // Calcular progreso de entrega
   const totalQuantity = contract.quantity || 0;
-  const deliveredQuantity = subContracts.reduce(
+  const deliveredQuantity = Array.isArray(subContracts) ? subContracts.reduce(
     (sum, sub) => sum + (sub.quantity || 0),
     0,
-  );
+  ) : 0;
   const deliveryProgress = totalQuantity > 0 ? (deliveredQuantity / totalQuantity) * 100 : 0;
 
   return (
