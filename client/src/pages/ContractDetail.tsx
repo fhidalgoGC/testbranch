@@ -1600,6 +1600,10 @@ export default function ContractDetail() {
                     <TooltipTrigger asChild>
                       <Button
                         size="sm"
+                        onClick={() => {
+                          console.log("Ver contrato completo:", contractId);
+                          setLocation(`/${contractType}-contracts/${contractId}/view`);
+                        }}
                         className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white"
                       >
                         <Eye className="w-4 h-4" />
