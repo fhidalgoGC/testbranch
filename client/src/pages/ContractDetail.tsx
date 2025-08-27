@@ -320,12 +320,22 @@ export default function ContractDetail() {
           // Actualizar Redux cache con los datos actualizados del contrato
           try {
             const updatedContract = contractResult.data;
-            const contractType = updatedContract.type === 'purchase' ? 'purchase' : 'sale';
-            const statePage = contractType === 'purchase' ? 'purchaseContracts' : 'saleContracts';
+            
+            // Usar el tipo detectado desde la URL actual en lugar del tipo del contrato
+            const currentContractType = location.includes("/sale-contracts/") ? "sale" : "purchase";
+            const statePage = currentContractType === 'purchase' ? 'purchaseContracts' : 'saleContracts';
             
             // Obtener el array actual de contratos desde Redux
             const currentState = store.getState();
             const currentContractsData = currentState.pageState[statePage].contractsData || [];
+            
+            console.log("🔄 Updating Redux cache:", {
+              contractId,
+              currentContractType,
+              statePage,
+              currentDataLength: currentContractsData.length,
+              contractFound: currentContractsData.some((c: any) => c._id === contractId)
+            });
             
             // Actualizar el contrato específico en el array
             const updatedContractsData = currentContractsData.map((contract: any) => 
