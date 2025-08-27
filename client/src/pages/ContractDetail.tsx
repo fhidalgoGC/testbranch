@@ -440,13 +440,17 @@ export default function ContractDetail() {
       }
     } catch (error) {
       console.error("❌ Error during full refresh:", error);
-      setLoading(false);
-      setError("Error al cargar el contrato");
     } finally {
-      // Quitar todos los estados de loading y liberar el lock
+      // Calcular tiempo transcurrido y asegurar duración mínima de 0.3 segundos
+      const elapsedTime = Date.now() - startTime;
+      const minimumDuration = 300; // 0.3 segundos en milisegundos
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+
+
+      // Quitar el loading de pantalla completa y liberar el lock
       setFullScreenLoading(false);
       setIsRefreshing(false);
-      console.log("✅ Full refresh completed - isRefreshing liberado");
+      console.log("✅ Full refresh completed");
     }
   };
 
