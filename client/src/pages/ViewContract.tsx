@@ -81,7 +81,7 @@ export default function ViewContract() {
 
   return (
     <DashboardLayout title="">
-      <div className="container mx-auto px-4 py-6">
+      <div className="min-h-0">
         {/* Formulario en modo view */}
         <PurchaseContractForm
           contractType={contractType}

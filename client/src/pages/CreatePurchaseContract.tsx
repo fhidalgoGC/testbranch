@@ -61,14 +61,16 @@ export default function CreatePurchaseContract() {
 
   return (
     <DashboardLayout title={t("createPurchaseContract")}>
-      <PurchaseContractForm
-        contractType="purchase"
-        mode="create"
-        contractId={urlContractId}
-        representativeRole="buyer"
-        onCancel={handleCancel}
-        onSubmitContract={handleSubmitContract}
-      />
+      <div className="min-h-0">
+        <PurchaseContractForm
+          contractType="purchase"
+          mode="create"
+          contractId={urlContractId}
+          representativeRole="buyer"
+          onCancel={handleCancel}
+          onSubmitContract={handleSubmitContract}
+        />
+      </div>
 
       {/* Error Modal */}
       <AlertDialog

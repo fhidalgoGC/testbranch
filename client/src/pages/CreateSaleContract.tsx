@@ -70,14 +70,16 @@ export default function CreateSaleContract() {
 
   return (
     <DashboardLayout title={t("createSaleContract")}>
-      <PurchaseContractForm 
-        contractType="sale" 
-        mode="create" 
-        contractId={contractId}
-        representativeRole="seller"
-        onCancel={handleCancel}
-        onSubmitContract={handleSubmitContract}
-      />
+      <div className="min-h-0">
+        <PurchaseContractForm 
+          contractType="sale" 
+          mode="create" 
+          contractId={contractId}
+          representativeRole="seller"
+          onCancel={handleCancel}
+          onSubmitContract={handleSubmitContract}
+        />
+      </div>
       
       {/* Error Modal */}
       <AlertDialog open={errorModal.open} onOpenChange={(open) => setErrorModal(prev => ({ ...prev, open }))}>
