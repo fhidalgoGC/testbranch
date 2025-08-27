@@ -131,17 +131,7 @@ export default function ContractDetail() {
   // Estado para forzar re-render cuando se actualizan los datos
   const [refreshKey, setRefreshKey] = useState<number>(0);
   
-  // Flag para evitar múltiples refreshes simultáneos
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  // Debug: Monitor changes to currentContractData
-  useEffect(() => {
-    console.log("🔄 USEEFFECT: currentContractData cambió:", {
-      folio: currentContractData?.folio,
-      quantity: currentContractData?.quantity,
-      refreshKey: refreshKey
-    });
-  }, [currentContractData, refreshKey]);
 
   // Estado para la dirección del participante
   const [participantAddress, setParticipantAddress] =
@@ -247,14 +237,7 @@ export default function ContractDetail() {
     console.log("YEAYEA",contractId);
     if (!contractId) return;
     
-    // Si ya está refrescando, ignorar esta llamada
-    if (isRefreshing) {
-      console.log("⚠️ Refresh ya en progreso, ignorando nueva llamada");
-      return;
-    }
-
-    // Marcar como refrescando y iniciar el loading de pantalla completa
-    setIsRefreshing(true);
+    console.log("🔄 Iniciando refresh...");
     setFullScreenLoading(true);
     const startTime = Date.now();
 
@@ -281,27 +264,11 @@ export default function ContractDetail() {
         console.log("✅ Contract data refreshed successfully:", contractResult);
 
         if (contractResult.data) {
-          console.log("🔄 ANTES del setState - currentContractData:", {
-            folio: currentContractData?.folio,
-            quantity: currentContractData?.quantity
-          });
-          
-          console.log("🔄 NUEVOS datos del API:", {
-            folio: contractResult.data.folio,
-            quantity: contractResult.data.quantity
-          });
+          // Actualizar datos del contrato
+          setCurrentContractData(contractResult.data);
+          setLoading(false);
 
-          // Crear una copia profunda para asegurar que React detecte el cambio
-          const newData = JSON.parse(JSON.stringify(contractResult.data));
-          
-          console.log("✅ Actualizando datos - quantity:", newData.quantity);
-          
-          // Actualizar ambos estados juntos
-          setCurrentContractData({...newData});
-          console.log("✅ CURRENT", currentContractData);
-          setRefreshKey(prev => prev + 1);
-
-          // Cargar dirección del participante
+          // Cargar dirección del seller
           const seller = contractResult.data.participants?.find(
             (p: any) => p.role === "seller",
           );
@@ -447,9 +414,8 @@ export default function ContractDetail() {
       const remainingTime = Math.max(0, minimumDuration - elapsedTime);
 
 
-      // Quitar el loading de pantalla completa y liberar el lock
+      // Quitar el loading de pantalla completa
       setFullScreenLoading(false);
-      setIsRefreshing(false);
       console.log("✅ Full refresh completed");
     }
   };
