@@ -1770,7 +1770,7 @@ export default function ContractDetail() {
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                         {t("contractDetail.quantityUnits")}:
                       </span>
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      <span key={`quantity-${refreshKey}`} className="text-sm font-medium text-gray-900 dark:text-white">
                         {formatNumber({
                           value: currentContractData?.quantity || 0,
                           minDecimals: 0,
