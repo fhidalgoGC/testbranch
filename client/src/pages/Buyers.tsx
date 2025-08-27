@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'wouter';
 import { useEffect } from 'react';
-import { useContractsPageState, usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
+import {  usePageTracking, useNavigationHandler } from '@/hooks/usePageState';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { DataTable, Column } from '@/components/ui/data-table';
 import { useBuyers } from '@/features/buyers/hooks/useBuyers';

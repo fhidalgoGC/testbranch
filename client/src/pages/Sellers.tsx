@@ -1,23 +1,19 @@
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
-import {
-  useContractsPageState,
-  usePageTracking,
-  useNavigationHandler,
-} from "@/hooks/usePageState";
+import { usePageTracking, useNavigationHandler } from "@/hooks/usePageState";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { DataTable, Column } from "@/components/ui/data-table";
 import { Seller } from "@/features/sellers/types";
 import SellerDetailsCard from "@/components/sellers/SellerDetailsCard";
 import { formatSellerId } from "@/lib/formatters";
-import { useSellers } from "@/features/buyers/hooks/useSellers";
+import { useSellers } from "@/features/sellers/hooks/useSellers";
 export default function Sellers() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { handleNavigateToPage } = useNavigationHandler();
-  
-  usePageTracking("/buyers");
+
+  usePageTracking("/sellers");
 
   // Notificar navegación jerárquica al cargar la página
   useEffect(() => {

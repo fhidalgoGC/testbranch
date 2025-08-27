@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getSellers } from "@/services/crm-people.service";
+import { SellersResponse } from "../types";
 
 interface UseSellersParams {
   page?: number;
@@ -34,7 +35,7 @@ export function useSellers(params: UseSellersParams = {}) {
     };
   }, [currentPage, pageSize, sortKey, sortDirection, searchValue]);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<SellersResponse>({
     queryKey: [
       "sellers",
       currentPage,
@@ -53,7 +54,7 @@ export function useSellers(params: UseSellersParams = {}) {
         const response = await getSellers(buildQueryOptions());
 
         // Transform the response to match expected SellersResponse structure
-        const transformedResult = {
+        const transformedResult: SellersResponse = {
           data: response.data || [],
           meta: {
             page_size: response._meta.page_size,
