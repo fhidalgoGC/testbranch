@@ -101,6 +101,21 @@ export default function ContractDetail() {
     handleNavigateToPage("contractDetail", contractId);
   }, [contractId]);
 
+  // Detectar parámetro refresh en URL y disparar actualización completa
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get("refresh") === "true";
+
+    if (shouldRefresh && contractId) {
+      console.log("🔄 Refresh parameter detected, triggering full refresh");
+      // Limpiar el parámetro de la URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, "", cleanUrl);
+
+      // Disparar refresh inmediatamente
+      handleFullRefresh();
+    }
+  }, [location, contractId]);
 
   // Estados
   const [contract, setContract] = useState<PurchaseContract | null>(null);
@@ -425,13 +440,17 @@ export default function ContractDetail() {
       }
     } catch (error) {
       console.error("❌ Error during full refresh:", error);
-      setLoading(false);
-      setError("Error al cargar el contrato");
     } finally {
-      // Quitar todos los estados de loading y liberar el lock
+      // Calcular tiempo transcurrido y asegurar duración mínima de 0.3 segundos
+      const elapsedTime = Date.now() - startTime;
+      const minimumDuration = 300; // 0.3 segundos en milisegundos
+      const remainingTime = Math.max(0, minimumDuration - elapsedTime);
+
+
+      // Quitar el loading de pantalla completa y liberar el lock
       setFullScreenLoading(false);
       setIsRefreshing(false);
-      console.log("✅ Full refresh completed - isRefreshing liberado");
+      console.log("✅ Full refresh completed");
     }
   };
 
@@ -1216,40 +1235,34 @@ export default function ContractDetail() {
     }
   };
 
-
-
-  // Efecto principal que se ejecuta al montar y maneja refresh desde URL
+  // Check for refresh parameter and trigger full refresh (same as refresh button)
   useEffect(() => {
-    console.log("🚀 useEffect PRINCIPAL ejecutándose");
-    console.log("contractId disponible:", contractId);
-    
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get("refresh") === "true";
+
+    if (shouldRefresh && contractId) {
+      console.log(
+        "🔄 Refresh parameter detected from sub-contract creation, triggering full refresh",
+      );
+      handleFullRefresh();
+
+      // Clean up the URL parameter
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [contractId, location]);
+
+
+  // Efecto que se ejecuta una sola vez al montar el componente
+  useEffect(() => {
     if (!contractId) {
-      console.log("❌ No hay contractId, terminando");
       setError("ID de contrato no válido");
       setLoading(false);
       return;
     }
 
-    // Verificar si viene con parámetro refresh
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldRefresh = urlParams.get("refresh") === "true";
-
-    if (shouldRefresh) {
-      console.log("🔄 Refresh parameter detected, cleaning URL and refreshing");
-      // Limpiar el parámetro de la URL
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, "", cleanUrl);
-    }
-
     console.log("🔄 Componente montado - Cargando contrato desde API:", contractId);
-    console.log("🔄 Llamando handleFullRefresh...");
-    
-    // Verificar que handleFullRefresh existe
-    if (typeof handleFullRefresh === 'function') {
-      handleFullRefresh();
-    } else {
-      console.error("❌ handleFullRefresh no es una función!");
-    }
+    handleFullRefresh();
   }, []); // Array vacío para que solo se ejecute al montar
 
   // Efecto para persistir cambios de tab activo
