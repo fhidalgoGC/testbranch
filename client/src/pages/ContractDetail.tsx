@@ -228,56 +228,6 @@ export default function ContractDetail() {
     }
   };
 
-  // Función para refrescar los datos del contrato desde la API
-  const refreshContractData = async (contractId: string) => {
-    try {
-      setRefreshingContract(true);
-
-      const authCheck = hasAuthTokens();
-      if (!authCheck.isAuthenticated) {
-        console.error(
-          "❌ No authentication tokens available for contract refresh",
-        );
-        return;
-      }
-
-      // Call the contract detail endpoint using the service
-      const response = await getContractById(contractId);
-
-      if (response.ok) {
-        const result = await response.json();
-
-        if (result.data) {
-          // Update the current contract data immediately
-          setCurrentContractData(result.data);
-
-          // Reload related data
-          const seller = result.data.participants?.find(
-            (p: any) => p.role === "seller",
-          );
-          if (seller && seller.people_id) {
-            loadParticipantAddress(seller.people_id);
-          }
-
-          // Reload sub-contracts if it's a basis contract
-          if (result.data.price_schedule?.[0]?.pricing_type === "basis") {
-            loadSubContracts(contractId);
-          }
-        }
-      } else {
-        console.error(
-          "❌ Failed to refresh contract data:",
-          response.status,
-          response.statusText,
-        );
-      }
-    } catch (error) {
-      console.error("❌ Error refreshing contract data:", error);
-    } finally {
-      setRefreshingContract(false);
-    }
-  };
-
   // Función completa de refresh con overlay de pantalla completa y mínimo 0.3 segundos
   const handleFullRefresh = async () => {
     if (!contractId) return;
