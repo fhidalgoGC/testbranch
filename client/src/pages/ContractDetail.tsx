@@ -7,9 +7,11 @@ import {
   useNavigationHandler,
 } from "@/hooks/usePageState";
 import { useSelector, useDispatch } from "react-redux";
+import { store } from "@/app/store";
 import {
   updateCreateSubContractState,
   updateEditSubContractState,
+  updateContractsState,
 } from "@/store/slices/pageStateSlice";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -314,6 +316,32 @@ export default function ContractDetail() {
         if (contractResult.data) {
           setCurrentContractData(contractResult.data);
           console.log("🔄 Updated contract data in local state");
+
+          // Actualizar Redux cache con los datos actualizados del contrato
+          try {
+            const updatedContract = contractResult.data;
+            const contractType = updatedContract.type === 'purchase' ? 'purchase' : 'sale';
+            const statePage = contractType === 'purchase' ? 'purchaseContracts' : 'saleContracts';
+            
+            // Obtener el array actual de contratos desde Redux
+            const currentState = store.getState();
+            const currentContractsData = currentState.pageState[statePage].contractsData || [];
+            
+            // Actualizar el contrato específico en el array
+            const updatedContractsData = currentContractsData.map((contract: any) => 
+              contract._id === contractId ? updatedContract : contract
+            );
+            
+            // Dispatch para actualizar Redux
+            dispatch(updateContractsState({ 
+              page: statePage as 'purchaseContracts' | 'saleContracts', 
+              updates: { contractsData: updatedContractsData }
+            }));
+            
+            console.log("✅ Redux cache updated in handleFullRefresh");
+          } catch (error) {
+            console.warn("⚠️ Could not update Redux cache in handleFullRefresh:", error);
+          }
 
           // Cargar dirección del participante
           const seller = contractResult.data.participants?.find(
