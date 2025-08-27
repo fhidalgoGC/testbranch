@@ -53,7 +53,7 @@ export default function ViewContract() {
 
   if (loading) {
     return (
-      <DashboardLayout title={t('viewContract')}>
+      <DashboardLayout title="">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -63,7 +63,7 @@ export default function ViewContract() {
 
   if (!contractData) {
     return (
-      <DashboardLayout title={t('viewContract')}>
+      <DashboardLayout title="">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -78,12 +78,6 @@ export default function ViewContract() {
       </DashboardLayout>
     );
   }
-
-  const getPageTitle = () => {
-    return contractType === 'purchase' 
-      ? t('viewPurchaseContract') 
-      : t('viewSaleContract');
-  };
 
   return (
     <DashboardLayout title="">
