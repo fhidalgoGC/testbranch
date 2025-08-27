@@ -10,6 +10,7 @@ import "./common/utils/i18n";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { useStateRestoration } from "@/hooks/usePageState";
 import Login from "@/pages/Login";
+import PurchaseSaleContractDetail from "./pages/PurchaseSaleContractDetail";
 // Lazy load heavy pages for better code splitting
 const Home = lazy(() => import("@/pages/Home"));
 const Buyers = lazy(() => import("@/pages/Buyers"));
@@ -49,13 +50,13 @@ function Router() {
         <Route path="/purchase-contracts/:contractId/sub-contracts/create" component={CreateSubContract} />
         <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSubContract} />
         <Route path="/purchase-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
-        <Route path="/purchase-contracts/:id" component={PurchaseContractDetail} />
+        <Route path="/purchase-contracts/:id" component={PurchaseSaleContractDetail} />
         <Route path="/sale-contracts" component={SaleContracts} />
         <Route path="/sale-contracts/create/:contractId?" component={CreateSaleContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/create" component={CreateSubContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/edit" component={EditSubContract} />
         <Route path="/sale-contracts/:contractId/sub-contracts/:subContractId/view" component={ViewSubContract} />
-        <Route path="/sale-contracts/:id" component={PurchaseContractDetail} />
+        <Route path="/sale-contracts/:id" component={PurchaseSaleContractDetail} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
