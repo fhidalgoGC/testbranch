@@ -20,9 +20,7 @@ export default function DashboardLayout({ children, title }: DashboardLayoutProp
         
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto bg-gray-100/80 dark:bg-gray-900/60 min-h-0">
-          <div className="w-full h-full">
-            {children}
-          </div>
+          {children}
         </main>
       </div>
     </div>
