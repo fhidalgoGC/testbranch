@@ -22,7 +22,7 @@ interface CreateLocationPayload {
   latitude: string;
   longitude: string;
   elevation: string;
-  _partitionKey?: string; // Optional - interceptor handles automatically
+  _partitionKey: string;
 }
 
 export function useCreateBuyer() {
@@ -36,6 +36,7 @@ export function useCreateBuyer() {
     const initializeIdempotentId = async () => {
       try {
         const jwt = localStorage.getItem('jwt');
+        const partitionKey = localStorage.getItem('partition_key');
         
         console.log('CreateBuyer: Calling service to create buyer ID');
         const buyerId = await createPersonId();
@@ -55,9 +56,10 @@ export function useCreateBuyer() {
   // Helper function to create location after buyer creation
   const createBuyerLocation = async (peopleId: string, formData: BuyerFormData) => {
     const jwt = localStorage.getItem('jwt');
+    const partitionKey = localStorage.getItem('partition_key');
     const crmUrl = environment.CRM_BASE_URL;
     
-    if (!jwt || !crmUrl) {
+    if (!jwt || !partitionKey || !crmUrl) {
       console.log('CreateBuyer: Missing data for location creation, skipping location step');
       return;
     }
@@ -87,7 +89,7 @@ export function useCreateBuyer() {
       latitude: "",
       longitude: "",
       elevation: "",
-      // Interceptor handles partition key automatically
+      _partitionKey: partitionKey
     };
     
     console.log('CreateBuyer: Location payload:', locationPayload);
@@ -100,7 +102,9 @@ export function useCreateBuyer() {
   const createBuyerMutation = useMutation({
     mutationFn: async (formData: BuyerFormData) => {
       const jwt = localStorage.getItem('jwt');
-      if (!jwt || !idempotentBuyerId) {
+      const partitionKey = localStorage.getItem('partition_key');
+      
+      if (!jwt || !partitionKey || !idempotentBuyerId) {
         throw new Error('Missing required data for buyer creation');
       }
 
@@ -130,7 +134,7 @@ export function useCreateBuyer() {
           type: 'principal',
           verified: false
         }] : [],
-        // Interceptor handles partition key automatically
+        _partitionKey: partitionKey,
         active: true,
         person_type: formData.person_type
       };

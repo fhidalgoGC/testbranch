@@ -35,7 +35,7 @@ export interface CreateBuyerPayload {
   roles: BuyerRole[];
   emails: BuyerEmail[];
   phones: BuyerPhone[];
-  _partitionKey?: string; // Optional - interceptor handles automatically
+  _partitionKey: string;
   active: true;
   person_type: 'natural_person' | 'juridical_person';
 }
