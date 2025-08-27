@@ -69,12 +69,30 @@ export function useCreateSeller() {
         throw new Error("Idempotent seller ID not initialized");
       }
 
-      // Get user data from localStorage
-      const userData = JSON.parse(localStorage.getItem("user") || "{}");
-      const partitionKey = userData.partition_key;
+      // Get partition key from localStorage
+      const partitionKey = localStorage.getItem("partition_key");
 
       if (!partitionKey) {
-        throw new Error("Partition key not found in user data");
+        throw new Error("Partition key not found");
+      }
+
+      // Check if we're in demo mode
+      const isDemoMode = partitionKey === 'demo-partition-key' || idempotentSellerId.startsWith('demo-seller-id-');
+      
+      if (isDemoMode) {
+        console.log("CreateSeller: Demo mode detected, simulating successful seller creation");
+        // Simulate successful seller creation in demo mode
+        return {
+          data: {
+            key: idempotentSellerId,
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            email: formData.email,
+            person_type: formData.person_type,
+            roles: [{ slug: "seller" }],
+            created: true
+          }
+        };
       }
 
       // Build full name based on person type
