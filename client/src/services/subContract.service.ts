@@ -1,4 +1,5 @@
 import { authenticatedFetch } from '@/utils/apiInterceptors';
+import { environment } from '@/environment/environment';
 
 export interface SubContractKeyResponse {
   key: string;
@@ -35,7 +36,7 @@ export interface CreateSubContractPayload {
 }
 
 export class SubContractService {
-  private static readonly BASE_URL = 'https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts';
+  private static readonly BASE_URL = `${environment.TRM_BASE_URL}/contracts/sp-sub-contracts`;
 
   /**
    * Obtiene una clave única para crear un nuevo sub-contrato
