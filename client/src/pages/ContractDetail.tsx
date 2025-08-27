@@ -101,21 +101,6 @@ export default function ContractDetail() {
     handleNavigateToPage("contractDetail", contractId);
   }, [contractId]);
 
-  // Detectar parámetro refresh en URL y disparar actualización completa
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldRefresh = urlParams.get("refresh") === "true";
-
-    if (shouldRefresh && contractId) {
-      console.log("🔄 Refresh parameter detected, triggering full refresh");
-      // Limpiar el parámetro de la URL
-      const cleanUrl = window.location.pathname;
-      window.history.replaceState({}, "", cleanUrl);
-
-      // Disparar refresh inmediatamente
-      handleFullRefresh();
-    }
-  }, [location, contractId]);
 
   // Estados
   const [contract, setContract] = useState<PurchaseContract | null>(null);
@@ -1231,30 +1216,25 @@ export default function ContractDetail() {
     }
   };
 
-  // Check for refresh parameter and trigger full refresh (same as refresh button)
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const shouldRefresh = urlParams.get("refresh") === "true";
-
-    if (shouldRefresh && contractId) {
-      console.log(
-        "🔄 Refresh parameter detected from sub-contract creation, triggering full refresh",
-      );
-      handleFullRefresh();
-
-      // Clean up the URL parameter
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, "", newUrl);
-    }
-  }, [contractId, location]);
 
 
-  // Efecto que se ejecuta una sola vez al montar el componente
+  // Efecto principal que se ejecuta al montar y maneja refresh desde URL
   useEffect(() => {
     if (!contractId) {
       setError("ID de contrato no válido");
       setLoading(false);
       return;
+    }
+
+    // Verificar si viene con parámetro refresh
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get("refresh") === "true";
+
+    if (shouldRefresh) {
+      console.log("🔄 Refresh parameter detected, cleaning URL and refreshing");
+      // Limpiar el parámetro de la URL
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, "", cleanUrl);
     }
 
     console.log("🔄 Componente montado - Cargando contrato desde API:", contractId);
