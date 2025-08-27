@@ -32,6 +32,7 @@ interface ContractInfoSectionProps {
     | "purchase"
     | "sale";
   contractType?: "purchase" | "sale";
+  disabled?: boolean;
 }
 
 // Fake sellers data for display
@@ -108,6 +109,7 @@ const SUB_TYPE_OPTIONS = [
 export function ContractInfoSection({
   representativeRole = "purchase",
   contractType = "purchase",
+  disabled = false,
 }: ContractInfoSectionProps) {
   const { t } = useTranslation();
   const { data: measurementUnits = [], isLoading: loadingUnits } =
@@ -210,6 +212,7 @@ export function ContractInfoSection({
                   );
                   clearErrors("sub_type");
                 }}
+                disabled={disabled}
               >
                 <SelectTrigger
                   className={`h-10 ${errors.sub_type ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-green-500"}`}

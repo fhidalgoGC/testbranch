@@ -29,12 +29,14 @@ interface PriceSectionProps {
   addPriceSchedule: () => void;
   removePriceSchedule: (index: number) => void;
   updatePriceSchedule: (index: number, field: keyof PriceSchedule, value: any) => void;
+  disabled?: boolean;
 }
 
 export function PriceSection({ 
   addPriceSchedule, 
   removePriceSchedule, 
-  updatePriceSchedule 
+  updatePriceSchedule,
+  disabled = false
 }: PriceSectionProps) {
   const { t } = useTranslation();
   const { formState: { errors }, watch, setValue, control, clearErrors } = useFormContext<PurchaseSaleContract>();

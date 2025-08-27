@@ -165,3 +165,49 @@ input[inputmode="numeric"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+@layer components {
+  /* View-only form styles */
+  .view-only-form input,
+  .view-only-form textarea,
+  .view-only-form select,
+  .view-only-form button[type="button"]:not(.modal-button),
+  .view-only-form .react-datepicker-wrapper input,
+  .view-only-form [role="combobox"],
+  .view-only-form [data-radix-select-trigger] {
+    pointer-events: none !important;
+    opacity: 0.7 !important;
+    background-color: rgb(249 250 251) !important;
+    border-color: rgb(229 231 235) !important;
+    cursor: not-allowed !important;
+  }
+
+  .view-only-form [data-radix-select-trigger] {
+    background-color: rgb(249 250 251) !important;
+  }
+
+  .dark .view-only-form input,
+  .dark .view-only-form textarea,
+  .dark .view-only-form select,
+  .dark .view-only-form button[type="button"]:not(.modal-button),
+  .dark .view-only-form .react-datepicker-wrapper input,
+  .dark .view-only-form [role="combobox"],
+  .dark .view-only-form [data-radix-select-trigger] {
+    background-color: rgb(31 41 55) !important;
+    border-color: rgb(75 85 99) !important;
+    color: rgb(156 163 175) !important;
+  }
+
+  /* Hide add/remove buttons in view mode */
+  .view-only-form button[aria-label*="Add"],
+  .view-only-form button[aria-label*="Remove"],
+  .view-only-form button[title*="Add"],
+  .view-only-form button[title*="Remove"],
+  .view-only-form .add-button,
+  .view-only-form .remove-button,
+  .view-only-form button:has(svg.lucide-plus),
+  .view-only-form button:has(svg.lucide-trash-2),
+  .view-only-form button:has(svg.lucide-x) {
+    display: none !important;
+  }
+}

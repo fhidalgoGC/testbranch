@@ -186,16 +186,21 @@ export function PurchaseContractForm({
             console.log("🔍 Form is valid:", form.formState.isValid);
             onSubmit(e);
           }}
-          className="space-y-8"
+          className={`space-y-8 ${mode === "view" ? "view-only-form" : ""}`}
         >
           {/* Section 1: Contract Info */}
-          <ContractInfoSection representativeRole={representativeRole} contractType={contractType} />
+          <ContractInfoSection 
+            representativeRole={representativeRole} 
+            contractType={contractType}
+            disabled={mode === "view"}
+          />
 
           {/* Section 2: Price Contract Per (Bushel 56) */}
           <PriceSection
             addPriceSchedule={addPriceSchedule}
             removePriceSchedule={removePriceSchedule}
             updatePriceSchedule={updatePriceSchedule}
+            disabled={mode === "view"}
           />
 
           {/* Section 3: Logistic Contract */}
@@ -203,13 +208,14 @@ export function PurchaseContractForm({
             addLogisticSchedule={addLogisticSchedule}
             removeLogisticSchedule={removeLogisticSchedule}
             updateLogisticSchedule={updateLogisticSchedule}
+            disabled={mode === "view"}
           />
 
           {/* Section 4: Contract Adjustments */}
-          <AdjustmentsSection />
+          <AdjustmentsSection disabled={mode === "view"} />
 
           {/* Section 5: Shipment & Delivery */}
-          <ShipmentSection />
+          <ShipmentSection disabled={mode === "view"} />
 
           {/* Section 6: Remarks & Observation */}
           <RemarksSection
@@ -217,6 +223,7 @@ export function PurchaseContractForm({
             removeRemark={removeRemark}
             updateRemark={updateRemark}
             addComment={addRemark}
+            disabled={mode === "view"}
           />
 
           {/* Form Actions */}
