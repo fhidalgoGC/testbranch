@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   ArrowLeft,
   User,
@@ -19,6 +19,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { CountrySelector } from "@/components/ui/country-selector-new";
 import { StateSelector } from "@/components/ui/state-selector-new";
@@ -85,7 +94,9 @@ const sellerSchema = z
 
 export default function CreateSeller() {
   const { t, i18n } = useTranslation();
+  const [, setLocation] = useLocation();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successModal, setSuccessModal] = useState({ open: false, sellerName: "" });
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedState, setSelectedState] = useState<State | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
@@ -188,21 +199,33 @@ export default function CreateSeller() {
   };
 
   const onSubmit = async (data: SellerFormData) => {
-    // Add location fields to the form data
-    const formDataWithLocation: SellerFormData = {
-      ...data,
-      address,
-      postalCode,
-      selectedCountry,
-      selectedState,
-      selectedCity,
-    };
+    try {
+      // Add location fields to the form data
+      const formDataWithLocation: SellerFormData = {
+        ...data,
+        address,
+        postalCode,
+        selectedCountry,
+        selectedState,
+        selectedCity,
+      };
 
-    console.log(
-      "CreateSeller: Submitting form with location data:",
-      formDataWithLocation,
-    );
-    await createSeller(formDataWithLocation);
+      console.log(
+        "CreateSeller: Submitting form with location data:",
+        formDataWithLocation,
+      );
+      
+      await createSeller(formDataWithLocation);
+      
+      // Show success modal
+      const sellerName = data.person_type === "juridical_person" 
+        ? data.organization_name || `${data.first_name} ${data.last_name}`
+        : `${data.first_name} ${data.last_name}`;
+      
+      setSuccessModal({ open: true, sellerName });
+    } catch (error) {
+      console.error("CreateSeller: Form submission failed:", error);
+    }
   };
 
   // Show success message when seller is created
@@ -742,6 +765,40 @@ export default function CreateSeller() {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <AlertDialog
+        open={successModal.open}
+        onOpenChange={(open) => {
+          setSuccessModal((prev) => ({ ...prev, open }));
+          if (!open) {
+            // Redirect to sellers list when modal is closed
+            setLocation("/sellers");
+          }
+        }}
+      >
+        <AlertDialogContent className="border-green-500">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-green-700 dark:text-green-400">
+              ✅ {t("sellerCreatedSuccessfully")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-green-600 dark:text-green-300">
+              {t("sellerCreatedSuccessfullyDesc")} <strong>{successModal.sellerName}</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+              onClick={() => {
+                setSuccessModal({ open: false, sellerName: "" });
+                setLocation("/sellers");
+              }}
+            >
+              {t("continue")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }

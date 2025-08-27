@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { ArrowLeft, User, Building2, Mail, Phone, Loader2, MapPin } from 'lucide-react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { CountrySelector } from '@/components/ui/country-selector-new';
 import { StateSelector } from '@/components/ui/state-selector-new';
@@ -61,7 +70,9 @@ const buyerSchema = z.object({
 
 export default function CreateBuyer() {
   const { t, i18n } = useTranslation();
+  const [, setLocation] = useLocation();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successModal, setSuccessModal] = useState({ open: false, buyerName: "" });
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [selectedState, setSelectedState] = useState<State | null>(null);
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
@@ -161,18 +172,29 @@ export default function CreateBuyer() {
   };
 
   const onSubmit = async (data: BuyerFormData) => {
-    // Add location fields to the form data
-    const formDataWithLocation: BuyerFormData = {
-      ...data,
-      address,
-      postalCode,
-      selectedCountry,
-      selectedState,
-      selectedCity,
-    };
-    
-    console.log('CreateBuyer: Submitting form with location data:', formDataWithLocation);
-    await createBuyer(formDataWithLocation);
+    try {
+      // Add location fields to the form data
+      const formDataWithLocation: BuyerFormData = {
+        ...data,
+        address,
+        postalCode,
+        selectedCountry,
+        selectedState,
+        selectedCity,
+      };
+      
+      console.log('CreateBuyer: Submitting form with location data:', formDataWithLocation);
+      await createBuyer(formDataWithLocation);
+      
+      // Show success modal
+      const buyerName = data.person_type === "juridical_person" 
+        ? data.organization_name || `${data.first_name} ${data.last_name}`
+        : `${data.first_name} ${data.last_name}`;
+      
+      setSuccessModal({ open: true, buyerName });
+    } catch (error) {
+      console.error("CreateBuyer: Form submission failed:", error);
+    }
   };
 
   // Show success message when buyer is created
@@ -645,6 +667,40 @@ export default function CreateBuyer() {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <AlertDialog
+        open={successModal.open}
+        onOpenChange={(open) => {
+          setSuccessModal((prev) => ({ ...prev, open }));
+          if (!open) {
+            // Redirect to buyers list when modal is closed
+            setLocation("/buyers");
+          }
+        }}
+      >
+        <AlertDialogContent className="border-green-500">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-green-700 dark:text-green-400">
+              ✅ {t("buyerCreatedSuccessfully")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-green-600 dark:text-green-300">
+              {t("buyerCreatedSuccessfullyDesc")} <strong>{successModal.buyerName}</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+              onClick={() => {
+                setSuccessModal({ open: false, buyerName: "" });
+                setLocation("/buyers");
+              }}
+            >
+              {t("continue")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 }
