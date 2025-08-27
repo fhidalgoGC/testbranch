@@ -329,7 +329,7 @@ export function QuantityActualOverview({
                     mode === 'view' ? (
                       <Input
                         type="text"
-                        value={measurementUnits?.find(unit => unit.key === field.value)?.label || field.value || ''}
+                        value={measurementUnits?.find(unit => unit.key === field.value)?.label || field.value || 'A'}
                         readOnly
                         disabled
                         className="text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed border-gray-200"

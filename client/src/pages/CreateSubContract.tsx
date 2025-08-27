@@ -172,7 +172,9 @@ export default function CreateSubContract() {
   useEffect(() => {
     handleNavigateToPage('createSubContract', contractId);
     fetchSubContractKey();
-  }, [contractId]);
+    // Force refetch measurement units every time this page loads
+    refetchMeasurementUnits();
+  }, [contractId, refetchMeasurementUnits]);
 
   // Estados locales - usar datos del contrato principal si están disponibles
   const [contractData] = useState<ContractData>(() => {
@@ -215,8 +217,8 @@ export default function CreateSubContract() {
     };
   });
 
-  // API hooks
-  const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError } = useMeasurementUnits();
+  // API hooks - Force refetch measurement units every time this page loads
+  const { data: measurementUnits = [], isLoading: loadingUnits, error: unitsError, refetch: refetchMeasurementUnits } = useMeasurementUnits();
   
   // Modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
