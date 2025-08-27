@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'wouter';
+import { useParams, useLocation, useRouter } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -8,7 +8,7 @@ import { RootState } from '@/app/store';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { PurchaseSaleContract } from '@/types/purchaseSaleContract.types';
-import { submitContract, getContractById } from '@/services/contractsService';
+import { submitContract } from '@/services/contractsService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +22,8 @@ import {
 export default function EditContract() {
   const { t } = useTranslation();
   const params = useParams();
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
+  const router = useRouter();
   const contractId = params.contractId;
   
   // Determinar el tipo de contrato desde la URL
@@ -33,52 +34,34 @@ export default function EditContract() {
   const [errorModal, setErrorModal] = useState({ open: false, message: "" });
   const [successModal, setSuccessModal] = useState({ open: false, folio: "" });
 
-  // Obtener datos del contrato desde Redux
-  const contractsData = useSelector((state: RootState) => 
-    contractType === 'purchase' ? state.pageState.purchaseContracts.contractsData : state.pageState.saleContracts.contractsData
+  // Obtener datos del contrato desde Redux según el tipo (igual que ViewContract)
+  const contractsState = useSelector((state: any) => 
+    contractType === 'purchase' 
+      ? state.pageState.purchaseContracts 
+      : state.pageState.saleContracts
   );
+  const contractsData = contractsState?.contractsData || [];
 
   useEffect(() => {
-    const loadContractData = async () => {
-      if (!contractId) {
-        setLoading(false);
-        return;
+    if (contractId && contractsData.length > 0) {
+      // Buscar el contrato específico en los datos de Redux (igual que ViewContract)
+      const foundContract = contractsData.find((contract: PurchaseSaleContract) => 
+        contract._id === contractId
+      );
+      
+      if (foundContract) {
+        console.log('📝 EDIT CONTRACT: Contrato encontrado', foundContract);
+        setContractData(foundContract);
+      } else {
+        console.warn('⚠️ EDIT CONTRACT: Contrato no encontrado en Redux');
       }
-
-      // Primero intentar obtener desde Redux
-      if (contractsData && contractsData.length > 0) {
-        const contract = contractsData.find((c: any) => c.id === contractId);
-        if (contract) {
-          setContractData(contract);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Si no está en Redux, cargar desde API
-      try {
-        console.log("🔄 EditContract: Loading contract from API...", contractId);
-        const result = await getContractById(contractId);
-        
-        if ((result as any).success && (result as any).data) {
-          console.log("✅ EditContract: Contract loaded from API", (result as any).data);
-          setContractData((result as any).data);
-        } else {
-          console.error("❌ EditContract: Failed to load contract", (result as any).error);
-        }
-      } catch (error) {
-        console.error("❌ EditContract: Error loading contract", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadContractData();
+      setLoading(false);
+    }
   }, [contractId, contractsData]);
 
   const handleCancel = () => {
-    // Regresar al detalle del contrato
-    setLocation(`/${contractType}-contracts/${contractId}`);
+    // Regresar al detalle del contrato (igual que ViewContract)
+    router.push(`/${contractType}-contracts/${contractId}`);
   };
 
   // Función para manejar submit del contrato actualizado
