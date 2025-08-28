@@ -211,6 +211,13 @@ export default function EditSubContract() {
   // Watch form changes for total price calculation  
   const watchedPrice = watch('price');
   const watchedQuantity = watch('quantity');
+  const watchedMeasurementUnit = watch('measurementUnitId');
+
+  // Get the selected measurement unit name for display
+  const getSelectedMeasurementUnitName = () => {
+    const selectedUnit = measurementUnits.find(unit => unit.value === watchedMeasurementUnit);
+    return selectedUnit?.label || watchedMeasurementUnit || 'bu48';
+  };
   
   // Calculate total price whenever price or quantity changes
   useEffect(() => {
@@ -568,13 +575,13 @@ export default function EditSubContract() {
                 <div className="flex justify-between">
                   <span className="text-orange-700 dark:text-orange-300">Old Quantity:</span>
                   <span className="font-mono text-orange-900 dark:text-orange-100">
-                    {formatQuantity(currentSubContract?.quantity || 0)} {parentContractData?.measurement_unit || 'bu60'}
+                    {formatQuantity(currentSubContract?.quantity || 0)} {currentSubContract?.measurement_unit || 'bu48'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-orange-700 dark:text-orange-300">New Quantity:</span>
                   <span className="font-mono text-orange-900 dark:text-orange-100">
-                    {formatQuantity(formDataForSubmission?.quantity || 0)} {parentContractData?.measurement_unit || 'bu60'}
+                    {formatQuantity(formDataForSubmission?.quantity || 0)} {getSelectedMeasurementUnitName()}
                   </span>
                 </div>
                 <div className="flex justify-between">
