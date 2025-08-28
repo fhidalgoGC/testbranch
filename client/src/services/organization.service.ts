@@ -60,33 +60,25 @@ export const organizationService = {
       
       console.log('Raw partition keys data received:', data);
       
-      // Ensure data is an array
-      if (!Array.isArray(data)) {
-        console.error('Expected array but received:', typeof data, data);
-        return [];
-      }
+      // Check if data is an array, if not, handle accordingly
+      const itemsArray = Array.isArray(data) ? data : (data.data || data.items || []);
       
-      // Save to localStorage for future use
-      localStorage.setItem('partition_keys_data', JSON.stringify(data));
+      console.log('Processed items array:', itemsArray);
       
       // Transform the response data to match our interface
-      const transformedData = data.map((item: any) => ({
-        key: item.partitionKey || item.id,
-        value: item.partitionKey || item.id,
-        label: item.organization || 'Unknown Organization',
+      return itemsArray.map((item: any) => ({
+        key: item.partitionKey || item.id || item.key,
+        value: item.partitionKey || item.id || item.value,
+        label: item.organization || item.label,
         organization: {
           _id: item.partitionKey || item.id,
-          name: item.organization || 'Unknown Organization',
-          description: item.type || '',
+          name: item.organization,
+          description: item.description,
           type: item.type,
           logo: item.logo,
-          initials: getInitials(item.organization || 'Unknown Organization')
+          initials: item.initials || getInitials(item.organization || '')
         }
       }));
-      
-      console.log('Transformed organizations data:', transformedData);
-      
-      return transformedData;
     } catch (error) {
       console.error('Error fetching partition keys:', error);
       console.error('Error details:', {
@@ -96,33 +88,6 @@ export const organizationService = {
         jwt: jwt ? 'Present' : 'Missing',
         url: `${ORGANIZATION_ENDPOINT}/${customerId}/partition_keys`
       });
-      
-      // Try to get data from localStorage as fallback
-      try {
-        const cachedData = localStorage.getItem('partition_keys_data');
-        if (cachedData) {
-          const parsedData = JSON.parse(cachedData);
-          console.log('Using cached partition keys data:', parsedData);
-          
-          // Transform cached data
-          return parsedData.map((item: any) => ({
-            key: item.partitionKey || item.id,
-            value: item.partitionKey || item.id,
-            label: item.organization || 'Unknown Organization',
-            organization: {
-              _id: item.partitionKey || item.id,
-              name: item.organization || 'Unknown Organization',
-              description: item.type || '',
-              type: item.type,
-              logo: item.logo,
-              initials: getInitials(item.organization || 'Unknown Organization')
-            }
-          }));
-        }
-      } catch (cacheError) {
-        console.error('Error reading cached partition keys:', cacheError);
-      }
-      
       // Return empty array instead of throwing to prevent breaking the UI
       return [];
     }

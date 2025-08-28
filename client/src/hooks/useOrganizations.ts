@@ -20,34 +20,24 @@ export function useOrganizations() {
 
   // Initialize current organization from localStorage
   useEffect(() => {
-    console.log('🏢 useOrganizations effect triggered:', {
-      organizationsCount: organizations.length,
-      organizations: organizations.map(org => ({ key: org.key, label: org.label }))
-    });
-    
     if (organizations.length > 0) {
       const storedPartitionKey = localStorage.getItem('partition_key');
-      console.log('🔑 Stored partition key:', storedPartitionKey);
       
       if (storedPartitionKey) {
         const found = organizations.find(org => org.value === storedPartitionKey);
-        console.log('🔍 Found matching organization:', found?.label);
         if (found) {
           setCurrentOrganization(found);
-          console.log('✅ Set current organization to:', found.label);
         } else {
           // If stored partition key doesn't match any organization, use the first one
           const firstOrg = organizations[0];
           setCurrentOrganization(firstOrg);
           localStorage.setItem('partition_key', firstOrg.value);
-          console.log('⚠️ No match found, using first organization:', firstOrg.label);
         }
       } else {
         // No partition key stored, use the first organization
         const firstOrg = organizations[0];
         setCurrentOrganization(firstOrg);
         localStorage.setItem('partition_key', firstOrg.value);
-        console.log('🆕 No stored key, using first organization:', firstOrg.label);
       }
     }
   }, [organizations]);
