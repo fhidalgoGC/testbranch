@@ -1,4 +1,5 @@
-import { authenticatedFetch } from '@/utils/apiInterceptors';
+import { addJwtPk } from '@/utils/apiInterceptors';
+import { environment } from '@/environment/environment';
 
 export interface Organization {
   _id: string;
@@ -16,40 +17,17 @@ export interface OrganizationOption {
   organization: Organization;
 }
 
-const ORGANIZATION_ENDPOINT = 'https://un4grlwfx2.execute-api.us-west-2.amazonaws.com/dev/identity/v2/customers';
-
 export const organizationService = {
   async getPartitionKeys(): Promise<OrganizationOption[]> {
-    // Get customer ID and JWT token from localStorage
+    // Get customer ID from localStorage
     const customerId = localStorage.getItem('customer_id') || 'a328b9b8f1996eadd36d375f';
-    const jwt = localStorage.getItem('jwt') || localStorage.getItem('id_token');
     
     try {
-      
-      if (!jwt) {
-        console.warn('No JWT token found for partition keys request');
-        return [];
-      }
+      const url = `${environment.IDENTITY_BASE_URL}/identity/v2/customers/${customerId}/partition_keys`;
       
       const response = await fetch(
-        `${ORGANIZATION_ENDPOINT}/${customerId}/partition_keys`,
-        {
-          method: 'GET',
-          headers: {
-            'accept': '*/*',
-            'accept-language': 'en-US,en;q=0.9',
-            'authorization': `Bearer ${jwt}`,
-            'origin': window.location.origin,
-            'referer': window.location.href,
-            'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
-            'sec-ch-ua-mobile': '?1',
-            'sec-ch-ua-platform': '"Android"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'cross-site',
-            'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Mobile Safari/537.36'
-          }
-        }
+        url,
+        addJwtPk(url, { method: 'GET' })
       );
 
       if (!response.ok) {
@@ -85,8 +63,7 @@ export const organizationService = {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
         customerId: customerId,
-        jwt: jwt ? 'Present' : 'Missing',
-        url: `${ORGANIZATION_ENDPOINT}/${customerId}/partition_keys`
+        url: `${environment.IDENTITY_BASE_URL}/identity/v2/customers/${customerId}/partition_keys`
       });
       // Return empty array instead of throwing to prevent breaking the UI
       return [];

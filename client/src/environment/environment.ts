@@ -4,6 +4,8 @@ export const environment = {
     import.meta.env.CRM_BASE_URL || "https://crm-develop.grainchain.io/api/v1",
   TRM_BASE_URL:
     import.meta.env.VITE_TRM_BASE_URL || "https://trm-develop.grainchain.io/api/v1",
+  IDENTITY_BASE_URL:
+    import.meta.env.VITE_IDENTITY_BASE_URL || "https://un4grlwfx2.execute-api.us-west-2.amazonaws.com/dev",
   UNIT_CONVERSIONS_ENDPOINT: "/unit-conversions/units",
   CRAFTMYPDF_BASE_URL:
     import.meta.env.VITE_CRAFTMYPDF_BASE_URL || "https://api.craftmypdf.com/v1",
