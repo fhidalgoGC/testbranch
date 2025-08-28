@@ -284,6 +284,12 @@ export default function CreateSubContract() {
   const measurementUnitValue = watch('measurementUnitId');
   const totalDateValue = watch('totalDate');
 
+  // Get the selected measurement unit name for display
+  const getSelectedMeasurementUnitName = () => {
+    const selectedUnit = measurementUnits.find(unit => unit.value === measurementUnitValue);
+    return selectedUnit?.label || measurementUnitValue || 'bu48';
+  };
+
   // Auto-save form data to Redux state whenever fields change (with debounce)
   useEffect(() => {
     // Only update if we have valid values to prevent infinite loops
@@ -586,7 +592,7 @@ export default function CreateSubContract() {
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">Cantidad Sub-Contrato:</span>
                     <div className="text-blue-600 dark:text-blue-400 font-semibold">
-                      {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(formDataForSubmission?.quantity)} {getSelectedMeasurementUnitName()}
                     </div>
                   </div>
                   <div className="text-right">
@@ -664,7 +670,7 @@ export default function CreateSubContract() {
                       #{formDataForSubmission?.contractNumber || 'SPC-46-SUBC-5'}
                     </span>
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(formDataForSubmission?.quantity)} {getSelectedMeasurementUnitName()}
                     </span>
                   </div>
                   
@@ -674,7 +680,7 @@ export default function CreateSubContract() {
                   
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      {formatQuantity(formDataForSubmission?.quantity)} {parentContractData?.measurement_unit || 'bu60'}
+                      {formatQuantity(formDataForSubmission?.quantity)} {getSelectedMeasurementUnitName()}
                     </span>
                   </div>
                   
