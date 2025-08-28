@@ -17,7 +17,28 @@ export interface OrganizationOption {
   organization: Organization;
 }
 
+// Organization service with customer info and partition keys
 export const organizationService = {
+  async getCustomerInfo(): Promise<any> {
+    try {
+      const url = `${environment.IDENTITY_BASE_URL}/identity/customers`;
+      
+      const response = await authenticatedFetch(url, { method: "GET" });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch customer info: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Customer info received:', data);
+      
+      return data;
+    } catch (error) {
+      console.error('Error fetching customer info:', error);
+      throw error;
+    }
+  },
+
   async getPartitionKeys(): Promise<OrganizationOption[]> {
     // Get customer ID from localStorage - use default if not found
     const customerId = localStorage.getItem("customer_id") || "a328b9b8f1996eadd36d375f";
