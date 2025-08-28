@@ -51,26 +51,25 @@ export const useAuth = () => {
         localStorage.setItem('customer_id', identityData.data.id); // Store customer_id for organization service
         localStorage.setItem('user_email', identityData.data.email);
         
-        // Third endpoint: Get partition keys
-        const partitionKeysUrl = `${baseUrl}/identity/v2/customers/${identityData.data.id}/partition_keys`;
-        console.log('Partition Keys URL:', partitionKeysUrl);
+        // Third endpoint: Get partition keys using organization service
+        const { organizationService } = await import('@/services/organization.service');
+        const partitionKeysData = await organizationService.getPartitionKeys();
         
-        const partitionKeysResponse = await fetch(partitionKeysUrl, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${result.id_token}`,
-          },
-        });
-
-        if (partitionKeysResponse.ok) {
-          const partitionKeysData = await partitionKeysResponse.json();
+        // Store partition key from the first object in the array and store organization options
+        let partitionKey = '';
+        if (partitionKeysData && partitionKeysData.length > 0) {
+          const firstOrg = partitionKeysData[0];
+          partitionKey = firstOrg.value;
+          localStorage.setItem('partition_key', partitionKey);
           
-          // Store partition key from the first object in the array
-          let partitionKey = '';
-          if (partitionKeysData.data && partitionKeysData.data.length > 0) {
-            partitionKey = partitionKeysData.data[0].partitionKey;
-            localStorage.setItem('partition_key', partitionKey);
-          }
+          // Store current organization info for navbar menu
+          localStorage.setItem('current_organization_id', firstOrg.value);
+          localStorage.setItem('current_organization_name', firstOrg.label);
+          
+          // Store all organization options for the menu
+          localStorage.setItem('organization_options', JSON.stringify(partitionKeysData));
+          
+          console.log('Partition keys from service:', partitionKeysData);
           
           // Fourth endpoint: Get organization information
           const crmBaseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
@@ -182,7 +181,7 @@ export const useAuth = () => {
             throw new Error('Failed to fetch organization information');
           }
         } else {
-          throw new Error('Failed to fetch partition keys');
+          throw new Error('Failed to fetch partition keys from organization service');
         }
       } else {
         throw new Error('Failed to fetch user identity');

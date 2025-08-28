@@ -6,7 +6,7 @@ export function useOrganizations() {
   const [currentOrganization, setCurrentOrganization] = useState<OrganizationOption | null>(null);
   const [organizationDetails, setOrganizationDetails] = useState<Organization[]>([]);
 
-  // Fetch organizations from API
+  // Get organizations from localStorage first, then fetch from API if not available
   const {
     data: organizations = [],
     isLoading,
@@ -14,7 +14,23 @@ export function useOrganizations() {
     refetch
   } = useQuery({
     queryKey: ['organizations'],
-    queryFn: organizationService.getPartitionKeys,
+    queryFn: async () => {
+      // First try to get from localStorage
+      const storedOptions = localStorage.getItem('organization_options');
+      if (storedOptions) {
+        try {
+          const parsedOptions = JSON.parse(storedOptions);
+          console.log('Using organizations from localStorage:', parsedOptions);
+          return parsedOptions;
+        } catch (error) {
+          console.warn('Failed to parse stored organization options:', error);
+        }
+      }
+      
+      // If not in localStorage, fetch from API
+      console.log('Fetching organizations from API...');
+      return organizationService.getPartitionKeys();
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
   });
