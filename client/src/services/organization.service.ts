@@ -138,6 +138,42 @@ export const organizationService = {
       return [];
     }
   },
+
+  async getOrganizationsRaw(partitionKey: string): Promise<any> {
+    try {
+      // Build filter object with the partition key
+      const filter = {
+        "_partitionKey": {
+          "$in": [partitionKey]
+        }
+      };
+      
+      const encodedFilter = encodeURIComponent(JSON.stringify(filter));
+      const url = `${environment.CRM_BASE_URL}/mngm-organizations/organizations?filter=${encodedFilter}`;
+      
+      const response = await authenticatedFetch(url, { method: "GET" });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch organizations: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      console.log('Raw organizations data received:', data);
+      
+      // Return the raw data without transformation for auth purposes
+      return data;
+    } catch (error) {
+      console.error('Error fetching organizations raw:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        partitionKey: partitionKey,
+        url: `${environment.CRM_BASE_URL}/mngm-organizations/organizations`
+      });
+      throw error;
+    }
+  },
 };
 
 // Helper function to generate initials from organization name

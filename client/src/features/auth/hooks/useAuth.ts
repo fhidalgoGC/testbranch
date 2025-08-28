@@ -59,25 +59,14 @@ export const useAuth = () => {
         console.log('Partition keys from service:', partitionKeysData);
       }
       
-      // Fourth endpoint: Get organization information
-      const crmBaseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
-      const organizationUrl = `${crmBaseUrl}/mngm-organizations/organizations?filter={"_partitionKey":{"$in":["${partitionKey}"]}}`;
-      console.log('Organization URL:', organizationUrl);
+      // Fourth endpoint: Get organization information using organization service
+      const organizationResponse = await organizationService.getOrganizationsRaw(partitionKey);
       
-      const organizationResponse = await fetch(organizationUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${result.id_token}`,
-        },
-      });
-
-      if (organizationResponse.ok) {
-        const organizationData = await organizationResponse.json();
-        
-        // Extract representative_people_id from the first organization's extras
-        let representativePeopleId = '';
-        if (organizationData.data && organizationData.data.length > 0) {
-          const firstOrg = organizationData.data[0];
+      // Extract representative_people_id from the first organization's extras
+      let representativePeopleId = '';
+      
+      if (organizationResponse.data && organizationResponse.data.length > 0) {
+        const firstOrg = organizationResponse.data[0];
           if (firstOrg.extras && Array.isArray(firstOrg.extras)) {
             const representativeExtra = firstOrg.extras.find((extra: any) => extra.key === 'representativePeople_id');
             if (representativeExtra && representativeExtra.values && representativeExtra.values.length > 0) {
@@ -159,9 +148,6 @@ export const useAuth = () => {
         }, 1000);
 
         return true;
-      } else {
-        throw new Error('Failed to fetch organization information');
-      }
     } catch (err: any) {
       const errorMessage = err?.data?.error_description || err?.message || t('loginError');
       setError(errorMessage);
