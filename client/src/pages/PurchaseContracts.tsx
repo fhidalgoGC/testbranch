@@ -628,64 +628,6 @@ export default function PurchaseContracts() {
           </h1>
           <div className="flex gap-2">
             <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                console.log("=== ESTADO DE LA PÁGINA (TABLE DATA) ===");
-                console.log("Contracts:", tableData.contracts);
-                console.log("Total Elements:", tableData.totalElements);
-                console.log("Current Page:", tableData.currentPage);
-                console.log("Filters:", tableData.filters);
-                console.log(
-                  "Total contracts in state:",
-                  tableData.contracts.length,
-                );
-                console.log("==========================================");
-              }}
-            >
-              Debug Table
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                console.log("=== ESTADO JSON DE PURCHASECONTRACTS ===");
-                console.group("📋 Selected Filters");
-                console.log(pageStateData.selectedFilters);
-                console.groupEnd();
-
-                console.group("📄 Contracts Summary");
-                console.log("Total contracts:", pageStateData.contracts.length);
-
-                // Mostrar solo información básica de los contratos
-                const contractsSummary = pageStateData.contracts.map(
-                  (contract) => ({
-                    _id: contract._id,
-                    folio: contract.folio,
-                    commodity_name: contract.commodity?.name,
-                    commodity_id: contract.commodity?.commodity_id,
-                    quantity: contract.quantity,
-                    pricing_type: contract.price_schedule?.[0]?.pricing_type,
-                  }),
-                );
-
-                console.log("Contracts (basic info):", contractsSummary);
-                console.groupEnd();
-
-                console.group("🔗 Full JSON Structure (collapsed)");
-                console.log("Complete state structure:", {
-                  selectedFilters: pageStateData.selectedFilters,
-                  contracts: `[${pageStateData.contracts.length} contracts - expand to see full data]`,
-                  contractsFullData: pageStateData.contracts,
-                });
-                console.groupEnd();
-                console.log("========================================");
-              }}
-              className="bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100"
-            >
-              Debug Page State
-            </Button>
-            <Button
               className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 relative"
               size="lg"
               onClick={async () => {
