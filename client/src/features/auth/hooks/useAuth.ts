@@ -106,65 +106,59 @@ export const useAuth = () => {
           }
         }
         
-        // Fifth endpoint: Get representative people information
-        const peopleUrl = `${crmBaseUrl}/crm-people/people/${representativePeopleId}`;
-        console.log('People URL:', peopleUrl);
-        
-        const peopleResponse = await fetch(peopleUrl, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-            '_partitionkey': partitionKey,
-          },
-        });
-
-        if (peopleResponse.ok) {
-          const peopleData = await peopleResponse.json();
+        // Fifth endpoint: Get representative people information using crm-people service
+        const { getPersonById } = await import('@/services/crm-people.service');
+        try {
+          const peopleData = await getPersonById(representativePeopleId);
           
           // Store representative people information in localStorage
-          if (peopleData.data) {
-            localStorage.setItem('representative_people_full_name', peopleData.data.full_name);
-            localStorage.setItem('representative_people_first_name', peopleData.data.first_name);
-            localStorage.setItem('representative_people_last_name', peopleData.data.last_name);
+          if (peopleData) {
+            localStorage.setItem('representative_people_full_name', peopleData.full_name);
+            if (peopleData.first_name) {
+              localStorage.setItem('representative_people_first_name', peopleData.first_name);
+            }
+            if (peopleData.last_name) {
+              localStorage.setItem('representative_people_last_name', peopleData.last_name);
+            }
             
             // Store email from first email object
-            if (peopleData.data.emails && peopleData.data.emails.length > 0) {
-              localStorage.setItem('representative_people_email', peopleData.data.emails[0].value);
+            if (peopleData.emails && peopleData.emails.length > 0) {
+              localStorage.setItem('representative_people_email', peopleData.emails[0].value);
             }
             
             // Store phone information from first phone object
-            if (peopleData.data.phones && peopleData.data.phones.length > 0) {
-              localStorage.setItem('representative_people_calling_code', peopleData.data.phones[0].calling_code);
-              localStorage.setItem('representative_people_phone_number', peopleData.data.phones[0].phone_number);
+            if (peopleData.phones && peopleData.phones.length > 0) {
+              localStorage.setItem('representative_people_calling_code', peopleData.phones[0].calling_code);
+              localStorage.setItem('representative_people_phone_number', peopleData.phones[0].phone_number);
             }
           }
-          
-          // Update Redux state
-          dispatch(loginAction({
-            user: { 
-              email: identityData.data.email,
-              name: `${identityData.data.firstName} ${identityData.data.lastName}`,
-            },
-            tokens: {
-              accessToken: result.access_token,
-              refreshToken: result.refresh_token,
-              idToken: result.id_token,
-            },
-          }));
-
-          toast({
-            title: t('loginSuccess'),
-            description: t('loginSuccessMessage'),
-          });
-
-          setTimeout(() => {
-            setLocation('/home');
-          }, 1000);
-
-          return true;
-        } else {
-          throw new Error('Failed to fetch representative people information');
+        } catch (error) {
+          console.error('Error fetching representative people:', error);
         }
+        
+        // Update Redux state
+        dispatch(loginAction({
+          user: { 
+            email: identityData.data.email,
+            name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+          },
+          tokens: {
+            accessToken: result.access_token,
+            refreshToken: result.refresh_token,
+            idToken: result.id_token,
+          },
+        }));
+
+        toast({
+          title: t('loginSuccess'),
+          description: t('loginSuccessMessage'),
+        });
+
+        setTimeout(() => {
+          setLocation('/home');
+        }, 1000);
+
+        return true;
       } else {
         throw new Error('Failed to fetch organization information');
       }
