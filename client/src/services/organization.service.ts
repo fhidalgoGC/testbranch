@@ -20,10 +20,11 @@ const ORGANIZATION_ENDPOINT = 'https://un4grlwfx2.execute-api.us-west-2.amazonaw
 
 export const organizationService = {
   async getPartitionKeys(): Promise<OrganizationOption[]> {
+    // Get customer ID and JWT token from localStorage
+    const customerId = localStorage.getItem('customer_id') || 'a328b9b8f1996eadd36d375f';
+    const jwt = localStorage.getItem('jwt') || localStorage.getItem('id_token');
+    
     try {
-      // Get customer ID and JWT token from localStorage
-      const customerId = localStorage.getItem('customer_id') || 'a328b9b8f1996eadd36d375f';
-      const jwt = localStorage.getItem('jwt') || localStorage.getItem('id_token');
       
       if (!jwt) {
         console.warn('No JWT token found for partition keys request');
@@ -59,20 +60,27 @@ export const organizationService = {
       
       // Transform the response data to match our interface
       return data.map((item: any) => ({
-        key: item._id || item.key,
-        value: item._id || item.value,
-        label: item.name || item.label,
+        key: item.partitionKey || item.id || item.key,
+        value: item.partitionKey || item.id || item.value,
+        label: item.organization || item.label,
         organization: {
-          _id: item._id,
-          name: item.name,
+          _id: item.partitionKey || item.id,
+          name: item.organization,
           description: item.description,
           type: item.type,
           logo: item.logo,
-          initials: item.initials || getInitials(item.name)
+          initials: item.initials || getInitials(item.organization || '')
         }
       }));
     } catch (error) {
       console.error('Error fetching partition keys:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        customerId: customerId,
+        jwt: jwt ? 'Present' : 'Missing',
+        url: `${ORGANIZATION_ENDPOINT}/${customerId}/partition_keys`
+      });
       // Return empty array instead of throwing to prevent breaking the UI
       return [];
     }
