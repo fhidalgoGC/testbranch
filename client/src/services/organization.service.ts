@@ -58,8 +58,15 @@ export const organizationService = {
 
       const data = await response.json();
       
+      console.log('Raw partition keys data received:', data);
+      
+      // Check if data is an array, if not, handle accordingly
+      const itemsArray = Array.isArray(data) ? data : (data.data || data.items || []);
+      
+      console.log('Processed items array:', itemsArray);
+      
       // Transform the response data to match our interface
-      return data.map((item: any) => ({
+      return itemsArray.map((item: any) => ({
         key: item.partitionKey || item.id || item.key,
         value: item.partitionKey || item.id || item.value,
         label: item.organization || item.label,
