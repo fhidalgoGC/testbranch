@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'wouter';
-import { LogOut, Languages, ChevronDown, ChevronRight } from 'lucide-react';
+import { LogOut, Languages, ChevronDown, ChevronRight, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -14,6 +14,7 @@ import {
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import { useNavigationHandler } from '@/hooks/usePageState';
+import { useOrganizations } from '@/hooks/useOrganizations';
 import { Link } from 'wouter';
 
 interface NavBarProps {
@@ -25,6 +26,7 @@ export default function NavBar({ title }: NavBarProps) {
   const { logout } = useAuth();
   const [location] = useLocation();
   const { handleNavigateToPage } = useNavigationHandler();
+  const { organizations, currentOrganization, changeOrganization, isLoading: organizationsLoading } = useOrganizations();
   const [currentLanguage, setCurrentLanguage] = useState(
     localStorage.getItem('language') || 'es'
   );
@@ -250,10 +252,60 @@ export default function NavBar({ title }: NavBarProps) {
         )}
       </div>
 
-      {/* Right side - Theme toggle, Language selector and User menu */}
+      {/* Right side - Theme toggle, Organization selector, Language selector and User menu */}
       <div className="flex items-center space-x-2">
         {/* Theme Toggle */}
         <ThemeToggle />
+        
+        {/* Organization Selector */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-8 h-8 rounded-sm p-0 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-all duration-100 border border-transparent hover:border-gray-200/50 dark:hover:border-gray-700/50"
+              disabled={organizationsLoading}
+            >
+              {organizationsLoading ? (
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+              ) : currentOrganization?.organization.initials ? (
+                <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                  {currentOrganization.organization.initials}
+                </span>
+              ) : (
+                <Building2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 border-gray-200/50 dark:border-gray-700/50 shadow-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
+            {organizations.map((org) => (
+              <DropdownMenuItem
+                key={org.key}
+                onClick={() => changeOrganization(org.value)}
+                className="flex items-center space-x-3 cursor-pointer px-3 py-2 text-sm hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-all duration-100"
+              >
+                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                  <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                    {org.organization.initials}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-gray-900 dark:text-white truncate">
+                    {org.label}
+                  </div>
+                  {org.organization.description && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {org.organization.description}
+                    </div>
+                  )}
+                </div>
+                {currentOrganization?.value === org.value && (
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         
         {/* Language Selector */}
         <DropdownMenu>
