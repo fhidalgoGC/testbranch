@@ -48,6 +48,7 @@ export const useAuth = () => {
         localStorage.setItem('user_name', identityData.data.firstName);
         localStorage.setItem('user_lastname', identityData.data.lastName);
         localStorage.setItem('user_id', identityData.data.id);
+        localStorage.setItem('customer_id', identityData.data.id); // Store customer_id for organization service
         localStorage.setItem('user_email', identityData.data.email);
         
         // Third endpoint: Get partition keys

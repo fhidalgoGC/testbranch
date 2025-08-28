@@ -19,8 +19,8 @@ export interface OrganizationOption {
 
 export const organizationService = {
   async getPartitionKeys(): Promise<OrganizationOption[]> {
-    // Get customer ID from localStorage
-    const customerId = localStorage.getItem("customer_id");
+    // Get customer ID from localStorage - use default if not found
+    const customerId = localStorage.getItem("customer_id") || "a328b9b8f1996eadd36d375f";
 
     try {
       const url = `${environment.IDENTITY_BASE_URL}/identity/v2/customers/${customerId}/partition_keys`;
