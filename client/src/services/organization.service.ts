@@ -1,4 +1,4 @@
-import { addJwtPk } from '@/utils/apiInterceptors';
+import { authenticatedFetch } from '@/utils/apiInterceptors';
 import { environment } from '@/environment/environment';
 
 export interface Organization {
@@ -25,10 +25,7 @@ export const organizationService = {
     try {
       const url = `${environment.IDENTITY_BASE_URL}/identity/v2/customers/${customerId}/partition_keys`;
       
-      const response = await fetch(
-        url,
-        addJwtPk(url, { method: 'GET' })
-      );
+      const response = await authenticatedFetch(url, { method: 'GET' });
 
       if (!response.ok) {
         throw new Error(`Failed to fetch partition keys: ${response.status}`);
