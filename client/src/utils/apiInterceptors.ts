@@ -21,7 +21,6 @@ export const addJwtPk = (
   const excludedEndpoints = [
     "/identity/customers", // Token endpoint
     "/identity/v2/customers", // Customer endpoint
-    "/partition_keys", // Partition keys endpoint
     "/organizations", // Organization endpoint (some variations)
     "/oauth/token", // Auth0 token endpoint
   ];
@@ -56,35 +55,6 @@ export const addJwtPk = (
       headers.set("bt-uid", partitionKey);
       headers.set("organization_id", partitionKey);
       headers.set("pk-organization", partitionKey);
-    }
-
-    // Headers adicionales comunes para APIs autenticadas
-    if (!headers.has("accept")) {
-      headers.set("accept", "*/*");
-    }
-    if (!headers.has("accept-language")) {
-      headers.set("accept-language", "es-419,es;q=0.9");
-    }
-    if (!headers.has("origin")) {
-      headers.set("origin", "https://contracts-develop.grainchain.io");
-    }
-    if (!headers.has("referer")) {
-      headers.set("referer", "https://contracts-develop.grainchain.io/");
-    }
-    if (!headers.has("sec-fetch-dest")) {
-      headers.set("sec-fetch-dest", "empty");
-    }
-    if (!headers.has("sec-fetch-mode")) {
-      headers.set("sec-fetch-mode", "cors");
-    }
-    if (!headers.has("sec-fetch-site")) {
-      headers.set("sec-fetch-site", "same-site");
-    }
-    if (!headers.has("user-agent")) {
-      headers.set(
-        "user-agent",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
-      );
     }
   }
 
