@@ -1,27 +1,36 @@
-name: Force sync staging testBranch
+name: Force sync staging to Repo B
 
 on:
   push:
     branches:
-      - staging   # cada vez que hay cambios en staging de Repo A
+      - staging
+  # Permite correrlo manualmente desde la pestaña Actions (Run workflow)
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repo A
-        uses: actions/checkout@v3
+      - name: Checkout Repo A (staging)
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # historial completo
 
-      - name: Force push staging to Repo B
+      - name: Force push staging -> main in Repo B
+        env:
+          TOKEN: ${{ secrets.GCCONTRACTS_MIRROR_STAGING_SECRET }}
         run: |
+          set -e
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          
-          # Agregar Repo B como remoto
-          git remote add mirror https://x-access-token:${{ secrets.GCCONTRACTS_MIRROR_STAGING_SECRET }}@github.com/fhidalgoGC/testbranch.git
-          
-          # Enviar staging forzado
-          git push mirror staging --force
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          # Asegurar que la rama staging existe localmente
+          git fetch origin staging:staging
+
+          # Agregar remoto destino con PAT
+          git remote add mirror "https://x-access-token:${TOKEN}@github.com/fhidalgoGC/testbranch.git"
+
+          # Forzar push staging -> main
+          git push mirror staging:main --force
