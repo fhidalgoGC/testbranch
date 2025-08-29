@@ -6,6 +6,7 @@ import { store } from "./app/store";
 import { Toaster } from "@/components/ui/toaster";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { useOrganizationLoading } from "@/store/organizationLoadingStore";
+import { UserProvider } from "@/contexts/UserContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect, lazy, Suspense } from "react";
 import "./common/utils/i18n";
@@ -97,11 +98,13 @@ function App() {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <TooltipProvider>
-            <AppContent />
-          </TooltipProvider>
-        </ThemeProvider>
+        <UserProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              <AppContent />
+            </TooltipProvider>
+          </ThemeProvider>
+        </UserProvider>
       </QueryClientProvider>
     </Provider>
   );

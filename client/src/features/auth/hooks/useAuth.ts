@@ -8,6 +8,7 @@ import {
 } from "../slices/authSlice";
 import { useLoginMutation, useGetIdentityQuery } from "../services/authApi";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/contexts/UserContext";
 
 export const useAuth = () => {
   const [, setLocation] = useLocation();
@@ -18,6 +19,7 @@ export const useAuth = () => {
   const [loginMutation] = useLoginMutation();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { setUserData, setAvailableOrganizations, setCurrentOrganization, clearSession } = useUser();
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -37,12 +39,18 @@ export const useAuth = () => {
       );
       const identityData = await (organizationService as any).getCustomerInfo();
 
-      // Store user data in localStorage
+      // Store user data in localStorage and context
       localStorage.setItem("user_name", identityData.data.firstName);
       localStorage.setItem("user_lastname", identityData.data.lastName);
       localStorage.setItem("user_id", identityData.data.id);
       localStorage.setItem("customer_id", identityData.data.id); // Store customer_id for organization service
       localStorage.setItem("user_email", identityData.data.email);
+      
+      // Update user context
+      setUserData({
+        userName: identityData.data.firstName,
+        userId: identityData.data.id
+      });
 
       // Get partition keys using organization service
       const partitionKeysData = await organizationService.getPartitionKeys();
@@ -284,6 +292,14 @@ export const useAuth = () => {
     localStorage.removeItem("company_calling_code");
     localStorage.removeItem("company_phone_number");
     localStorage.removeItem("company_address_line");
+    
+    // Clear organization data from localStorage
+    localStorage.removeItem("current_organization_id");
+    localStorage.removeItem("current_organization_name");
+    localStorage.removeItem("organization_details");
+
+    // Clear session context
+    clearSession();
 
     // Update Redux state
     dispatch(logoutAction());
