@@ -55,22 +55,28 @@ export const useAuth = () => {
       // Get partition keys using organization service
       const partitionKeysData = await organizationService.getPartitionKeys();
 
-      // Store partition key from the first object in the array and store organization options
+      // Store organizations in context and set initial partition key
       let partitionKey = "";
       if (partitionKeysData && partitionKeysData.length > 0) {
+        // Set organizations in context
+        setAvailableOrganizations(partitionKeysData);
+        
         const firstOrg = partitionKeysData[0];
         partitionKey = firstOrg.value;
         localStorage.setItem("partition_key", partitionKey);
-
-        // Store current organization info for navbar menu
-        localStorage.setItem("current_organization_id", firstOrg.value);
-        localStorage.setItem("current_organization_name", firstOrg.label);
-
-        // Store all organization options for the menu
-        localStorage.setItem(
-          "organization_options",
-          JSON.stringify(partitionKeysData),
-        );
+        
+        // Set current organization in context
+        const rawOrgData = {
+          role: '',
+          partitionKey: firstOrg.value,
+          organization: firstOrg.label,
+          registered: '',
+          id: firstOrg.organization.id || firstOrg.organization._id,
+          externals: [],
+          type: firstOrg.organization.type,
+          idCustomer: ''
+        };
+        setCurrentOrganization(rawOrgData);
 
         console.log("Partition keys from service:", partitionKeysData);
       }
@@ -235,28 +241,7 @@ export const useAuth = () => {
       // Update partition key in localStorage
       localStorage.setItem("partition_key", partitionKey);
 
-      // Find the organization option to get the label for current organization info
-      const storedOptions = localStorage.getItem("organization_options");
-      if (storedOptions) {
-        try {
-          const organizationOptions = JSON.parse(storedOptions);
-          const currentOrgOption = organizationOptions.find(
-            (org: any) => org.value === partitionKey,
-          );
-          if (currentOrgOption) {
-            localStorage.setItem(
-              "current_organization_id",
-              currentOrgOption.value,
-            );
-            localStorage.setItem(
-              "current_organization_name",
-              currentOrgOption.label,
-            );
-          }
-        } catch (error) {
-          console.warn("Failed to parse organization options:", error);
-        }
-      }
+      // Organization context is already updated during login, no need to do anything here
 
       console.log("Organization data loaded for partition key:", partitionKey);
     } catch (error) {
@@ -298,7 +283,6 @@ export const useAuth = () => {
     localStorage.removeItem("current_organization_id");
     localStorage.removeItem("current_organization_name");
     localStorage.removeItem("organization_details");
-    localStorage.removeItem("organization_options");
 
     // Clear session context
     clearSession();
