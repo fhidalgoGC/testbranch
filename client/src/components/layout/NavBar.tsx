@@ -26,7 +26,7 @@ export default function NavBar({ title }: NavBarProps) {
   const { logout } = useAuth();
   const [location] = useLocation();
   const { handleNavigateToPage } = useNavigationHandler();
-  const { availableOrganizations, currentOrganization, setCurrentOrganization, isLoadingOrganizations } = useUser();
+  const { availableOrganizations, currentOrganization, setCurrentOrganization, isLoadingOrganizations, setIsLoadingOrganizations } = useUser();
   const { loadOrganizationData } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState(
     localStorage.getItem('language') || 'es'
@@ -216,13 +216,27 @@ export default function NavBar({ title }: NavBarProps) {
   const handleOrganizationChange = async (partitionKey: string) => {
     const selectedOrg = availableOrganizations.find(org => org.partitionKey === partitionKey);
     if (selectedOrg) {
+      console.log('Starting organization change, setting loading to true');
+      setIsLoadingOrganizations(true);
+      const startTime = Date.now();
+      
       setCurrentOrganization(selectedOrg);
       localStorage.setItem('partition_key', partitionKey);
       
       try {
         await loadOrganizationData(partitionKey);
+        console.log('Organization switched successfully to:', selectedOrg.organization);
       } catch (error) {
         console.error('Error switching organization:', error);
+      } finally {
+        // Ensure minimum loading time of 300ms
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, 300 - elapsedTime);
+        
+        setTimeout(() => {
+          console.log('Finishing organization change, setting loading to false');
+          setIsLoadingOrganizations(false);
+        }, remainingTime);
       }
     }
   };
