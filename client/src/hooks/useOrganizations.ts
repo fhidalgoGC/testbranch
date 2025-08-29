@@ -35,7 +35,7 @@ export function useOrganizations() {
 
   // Get organizations from localStorage first, then fetch from API if not available
   const {
-    data: organizations = [],
+    data: organizationsData = [],
     isLoading,
     error,
     refetch
@@ -64,11 +64,11 @@ export function useOrganizations() {
 
   // Update available organizations when data changes
   useEffect(() => {
-    if (data && Array.isArray(data)) {
-      console.log('Updating available organizations from API:', data);
-      setAvailableOrganizations(data);
+    if (organizationsData && Array.isArray(organizationsData)) {
+      console.log('Updating available organizations from API:', organizationsData);
+      setAvailableOrganizations(organizationsData);
     }
-  }, [data, setAvailableOrganizations]);
+  }, [organizationsData, setAvailableOrganizations]);
 
   // Transform API data into options
   const organizations = useMemo(() => {
