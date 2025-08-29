@@ -42,21 +42,15 @@ export function useOrganizations() {
   } = useQuery({
     queryKey: ['organizations'],
     queryFn: async () => {
-      // First try to get from localStorage
-      const storedOptions = localStorage.getItem('organization_options');
-      if (storedOptions) {
-        try {
-          const parsedOptions = JSON.parse(storedOptions);
-          console.log('Using organizations from localStorage:', parsedOptions);
-          return parsedOptions;
-        } catch (error) {
-          console.warn('Failed to parse stored organization options:', error);
-        }
-      }
-      
-      // If not in localStorage, fetch from API
+      // Always fetch from API to ensure fresh data
       console.log('Fetching organizations from API...');
-      return organizationService.getPartitionKeys();
+      const apiData = await organizationService.getPartitionKeys();
+      console.log('API returned organizations:', apiData);
+      
+      // Store in localStorage for future use
+      localStorage.setItem('organization_options', JSON.stringify(apiData));
+      
+      return apiData;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
@@ -67,6 +61,9 @@ export function useOrganizations() {
     if (organizationsData && Array.isArray(organizationsData)) {
       console.log('Updating available organizations from API:', organizationsData);
       setAvailableOrganizations(organizationsData);
+    } else if (organizationsData && organizationsData.data && Array.isArray(organizationsData.data)) {
+      console.log('Updating available organizations from API with data wrapper:', organizationsData.data);
+      setAvailableOrganizations(organizationsData.data);
     }
   }, [organizationsData, setAvailableOrganizations]);
 

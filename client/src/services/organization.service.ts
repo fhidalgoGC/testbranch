@@ -62,6 +62,7 @@ export const organizationService = {
         : data.data || data.items || [];
 
       console.log("Processed items array:", itemsArray);
+      console.log("Items array length:", itemsArray.length);
 
       // Transform the response data to match our interface
       return itemsArray
@@ -76,7 +77,7 @@ export const organizationService = {
             description: item.description,
             type: item.type,
             logo: item.logo,
-            initials: item.initials || getInitials(item.organization || `Org ${item.partitionKey?.slice(-4)}`),
+            initials: item.initials || getInitials(item.organization || `Org ${item.partitionKey?.slice(-4) || 'XX'}`),
           },
         }));
     } catch (error) {
