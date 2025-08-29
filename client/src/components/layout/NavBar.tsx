@@ -150,20 +150,9 @@ export default function NavBar({ title }: NavBarProps) {
 
   // Get user name from localStorage
   const getUserName = () => {
-    const fullName = localStorage.getItem('representative_people_full_name');
-    if (fullName && fullName.trim().length > 0) {
-      return fullName.trim();
-    }
-    
-    const firstName = localStorage.getItem('representative_people_first_name');
-    const lastName = localStorage.getItem('representative_people_last_name');
-    
-    if (firstName && firstName.trim().length > 0 && lastName && lastName.trim().length > 0) {
-      return `${firstName.trim()} ${lastName.trim()}`;
-    } else if (firstName && firstName.trim().length > 0) {
-      return firstName.trim();
-    } else if (lastName && lastName.trim().length > 0) {
-      return lastName.trim();
+    const userName = localStorage.getItem('user_name');
+    if (userName && userName.trim().length > 0) {
+      return userName.trim();
     }
     
     return 'Usuario';
