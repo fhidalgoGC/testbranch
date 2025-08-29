@@ -76,24 +76,29 @@ export function useOrganizations() {
     
     console.log('Transforming organizations:', availableOrganizations);
     
-    return availableOrganizations
-      .filter((item: any) => item && item.partitionKey) // Filter out invalid items
-      .map((item: any) => {
-        const orgName = item.organization || (item.type === 'Personal' ? 'Personal' : `Organización ${item.id}`);
-        return {
-          key: item.partitionKey,
-          value: item.partitionKey,
-          label: orgName,
-          organization: {
-            id: item.id,
-            name: orgName,
-            partitionKey: item.partitionKey,
-            type: item.type,
-            description: item.description,
-            initials: getOrganizationInitials(orgName)
-          }
-        };
-      });
+    const filtered = availableOrganizations.filter((item: any) => item && item.partitionKey);
+    console.log('Filtered organizations:', filtered.length, 'items');
+    
+    const transformed = filtered.map((item: any) => {
+      const orgName = item.organization || (item.type === 'Personal' ? 'Personal' : `Organización ${item.id}`);
+      const result = {
+        key: item.partitionKey,
+        value: item.partitionKey,
+        label: orgName,
+        organization: {
+          id: item.id,
+          name: orgName,
+          partitionKey: item.partitionKey,
+          type: item.type,
+          initials: getOrganizationInitials(orgName)
+        }
+      };
+      console.log('Transformed organization:', orgName, 'initials:', result.organization.initials);
+      return result;
+    });
+    
+    console.log('Final transformed organizations:', transformed.length, 'items');
+    return transformed;
   }, [availableOrganizations]);
 
   // Initialize current organization from available organizations
@@ -125,7 +130,6 @@ export function useOrganizations() {
         name: orgName,
         partitionKey: currentOrgContext.partitionKey,
         type: currentOrgContext.type,
-        description: currentOrgContext.description,
         initials: getOrganizationInitials(orgName)
       }
     };

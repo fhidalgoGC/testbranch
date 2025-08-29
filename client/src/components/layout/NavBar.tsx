@@ -282,11 +282,6 @@ export default function NavBar({ title }: NavBarProps) {
                   <div className="font-medium text-gray-900 dark:text-white truncate">
                     {typeof org.label === 'string' ? org.label : 'Organization'}
                   </div>
-                  {org.organization?.description && typeof org.organization.description === 'string' && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {org.organization.description}
-                    </div>
-                  )}
                 </div>
                 {currentOrganization?.value === org.value && (
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
