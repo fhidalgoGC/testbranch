@@ -5,7 +5,7 @@ import { queryClient } from "./lib/queryClient";
 import { store } from "./app/store";
 import { Toaster } from "@/components/ui/toaster";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
-import { useOrganizations } from "@/hooks/useOrganizations";
+import { useOrganizationLoading } from "@/store/organizationLoadingStore";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect, lazy, Suspense } from "react";
 import "./common/utils/i18n";
@@ -75,7 +75,7 @@ function StateRestorer() {
 }
 
 function AppContent() {
-  const { isChangingOrganization } = useOrganizations();
+  const isChangingOrganization = useOrganizationLoading();
   
   return (
     <>

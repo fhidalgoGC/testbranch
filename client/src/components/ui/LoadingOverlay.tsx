@@ -6,6 +6,7 @@ interface LoadingOverlayProps {
 }
 
 export function LoadingOverlay({ isVisible, message = "Cambiando organización..." }: LoadingOverlayProps) {
+  console.log('LoadingOverlay render - isVisible:', isVisible);
   if (!isVisible) return null;
 
   return (

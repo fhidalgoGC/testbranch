@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { organizationService, OrganizationOption, Organization } from '@/services/organization.service';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { organizationLoadingStore } from '@/store/organizationLoadingStore';
 
 export function useOrganizations() {
   const { loadOrganizationData } = useAuth();
   const [currentOrganization, setCurrentOrganization] = useState<OrganizationOption | null>(null);
   const [organizationDetails, setOrganizationDetails] = useState<Organization[]>([]);
-  const [isChangingOrganization, setIsChangingOrganization] = useState(false);
 
   // Get organizations from localStorage first, then fetch from API if not available
   const {
@@ -65,7 +65,8 @@ export function useOrganizations() {
   const changeOrganization = async (organizationId: string) => {
     const selectedOrg = organizations.find((org: OrganizationOption) => org.value === organizationId);
     if (selectedOrg) {
-      setIsChangingOrganization(true);
+      console.log('Starting organization change, setting loading to true');
+      organizationLoadingStore.setState(true);
       const startTime = Date.now();
       
       setCurrentOrganization(selectedOrg);
@@ -96,7 +97,8 @@ export function useOrganizations() {
         const remainingTime = Math.max(0, 300 - elapsedTime);
         
         setTimeout(() => {
-          setIsChangingOrganization(false);
+          console.log('Finishing organization change, setting loading to false');
+          organizationLoadingStore.setState(false);
         }, remainingTime);
       }
     }
@@ -122,7 +124,6 @@ export function useOrganizations() {
     organizationDetails,
     changeOrganization,
     isLoading,
-    isChangingOrganization,
     error,
     refetch
   };

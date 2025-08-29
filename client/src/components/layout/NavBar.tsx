@@ -26,7 +26,7 @@ export default function NavBar({ title }: NavBarProps) {
   const { logout } = useAuth();
   const [location] = useLocation();
   const { handleNavigateToPage } = useNavigationHandler();
-  const { organizations, currentOrganization, changeOrganization, isLoading: organizationsLoading, isChangingOrganization } = useOrganizations();
+  const { organizations, currentOrganization, changeOrganization, isLoading: organizationsLoading } = useOrganizations();
   const [currentLanguage, setCurrentLanguage] = useState(
     localStorage.getItem('language') || 'es'
   );
