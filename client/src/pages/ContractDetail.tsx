@@ -63,7 +63,7 @@ import {
   settleParentContract,
   settleSubContract,
   generateAndDownloadPDF,
-} from "@/services/contractsService";
+} from "@/services/contracts.service";
 
 export default function ContractDetail() {
   const { t } = useTranslation();
@@ -187,7 +187,7 @@ export default function ContractDetail() {
         return;
       }
 
-      // Usar el servicio contractsService
+      // Usar el servicio contracts.service
       const response = await getParticipantLocation(participantId);
 
       if (response.ok) {
