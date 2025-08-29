@@ -64,19 +64,21 @@ export const organizationService = {
       console.log("Processed items array:", itemsArray);
 
       // Transform the response data to match our interface
-      return itemsArray.map((item: any) => ({
-        key: item.partitionKey || item.id || item.key,
-        value: item.partitionKey || item.id || item.value,
-        label: item.organization || item.label,
-        organization: {
-          _id: item.partitionKey || item.id,
-          name: item.organization,
-          description: item.description,
-          type: item.type,
-          logo: item.logo,
-          initials: item.initials || getInitials(item.organization || ""),
-        },
-      }));
+      return itemsArray
+        .filter((item: any) => item.partitionKey) // Only include items with partitionKey
+        .map((item: any) => ({
+          key: item.partitionKey || item.id || item.key,
+          value: item.partitionKey || item.id || item.value,
+          label: item.organization || item.label || `Organization ${item.partitionKey?.slice(-8)}`,
+          organization: {
+            _id: item.partitionKey || item.id,
+            name: item.organization || `Organization ${item.partitionKey?.slice(-8)}`,
+            description: item.description,
+            type: item.type,
+            logo: item.logo,
+            initials: item.initials || getInitials(item.organization || `Org ${item.partitionKey?.slice(-4)}`),
+          },
+        }));
     } catch (error) {
       console.error("Error fetching partition keys:", error);
       console.error("Error details:", {
