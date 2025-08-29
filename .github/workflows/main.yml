@@ -1,9 +1,9 @@
-name: Force sync staging -> main in Repo B
+name: Sync staging -> main (sin workflows) a Repo B
 
 on:
   push:
     branches: [staging]
-  workflow_dispatch:   # 👈 habilita botón Run workflow en Actions
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -13,34 +13,40 @@ jobs:
       - name: Checkout Repo A (staging)
         uses: actions/checkout@v4
         with:
+          ref: staging
           fetch-depth: 0
 
-      - name: Force push staging -> main in Repo B
+      - name: Push a Repo B sin .github/workflows
         env:
           TOKEN: ${{ secrets.GCCONTRACTS_MIRROR_STAGING_SECRET }}
         run: |
           set -e
+
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      
-          # 🔑 Quitar el header de auth que mete checkout (en TODOS los scopes)
+
+          # 1) Quitar el header del GITHUB_TOKEN (evita usar github-actions[bot])
           git config --unset-all http.https://github.com/.extraheader || true
           git config --global --unset-all http.https://github.com/.extraheader || true
           sudo git config --system --unset-all http.https://github.com/.extraheader || true
-      
-          # (Opcional) verifica que ya no haya extraheader
-          git config --get-all http.https://github.com/.extraheader || true
-      
-          # Agregar remoto destino con tu PAT
+
+          # 2) Crear un commit temporal SIN workflows (no se empuja a Repo A)
+          if [ -d ".github/workflows" ]; then
+            rm -rf .github/workflows
+            git add -A
+            # solo commitea si hubo cambios
+            if ! git diff --cached --quiet; then
+              git commit -m "chore(sync): strip .github/workflows for mirror to Repo B"
+            fi
+          fi
+
+          # 3) Agregar remoto destino con PAT
           git remote remove mirror 2>/dev/null || true
           git remote add mirror "https://x-access-token:${TOKEN}@github.com/fhidalgoGC/testbranch.git"
-          git remote -v
-      
-          # (Opcional) probar credenciales antes del push
+
+          # 4) (opcional) probar acceso
           git ls-remote mirror -h
-      
-          # Empujar HEAD (staging) -> main en Repo B, forzando
+
+          # 5) Forzar push del HEAD actual -> main en Repo B
           git push mirror HEAD:main --force
-
-
