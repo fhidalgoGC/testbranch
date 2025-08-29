@@ -59,7 +59,51 @@ export const useAuth = () => {
         console.log('Partition keys from service:', partitionKeysData);
       }
       
-      // Fourth endpoint: Get organization information using organization service
+      // Load organization-specific data for the selected partition key
+      await loadOrganizationData(partitionKey);
+      
+      // Update Redux state
+      dispatch(loginAction({
+        user: { 
+          email: identityData.data.email,
+          name: `${identityData.data.firstName} ${identityData.data.lastName}`,
+        },
+        tokens: {
+          accessToken: result.access_token,
+          refreshToken: result.refresh_token,
+          idToken: result.id_token,
+        },
+      }));
+
+      toast({
+        title: t('loginSuccess'),
+        description: t('loginSuccessMessage'),
+      });
+
+      setTimeout(() => {
+        setLocation('/home');
+      }, 1000);
+
+      return true;
+    } catch (err: any) {
+      const errorMessage = err?.data?.error_description || err?.message || t('loginError');
+      setError(errorMessage);
+      toast({
+        title: t('loginErrorTitle'),
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // New method to load organization-specific data
+  const loadOrganizationData = async (partitionKey: string) => {
+    try {
+      // Get organization information using organization service
+      const { organizationService } = await import('@/services/organization.service');
       const organizationResponse = await organizationService.getOrganizationsRaw(partitionKey);
       
       // Extract representative_people_id from the first organization's extras
@@ -95,7 +139,7 @@ export const useAuth = () => {
           }
         }
         
-        // Fifth endpoint: Get representative people information using crm-people service
+        // Get representative people information using crm-people service
         const { getPersonById } = await import('@/services/crm-people.service');
         try {
           const peopleData = await getPersonById(representativePeopleId);
@@ -125,40 +169,13 @@ export const useAuth = () => {
           console.error('Error fetching representative people:', error);
         }
         
-        // Update Redux state
-        dispatch(loginAction({
-          user: { 
-            email: identityData.data.email,
-            name: `${identityData.data.firstName} ${identityData.data.lastName}`,
-          },
-          tokens: {
-            accessToken: result.access_token,
-            refreshToken: result.refresh_token,
-            idToken: result.id_token,
-          },
-        }));
-
-        toast({
-          title: t('loginSuccess'),
-          description: t('loginSuccessMessage'),
-        });
-
-        setTimeout(() => {
-          setLocation('/home');
-        }, 1000);
-
-        return true;
-    } catch (err: any) {
-      const errorMessage = err?.data?.error_description || err?.message || t('loginError');
-      setError(errorMessage);
-      toast({
-        title: t('loginErrorTitle'),
-        description: errorMessage,
-        variant: 'destructive',
-      });
-      return false;
-    } finally {
-      setIsLoading(false);
+        // Update partition key in localStorage
+        localStorage.setItem('partition_key', partitionKey);
+        
+        console.log('Organization data loaded for partition key:', partitionKey);
+    } catch (error) {
+      console.error('Error loading organization data:', error);
+      throw error;
     }
   };
 
@@ -204,6 +221,7 @@ export const useAuth = () => {
   return {
     login,
     logout,
+    loadOrganizationData,
     isLoading,
     error,
     isAuthenticated,

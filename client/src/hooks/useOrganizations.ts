@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { organizationService, OrganizationOption, Organization } from '@/services/organization.service';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 
 export function useOrganizations() {
+  const { loadOrganizationData } = useAuth();
   const [currentOrganization, setCurrentOrganization] = useState<OrganizationOption | null>(null);
   const [organizationDetails, setOrganizationDetails] = useState<Organization[]>([]);
 
@@ -41,7 +43,7 @@ export function useOrganizations() {
       const storedPartitionKey = localStorage.getItem('partition_key');
       
       if (storedPartitionKey) {
-        const found = organizations.find(org => org.value === storedPartitionKey);
+        const found = organizations.find((org: OrganizationOption) => org.value === storedPartitionKey);
         if (found) {
           setCurrentOrganization(found);
         } else {
@@ -60,16 +62,18 @@ export function useOrganizations() {
   }, [organizations]);
 
   const changeOrganization = async (organizationId: string) => {
-    const selectedOrg = organizations.find(org => org.value === organizationId);
+    const selectedOrg = organizations.find((org: OrganizationOption) => org.value === organizationId);
     if (selectedOrg) {
       setCurrentOrganization(selectedOrg);
       
       // Update localStorage with new partition key
-      localStorage.setItem('partition_key', selectedOrg.value);
       localStorage.setItem('current_organization_id', selectedOrg.value);
       localStorage.setItem('current_organization_name', selectedOrg.label);
       
       try {
+        // Use the new loadOrganizationData method instead of individual calls
+        await loadOrganizationData(selectedOrg.value);
+        
         // Fetch organization details with the new partition key
         const orgDetails = await organizationService.getOrganizations(selectedOrg.value);
         setOrganizationDetails(orgDetails);
@@ -77,15 +81,12 @@ export function useOrganizations() {
         // Store organization details in localStorage
         localStorage.setItem('organization_details', JSON.stringify(orgDetails));
         
-        console.log('Organization details fetched and stored:', orgDetails);
+        console.log('Organization switched successfully to:', selectedOrg.label);
       } catch (error) {
-        console.error('Error fetching organization details:', error);
+        console.error('Error switching organization:', error);
         setOrganizationDetails([]);
         localStorage.removeItem('organization_details');
       }
-      
-      // Force reload to refresh all data with new partition key
-      window.location.reload();
     }
   };
 

@@ -278,7 +278,7 @@ export default function NavBar({ title }: NavBarProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 border-gray-200/50 dark:border-gray-700/50 shadow-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
-            {organizations.map((org) => (
+            {organizations.map((org: any) => (
               <DropdownMenuItem
                 key={org.key}
                 onClick={() => changeOrganization(org.value)}
