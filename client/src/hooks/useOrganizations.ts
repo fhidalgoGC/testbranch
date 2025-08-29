@@ -6,8 +6,8 @@ import { organizationLoadingStore } from '@/store/organizationLoadingStore';
 import { useUser } from '@/contexts/UserContext';
 
 // Helper function to get organization initials
-const getOrganizationInitials = (name: string): string => {
-  if (!name || name.trim().length === 0) return 'ORG';
+const getOrganizationInitials = (name: string | null | undefined): string => {
+  if (!name || typeof name !== 'string' || name.trim().length === 0) return 'ORG';
   
   const words = name.trim().split(' ').filter(word => word.length > 0);
   if (words.length >= 2) {
