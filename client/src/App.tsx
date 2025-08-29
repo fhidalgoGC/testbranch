@@ -5,7 +5,7 @@ import { queryClient } from "./lib/queryClient";
 import { store } from "./app/store";
 import { Toaster } from "@/components/ui/toaster";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
-import { useOrganizationLoading } from "@/store/organizationLoadingStore";
+import { useUser } from "@/contexts/UserContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect, lazy, Suspense } from "react";
@@ -76,14 +76,14 @@ function StateRestorer() {
 }
 
 function AppContent() {
-  const isChangingOrganization = useOrganizationLoading();
+  const { isLoadingOrganizations } = useUser();
   
   return (
     <>
       <StateRestorer />
       <Toaster />
       <Router />
-      <LoadingOverlay isVisible={isChangingOrganization} message="Cambiando organización..." />
+      <LoadingOverlay isVisible={isLoadingOrganizations} message="Cambiando organización..." />
     </>
   );
 }
