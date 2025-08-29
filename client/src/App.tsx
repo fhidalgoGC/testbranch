@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { store } from "./app/store";
 import { Toaster } from "@/components/ui/toaster";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
+import { useOrganizations } from "@/hooks/useOrganizations";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect, lazy, Suspense } from "react";
 import "./common/utils/i18n";
@@ -72,6 +74,19 @@ function StateRestorer() {
   return null;
 }
 
+function AppContent() {
+  const { isChangingOrganization } = useOrganizations();
+  
+  return (
+    <>
+      <StateRestorer />
+      <Toaster />
+      <Router />
+      <LoadingOverlay isVisible={isChangingOrganization} message="Cambiando organización..." />
+    </>
+  );
+}
+
 function App() {
   useEffect(() => {
     // Set document language based on detected language
@@ -84,9 +99,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <TooltipProvider>
-            <StateRestorer />
-            <Toaster />
-            <Router />
+            <AppContent />
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>

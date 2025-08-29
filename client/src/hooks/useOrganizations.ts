@@ -7,6 +7,7 @@ export function useOrganizations() {
   const { loadOrganizationData } = useAuth();
   const [currentOrganization, setCurrentOrganization] = useState<OrganizationOption | null>(null);
   const [organizationDetails, setOrganizationDetails] = useState<Organization[]>([]);
+  const [isChangingOrganization, setIsChangingOrganization] = useState(false);
 
   // Get organizations from localStorage first, then fetch from API if not available
   const {
@@ -64,6 +65,9 @@ export function useOrganizations() {
   const changeOrganization = async (organizationId: string) => {
     const selectedOrg = organizations.find((org: OrganizationOption) => org.value === organizationId);
     if (selectedOrg) {
+      setIsChangingOrganization(true);
+      const startTime = Date.now();
+      
       setCurrentOrganization(selectedOrg);
       
       // Update localStorage with new partition key
@@ -86,6 +90,14 @@ export function useOrganizations() {
         console.error('Error switching organization:', error);
         setOrganizationDetails([]);
         localStorage.removeItem('organization_details');
+      } finally {
+        // Ensure minimum loading time of 300ms
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, 300 - elapsedTime);
+        
+        setTimeout(() => {
+          setIsChangingOrganization(false);
+        }, remainingTime);
       }
     }
   };
@@ -110,6 +122,7 @@ export function useOrganizations() {
     organizationDetails,
     changeOrganization,
     isLoading,
+    isChangingOrganization,
     error,
     refetch
   };

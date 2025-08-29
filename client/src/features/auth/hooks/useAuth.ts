@@ -128,7 +128,7 @@ export const useAuth = () => {
         const firstOrg = organizationResponse.data[0];
         if (firstOrg.extras && Array.isArray(firstOrg.extras)) {
           const representativeExtra = firstOrg.extras.find(
-            (extra: any) => extra.key === "representativePeople_id",
+            (extra: any) => extra.key === "organization_owner",
           );
           if (
             representativeExtra &&
