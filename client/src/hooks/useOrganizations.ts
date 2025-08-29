@@ -104,14 +104,34 @@ export function useOrganizations() {
     if (organizations.length > 0 && !currentOrgContext) {
       // Use the first organization available for the current user
       const firstOrg = organizations[0];
-      const orgData = availableOrganizations.find(org => org.partitionKey === firstOrg.value);
+      // Find the raw organization data from availableOrganizations
+      let orgData = null;
+      
+      // Check if the organizations are already transformed (have 'key' property)
+      if (firstOrg.key && availableOrganizations.length > 0 && availableOrganizations[0].key) {
+        // Data is already transformed, create a raw organization object
+        orgData = {
+          role: '',
+          partitionKey: firstOrg.value,
+          organization: firstOrg.label,
+          registered: '',
+          id: firstOrg.organization.id,
+          externals: [],
+          type: firstOrg.organization.type,
+          idCustomer: ''
+        };
+      } else {
+        // Data is raw, find by partitionKey
+        orgData = availableOrganizations.find(org => org.partitionKey === firstOrg.value);
+      }
+      
       if (orgData) {
         console.log('Setting initial organization from context:', orgData);
         setCurrentOrgContext(orgData);
         localStorage.setItem('partition_key', firstOrg.value);
       }
     }
-  }, [organizations.length, currentOrgContext]);
+  }, [organizations.length, currentOrgContext, availableOrganizations]);
 
   // Get current organization as OrganizationOption format
   const currentOrganization = useMemo(() => {
@@ -134,7 +154,29 @@ export function useOrganizations() {
   }, [currentOrgContext]);
 
   const changeOrganization = async (organizationId: string) => {
-    const selectedOrgData = availableOrganizations.find((org) => org.partitionKey === organizationId);
+    // Find the organization in the transformed list
+    const selectedOrg = organizations.find((org) => org.value === organizationId);
+    
+    // Create or find the raw organization data
+    let selectedOrgData = null;
+    
+    if (selectedOrg && availableOrganizations.length > 0 && availableOrganizations[0].key) {
+      // Data is already transformed, create a raw organization object
+      selectedOrgData = {
+        role: '',
+        partitionKey: selectedOrg.value,
+        organization: selectedOrg.label,
+        registered: '',
+        id: selectedOrg.organization.id,
+        externals: [],
+        type: selectedOrg.organization.type,
+        idCustomer: ''
+      };
+    } else {
+      // Data is raw, find by partitionKey
+      selectedOrgData = availableOrganizations.find((org) => org.partitionKey === organizationId);
+    }
+    
     if (selectedOrgData) {
       console.log('Starting organization change, setting loading to true');
       organizationLoadingStore.setState(true);
