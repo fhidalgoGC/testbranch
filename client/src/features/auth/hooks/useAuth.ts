@@ -285,6 +285,7 @@ export const useAuth = () => {
     localStorage.removeItem("representative_people_email");
     localStorage.removeItem("representative_people_calling_code");
     localStorage.removeItem("representative_people_phone_number");
+    
 
     // Clear company data from localStorage
     localStorage.removeItem("company_business_name");
@@ -297,6 +298,7 @@ export const useAuth = () => {
     localStorage.removeItem("current_organization_id");
     localStorage.removeItem("current_organization_name");
     localStorage.removeItem("organization_details");
+    localStorage.removeItem("organization_options");
 
     // Clear session context
     clearSession();
