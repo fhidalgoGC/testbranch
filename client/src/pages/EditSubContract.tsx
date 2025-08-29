@@ -155,7 +155,7 @@ export default function EditSubContract() {
   const reloadSubContracts = async () => {
     try {
       const response = await authenticatedFetch(
-        `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts?filter={"contract_id":"${contractId}"}`
+        `${environment.TRM_BASE_URL}/contracts/sp-sub-contracts?filter={"contract_id":"${contractId}"}`
       );
       if (response.ok) {
         const result = await response.json();
@@ -368,7 +368,7 @@ export default function EditSubContract() {
       
       // Call update API
       const response = await authenticatedFetch(
-        `https://trm-develop.grainchain.io/api/v1/contracts/sp-sub-contracts/${currentSubContract._id}`,
+        `${environment.TRM_BASE_URL}/contracts/sp-sub-contracts/${currentSubContract._id}`,
         {
           method: 'PUT',
           headers: {

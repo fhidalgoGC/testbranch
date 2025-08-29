@@ -166,7 +166,7 @@ export const fetchContractsDataDirect = async (
       params.append("sort[created_at]", "-1");
     }
 
-    const url = `https://trm-develop.grainchain.io/api/v1/contracts/sp-contracts?${params.toString()}`;
+    const url = `${environment.TRM_BASE_URL}/contracts/sp-contracts?${params.toString()}`;
     console.log("Fetching contracts from:", url);
 
     // Headers de la petición
@@ -178,7 +178,7 @@ export const fetchContractsDataDirect = async (
       "bt-organization": partitionKey,
       "bt-uid": partitionKey,
       organization_id: partitionKey,
-      origin: "https://contracts-develop.grainchain.io",
+      origin: environment.CONTRACTS_ORIGIN,
       "pk-organization": partitionKey,
     };
 
@@ -403,7 +403,7 @@ export const fetchContractsData = async (params: FetchContractsParams) => {
       "bt-organization": partitionKey,
       "bt-uid": partitionKey,
       organization_id: partitionKey,
-      origin: "https://contracts-develop.grainchain.io",
+      origin: environment.CONTRACTS_ORIGIN,
       "pk-organization": partitionKey,
     };
 
@@ -721,9 +721,9 @@ export const generateAndDownloadPDF = async (printData: any, fileName: string): 
         'accept': '*/*',
         'accept-language': 'es-419,es;q=0.9',
         'content-type': 'application/json; charset=utf-8',
-        'origin': 'https://contracts-develop.grainchain.io',
+        'origin': environment.CONTRACTS_ORIGIN,
         'priority': 'u=1, i',
-        'referer': 'https://contracts-develop.grainchain.io/',
+        'referer': `${environment.CONTRACTS_ORIGIN}/`,
         'sec-ch-ua': '"Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"macOS"',

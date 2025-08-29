@@ -19,7 +19,7 @@ import {
   fetchContractsData,
   fetchContractsDataDirect,
   generateContractId,
-} from "@/services/contractsService";
+} from "@/services/contracts.service";
 import {
   DropdownMenu,
   DropdownMenuContent,

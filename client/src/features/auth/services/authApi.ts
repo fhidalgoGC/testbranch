@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { LoginRequest, LoginResponse, IdentityResponse } from '../types/auth';
+import { environment } from '@/environment/environment';
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_AUTH0_URL || 'https://grainchaindev.auth0.com/oauth/token',
+    baseUrl: environment.AUTH0_URL,
   }),
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -17,11 +18,11 @@ export const authApi = createApi({
         body: {
           username: credentials.email,
           password: credentials.password,
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://grainchaindev.auth0.com/userinfo',
-          grant_type: import.meta.env.VITE_AUTH0_GRANT_TYPE || 'http://auth0.com/oauth/grant-type/password-realm',
-          realm: import.meta.env.VITE_AUTH0_REALM || 'Username-Password-Authentication',
-          client_id: import.meta.env.VITE_AUTH0_CLIENT_ID || 'f9jw9xsL2Sje2LwHsEZSxnpMupH0QiNJ',
-          scope: import.meta.env.VITE_AUTH0_SCOPE || 'openid offline_access',
+          audience: environment.AUTH0_AUDIENCE,
+          grant_type: environment.AUTH0_GRANT_TYPE,
+          realm: environment.AUTH0_REALM,
+          client_id: environment.AUTH0_CLIENT_ID,
+          scope: environment.AUTH0_SCOPE,
         },
       }),
     }),
@@ -31,7 +32,7 @@ export const authApi = createApi({
 export const identityApi = createApi({
   reducerPath: 'identityApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_URL_IDENTITY || 'https://un4grlwfx2.execute-api.us-west-2.amazonaws.com/dev',
+    baseUrl: environment.IDENTITY_BASE_URL,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('jwt');
       if (token) {

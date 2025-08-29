@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { CountryApiResponse, UseCountriesParams } from '../types/country';
+import { environment } from '@/environment/environment';
 const colombiaFlag = '/assets/colombia_1753044330762.png';
 const guatemalaFlag = '/assets/guatemala_1753044330764.png';
 
@@ -12,7 +13,7 @@ export function useCountries({
   return useQuery({
     queryKey: ['countries', { page, limit, search, language }],
     queryFn: async (): Promise<CountryApiResponse> => {
-      const crmUrl = import.meta.env.VITE_URL_CRM;
+      const crmUrl = environment.CRM_BASE_URL;
       const jwt = localStorage.getItem('jwt');
       
       if (!crmUrl) {

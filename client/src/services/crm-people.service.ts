@@ -144,6 +144,36 @@ export const getPeople = async (
 };
 
 /**
+ * Get a person by ID from CRM
+ */
+export const getPersonById = async (personId: string): Promise<CrmPerson> => {
+  const url = `${environment.CRM_BASE_URL}/crm-people/people/${personId}`;
+  
+  console.log("CRM Person by ID API URL:", url);
+
+  try {
+    const response = await authenticatedFetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("CRM Person by ID API Response:", data);
+
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching person by ID from CRM:", error);
+    throw error;
+  }
+};
+
+/**
  * Get sellers from CRM
  */
 export const getSellers = async (

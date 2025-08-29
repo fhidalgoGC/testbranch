@@ -6,7 +6,7 @@ import { PurchaseContractForm } from "@/components/PurchaseContractForm/Purchase
 import {
   generateContractId,
   submitContract,
-} from "@/services/contractsService";
+} from "@/services/contracts.service";
 import {
   AlertDialog,
   AlertDialogAction,

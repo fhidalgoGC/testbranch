@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { environment } from '@/environment/environment';
 
 interface CharacteristicsConfigurationData {
   _id: string;
@@ -68,7 +69,7 @@ export function useCharacteristicsConfigurations({
         partitionKey: partitionKey
       });
 
-      const url = `https://ssm-develop.grainchain.io/silosys-service/api/v1/chars-configs/summary?commodity_id=${commodityId}&subcategory_id=${subcategoryId}`;
+      const url = `${environment.SSM_BASE_URL}/chars-configs/summary?commodity_id=${commodityId}&subcategory_id=${subcategoryId}`;
       
       console.log('Characteristics configurations URL:', url);
       console.log('Making request with token:', authToken.substring(0, 50) + '...');
@@ -84,9 +85,9 @@ export function useCharacteristicsConfigurations({
           'bt-organization': partitionKey,
           'bt-uid': partitionKey,
           'organization_id': partitionKey,
-          'origin': 'https://contracts-develop.grainchain.io',
+          'origin': environment.CONTRACTS_ORIGIN,
           'pk-organization': partitionKey,
-          'referer': 'https://contracts-develop.grainchain.io/',
+          'referer': `${environment.CONTRACTS_ORIGIN}/`,
           'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138", "Google Chrome";v="138"',
           'sec-ch-ua-mobile': '?0',
           'sec-ch-ua-platform': '"macOS"',
