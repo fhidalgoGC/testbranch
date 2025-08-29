@@ -13,10 +13,6 @@ jobs:
       - name: Checkout Repo A (staging)
         uses: actions/checkout@v4
         with:
-<<<<<<< HEAD
-          ref: staging       # 👈 asegura que se baje la rama staging
-          fetch-depth: 0     # historial completo, por si se requiere
-=======
           ref: staging
           fetch-depth: 0
 >>>>>>> main
@@ -31,21 +27,11 @@ jobs:
           git config user.email "actions@github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-<<<<<<< HEAD
-          # 🔑 quitar el header automático de checkout (usa GITHUB_TOKEN)
-=======
           # 1) Quitar el header del GITHUB_TOKEN (evita usar github-actions[bot])
           git config --unset-all http.https://github.com/.extraheader || true
->>>>>>> main
           git config --global --unset-all http.https://github.com/.extraheader || true
           sudo git config --system --unset-all http.https://github.com/.extraheader || true
 
-<<<<<<< HEAD
-          # agregar remoto destino con tu PAT
-          git remote add mirror "https://x-access-token:${TOKEN}@github.com/fhidalgoGC/testbranch.git"
-
-          # empujar staging (HEAD actual) a main en Repo B, forzando
-=======
           # 2) Crear un commit temporal SIN workflows (no se empuja a Repo A)
           if [ -d ".github/workflows" ]; then
             rm -rf .github/workflows
@@ -64,5 +50,4 @@ jobs:
           git ls-remote mirror -h
 
           # 5) Forzar push del HEAD actual -> main en Repo B
->>>>>>> main
           git push mirror HEAD:main --force
