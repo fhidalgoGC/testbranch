@@ -22,6 +22,15 @@ export const environment = {
   CRAFTMYPDF_BASE_URL:
     import.meta.env.VITE_CRAFTMYPDF_BASE_URL || "https://api.craftmypdf.com/v1",
 
+  SSM_BASE_URL:
+    import.meta.env.VITE_SSM_BASE_URL ||
+    "https://ssm-develop.grainchain.io/silosys-service/api/v1",
+
+  // Origins for CORS
+  CONTRACTS_ORIGIN:
+    import.meta.env.VITE_CONTRACTS_ORIGIN ||
+    "https://contracts-develop.grainchain.io",
+
   // Auth0 Config
   AUTH0_URL:
     import.meta.env.VITE_AUTH0_URL ||

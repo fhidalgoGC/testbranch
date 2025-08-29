@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { environment } from '@/environment/environment';
 
 interface CommodityOption {
   key: string;
@@ -49,7 +50,7 @@ export const useCommodities = () => {
           "_partitionKey": partitionKey
         });
         
-        const url = `https://crm-develop.grainchain.io/api/v1/commodities/commodities?page=1&limit=20&filter=${encodeURIComponent(filter)}`;
+        const url = `${environment.CRM_BASE_URL}/commodities/commodities?page=1&limit=20&filter=${encodeURIComponent(filter)}`;
         
         console.log('Fetching commodities from:', url);
 
