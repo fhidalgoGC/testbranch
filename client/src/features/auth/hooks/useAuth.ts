@@ -58,25 +58,27 @@ export const useAuth = () => {
       // Store organizations in context and set initial partition key
       let partitionKey = "";
       if (partitionKeysData && partitionKeysData.length > 0) {
+        // Convert OrganizationOption[] to OrganizationData[]
+        const organizationDataArray = partitionKeysData.map(org => ({
+          role: '',
+          partitionKey: org.value,
+          organization: org.label,
+          registered: '',
+          id: org.organization._id || org.value,
+          externals: [],
+          type: org.organization.type || 'Organizational',
+          idCustomer: ''
+        }));
+        
         // Set organizations in context
-        setAvailableOrganizations(partitionKeysData);
+        setAvailableOrganizations(organizationDataArray);
         
         const firstOrg = partitionKeysData[0];
         partitionKey = firstOrg.value;
         localStorage.setItem("partition_key", partitionKey);
         
         // Set current organization in context
-        const rawOrgData = {
-          role: '',
-          partitionKey: firstOrg.value,
-          organization: firstOrg.label,
-          registered: '',
-          id: firstOrg.organization.id || firstOrg.organization._id,
-          externals: [],
-          type: firstOrg.organization.type,
-          idCustomer: ''
-        };
-        setCurrentOrganization(rawOrgData);
+        setCurrentOrganization(organizationDataArray[0]);
 
         console.log("Partition keys from service:", partitionKeysData);
       }
