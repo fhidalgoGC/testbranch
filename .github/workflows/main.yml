@@ -1,11 +1,9 @@
-name: Force sync staging to Repo B
+name: Force sync staging -> main in Repo B
 
 on:
   push:
-    branches:
-      - staging
-  # Permite correrlo manualmente desde la pestaña Actions (Run workflow)
-  workflow_dispatch:
+    branches: [staging]
+  workflow_dispatch:   # 👈 habilita botón Run workflow en Actions
 
 jobs:
   sync:
@@ -15,7 +13,7 @@ jobs:
       - name: Checkout Repo A (staging)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # historial completo
+          fetch-depth: 0
 
       - name: Force push staging -> main in Repo B
         env:
@@ -26,11 +24,15 @@ jobs:
           git config user.email "actions@github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-          # Asegurar que la rama staging existe localmente
+          # 🔑 Quitar el header que pone checkout (usa GITHUB_TOKEN)
+          git config --global --unset-all http.https://github.com/.extraheader || true
+
+          # Asegurar rama staging local
           git fetch origin staging:staging
 
-          # Agregar remoto destino con PAT
+          # Agregar remoto con tu PAT
           git remote add mirror "https://x-access-token:${TOKEN}@github.com/fhidalgoGC/testbranch.git"
 
           # Forzar push staging -> main
           git push mirror staging:main --force
+
