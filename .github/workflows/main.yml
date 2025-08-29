@@ -23,16 +23,24 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-          # 🔑 Quitar el header que pone checkout (usa GITHUB_TOKEN)
+      
+          # 🔑 Quitar el header de auth que mete checkout (en TODOS los scopes)
+          git config --unset-all http.https://github.com/.extraheader || true
           git config --global --unset-all http.https://github.com/.extraheader || true
-
-          # Asegurar rama staging local
-          git fetch origin staging:staging
-
-          # Agregar remoto con tu PAT
+          sudo git config --system --unset-all http.https://github.com/.extraheader || true
+      
+          # (Opcional) verifica que ya no haya extraheader
+          git config --get-all http.https://github.com/.extraheader || true
+      
+          # Agregar remoto destino con tu PAT
+          git remote remove mirror 2>/dev/null || true
           git remote add mirror "https://x-access-token:${TOKEN}@github.com/fhidalgoGC/testbranch.git"
+          git remote -v
+      
+          # (Opcional) probar credenciales antes del push
+          git ls-remote mirror -h
+      
+          # Empujar HEAD (staging) -> main en Repo B, forzando
+          git push mirror HEAD:main --force
 
-          # Forzar push staging -> main
-          git push mirror staging:main --force
 
