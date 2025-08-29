@@ -76,17 +76,24 @@ export function useOrganizations() {
     
     console.log('Transforming organizations:', availableOrganizations);
     
-    return availableOrganizations.map((item: any) => ({
-      value: item.partitionKey,
-      label: item.organization || `Organización ${item.id}`,
-      organization: {
-        id: item.id,
-        name: item.organization || `Organización ${item.id}`,
-        partitionKey: item.partitionKey,
-        type: item.type,
-        initials: getOrganizationInitials(item.organization || `Organización ${item.id}`)
-      }
-    }));
+    return availableOrganizations
+      .filter((item: any) => item && item.partitionKey) // Filter out invalid items
+      .map((item: any) => {
+        const orgName = item.organization || (item.type === 'Personal' ? 'Personal' : `Organización ${item.id}`);
+        return {
+          key: item.partitionKey,
+          value: item.partitionKey,
+          label: orgName,
+          organization: {
+            id: item.id,
+            name: orgName,
+            partitionKey: item.partitionKey,
+            type: item.type,
+            description: item.description,
+            initials: getOrganizationInitials(orgName)
+          }
+        };
+      });
   }, [availableOrganizations]);
 
   // Initialize current organization from available organizations
@@ -107,15 +114,19 @@ export function useOrganizations() {
   const currentOrganization = useMemo(() => {
     if (!currentOrgContext) return null;
     
+    const orgName = currentOrgContext.organization || (currentOrgContext.type === 'Personal' ? 'Personal' : `Organización ${currentOrgContext.id}`);
+    
     return {
+      key: currentOrgContext.partitionKey,
       value: currentOrgContext.partitionKey,
-      label: currentOrgContext.organization || `Organización ${currentOrgContext.id}`,
+      label: orgName,
       organization: {
         id: currentOrgContext.id,
-        name: currentOrgContext.organization || `Organización ${currentOrgContext.id}`,
+        name: orgName,
         partitionKey: currentOrgContext.partitionKey,
         type: currentOrgContext.type,
-        initials: getOrganizationInitials(currentOrgContext.organization || `Organización ${currentOrgContext.id}`)
+        description: currentOrgContext.description,
+        initials: getOrganizationInitials(orgName)
       }
     };
   }, [currentOrgContext]);
