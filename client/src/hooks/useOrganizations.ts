@@ -71,14 +71,17 @@ export function useOrganizations() {
   const organizations = useMemo(() => {
     if (!availableOrganizations || !Array.isArray(availableOrganizations)) return [];
     
-    console.log('Transforming organizations:', availableOrganizations);
+    // Check if data is already transformed from API service
+    if (availableOrganizations.length > 0 && availableOrganizations[0].key) {
+      return availableOrganizations;
+    }
     
+    // If not transformed, transform raw data
     const filtered = availableOrganizations.filter((item: any) => item && item.partitionKey);
-    console.log('Filtered organizations:', filtered.length, 'items');
     
     const transformed = filtered.map((item: any) => {
       const orgName = item.organization || (item.type === 'Personal' ? 'Personal' : `Organización ${item.id}`);
-      const result = {
+      return {
         key: item.partitionKey,
         value: item.partitionKey,
         label: orgName,
@@ -90,8 +93,6 @@ export function useOrganizations() {
           initials: getOrganizationInitials(orgName)
         }
       };
-      console.log('Transformed organization:', orgName, 'initials:', result.organization.initials);
-      return result;
     });
     
     console.log('Final transformed organizations:', transformed.length, 'items');
@@ -110,7 +111,7 @@ export function useOrganizations() {
         localStorage.setItem('partition_key', firstOrg.value);
       }
     }
-  }, [organizations, currentOrgContext, availableOrganizations, setCurrentOrgContext]);
+  }, [organizations.length, currentOrgContext]);
 
   // Get current organization as OrganizationOption format
   const currentOrganization = useMemo(() => {
