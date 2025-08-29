@@ -33,7 +33,9 @@ export function useOrganizations() {
   } = useUser();
   const [organizationDetails, setOrganizationDetails] = useState<Organization[]>([]);
 
-  // Get organizations from localStorage first, then fetch from API if not available
+  // Only fetch from API if context is completely empty
+  const shouldFetchFromAPI = availableOrganizations.length === 0 && !isLoadingOrganizations;
+  
   const {
     data: organizationsData = [],
     isLoading,
@@ -42,30 +44,20 @@ export function useOrganizations() {
   } = useQuery({
     queryKey: ['organizations'],
     queryFn: async () => {
-      // Always fetch from API to ensure fresh data
-      console.log('Fetching organizations from API...');
-      const apiData = await organizationService.getPartitionKeys();
-      console.log('API returned organizations:', apiData);
-      
-      // Store in localStorage for future use
-      localStorage.setItem('organization_options', JSON.stringify(apiData));
-      
-      return apiData;
+      console.log('Fetching organizations from API as fallback...');
+      return organizationService.getPartitionKeys();
     },
+    enabled: shouldFetchFromAPI, // Only run if we don't have organizations in context
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
   });
 
-  // Update available organizations when data changes
+  // Update available organizations when data changes (only if context is empty)
   useEffect(() => {
-    if (organizationsData && Array.isArray(organizationsData)) {
-      console.log('Updating available organizations from API:', organizationsData);
+    if (organizationsData && Array.isArray(organizationsData) && availableOrganizations.length === 0) {
       setAvailableOrganizations(organizationsData);
-    } else if (organizationsData && organizationsData.data && Array.isArray(organizationsData.data)) {
-      console.log('Updating available organizations from API with data wrapper:', organizationsData.data);
-      setAvailableOrganizations(organizationsData.data);
     }
-  }, [organizationsData, setAvailableOrganizations]);
+  }, [organizationsData]);
 
   // Transform API data into options
   const organizations = useMemo(() => {
@@ -184,9 +176,7 @@ export function useOrganizations() {
       
       setCurrentOrgContext(selectedOrgData);
       
-      // Update localStorage with new partition key
-      localStorage.setItem('current_organization_id', selectedOrgData.partitionKey);
-      localStorage.setItem('current_organization_name', selectedOrgData.organization || `Organización ${selectedOrgData.id}`);
+      // Update localStorage with new partition key (keep only the partition key)
       localStorage.setItem('partition_key', selectedOrgData.partitionKey);
       
       try {
