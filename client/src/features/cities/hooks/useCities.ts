@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { environment } from '@/environment/environment';
 
 // Types for city data structure
 export interface City {
@@ -105,7 +106,7 @@ export function useCities() {
 
     try {
       // Build the URL
-      const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
+      const baseUrl = environment.CRM_BASE_URL;
       const endpoint = '/crm-locations/cities/find-cities';
       
       // Build filter object

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CountryApiResponse, Country } from '../types/country';
+import { environment } from '@/environment/environment';
 
 interface UseCountriesParams {
   search?: string;
@@ -19,7 +20,7 @@ export function useCountries(params: UseCountriesParams) {
 
     try {
       // Use the CRM base URL - it should already include /api/v1
-      const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
+      const baseUrl = environment.CRM_BASE_URL;
       
       // Build sort object based on language and sort order
       const language = params.language || 'en';

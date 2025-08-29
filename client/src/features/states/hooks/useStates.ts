@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StatesResponse, State } from '../types/state';
+import { environment } from '@/environment/environment';
 
 // Demo states data for testing
 const DEMO_STATES: Record<string, State[]> = {
@@ -243,7 +244,7 @@ export function useStates(params: UseStatesParams) {
 
     try {
       // Use environment variable or default to the exact base URL from your example
-      const baseUrl = import.meta.env.VITE_URL_CRM || 'https://crm-develop.grainchain.io/api/v1';
+      const baseUrl = environment.CRM_BASE_URL;
       
       // Build filter object exactly as shown in your example
       const filter: any = {
