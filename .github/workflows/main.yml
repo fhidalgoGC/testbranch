@@ -1,0 +1,27 @@
+name: Force sync staging testBranch
+
+on:
+  push:
+    branches:
+      - staging   # cada vez que hay cambios en staging de Repo A
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo A
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Force push staging to Repo B
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          # Agregar Repo B como remoto
+          git remote add mirror https://x-access-token:${{ secrets.GCCONTRACTS_MIRROR_STAGING_SECRET }}@github.com/fhidalgoGC/testbranch.git
+          
+          # Enviar staging forzado
+          git push mirror staging --force
