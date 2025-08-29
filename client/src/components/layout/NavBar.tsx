@@ -14,7 +14,7 @@ import {
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import { useNavigationHandler } from '@/hooks/usePageState';
-import { useOrganizations } from '@/hooks/useOrganizations';
+import { useUser } from '@/contexts/UserContext';
 import { Link } from 'wouter';
 
 interface NavBarProps {
@@ -26,7 +26,8 @@ export default function NavBar({ title }: NavBarProps) {
   const { logout } = useAuth();
   const [location] = useLocation();
   const { handleNavigateToPage } = useNavigationHandler();
-  const { organizations, currentOrganization, changeOrganization, isLoading: organizationsLoading } = useOrganizations();
+  const { availableOrganizations, currentOrganization, setCurrentOrganization, isLoadingOrganizations } = useUser();
+  const { loadOrganizationData } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState(
     localStorage.getItem('language') || 'es'
   );
@@ -195,6 +196,37 @@ export default function NavBar({ title }: NavBarProps) {
 
   const currentLang = languages.find(lang => lang.code === currentLanguage);
 
+  // Helper function to get organization initials
+  const getOrganizationInitials = (name: string | null | undefined): string => {
+    if (!name || typeof name !== 'string' || name.trim().length === 0) return 'ORG';
+    
+    const words = name.trim().split(' ').filter(word => word.length > 0);
+    if (words.length >= 2) {
+      return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
+    } else if (words.length === 1 && words[0].length >= 2) {
+      return words[0].substring(0, 2).toUpperCase();
+    } else if (words.length === 1 && words[0].length === 1) {
+      return `${words[0][0]}${words[0][0]}`.toUpperCase();
+    }
+    
+    return 'ORG';
+  };
+
+  // Handle organization change
+  const handleOrganizationChange = async (partitionKey: string) => {
+    const selectedOrg = availableOrganizations.find(org => org.partitionKey === partitionKey);
+    if (selectedOrg) {
+      setCurrentOrganization(selectedOrg);
+      localStorage.setItem('partition_key', partitionKey);
+      
+      try {
+        await loadOrganizationData(partitionKey);
+      } catch (error) {
+        console.error('Error switching organization:', error);
+      }
+    }
+  };
+
   return (
     <nav className="h-12 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/30 px-6 flex items-center justify-between">
       {/* Left side - Breadcrumbs */}
@@ -253,13 +285,13 @@ export default function NavBar({ title }: NavBarProps) {
               variant="ghost" 
               size="sm" 
               className="w-8 h-8 rounded-sm p-0 hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-all duration-100 border border-transparent hover:border-gray-200/50 dark:hover:border-gray-700/50"
-              disabled={organizationsLoading}
+              disabled={isLoadingOrganizations}
             >
-              {organizationsLoading ? (
+              {isLoadingOrganizations ? (
                 <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
-              ) : currentOrganization?.organization?.initials && typeof currentOrganization.organization.initials === 'string' ? (
+              ) : currentOrganization ? (
                 <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                  {currentOrganization.organization.initials}
+                  {getOrganizationInitials(currentOrganization.organization || '')}
                 </span>
               ) : (
                 <Building2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
@@ -267,23 +299,23 @@ export default function NavBar({ title }: NavBarProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 border-gray-200/50 dark:border-gray-700/50 shadow-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
-            {organizations.map((org: any) => (
+            {availableOrganizations.map((org) => (
               <DropdownMenuItem
-                key={org.key}
-                onClick={() => changeOrganization(org.value)}
+                key={org.partitionKey}
+                onClick={() => handleOrganizationChange(org.partitionKey)}
                 className="flex items-center space-x-3 cursor-pointer px-3 py-2 text-sm hover:bg-gray-50/60 dark:hover:bg-gray-800/40 transition-all duration-100"
               >
                 <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
                   <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                    {typeof org.organization?.initials === 'string' ? org.organization.initials : 'ORG'}
+                    {getOrganizationInitials(org.organization || '')}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-900 dark:text-white truncate">
-                    {typeof org.label === 'string' ? org.label : 'Organization'}
+                    {org.organization || 'Organization'}
                   </div>
                 </div>
-                {currentOrganization?.value === org.value && (
+                {currentOrganization?.partitionKey === org.partitionKey && (
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
                 )}
               </DropdownMenuItem>
