@@ -172,6 +172,21 @@ export const useAuth = () => {
         // Update partition key in localStorage
         localStorage.setItem('partition_key', partitionKey);
         
+        // Find the organization option to get the label for current organization info
+        const storedOptions = localStorage.getItem('organization_options');
+        if (storedOptions) {
+          try {
+            const organizationOptions = JSON.parse(storedOptions);
+            const currentOrgOption = organizationOptions.find((org: any) => org.value === partitionKey);
+            if (currentOrgOption) {
+              localStorage.setItem('current_organization_id', currentOrgOption.value);
+              localStorage.setItem('current_organization_name', currentOrgOption.label);
+            }
+          } catch (error) {
+            console.warn('Failed to parse organization options:', error);
+          }
+        }
+        
         console.log('Organization data loaded for partition key:', partitionKey);
     } catch (error) {
       console.error('Error loading organization data:', error);
