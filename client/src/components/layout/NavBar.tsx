@@ -257,7 +257,7 @@ export default function NavBar({ title }: NavBarProps) {
             >
               {organizationsLoading ? (
                 <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
-              ) : currentOrganization?.organization.initials ? (
+              ) : currentOrganization?.organization?.initials && typeof currentOrganization.organization.initials === 'string' ? (
                 <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
                   {currentOrganization.organization.initials}
                 </span>
@@ -275,14 +275,14 @@ export default function NavBar({ title }: NavBarProps) {
               >
                 <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
                   <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                    {org.organization.initials}
+                    {typeof org.organization?.initials === 'string' ? org.organization.initials : 'ORG'}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-900 dark:text-white truncate">
-                    {org.label}
+                    {typeof org.label === 'string' ? org.label : 'Organization'}
                   </div>
-                  {org.organization.description && (
+                  {org.organization?.description && typeof org.organization.description === 'string' && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
                       {org.organization.description}
                     </div>
